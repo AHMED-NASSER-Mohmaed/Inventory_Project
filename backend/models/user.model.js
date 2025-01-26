@@ -37,18 +37,19 @@ const userSchema = new mongoose.Schema(
         },
         message: "Passwords do not match",
       },
-      role: {
-        type: String,
-        enum: ["customer", "seller", "admin"],
-        default: "customer",
-      },
-      isActive: {
-        type: Boolean,
-        default: true,
-        select: false,
-      },
+    },
+    role: {
+      type: String,
+      enum: ["customer", "seller", "admin"],
+      default: "customer",
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+      select: false,
     },
   },
+
   {
     timestamps: true,
   }

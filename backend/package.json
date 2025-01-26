@@ -1,9 +1,9 @@
 {
   "name": "inventory",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "main.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon main.js"
   },
   "author": "Team 2",
   "license": "ISC",
