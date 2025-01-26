@@ -18,6 +18,15 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       validate: [validator.isEmail, "Please provide a valid email"],
     },
+    phoneNumber: {
+      type: String,
+      validate: {
+        validator: function (number) {
+          return /^(010|011|012|015)[0-9]{8}$/.test(number);
+        },
+        message: "Please provide a valid phone number",
+      },
+    },
     photo: {
       type: String,
       default: "default.jpg",

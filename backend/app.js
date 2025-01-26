@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const path = require("path");
 const fs = require("fs");
+const globalErrorHandler = require("./controllers/error.controller");
 
 const app = express();
 
@@ -12,9 +13,11 @@ app.use(express.json());
 const controllersDirPath = path.join(__dirname, "controllers");
 const controllersDirectory = fs.readdirSync(controllersDirPath);
 
-// for (const controllerFile of controllersDirectory) {
-//   const controller = require(path.join(controllersDirPath, controllerFile));
-//   app.use(controller);
-// }
+for (const controllerFile of controllersDirectory) {
+  const controller = require(path.join(controllersDirPath, controllerFile));
+  app.use(controller);
+}
+
+app.use(globalErrorHandler);
 
 module.exports = app;
