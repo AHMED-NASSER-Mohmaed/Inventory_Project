@@ -1,2 +1,3 @@
 # Inventory_Project
-Inventory Project Using Mearn
+
+Inventory Project Using MEAN stack.
