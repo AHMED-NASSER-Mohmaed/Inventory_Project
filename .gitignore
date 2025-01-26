@@ -1,0 +1,12 @@
+# NodeJS 
+backend/node_modules/
+backend/.env
+
+# Angular 
+frontend/dist/
+frontend/.angular/
+frontend/node_modules/
+
+
+# IDE files 
+.vscode/
