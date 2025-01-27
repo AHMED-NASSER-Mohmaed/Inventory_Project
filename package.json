@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "otp-generator": "^4.0.1"
+  }
+}
