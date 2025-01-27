@@ -17,8 +17,12 @@ const login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+const updatePassword = catchAsync(async (req, res, next) => {
+  const user = await AuthService.updatePassword(req.user.id, req.body);
+});
+
 const createSendToken = (user, statusCode, res) => {
-  const token = JWT_Manager.signToken(user.id, user.role);
+  const token = JWT_Manager.signToken(user.id, user.userType);
   user.password = undefined;
 
   res.status(statusCode).json({
