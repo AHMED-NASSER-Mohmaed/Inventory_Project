@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const AppError = require("../utils/appError");
 
 class UserRepository {
+  
   async getAllUsers() {
     try {
       const users = await User.find();

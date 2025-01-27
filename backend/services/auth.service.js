@@ -1,6 +1,7 @@
 const AuthRepository = require("../repos/auth.repo");
 
 class AuthService {
+  
   async signup(userData) {
     return await AuthRepository.signup(userData);
   }
