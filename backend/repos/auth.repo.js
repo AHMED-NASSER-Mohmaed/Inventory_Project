@@ -3,6 +3,7 @@ const AppError = require("../utils/appError");
 const jwt = require("jsonwebtoken");
 
 class UserRepository {
+  
   async signup(userData) {
     try {
       const { firstName, lastName, email, password, passwordConfirm } =

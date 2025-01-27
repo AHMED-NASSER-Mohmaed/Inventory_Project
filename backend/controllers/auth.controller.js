@@ -7,7 +7,7 @@ const authMiddleware = require("../middlewares/auth.middleware");
 const authRouter = express.Router();
 
 // Route Handlers
-const signup = catchAsync(async (req, res, next) => {
+const signup = catchAsync( async (req, res, next) => {
   const newUser = await AuthService.signup(req.body);
   createSendToken(newUser, 201, res);
 });

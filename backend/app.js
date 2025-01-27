@@ -11,6 +11,7 @@ app.use(morgan("common"));
 app.use(express.json());
 
 // controller registration
+
 const controllersDirPath = path.join(__dirname, "controllers");
 const controllersDirectory = fs.readdirSync(controllersDirPath);
 
