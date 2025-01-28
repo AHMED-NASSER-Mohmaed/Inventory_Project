@@ -57,7 +57,7 @@ const userSchema = new mongoose.Schema(
     },
     userType: {
       type: String,
-      enum: [ "staff" , "customer", "seller"],
+      enum: ["staff", "customer", "seller"],
       required: true,
       default: "customer",
     },
@@ -66,6 +66,7 @@ const userSchema = new mongoose.Schema(
       default: true,
       select: false,
     },
+    changedPasswordAt: Date,
 
     // otp: {
     //   type: String,
@@ -94,6 +95,30 @@ userSchema.pre("save", async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password") || this.isNew) return next();
+
+  this.changedPasswordAt = Date.now() - 1000;
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
+
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.changedPasswordAt) {
+    const changedTimestamp = parseInt(
+      this.changedPasswordAt.getTime() / 1000,
+      10
+    );
+    return JWTTimestamp < changedTimestamp;
+  }
+
+  return false;
+};
 
 userSchema.methods.correctPassword = async function (
   candidatePassword,
