@@ -17,11 +17,15 @@ const ProductSchema = new mongoose.Schema({
     
     seller: {  type: mongoose.Schema.ObjectId ,required:true , ref:'Seller' },
 
-    isActive:{type:Boolean , default:false  }
+    isActive:{ type:Boolean , default:false },
+
+    reviews:[ { reviewId:{ type:mongoose.Schema.ObjectId }}]
   },
   {
     timestamps: true,
   });
   
-  module.exports = mongoose.model("Product", ProductSchema);
+  const product= mongoose.model("Product", ProductSchema);
   
+
+  module.exports =product;
