@@ -14,7 +14,7 @@ class ProductRepository {
 
   async getProductById(productId) {
     try {
-      const product = await Product.findById(productId).populate('category seller'); // in order to populate the category and seller fields in the product scheme
+      const product = await Product.findById(productId); //  .populate() has been removed since there's no ref anymore
       if (!product) {
         throw new AppError('Product not found', 404);
       }
@@ -26,7 +26,7 @@ class ProductRepository {
 
   async getAllProducts() {
     try {
-      const products = await Product.find().populate('category seller');
+      const products = await Product.find(); //  .populate() has been removed since there's no ref anymore
       return products;
     } catch (err) {
       throw err;

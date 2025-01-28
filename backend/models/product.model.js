@@ -17,10 +17,10 @@ const ProductSchema = new mongoose.Schema({
         min: [0, "Price cannot be negative"]
     },
     images: [{ 
-        type: [String],
+        type: String,
         validate: {
-            validator: function (array) {
-                return array.every(url => validator.isURL(url));
+            validator: function (url) {
+                return validator.isURL(url);
             },
             message: "Please provide valid URLs for images"
         }
@@ -33,20 +33,31 @@ const ProductSchema = new mongoose.Schema({
         required: [true, "Please provide the product quantity"],
         min: [0, "Quantity cannot be negative"]
     },
-    category: { 
+    categoryId: { 
         type: mongoose.Schema.ObjectId, 
-        required: [true, "Please provide the product category"], 
-        ref: 'Category' 
+        required: [true, "Please provide the product category"] 
     },
-    seller: {  // there will be an object in the seller model in order to used here when we wanna create a product without external seller
+    categoryName: { 
+        type: String, 
+        required: [true, "Please provide the category name"] 
+    },
+    sellerId: { // there will be an object in the seller model in order to be used here when we wanna create a product without external seller
         type: mongoose.Schema.ObjectId, 
-        required: [true, "Please provide the seller"], 
-        ref: 'Seller' 
+        required: [true, "Please provide the seller"] 
+    },
+    sellerName: { 
+        type: String, 
+        required: [true, "Please provide the seller name"] 
     },
     isActive: {
         type: Boolean, 
         default: false  
-    }
+    },
+    reviews: [{ 
+        reviewId: { 
+            type: mongoose.Schema.ObjectId 
+        }
+    }]
 }, {
     timestamps: true,
 });
