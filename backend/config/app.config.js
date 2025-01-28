@@ -6,6 +6,13 @@ module.exports.APP_CONFIG = {
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
 
+  EMAIL_USERNAME: process.env.EMAIL_USERNAME,
+  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
+  EMAIL_HOST: process.env.EMAIL_HOST,
+  EMAIL_PORT: process.env.EMAIL_PORT,
+  EMAIL_NAME: process.env.EMAIL_NAME,
+  EMAIL_FROM: process.env.EMAIL_FROM,
+
   // Successful responses (2xx)
   HTTP_OK: 200, // [delete + [returned ack  data] that is already  returned in the body.] + [get verb +reterned data]
 
