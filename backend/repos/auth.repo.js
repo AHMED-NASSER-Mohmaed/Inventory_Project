@@ -1,18 +1,23 @@
 const User = require("../models/user.model");
 const AppError = require("../utils/appError");
-const jwt = require("jsonwebtoken");
 
 class UserRepository {
-  
   async signup(userData) {
     try {
-      const { firstName, lastName, email, password, passwordConfirm } =
-        userData;
+      const {
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        password,
+        passwordConfirm,
+      } = userData;
 
       const newUser = await User.create({
         firstName,
         lastName,
         email,
+        phoneNumber,
         password,
         passwordConfirm,
       });
@@ -45,11 +50,11 @@ class UserRepository {
       const user = await User.findById(userId).select("+password");
       if (!user) throw new AppError("No user found with this id", 400);
 
-      if (!userData.currentPassword)
+      if (!userData.passwordCurrent)
         throw new AppError("Current password is not provided", 400);
 
       if (
-        !(await user.correctPassword(userData.currentPassword, user.password))
+        !(await user.correctPassword(userData.passwordCurrent, user.password))
       )
         throw new AppError("Current password is incorrect", 400);
 
@@ -66,7 +71,8 @@ class UserRepository {
 
       user.password = userData.password;
       user.passwordConfirm = userData.passwordConfirm;
-      await user.save();
+      await user.validate(["passwordConfirm"]);
+      await user.save({ validateBeforeSave: false });
 
       return user;
     } catch (err) {

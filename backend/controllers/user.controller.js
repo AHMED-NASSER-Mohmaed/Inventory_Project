@@ -2,144 +2,79 @@ const express = require("express");
 const userService = require("../services/user.service");
 const UserMiddleware = require("../middlewares/user.middleware");
 const AuthMiddleware = require("../middlewares/auth.middleware");
+const catchAsync = require("../utils/catchAsync");
 
-class UserController {
-  constructor() {
-    this.router = express.Router();
-    this.initializeRoutes();
-  }
+const userRouter = express.Router();
 
-  initializeRoutes() {
-    this.router.use(AuthMiddleware.protect);
+const getAllUsers = catchAsync(async (req, res, next) => {
+  const users = await userService.getAllUsers();
+  res.status(200).json({
+    message: "success",
+    results: users.length,
+    users,
+  });
+});
 
-    this.router.get("/users/me", UserMiddleware.getMe, this.getUser);
-    this.router.patch("/users/updateMe", this.updateMe);
-    this.router.delete("/users/deleteMe", this.deleteMe);
+const getUser = catchAsync(async (req, res, next) => {
+  const user = await userService.getUser(req.params.userId);
+  res.status(200).json({
+    message: "success",
+    user,
+  });
+});
 
-    this.router.get(
-      "/users",
-      AuthMiddleware.restrictTo("admin"),
-      this.getAllUsers
-    );
-    this.router.post(
-      "/users",
-      AuthMiddleware.restrictTo("admin"),
-      this.createUser
-    );
+const createUser = catchAsync(async (req, res, next) => {
+  const newUser = await userService.createUser(req.body);
+  res.status(201).json({
+    message: "success",
+    newUser,
+  });
+});
 
-    this.router
-      .route("/users/:userId")
-      .get(this.getUser)
-      .patch(AuthMiddleware.restrictTo("admin"), this.updateUser)
-      .delete(AuthMiddleware.restrictTo("admin"), this.deleteUser);
-  }
+const updateUser = catchAsync(async (req, res, next) => {
+  const updatedUser = await userService.updateUser(req.params.userId, req.body);
+  res.status(200).json({
+    message: "success",
+    updatedUser,
+  });
+});
 
-  async getAllUsers(req, res, next) {
-    try {
-      const users = await userService.getAllUsers();
-      res.status(200).json({
-        message: "success",
-        results: users.length,
-        users,
-      });
-    } catch (error) {
-      res.status(400).json({
-        message: "fail",
-        error: error.message,
-      });
-    }
-  }
+const deleteUser = catchAsync(async (req, res, next) => {
+  await userService.deleteUser(req.params.userId);
+  res.status(204).json({
+    message: "success",
+  });
+});
 
-  async getUser(req, res, next) {
-    try {
-      const user = await userService.getUser(req.params.userId);
-      res.status(200).json({
-        message: "success",
-        user,
-      });
-    } catch (error) {
-      res.status(400).json({
-        message: "fail",
-        error: error.message,
-      });
-    }
-  }
+const updateMe = catchAsync(async (req, res, next) => {
+  const updatedUser = await userService.updateMe(req.user.id, req.body);
+  res.status(200).json({
+    message: "success",
+    updatedUser,
+  });
+});
 
-  async createUser(req, res, next) {
-    try {
-      const newUser = await userService.createUser(req.body);
-      res.status(201).json({
-        message: "success",
-        newUser,
-      });
-    } catch (error) {
-      res.status(400).json({
-        message: "fail",
-        error: error.message,
-      });
-    }
-  }
+const deleteMe = catchAsync(async (req, res, next) => {
+  await userService.deleteMe(req.user.id);
+  res.status(204).json({
+    message: "success",
+  });
+});
 
-  async updateUser(req, res, next) {
-    try {
-      const updatedUser = await userService.updateUser(
-        req.params.userId,
-        req.body
-      );
-      res.status(200).json({
-        message: "success",
-        updatedUser,
-      });
-    } catch (error) {
-      res.status(400).json({
-        message: "fail",
-        error: error.message,
-      });
-    }
-  }
+// Routes
+userRouter.use(AuthMiddleware.protect);
 
-  async deleteUser(req, res, next) {
-    try {
-      await userService.deleteUser(req.params.userId);
-      res.status(204).json({
-        message: "success",
-      });
-    } catch (error) {
-      res.status(400).json({
-        message: "fail",
-        error: error.message,
-      });
-    }
-  }
+userRouter.get("/users/me", UserMiddleware.getMe, getUser);
+userRouter.patch("/users/updateMe", updateMe);
+userRouter.delete("/users/deleteMe", deleteMe);
 
-  async updateMe(req, res, next) {
-    try {
-      const updatedUser = await userService.updateMe(req.user.id, req.body);
-      res.status(200).json({
-        message: "success",
-        updatedUser,
-      });
-    } catch (error) {
-      res.status(400).json({
-        message: "fail",
-        error: error.message,
-      });
-    }
-  }
+userRouter.get("/users", AuthMiddleware.restrictTo("admin"), getAllUsers);
+userRouter.post("/users", AuthMiddleware.restrictTo("admin"), createUser);
 
-  async deleteMe(req, res, next) {
-    try {
-      await userService.deleteMe(req.user.id);
-      res.status(204).json({
-        message: "success",
-      });
-    } catch (error) {
-      res.status(400).json({
-        message: "fail",
-        error: error.message,
-      });
-    }
-  }
-}
+userRouter
+  .route("/users/:userId")
+  .get(getUser)
+  .patch(AuthMiddleware.restrictTo("admin"), updateUser)
+  .delete(AuthMiddleware.restrictTo("admin"), deleteUser);
 
-module.exports = new UserController().router;
+module.exports = userRouter;

@@ -21,14 +21,14 @@ const userSchema = new mongoose.Schema(
     },
     phoneNumber: {
       type: String,
+      required: [true, "Please provide a phone number"],
+      unique: true,
       validate: {
         validator: function (number) {
           return /^(010|011|012|015)[0-9]{8}$/.test(number);
         },
         message: "Please provide a valid phone number",
       },
-        required: [true, "Please provide a phone number"],
-      unique: true,
     },
     photo: {
       type: String,
@@ -53,20 +53,20 @@ const userSchema = new mongoose.Schema(
     salt: {
       type: String,
       select: false,
-      unique:true
+      unique: true,
     },
     userType: {
       type: String,
       enum: ["staff", "customer", "seller"],
       required: true,
-      defualt: "customer"
+      default: "customer",
     },
     isActive: {
       type: Boolean,
       default: true,
       select: false,
     },
-     
+
     // otp: {
     //   type: String,
     //   select: false,
@@ -79,10 +79,8 @@ const userSchema = new mongoose.Schema(
     //   type: Boolean,
     //   default: false,
     // },
-
-  }, { discriminatorKey: "userType", timestamps: true } // 'userType' acts as a discriminator field
-  ,
-
+  },
+  { discriminatorKey: "userType", timestamps: true }, // 'userType' acts as a discriminator field
   {
     timestamps: true,
   }

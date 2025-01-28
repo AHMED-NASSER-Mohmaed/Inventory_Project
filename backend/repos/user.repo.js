@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const AppError = require("../utils/appError");
 
 class UserRepository {
-  
   async getAllUsers() {
     try {
       const users = await User.find();
@@ -25,16 +24,17 @@ class UserRepository {
 
   async createUser(userData) {
     try {
-      const { firstName, lastName, email, password, role } = userData;
+      const { firstName, lastName, email, phoneNumber, password, userType } =
+        userData;
       const newUser = await User.create({
         firstName,
         lastName,
         email,
         password,
         passwordConfirm: password,
-        role,
+        userType,
+        phoneNumber,
       });
-      this.passwordConfirm = undefined;
 
       return newUser;
     } catch (error) {

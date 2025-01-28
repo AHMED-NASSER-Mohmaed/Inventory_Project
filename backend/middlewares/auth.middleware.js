@@ -3,13 +3,13 @@ const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const JWT_Manager = require("../utils/jwt.manager");
 
-module.exports.protect = catchAsync( async (req, res, next) => {
+module.exports.protect = catchAsync(async (req, res, next) => {
   let token;
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
-    token = req.headers.authorization.split(" ")[1]; 
+    token = req.headers.authorization.split(" ")[1];
   }
   if (!token) {
     return next(
@@ -19,9 +19,7 @@ module.exports.protect = catchAsync( async (req, res, next) => {
 
   JWT_Manager.verifyToken(token);
   const decoded = JWT_Manager.decodedToken({ token });
-  console.log(decoded);
   const currentUser = await UserService.getUser(decoded.payload.id);
-  console.log(currentUser);
   if (!currentUser)
     return next(
       new AppError(

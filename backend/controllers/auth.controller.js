@@ -7,7 +7,7 @@ const authMiddleware = require("../middlewares/auth.middleware");
 const authRouter = express.Router();
 
 // Route Handlers
-const signup = catchAsync( async (req, res, next) => {
+const signup = catchAsync(async (req, res, next) => {
   const newUser = await AuthService.signup(req.body);
   createSendToken(newUser, 201, res);
 });
@@ -19,6 +19,7 @@ const login = catchAsync(async (req, res, next) => {
 
 const updatePassword = catchAsync(async (req, res, next) => {
   const user = await AuthService.updatePassword(req.user.id, req.body);
+  createSendToken(user, 200, res);
 });
 
 const createSendToken = (user, statusCode, res) => {
@@ -37,5 +38,8 @@ const createSendToken = (user, statusCode, res) => {
 // Routes
 authRouter.post("/auth/signup", signup);
 authRouter.post("/auth/login", login);
+
+authRouter.use(authMiddleware.protect);
+authRouter.patch("/auth/updatePassword", updatePassword);
 
 module.exports = authRouter;
