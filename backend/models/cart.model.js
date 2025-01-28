@@ -4,13 +4,13 @@ const CartSchema = new mongoose.Schema({
 
     products: [
       {
-        product : { type: mongoose.Schema.ObjectId , ref:Product},
+        product : { type: mongoose.Schema.ObjectId , ref:Product , require:true, unique:true },
         requiredQty: { type: Number, required: true },
       },
 
     ],
     
-    customerId : { type : mongoose.Schema.ObjectId  },
+    customerId : { type : mongoose.Schema.ObjectId },
 
     sessionId: {
       type: String, // For guests
@@ -25,3 +25,4 @@ const CartSchema = new mongoose.Schema({
   
   module.exports = mongoose.model("Cart", CartSchema);
   
+ 

@@ -1,9 +1,9 @@
-const mongoose = required("mongoose")
+const mongoose = require("mongoose")
 
 
 const CInventorySchema = new mongoose.Schema({
 
-    productID: { type: mongoose.Schema.ObjectId , required: true},
+    productID: { type: mongoose.Schema.ObjectId , required: true },
 
     providerID: { type: mongoose.Schema.ObjectId , required: true},
 
@@ -16,7 +16,9 @@ const CInventorySchema = new mongoose.Schema({
     currentStock: { type: Number, required: true },
  
 });
+
+const CInventory=mongoose.model("CInventory", CInventorySchema);
   
-module.exports = mongoose.model("CInventory", CInventorySchema);
+module.exports = CInventory;
   
   

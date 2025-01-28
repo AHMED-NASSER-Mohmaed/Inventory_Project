@@ -7,21 +7,29 @@ const ProductSchema = new mongoose.Schema({
 
     price: { type: Number, required: true },
     
-    images: [ { type: [String] }], //pathes
+    images: [ { type: [String] } ], //pathes
 
     description: { type: String },
     
     quantity: { type: Number, required: true },
     
-    category: { type: mongoose.Schema.ObjectId, required: true , ref:'Category' },
-    
-    seller: {  type: mongoose.Schema.ObjectId ,required:true , ref:'Seller' },
+    categoryId: { type: mongoose.Schema.ObjectId, required: true},
 
-    isActive:{type:Boolean , default:false  }
+    categoryName: {type:String,required:true},
+    
+    sellerId: { type: mongoose.Schema.ObjectId ,required:true },
+
+    sellerName:{ type:String, required:true},
+
+    isActive:{ type:Boolean , default:false },
+
+    reviews:[ { reviewId:{ type:mongoose.Schema.ObjectId }}]
   },
   {
     timestamps: true,
   });
   
-  module.exports = mongoose.model("Product", ProductSchema);
+  const product= mongoose.model("Product", ProductSchema);
   
+
+  module.exports =product;

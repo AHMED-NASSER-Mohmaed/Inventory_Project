@@ -5,4 +5,19 @@ module.exports.APP_CONFIG = {
   NODE_ENV: process.env.NODE_ENV,
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+
+  // Successful responses (2xx)
+  HTTP_OK: 200, // [delete + [returned ack  data] that is already  returned in the body.] + [get verb +reterned data]
+
+  HTTP_CREATED: 201, // post[create new resource] or put [update existing resource]
+
+  HTTP_BAD_REQUEST: 400, // incorrect parameter value
+
+  HTTP_UNAUTHENTICATED: 401, // guest user or is not logged in
+
+  HTTP_UNAUTHORIZED: 403, // you are not authorized
+
+  HTTP_NOT_FOUND: 404, // not found
+
+  HTTP_INTERNAL_SERVER_ERROR: 500,
 };
