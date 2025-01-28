@@ -3,12 +3,14 @@ const AuthService = require("../services/auth.service");
 const JWT_Manager = require("../utils/jwt.manager");
 const catchAsync = require("../utils/catchAsync");
 const authMiddleware = require("../middlewares/auth.middleware");
+const Email = require("../utils/email");
 
 const authRouter = express.Router();
 
 // Route Handlers
 const signup = catchAsync(async (req, res, next) => {
   const newUser = await AuthService.signup(req.body);
+  await new Email(newUser).sendWelcome();
   createSendToken(newUser, 201, res);
 });
 

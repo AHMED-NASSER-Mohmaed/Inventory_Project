@@ -133,7 +133,5 @@ userSchema.methods.generateOTP = function () {
   this.otpExpires = Date.now() + 10 * 60 * 1000;
   return otpCode;
 };
-
 const User = mongoose.model("User", userSchema);
-
 module.exports = User;
