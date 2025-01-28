@@ -7,15 +7,19 @@ const ProductSchema = new mongoose.Schema({
 
     price: { type: Number, required: true },
     
-    images: [ { type: [String] }], //pathes
+    images: [ { type: [String] } ], //pathes
 
     description: { type: String },
     
     quantity: { type: Number, required: true },
     
-    category: { type: mongoose.Schema.ObjectId, required: true , ref:'Category' },
+    categoryId: { type: mongoose.Schema.ObjectId, required: true},
+
+    categoryName: {type:String,required:true},
     
-    seller: {  type: mongoose.Schema.ObjectId ,required:true , ref:'Seller' },
+    sellerId: { type: mongoose.Schema.ObjectId ,required:true },
+
+    sellerName:{ type:String, required:true},
 
     isActive:{ type:Boolean , default:false },
 

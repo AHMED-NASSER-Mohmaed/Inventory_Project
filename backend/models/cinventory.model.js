@@ -1,4 +1,4 @@
-const mongoose = required("mongoose")
+const mongoose = require("mongoose")
 
 
 const CInventorySchema = new mongoose.Schema({
@@ -16,7 +16,9 @@ const CInventorySchema = new mongoose.Schema({
     currentStock: { type: Number, required: true },
  
 });
+
+const CInventory=mongoose.model("CInventory", CInventorySchema);
   
-module.exports = mongoose.model("CInventory", CInventorySchema);
+module.exports = CInventory;
   
   
