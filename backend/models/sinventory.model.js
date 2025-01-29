@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-const CInventory= require("./CInventory");
+const CInventory= require("./cinventory.model");
 
 const SInventorySchema = new mongoose.Schema({
 });
