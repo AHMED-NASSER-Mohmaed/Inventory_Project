@@ -45,9 +45,25 @@ class ProductRepository {
     }
   }
 
-  async deleteProductById(productId) {
+  // async deleteProductById(productId) { // hard delete
+  //   try {
+  //     const product = await Product.findByIdAndDelete(productId);
+  //     if (!product) {
+  //       throw new AppError('Product not found', 404);
+  //     }
+  //     return product;
+  //   } catch (err) {
+  //     throw err;
+  //   }
+  // }
+
+  async deleteProductById(productId) { // soft delete
     try {
-      const product = await Product.findByIdAndDelete(productId);
+      const product = await Product.findByIdAndUpdate(
+        productId,
+        { isActive: false },
+        { new: true }
+      );
       if (!product) {
         throw new AppError('Product not found', 404);
       }
