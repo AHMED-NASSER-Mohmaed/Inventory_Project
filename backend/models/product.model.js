@@ -33,14 +33,12 @@ const ProductSchema = new mongoose.Schema({
         required: [true, "Please provide the product quantity"],
         min: [0, "Quantity cannot be negative"]
     },
-    categoryId: { 
+    category: { 
         type: mongoose.Schema.ObjectId, 
-        required: [true, "Please provide the product category"] 
-    },
-    categoryName: { 
-        type: String, 
-        required: [true, "Please provide the category name"] 
-    },
+        required: [true, "Please provide the product category"],
+        ref:"Category" 
+    }
+    ,
     sellerId: { // there will be an object in the seller model in order to be used here when we wanna create a product without external seller
         type: mongoose.Schema.ObjectId, 
         required: [true, "Please provide the seller"] 
@@ -53,11 +51,7 @@ const ProductSchema = new mongoose.Schema({
         type: Boolean, 
         default: false  
     },
-    reviews: [{ 
-        reviewId: { 
-            type: mongoose.Schema.ObjectId 
-        }
-    }]
+    
 }, {
     timestamps: true,
 });
