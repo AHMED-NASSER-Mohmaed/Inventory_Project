@@ -14,7 +14,7 @@ module.exports.APP_CONFIG = {
   EMAIL_FROM: process.env.EMAIL_FROM,
 
   // Successful responses (2xx)
-  HTTP_OK: 200, // [delete + [returned ack  data] that is already  returned in the body.] + [get verb +reterned data]
+  HTTP_OK: 200, // [delete + [returned ack  data] that is already  returned in the body.] + [get verb + returned data]
 
   HTTP_CREATED: 201, // post[create new resource] or put [update existing resource]
 

@@ -10,15 +10,18 @@
   "description": "",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-fileupload": "^1.5.1",
+    "html-to-text": "^9.0.5",
     "inventory": "file:",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
     "morgan": "^1.10.0",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
+    "pug": "^3.0.3",
     "validator": "^13.12.0"
   }
 }

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema(
   {
@@ -67,6 +68,10 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
     changedPasswordAt: Date,
+    passwordResetCode: Number,
+    passwordResetCodeExpires: Date,
+    passwordResetToken: String,
+    passwordResetTokenExpires: Date,
 
     // otp: {
     //   type: String,
@@ -125,6 +130,26 @@ userSchema.methods.correctPassword = async function (
   userPassword
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.createPasswordResetCode = function () {
+  const resetCode = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digits code
+
+  this.passwordResetCode = resetCode;
+  this.passwordResetCodeExpires = Date.now() + 2 * 60 * 1000;
+  return resetCode;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
+  return resetToken;
 };
 
 userSchema.methods.generateOTP = function () {
