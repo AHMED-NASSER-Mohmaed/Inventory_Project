@@ -36,7 +36,7 @@ module.exports.protect = catchAsync(async (req, res, next) => {
 
 module.exports.restrictTo = (...userTypes) => {
   return (req, res, next) => {
-    if (!userTypes.includes(req.user.userType)) {
+    if (!userTypes.includes(req.user.userType)) { // to be reviewed
       return next(
         new AppError("You do not have permission to perform this action", 403)
       );

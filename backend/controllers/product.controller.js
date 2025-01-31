@@ -20,7 +20,6 @@ class ProductController {
 
     this.router.get(
       "/products/:productId",
-      // AuthMiddleware.restrictTo("admin"),
       catchAsync(this.getProduct)
     );
 
@@ -29,7 +28,7 @@ class ProductController {
 
     this.router.post(
       "/products",
-      AuthMiddleware.restrictTo("super_admin", "manager"),
+      // AuthMiddleware.restrictTo("super_admin", "manager"), // this will be commented temporarily to test the crud operations first without constraints but it has to be uncommented later
       catchAsync(this.createProduct)
     );
 
@@ -37,11 +36,11 @@ class ProductController {
     this.router
       .route("/products/:productId")
       .patch(
-        AuthMiddleware.restrictTo("super_admin", "manager"),
+        // AuthMiddleware.restrictTo("super_admin", "manager"), // // this will be commented temporarily to test the crud operations first without constraints but it has to be uncommented later
         catchAsync(this.updateProduct)
       )
       .delete(
-        AuthMiddleware.restrictTo("super_admin", "manager"),
+        // AuthMiddleware.restrictTo("super_admin", "manager"),  // this will be commented temporarily to test the crud operations first without constraints but it has to be uncommented later
         catchAsync(this.deleteProduct)
       );
   }

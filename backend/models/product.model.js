@@ -36,7 +36,7 @@ const ProductSchema = new mongoose.Schema({
     category: { 
         type: mongoose.Schema.ObjectId, 
         required: [true, "Please provide the product category"],
-        ref:"Category" 
+        // ref:"Category" // it should be uncommented but till we make the category CRUD operations it will stay commented
     }
     ,
     sellerId: { // there will be an object in the seller model in order to be used here when we wanna create a product without external seller
@@ -57,5 +57,4 @@ const ProductSchema = new mongoose.Schema({
 });
 
 const Product = mongoose.model("Product", ProductSchema);
-
 module.exports = Product;
