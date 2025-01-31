@@ -187,11 +187,17 @@
 
 // repositories/user.repository.js
 // repositories/user.repository.js
+const Customer = require("../models/customer.model");
+const Seller = require("../models/seller.model");
 const User = require("../models/user.model");
 
 class UserRepository {
-  async createUser(userData) {
-    return User.create(userData);
+  async createCustomer(userData) {
+    return Customer.create(userData);
+  }
+
+  async createSeller(userData) {
+    return Seller.create(userData);
   }
 
   async findByEmail(email, select = "") {

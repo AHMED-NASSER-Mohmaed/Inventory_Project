@@ -34,11 +34,21 @@ const crypto = require("crypto");
 
 class AuthService {
   async signup(userData) {
+    if (!["customer", "seller"].includes(userData.userType)) {
+      throw new AppError("Signup not allowed for this account type", 403);
+    }
+
     if (await AuthRepository.findByEmail(userData.email)) {
       throw new AppError("Email already exists", 400);
     }
 
-    const newUser = await AuthRepository.createUser(userData);
+    let newUser;
+    if (userData.userType === "seller") {
+      newUser = await AuthRepository.createSeller(userData);
+    } else {
+      newUser = await AuthRepository.createCustomer(userData);
+    }
+
     await new Email(newUser).sendWelcome();
     return newUser;
   }

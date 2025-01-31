@@ -86,7 +86,7 @@ const userSchema = new mongoose.Schema(
     //   default: false,
     // },
   },
-  { discriminatorKey: "userType", timestamps: true }, // 'userType' acts as a discriminator field
+  { discriminatorKey: "kind", timestamps: true }, // 'kind' acts as a discriminator field
   {
     timestamps: true,
   }
