@@ -1,20 +1,12 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const inventory = require('./inventory.model'); 
 
 
-const CInventorySchema = new mongoose.Schema({
+const CInventorySchema = new mongoose.Schema({});
 
-    product: { type: mongoose.Schema.ObjectId , required: true , ref:"Product" },
 
-    providerID: { type: mongoose.Schema.ObjectId , required: true} ,
+const CInventory = Inventory.discriminator('CInventory', CInventorySchema);
 
-    providerName: { type: String, required: true },
-
-    currentStock: { type: Number, required: true },
- 
-});
-
-const CInventory=mongoose.model("CInventory", CInventorySchema);
-  
 module.exports = CInventory;
-  
-  
+
+
