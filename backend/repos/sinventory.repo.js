@@ -15,9 +15,6 @@ class SInventoryRepository {
   async getInventoryById(inventoryId) {
     try {
       const inventory = await SInventory.findById(inventoryId);
-      if (!inventory) {
-        throw new AppError('Inventory not found', 404);
-      }
       return inventory;
     } catch (err) {
       throw err;
@@ -36,30 +33,13 @@ class SInventoryRepository {
   async updateInventoryById(inventoryId, updateData) {
     try {
       const inventory = await SInventory.findByIdAndUpdate(inventoryId, updateData, { new: true, runValidators: true });
-      if (!inventory) {
-        throw new AppError('Inventory not found', 404);
-      }
       return inventory;
     } catch (err) {
       throw err;
     }
   }
 
-  async deleteInventoryById(inventoryId) { // soft delete
-    try {
-      const inventory = await SInventory.findByIdAndUpdate(
-        inventoryId,
-        { isActive: false },
-        { new: true }
-      );
-      if (!inventory) {
-        throw new AppError('Inventory not found', 404);
-      }
-      return inventory;
-    } catch (err) {
-      throw err;
-    }
-  }
+  
 }
 
 module.exports = new SInventoryRepository();

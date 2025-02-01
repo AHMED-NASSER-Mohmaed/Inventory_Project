@@ -15,9 +15,6 @@ class CInventoryRepository {
   async getInventoryById(inventoryId) {
     try {
       const inventory = await CInventory.findById(inventoryId);
-      if (!inventory) {
-        throw new AppError('Inventory not found', 404);
-      }
       return inventory;
     } catch (err) {
       throw err;
@@ -36,30 +33,13 @@ class CInventoryRepository {
   async updateInventoryById(inventoryId, updateData) {
     try {
       const inventory = await CInventory.findByIdAndUpdate(inventoryId, updateData, { new: true, runValidators: true });
-      if (!inventory) {
-        throw new AppError('Inventory not found', 404);
-      }
       return inventory;
     } catch (err) {
       throw err;
     }
   }
 
-  async deleteInventoryById(inventoryId) { // soft delete
-    try {
-      const inventory = await CInventory.findByIdAndUpdate(
-        inventoryId,
-        { isActive: false },
-        { new: true }
-      );
-      if (!inventory) {
-        throw new AppError('Inventory not found', 404);
-      }
-      return inventory;
-    } catch (err) {
-      throw err;
-    }
-  }
+  
 }
 
 module.exports = new CInventoryRepository();
