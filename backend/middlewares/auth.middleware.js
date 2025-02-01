@@ -28,6 +28,12 @@ module.exports.protect = catchAsync(async (req, res, next) => {
       )
     );
 
+  if (currentUser.changedPasswordAfter(decoded.payload.iat)) {
+    return next(
+      new AppError("User recently changed password! Please log in again.", 401)
+    );
+  }
+
   req.user = currentUser;
   res.locals = currentUser;
 
