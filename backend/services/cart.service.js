@@ -73,7 +73,9 @@ module.exports.cartService = {
 
     getCart : async(userId)=>{
         try{
-            return CartRepo.getCart(userId);
+            const cart = await CartRepo.getCart(userId);
+            cart.products.
+
         }catch(err){
             return err;
         }
