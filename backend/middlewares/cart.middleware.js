@@ -1,4 +1,5 @@
-module.exports.cartProtection = catchAsync(async (req, res, next) => {
+/*
+module.exports.cartAuth = catchAsync(async (req, res, next) => {
 
     let token;
     if (
@@ -27,7 +28,7 @@ module.exports.cartProtection = catchAsync(async (req, res, next) => {
         }
 
         req.user = currentUser;
-        res.locals = currentUser;
+        res.locals.user = currentUser;
 
     }
 
@@ -56,4 +57,4 @@ module.exports.cartProtection = catchAsync(async (req, res, next) => {
     }
 
     next();
-});
+});*/

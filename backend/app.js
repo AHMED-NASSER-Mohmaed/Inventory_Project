@@ -4,6 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const globalErrorHandler = require("./middlewares/error.middleware");
 const AppError = require("./utils/appError");
+const cookieParser= require("cookie-parser");
 
 const app = express();
 
