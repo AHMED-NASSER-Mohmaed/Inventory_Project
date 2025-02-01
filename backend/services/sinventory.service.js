@@ -7,15 +7,28 @@ class SInventoryService {
     }
     
     async updateInventoryById(inventoryId, updatedData){
-        return await SInventoryRepository.updateInventoryById(inventoryId, updatedData);
+        try {
+            const inventory = await SInventoryRepository.updateInventoryById(inventoryId, updatedData);
+            if (!inventory) {
+              throw new AppError('Inventory not found', 404);
+            }
+            return inventory;
+        } catch (err) {
+            throw err;
+        }
     }
 
-    async deleteInventoryById(inventoryId){
-        return await SInventoryRepository.deleteInventoryById(inventoryId);
-    }
 
     async getInventoryById(inventoryId){
-        return await SInventoryRepository.getInventoryById(inventoryId);
+        try {
+            const inventory = await SInventoryRepository.getInventoryById(inventoryId);
+            if (!inventory) {
+              throw new AppError('Inventory not found', 404);
+            }
+            return inventory;
+        } catch (err) {
+            throw err;
+        }
     }
 
     async getAllInventories(){

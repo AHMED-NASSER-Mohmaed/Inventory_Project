@@ -37,10 +37,6 @@ class SInventoryController {
       .patch(
         AuthMiddleware.restrictTo("super_admin", "manager"),
         catchAsync(this.updateInventory)
-      )
-      .delete(
-        AuthMiddleware.restrictTo("super_admin", "manager"),
-        catchAsync(this.deleteInventory)
       );
   }
 

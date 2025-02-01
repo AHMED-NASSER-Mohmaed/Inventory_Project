@@ -5,7 +5,7 @@ class ProductRepository {
   
   async createProduct(productData) {
     try {
-      const product = await Product.create(productData);
+      const product = await Product.create(productData).select('-createdAt -updatedAt -__v');
       return product;
     } catch (err) {
       throw err;
@@ -14,10 +14,7 @@ class ProductRepository {
 
   async getProductById(productId) {
     try {
-      const product = await Product.findById(productId); //  .populate() has been removed since there's no ref anymore
-      if (!product) {
-        throw new AppError('Product not found', 404);
-      }
+      const product = await Product.findById(productId).select('-createdAt -updatedAt -__v'); //  .populate() has been removed since there's no ref anymore
       return product;
     } catch (err) {
       throw err;
@@ -26,7 +23,7 @@ class ProductRepository {
 
   async getAllProducts() {
     try {
-      const products = await Product.find(); //  .populate() has been removed since there's no ref anymore
+      const products = await Product.find().select('-createdAt -updatedAt -__v'); //  .populate() has been removed since there's no ref anymore
       return products;
     } catch (err) {
       throw err;
@@ -35,10 +32,7 @@ class ProductRepository {
 
   async updateProductById(productId, updateData) {
     try {
-      const product = await Product.findByIdAndUpdate(productId, updateData, { new: true, runValidators: true });
-      if (!product) {
-        throw new AppError('Product not found', 404);
-      }
+      const product = await Product.findByIdAndUpdate(productId, updateData, { new: true, runValidators: true }).select('-createdAt -updatedAt -__v');
       return product;
     } catch (err) {
       throw err;
@@ -63,11 +57,29 @@ class ProductRepository {
         productId,
         { isActive: false },
         { new: true }
-      );
+      ).select('-createdAt -updatedAt -__v');;
       if (!product) {
         throw new AppError('Product not found', 404);
       }
       return product;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async isProductExist(productId) {
+    try {
+      const product = await Product.findById(productId);
+      return !!product;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async getProductsByCategory(categoryId) {
+    try {
+      const products = await Product.find({ category: categoryId }).select('-createdAt -updatedAt -__v'); // - means to exclude if you wanna include don't use -
+      return products;
     } catch (err) {
       throw err;
     }

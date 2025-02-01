@@ -1,5 +1,5 @@
 const ProductRepository = require("../repos/product.repo");
-
+const AppError = require('../utils/appError');
 
 class ProductService {
   
@@ -8,15 +8,39 @@ class ProductService {
     }
     
     async updateProductById(productId, updatedData){
-        return await ProductRepository.updateProductById(productId, updatedData);
+        try {
+            const product = await ProductRepository.updateProductById(productId, updatedData);
+            if (!product) {
+              throw new AppError('Product not found', 404);
+            }
+            return product;
+        } catch (err) {
+            throw err;
+        }
     }
 
     async deleteProductById(productId){
-        return await ProductRepository.deleteProductById(productId);
+        try {
+            const product = await ProductRepository.deleteProductById(productId);
+            if (!product) {
+              throw new AppError('Product not found', 404);
+            }
+            return product;
+        } catch (err) {
+            throw err;
+        }
     }
 
     async getProductById(productId){
-        return await ProductRepository.getProductById(productId);
+        try{
+            const product = await ProductRepository.getProductById(productId); //  .populate() has been removed since there's no ref anymore
+            if (!product) {
+            throw new AppError('Product not found', 404);
+        }
+        return product;
+        } catch (err) {
+            throw err;
+        }
     }
 
     async getAllProducts(){
