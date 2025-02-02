@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const AppError = require("../utils/appError");
 
 class UserRepository {
+  
   async getAllUsers() {
     try {
       const users = await User.find();
@@ -11,6 +12,12 @@ class UserRepository {
       throw error;
     }
   }
+
+  //checking rule if manger - > create seller , cashier , clerk , customer
+  //check rule if super admin - >manager seller , cashier , clerk , customer
+
+
+  //change statse
 
   async getUser(userId) {
     try {
@@ -22,9 +29,11 @@ class UserRepository {
     }
   }
 
+
+  //super admin -- manager
   async createUser(userData) {
     try {
-      const { firstName, lastName, email, phoneNumber, password, userType } =
+      const { firstName, lastName, email, phoneNumber, password, userType} =
         userData;
       const newUser = await User.create({
         firstName,
@@ -41,7 +50,7 @@ class UserRepository {
       throw error;
     }
   }
-
+  //super admin -- manager
   async updateUser(userId, newData) {
     try {
       const updatedUser = await User.findByIdAndUpdate(
@@ -61,6 +70,8 @@ class UserRepository {
     }
   }
 
+
+  //soft delete
   async deleteUser(userId) {
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -85,6 +96,7 @@ class UserRepository {
     }
   }
 
+  // the one who own the account
   async updateMe(userId, newData) {
     try {
       if (newData.password || newData.passwordConfirm)

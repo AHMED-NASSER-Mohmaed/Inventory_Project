@@ -192,15 +192,19 @@ const Seller = require("../models/seller.model");
 const User = require("../models/user.model");
 
 class UserRepository {
+  
   async createCustomer(userData) {
     return Customer.create(userData);
   }
 
   async createSeller(userData) {
-    return Seller.create(userData);
+      const seller=await Seller.create(userData);
+      const result = await Seller.findById(seller._id).select('-salt');
+      return result;
   }
 
   async findByEmail(email, select = "") {
+     
     return User.findOne({ email }).select(select);
   }
 

@@ -125,11 +125,8 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   return false;
 };
 
-userSchema.methods.correctPassword = async function (
-  candidatePassword,
-  userPassword
-) {
-  return await bcrypt.compare(candidatePassword, userPassword);
+userSchema.methods.correctPassword = async function (userPassword) {
+  return await bcrypt.compare(userPassword,this.password);
 };
 
 userSchema.methods.createPasswordResetCode = function () {
@@ -158,5 +155,7 @@ userSchema.methods.generateOTP = function () {
   this.otpExpires = Date.now() + 10 * 60 * 1000;
   return otpCode;
 };
+
+
 const User = mongoose.model("User", userSchema);
 module.exports = User;

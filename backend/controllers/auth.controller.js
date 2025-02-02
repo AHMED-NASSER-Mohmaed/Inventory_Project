@@ -85,9 +85,12 @@ const signup = catchAsync(async (req, res) => {
   createSendToken(newUser, 201, res);
 });
 const login = catchAsync(async (req, res) => {
+  console.log("hello",req.body);
   const user = await AuthService.login(req.body.email, req.body.password);
+  console.log(user);
   createSendToken(user, 200, res);
 });
+
 const updatePassword = catchAsync(async (req, res) => {
   const user = await AuthService.updatePassword(
     req.user.id,

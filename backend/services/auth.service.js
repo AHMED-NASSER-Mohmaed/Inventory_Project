@@ -31,38 +31,52 @@ const AppError = require("../utils/appError");
 const Email = require("../utils/email");
 const AuthRepository = require("../repos/auth.repo");
 const crypto = require("crypto");
+ 
 
 class AuthService {
   async signup(userData) {
+
     if (!["customer", "seller"].includes(userData.userType)) {
       throw new AppError("Signup not allowed for this account type", 403);
     }
 
+    //already handeled in the global error
     if (await AuthRepository.findByEmail(userData.email)) {
       throw new AppError("Email already exists", 400);
     }
 
     let newUser;
     if (userData.userType === "seller") {
-      newUser = await AuthRepository.createSeller(userData);
+      newUser = await AuthRepository.createSeller(userData);///here
     } else {
       newUser = await AuthRepository.createCustomer(userData);
     }
 
     await new Email(newUser).sendWelcome();
+
+    console.log(newUser);
+
     return newUser;
   }
 
   async login(email, password) {
+
     if (!email || !password) {
       throw new AppError("Please provide email and password", 400);
     }
 
-    const user = await AuthRepository.findByEmail(email, "+password");
-    if (!user || !(await user.correctPassword(password))) {
+    const user = await AuthRepository.findByEmail(email, "+password +isActive +status");
+
+
+    if (user.userType == "seller" && !user.status) {
+      throw new AppError("sorry, you credintional is not revised yet.", 401);
+    }
+
+    if (!user || !user.isActive || !(await user.correctPassword(password))) {
       throw new AppError("Incorrect email or password", 401);
     }
 
+    console.log("user" , user);
     return user;
   }
 

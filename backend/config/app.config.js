@@ -27,4 +27,9 @@ module.exports.APP_CONFIG = {
   HTTP_NOT_FOUND: 404, // not found
 
   HTTP_INTERNAL_SERVER_ERROR: 500,
+
+  ADMIN:"admin",
+  CLERK:"clerk",
+  CASHIER:"cashier",
+  
 };
