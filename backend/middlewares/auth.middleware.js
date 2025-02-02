@@ -29,7 +29,7 @@ module.exports.protect = catchAsync(async (req, res, next) => {
     );
 
   if (
-    !currentUser.emailVerified &&
+    !currentUser.isEmailVerified &&
     req.path !== "/resendVerificationEmail" &&
     req.path !== "/me"
   ) {
