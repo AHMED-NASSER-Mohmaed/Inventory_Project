@@ -3,6 +3,8 @@ const productService = require("../services/product.service");
 const AuthMiddleware = require("../middlewares/auth.middleware");
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
+const pro_res=require("../utils/authMiddlewaresOptions")
+
 class ProductController {
   constructor() {
     this.router = express.Router();
@@ -11,6 +13,8 @@ class ProductController {
 
   initializeRoutes() {
 
+
+    this.router.post("/addProduct",pro_res("super_admin"),catchAsync(this.addProductForStaff))
 
     // public routes: no need for authentication 
     this.router.get(
@@ -43,6 +47,15 @@ class ProductController {
         // AuthMiddleware.restrictTo("super_admin", "manager"),  // this will be commented temporarily to test the crud operations first without constraints but it has to be uncommented later
         catchAsync(this.deleteProduct)
       );
+  }
+
+  async addProductForStaff(req,res,next){
+    const product=await productService.createProductForStaff(req.body);
+
+    res.status(APP_CONFIG.HTTP_OK).json({
+      message:product,
+
+    })
   }
 
   async getAllProducts(req, res, next) {

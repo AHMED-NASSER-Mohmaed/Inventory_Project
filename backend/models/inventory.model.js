@@ -20,6 +20,11 @@ const InventorySchema = new mongoose.Schema({
         type: Number, 
         required: [true, "Please provide the current stock"],
         min: [0, "Current stock cannot be negative"]
+    },
+    cost:{
+        type:Number,
+        required: [true, "Please provide the product price"],
+        min: [0, "Price cannot be negative"]
     }
 
 }, { discriminatorKey: 'providerType' });

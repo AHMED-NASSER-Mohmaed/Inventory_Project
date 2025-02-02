@@ -1,6 +1,6 @@
 const { validate } = require("./product.model");
 const {User}=require("./user.model");
-const mongoose = required("mongoose");
+const mongoose = require("mongoose");
 
 const CartSchema = new mongoose.Schema({
 

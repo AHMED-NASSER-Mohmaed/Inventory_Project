@@ -13,7 +13,6 @@ const ProductSchema = new mongoose.Schema({
     },
     price: { 
         type: Number, 
-        required: [true, "Please provide the product price"],
         min: [0, "Price cannot be negative"]
     },
     images: [{ 
@@ -30,7 +29,7 @@ const ProductSchema = new mongoose.Schema({
     },
     quantity: { 
         type: Number, 
-        required: [true, "Please provide the product quantity"],
+        // required: [true, "Please provide the product quantity"],
         min: [0, "Quantity cannot be negative"]
     },
     category: { 

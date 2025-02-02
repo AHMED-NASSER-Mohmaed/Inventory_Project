@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const validate = require("validator");
+const validator = require("validator");
 
 const SupplierSchema = new mongoose.Schema({
     
@@ -11,16 +11,7 @@ const SupplierSchema = new mongoose.Schema({
      },
 
     email: { type: String, required:[true,"please provide a email"], unique: true,
-      validate:[
-        {
-          validator:validator.isEmail,
-          message: "Please provide a valid email address.",
-        },
-        {
-        validator: uniquenessVal("email"),
-        message: "Email already exists. Please use a different email.",
-      
-      }],
+      validate: [validator.isEmail, "Please provide a valid email"]
       }//end of email validation.
     ,
 
