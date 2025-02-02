@@ -140,7 +140,8 @@ authRouter.post("/auth/forgotPassword", forgotPassword);
 authRouter.post("/auth/verifyResetCode", verifyResetCode);
 authRouter.post("/auth/resetPassword/:token", resetPassword);
 
-authRouter.use(authMiddleware.protect);
-authRouter.patch("/auth/updatePassword", updatePassword);
+
+
+authRouter.patch("/auth/updatePassword",authMiddleware.protect,updatePassword);
 
 module.exports = authRouter;
