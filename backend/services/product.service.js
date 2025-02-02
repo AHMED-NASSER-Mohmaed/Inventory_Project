@@ -46,6 +46,15 @@ class ProductService {
     async getAllProducts(){
         return await ProductRepository.getAllProducts();
     }
+
+    async addProducts(productsArray) {
+        try {
+            const products = await ProductRepository.addProducts(productsArray);
+            return products;
+        } catch (err) {
+            throw err;
+        }
+    }
 }
 
 module.exports = new ProductService();

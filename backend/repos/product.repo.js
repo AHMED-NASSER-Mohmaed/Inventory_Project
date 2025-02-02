@@ -82,6 +82,18 @@ class ProductRepository {
       throw err;
     }
   }
+
+  async addProducts(productsArray) { // add an array of products
+    try {
+      if (!Array.isArray(productsArray)) {
+        productsArray = [productsArray];
+      }
+      const products = await Product.insertMany(productsArray);
+      return products;
+    } catch (err) {
+      throw err;
+    }
+  }
 }
 
 module.exports = new ProductRepository();
