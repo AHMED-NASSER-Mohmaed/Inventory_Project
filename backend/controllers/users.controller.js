@@ -330,13 +330,13 @@ route.post("/addSeller", prot_rest("super_admin" ,"admin" ), catchAsync(sellerOp
     .get("/getAllCashiers",prot_rest("super_admin" , "admin"),catchAsync(cashierOp.getAllCashiers))
     .patch("/activeCashier/:SSN",prot_rest("super_admin" , "admin"),catchAsync(cashierOp.activeCashier))
     
-
+/*
     .post("/addCustomer",prot_rest("super_admin" , "admin"),catchAsync(customerOp.addCustomer))
     .get("/getCustomer/:id",prot_rest("super_admin" , "admin"),catchAsync(customerOp.getCustomer ))
     .get("/getAllCustomers",prot_rest("super_admin" , "admin"),catchAsync(customerOp.getAllCustomers))
     .delete("/deleteCustomer/:id",prot_rest("super_admin" , "admin"),catchAsync(customerOp.deleteCustomer))
     .patch("/activeCustomer/:id",prot_rest("super_admin" , "admin"),catchAsync(customerOp.activeCustomer))
 
-
+*/
 
 module.exports=route;
