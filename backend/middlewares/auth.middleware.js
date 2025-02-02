@@ -28,18 +28,18 @@ module.exports.protect = catchAsync(async (req, res, next) => {
       )
     );
 
-  if (
-    !currentUser.isEmailVerified &&
-    req.path !== "/auth/resendVerificationEmail" &&
-    req.path !== "/users/me"
-  ) {
-    return next(
-      new AppError(
-        "Please verify your email address to access this resource.",
-        401
-      )
-    );
-  }
+  // if (
+  //   !currentUser.isEmailVerified &&
+  //   req.path !== "/auth/resendVerificationEmail" &&
+  //   req.path !== "/users/me"
+  // ) {
+  //   return next(
+  //     new AppError(
+  //       "Please verify your email address to access this resource.",
+  //       401
+  //     )
+  //   );
+  // }
 
   if (currentUser.changedPasswordAfter(decoded.payload.iat)) {
     return next(
