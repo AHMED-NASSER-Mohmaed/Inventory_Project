@@ -1,5 +1,6 @@
 const ProductRepository = require("../repos/product.repo");
 const cinventory=require("../repos/cinventory.repo");
+const sinventory=require("../repos/sinventory.repo");
 const product=require("../models/product.model");
 const AppError = require('../utils/appError');
 const {APP_CONFIG} = require("../config/app.config")
@@ -14,11 +15,49 @@ class ProductService {
     //callback function
     // if you don't have role then --> userType
 
-    async createProductForStaff(sellerId,productData){
+    async createProductForSeller(user,productData){
+
+
+        try{
+
+            // frontend model -->   supplierID 
+            // const isExistSupplier=await supplier.findOne({_id:productData.supplierID});
+
+            // if(!isExistSupplier){
+            //     throw new AppError("supplier dose not exist.",APP_CONFIG.HTTP_BAD_REQUEST);
+            // }
+
+            let isExistCat=await category.findOne({_id:productData.categoryId})
+
+            
+            if(!isExistCat){
+                throw new AppError("category dose not exist.",APP_CONFIG.HTTP_BAD_REQUEST);
+            }
+
+            //upload images to kit 
+            let imagesURLS=[]
+
+            //throw exception from databse
+            const new_one =await product.create({ name:productData.name , code:productData.code ,  images:imagesURLS,
+                            description:productData.description , category:productData.categoryId 
+                            ,sellerId:user._id , sellerName:user.firstName});
+
+                
+            console.log("hellooooo");
+            
+            await sinventory.createInventory({  product:new_one._id ,  providerID: user._id,
+                providerName:user.firstName , currentStock: productData.currentStock,
+                cost:productData.cost
+             });
+
+             return "added successufully";
+
+            }catch(err){
+                throw err;
+            } 
+
 
     }
-
-
 
  
     async createProductForStaff(productData) {
@@ -80,6 +119,8 @@ class ProductService {
          
     }
 
+    
+
     async updateProductById(productId, updatedData) {
         try {
             const product = await ProductRepository.updateProductById(productId, updatedData);
@@ -129,6 +170,8 @@ class ProductService {
             throw err;
         }
     }
+
+
 }
 
 module.exports = new ProductService();

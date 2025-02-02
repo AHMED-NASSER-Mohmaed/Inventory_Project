@@ -14,7 +14,12 @@ class ProductController {
   initializeRoutes() {
 
 
-    this.router.post("/addProduct",AuthMiddleware.protect,catchAsync(this.addProductForStaff))
+    // this.router.post("/addProduct",pro_res(APP_CONFIG.SUPPERADMIN,APP_CONFIG.ADMIN),catchAsync(this.addProductForStaff))
+
+
+    this.router.post("/addProductSeller",pro_res(APP_CONFIG.SELLER),catchAsync(this.addProductForSeller))
+
+
 
     // public routes: no need for authentication 
     this.router.get(
@@ -47,6 +52,18 @@ class ProductController {
         // AuthMiddleware.restrictTo("super_admin", "manager"),  // this will be commented temporarily to test the crud operations first without constraints but it has to be uncommented later
         catchAsync(this.deleteProduct)
       );
+  }
+
+
+
+  
+  async addProductForSeller(req,res,next){
+    const product=await productService.createProductForSeller(req.user,req.body);
+
+    res.status(APP_CONFIG.HTTP_OK).json({
+      message:product,
+
+    })
   }
 
   async addProductForStaff(req,res,next){

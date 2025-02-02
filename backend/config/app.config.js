@@ -28,7 +28,7 @@ module.exports.APP_CONFIG = {
 
   HTTP_INTERNAL_SERVER_ERROR: 500,
 
-  SUPPERADMIN:"supper_admin",
+  SUPPERADMIN:"super_admin",
   ADMIN:"admin",
   CLERK:"clerk",
   CASHIER:"cashier",
