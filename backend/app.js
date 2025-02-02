@@ -3,23 +3,18 @@ const morgan = require("morgan");
 const path = require("path");
 const fs = require("fs");
 const globalErrorHandler = require("./middlewares/error.middleware");
-const cookieParser= require("cookie-parser");
+const cookieParser = require("cookie-parser");
 /******************************************************************* */
-
-
-
-
 
 /********************************************************************/
 const app = express();
 
+app.set("view engine", "pug");
+app.set("views", path.join(__dirname, "views/emails"));
 
 app.use(morgan("common"));
 app.use(express.json());
 app.use(cookieParser());
-
-
-
 
 // controller registration
 
@@ -34,7 +29,6 @@ for (const controllerFile of controllersDirectory) {
 // app.all("*", (req, res, next) => {
 //   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 // });
-
 
 app.use(globalErrorHandler);
 

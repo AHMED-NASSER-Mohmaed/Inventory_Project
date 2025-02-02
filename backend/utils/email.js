@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 const pug = require("pug");
+const juice = require("juice");
 const { htmlToText } = require("html-to-text");
 const { APP_CONFIG } = require("../config/app.config");
 
@@ -12,6 +13,22 @@ module.exports = class Email {
   }
 
   newTransport() {
+    if (process.env.NODE_ENV === "production") {
+      return nodemailer.createTransport({
+        host: APP_CONFIG.BREVO_HOST,
+        port: APP_CONFIG.BREVO_PORT,
+        secure: false, // True for 465, false for other ports
+        requireTLS: true,
+        auth: {
+          user: APP_CONFIG.BREVO_USERNAME,
+          pass: APP_CONFIG.BREVO_PASSWORD,
+        },
+        tls: {
+          ciphers: "SSLv3",
+        },
+      });
+    }
+
     return nodemailer.createTransport({
       host: APP_CONFIG.EMAIL_HOST,
       port: APP_CONFIG.EMAIL_PORT,
@@ -23,24 +40,37 @@ module.exports = class Email {
   }
 
   async send(template, subject) {
-    const html = pug.renderFile(
-      `${__dirname}/../views/emails/${template}.pug`,
-      {
-        firstName: this.firstName,
-        url: this.url,
-        subject,
-      }
-    );
-    const mailOptions = {
-      to: this.to,
-      from: this.from,
-      subject,
-      html,
-      text: htmlToText(html),
-    };
-    await this.newTransport().sendMail(mailOptions);
-  }
+    try {
+      const transport = this.newTransport();
 
+      // Add transport event listeners
+      transport.on("log", console.log);
+      transport.on("envelope", (envelope) => {
+        console.log("Envelope:", envelope);
+      });
+
+      const html = pug.renderFile(
+        `${__dirname}/../views/emails/${template}.pug`,
+        { firstName: this.firstName, url: this.url, subject }
+      );
+
+      const inlinedHtml = juice(html);
+
+      const mailOptions = {
+        from: this.from,
+        to: this.to,
+        subject,
+        html: inlinedHtml,
+        text: htmlToText(html),
+      };
+
+      const info = await transport.sendMail(mailOptions);
+      console.log("Message sent: %s", info.messageId);
+    } catch (error) {
+      console.error("Full error details:", error);
+      throw new Error(`Email sending failed: ${error.message}`);
+    }
+  }
   async sendWelcome() {
     await this.send("welcome", "Welcome!");
   }
@@ -54,5 +84,19 @@ module.exports = class Email {
 
   async sendPasswordResetSuccess() {
     await this.send("resetSuccess", "Password Reset Successful");
+  }
+
+  async sendVerifyEmail() {
+    await this.send(
+      "verifyEmail",
+      "Your email verification token (valid for only 10 minutes)"
+    );
+  }
+
+  async resendVerifyEmail() {
+    await this.send(
+      "verifyEmail",
+      "Resend: Your email verification token (valid for only 10 minutes)"
+    );
   }
 };

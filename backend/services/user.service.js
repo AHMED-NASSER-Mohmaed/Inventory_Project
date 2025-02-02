@@ -1,37 +1,37 @@
 const UserRepository = require("../repos/user.repo");
-const APP_CONFIG=require("../config/app.config");
+const APP_CONFIG = require("../config/app.config");
 
 class UserService {
-  
   //done ----------------
   async getAllUsers() {
-    try{
+    try {
       return await UserRepository.getAllUsers();
-    }catch(err){
+    } catch (err) {
       throw err;
     }
   }
 
-  //done ----------------  
+  //done ----------------
   async getUser(userId) {
-
-    try{
-      const user= await UserRepository.getUser(userId);
-      if(!user){
-        throw new AppError("No user found with this id", APP_CONFIG.HTTP_BAD_REQUEST);
+    try {
+      const user = await UserRepository.getUser(userId);
+      if (!user) {
+        throw new AppError(
+          "No user found with this id",
+          APP_CONFIG.HTTP_BAD_REQUEST
+        );
       }
-    }catch(err){
+      return user;
+    } catch (err) {
       throw err;
     }
-
   }
-
 
   //done ------------------
   async createUser(userData) {
-    try{
+    try {
       return await UserRepository.createUser(userData);
-    }catch(err){
+    } catch (err) {
       throw err;
     }
   }
@@ -40,29 +40,34 @@ class UserService {
     return await UserRepository.updateUser(userId, newData);
   }
 
-   //done ------------------
+  //done ------------------
   async deleteUser(userId) {
-    try{
-      const ack= await UserRepository.deleteUser(userId);
-      if(!ack.acknowledged){
-         throw new AppError("No user found with this id", APP_CONFIG.HTTP_BAD_REQUEST);
+    try {
+      const ack = await UserRepository.deleteUser(userId);
+      if (!ack.acknowledged) {
+        throw new AppError(
+          "No user found with this id",
+          APP_CONFIG.HTTP_BAD_REQUEST
+        );
       }
-    }catch(err){
+    } catch (err) {
       throw err;
-    } 
+    }
   }
 
-
-   //done ------------------
-   async activeUser(userId) {
-    try{
-      const ack= await UserRepository.activeUser(userId);
-      if(!ack.acknowledged){
-         throw new AppError("No user found with this id", APP_CONFIG.HTTP_BAD_REQUEST);
+  //done ------------------
+  async activeUser(userId) {
+    try {
+      const ack = await UserRepository.activeUser(userId);
+      if (!ack.acknowledged) {
+        throw new AppError(
+          "No user found with this id",
+          APP_CONFIG.HTTP_BAD_REQUEST
+        );
       }
-    }catch(err){
+    } catch (err) {
       throw err;
-    } 
+    }
   }
 
   async updateMe(userId, newData) {

@@ -1,82 +1,124 @@
-// const AuthRepository = require("../repos/auth.repo");
-
-// class AuthService {
-//   async signup(userData) {
-//     return await AuthRepository.signup(userData);
-//   }
-
-//   async login(userData) {
-//     return await AuthRepository.login(userData);
-//   }
-
-//   async updatePassword(userId, userData) {
-//     return await AuthRepository.updatePassword(userId, userData);
-//   }
-
-//   async forgotPassword(email) {
-//     return await AuthRepository.forgotPassword(email);
-//   }
-//   async verifyResetCode(code) {
-//     return await AuthRepository.verifyResetCode(code);
-//   }
-//   async resetPassword(token, userData) {
-//     return await AuthRepository.resetPassword(token, userData);
-//   }
-// }
-
-// module.exports = new AuthService();
-
 // services/auth.service.js
 const AppError = require("../utils/appError");
 const Email = require("../utils/email");
 const AuthRepository = require("../repos/auth.repo");
 const crypto = require("crypto");
- 
 
 class AuthService {
-  async signup(userData) {
-
+  async signup(userData, baseUrl) {
     if (!["customer", "seller"].includes(userData.userType)) {
       throw new AppError("Signup not allowed for this account type", 403);
     }
 
-    //already handeled in the global error
+    //already handled in the global error
     if (await AuthRepository.findByEmail(userData.email)) {
       throw new AppError("Email already exists", 400);
     }
 
     let newUser;
     if (userData.userType === "seller") {
-      newUser = await AuthRepository.createSeller(userData);///here
+      newUser = await AuthRepository.createSeller(userData); ///here
     } else {
       newUser = await AuthRepository.createCustomer(userData);
     }
 
     await new Email(newUser).sendWelcome();
 
-    console.log(newUser);
+    const verificationToken = newUser.createEmailVerificationToken();
+    await newUser.save({ validateBeforeSave: false });
 
-    return newUser;
+    try {
+      const verificationURL = `${baseUrl}/auth/verifyEmail/${verificationToken}`;
+      await new Email(newUser, verificationURL).sendVerifyEmail();
+
+      newUser.emailVerificationToken = undefined;
+      newUser.emailVerificationTokenExpires = undefined;
+
+      return newUser;
+    } catch (err) {
+      newUser.emailVerificationToken = undefined;
+      newUser.emailVerificationTokenExpires = undefined;
+      await newUser.save({ validateBeforeSave: false });
+
+      throw new AppError(
+        "There was an error sending the verification email. Try again later!",
+        500
+      );
+    }
+  }
+
+  async resendVerificationEmail(email, baseUrl) {
+    if (!email) return new AppError("Email is required", 400);
+
+    const user = await AuthRepository.findByEmail(email);
+    if (!user) return new AppError("User not found", 400);
+
+    if (user.isEmailVerified)
+      return new AppError("Email is already verified", 400);
+
+    const verificationToken = user.createEmailVerificationToken();
+    await AuthRepository.saveUser(user, { validateBeforeSave: false });
+
+    try {
+      const verificationURL = `${baseUrl}/auth/verifyEmail/${verificationToken}`;
+      await new Email(user, verificationURL).resendVerifyEmail();
+
+      user.emailVerificationToken = undefined;
+      user.emailVerificationTokenExpires = undefined;
+
+      return { status: "success" };
+    } catch (err) {
+      user.emailVerificationToken = undefined;
+      user.emailVerificationTokenExpires = undefined;
+      await AuthRepository.saveUser(user, { validateBeforeSave: false });
+
+      throw new AppError(
+        "There was an error sending the verification email. Try again later!",
+        500
+      );
+    }
+  }
+
+  async verifyEmail(paramToken) {
+    const token = crypto.createHash("sha256").update(paramToken).digest("hex");
+    const user = await AuthRepository.findByVerificationToken(token);
+    console.log(user);
+    if (!user) {
+      return { status: "invalid_token" };
+    }
+
+    if (user.isEmailVerified) {
+      return { status: "already_verified" };
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationTokenExpires = undefined;
+
+    await AuthRepository.saveUser(user, { validateBeforeSave: false });
+
+    return { status: "verified" };
   }
 
   async login(email, password) {
-
     if (!email || !password) {
       throw new AppError("Please provide email and password", 400);
     }
 
-    const user = await AuthRepository.findByEmail(email, "+password +isActive +status");
-
+    const user = await AuthRepository.findByEmail(
+      email,
+      "+password +isActive +status"
+    );
 
     if (user.userType == "seller" && !user.status) {
-      throw new AppError("sorry, you credintional is not revised yet.", 401);
+      throw new AppError("sorry, you credentials is not revised yet.", 401);
     }
 
     if (!user || !user.isActive || !(await user.correctPassword(password))) {
       throw new AppError("Incorrect email or password", 401);
     }
 
-    console.log("user" , user);
+    console.log("user", user);
     return user;
   }
 

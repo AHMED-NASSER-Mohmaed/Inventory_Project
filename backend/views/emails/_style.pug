@@ -1,4 +1,24 @@
 style.
+  /* Add these at the top */
+  .ExternalClass {
+    width: 100%;
+  }
+  
+  /* Force Outlook to respect line heights */
+  body {
+    width: 100% !important;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Prevent WebKit/Windows from changing default font sizes */
+  table td {
+    mso-line-height-rule: exactly;
+  }
+
+style.
   img {
     border: none;
     -ms-interpolation-mode: bicubic;
