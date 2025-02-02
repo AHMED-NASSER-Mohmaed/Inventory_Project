@@ -31,5 +31,6 @@ module.exports.APP_CONFIG = {
   ADMIN:"admin",
   CLERK:"clerk",
   CASHIER:"cashier",
+  CUSTOMER:"customer"
   
 };

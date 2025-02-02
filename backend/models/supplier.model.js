@@ -31,7 +31,7 @@ const SupplierSchema = new mongoose.Schema({
       }
      },
 
-    SSN:{ type:String , required:true , unique:true }
+    companyRegistrationNumber: { type: String, required: true, unique:true },
     
   });
   

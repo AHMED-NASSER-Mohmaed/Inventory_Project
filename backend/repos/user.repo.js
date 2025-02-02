@@ -1,13 +1,14 @@
 const User = require("../models/user.model");
-const mongoose = require("mongoose");
 const AppError = require("../utils/appError");
 
+
+
 class UserRepository {
-  
+
+  //done -----------------------
   async getAllUsers() {
     try {
-      const users = await User.find();
-      return users;
+      return await User.find({},{userType:"customer"});   
     } catch (error) {
       throw error;
     }
@@ -19,37 +20,27 @@ class UserRepository {
 
   //change statse
 
+  //done -----------------------
+  //return user or null , throw an exception.
   async getUser(userId) {
     try {
-      const user = await User.findOne({ _id: userId });
-      if (!user) throw new AppError("No user found with this id", 400);
-      return user;
+      return await User.findOne({ _id: userId });
     } catch (error) {
       throw error;
     }
   }
 
 
-  //super admin -- manager
+
+  //done ------------------
   async createUser(userData) {
     try {
-      const { firstName, lastName, email, phoneNumber, password, userType} =
-        userData;
-      const newUser = await User.create({
-        firstName,
-        lastName,
-        email,
-        password,
-        passwordConfirm: password,
-        userType,
-        phoneNumber,
-      });
-
-      return newUser;
+      return await User.create(userData);
     } catch (error) {
       throw error;
     }
   }
+
   //super admin -- manager
   async updateUser(userId, newData) {
     try {
@@ -70,32 +61,32 @@ class UserRepository {
     }
   }
 
-
-  //soft delete
-  async deleteUser(userId) {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
-    try {
-      const user = await User.findById({ _id: userId }).session(session);
-      if (!user) throw new AppError("No user found with this id", 400);
-
-      // Delete User
-      await User.findByIdAndDelete({ _id: userId }).session(session);
-
-      // Delete user related stuff
-
-      await session.commitTransaction();
-      session.endSession();
-
-      return user;
-    } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
-      throw error;
+  /*
+    //soft delete
+    async deleteUser(userId) {
+      const session = await mongoose.startSession();
+      session.startTransaction();
+  
+      try {
+        const user = await User.findById({ _id: userId }).session(session);
+        if (!user) throw new AppError("No user found with this id", 400);
+  
+        // Delete User
+        await User.findByIdAndDelete({ _id: userId }).session(session);
+  
+        // Delete user related stuff
+  
+        await session.commitTransaction();
+        session.endSession();
+  
+        return user;
+      } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        throw error;
+      }
     }
-  }
-
+  */
   // the one who own the account
   async updateMe(userId, newData) {
     try {
@@ -116,16 +107,32 @@ class UserRepository {
     }
   }
 
-  async deleteMe(userId) {
+
+  //done ------------------
+  async deleteUser(userId) {
     try {
-      const user = await User.findByIdAndUpdate(
+
+      return await User.updateOne(
         { _id: userId },
         { isActive: false }
       );
-      if (!user) throw new AppError("No user found with this id", 400);
+
     } catch (error) {
       throw error;
     }
+  }
+
+   //done ------------------
+  async activeUser(userId){
+    try{
+
+      //return ack.
+      return await user.updateOne({_id:userId},{isActive:true});
+
+    }catch(err){
+      throw err;
+    }
+
   }
 }
 
