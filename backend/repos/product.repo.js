@@ -5,8 +5,9 @@ class ProductRepository {
   
   async createProduct(productData) {
     try {
-      const product = await Product.create(productData).select('-createdAt -updatedAt -__v');
-      return product;
+      const product = await Product.create(productData);
+      const res = await Product.findById(product._id).select('-createdAt -updatedAt -__v');
+      return res;
     } catch (err) {
       throw err;
     }
@@ -58,9 +59,6 @@ class ProductRepository {
         { isActive: false },
         { new: true }
       ).select('-createdAt -updatedAt -__v');;
-      if (!product) {
-        throw new AppError('Product not found', 404);
-      }
       return product;
     } catch (err) {
       throw err;
