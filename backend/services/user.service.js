@@ -17,9 +17,11 @@ class UserService {
 
     try{
       const user= await UserRepository.getUser(userId);
+      console.log("i'm the logined one :",user)
       if(!user){
         throw new AppError("No user found with this id", APP_CONFIG.HTTP_BAD_REQUEST);
       }
+      return user;
     }catch(err){
       throw err;
     }
