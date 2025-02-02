@@ -1,28 +1,24 @@
+const { validate } = require("./product.model");
+const {User}=require("./user.model");
 const mongoose = required("mongoose");
 
 const CartSchema = new mongoose.Schema({
 
     products: [
       {
-        product : { type: mongoose.Schema.ObjectId , ref:"Product" , require:true, unique:true },
-        requiredQty: { type: Number, required: true },
+        product : { type:[mongoose.Schema.ObjectId, "invalid product id"] , ref:"Product" , required:true },
+        requiredQty: { type: Number, required: true ,default: 1, min: [1, "Quantity cannot be less than 1"], },
       },
-
     ],
     
-    customerId : { type : mongoose.Schema.ObjectId , },
+    customerId : { type : [mongoose.Schema.ObjectId,"not valid user id"] , required:true , },
 
-    sessionId: {
-      type: String, // For guests
-      required: function () {
-          return !this.customerId;  // Guest ID is required if no user is provided
-      },
+    isGuest:{ type:Boolean , default:false },
 
-    expireAt: { type: Date, required: true },
+    expireAt: { type: [Date,"not a valid date"] },
 
-  }
-
-  },{
+  },
+  {
     timestamps: true,
   });
 

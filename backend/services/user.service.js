@@ -1,15 +1,21 @@
 const UserRepository = require("../repos/user.repo");
 
 class UserService {
-  async getAllUsers() {
-    return await UserRepository.getAllUsers();
-  }
+  // async getAllUsers() {
+  //   return await UserRepository.getAllUsers();
+  // }
 
   async getUser(userId) {
     return await UserRepository.getUser(userId);
   }
 
+
+  //who can call this endpoint
+  //manager , supper admin
+  //create customer
+
   async createUser(userData) {
+
     return await UserRepository.createUser(userData);
   }
 

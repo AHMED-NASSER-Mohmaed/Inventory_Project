@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema(
   {
@@ -57,7 +58,7 @@ const userSchema = new mongoose.Schema(
     },
     userType: {
       type: String,
-      enum: [ "staff" , "customer", "seller"],
+      enum: ["staff", "customer", "seller"],
       required: true,
       default: "customer",
     },
@@ -66,6 +67,11 @@ const userSchema = new mongoose.Schema(
       default: true,
       select: false,
     },
+    changedPasswordAt: Date,
+    passwordResetCode: Number,
+    passwordResetCodeExpires: Date,
+    passwordResetToken: String,
+    passwordResetTokenExpires: Date,
 
     // otp: {
     //   type: String,
@@ -80,7 +86,7 @@ const userSchema = new mongoose.Schema(
     //   default: false,
     // },
   },
-  { discriminatorKey: "userType", timestamps: true }, // 'userType' acts as a discriminator field
+  { discriminatorKey: "kind", timestamps: true }, // 'kind' acts as a discriminator field
   {
     timestamps: true,
   }
@@ -95,11 +101,52 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-userSchema.methods.correctPassword = async function (
-  candidatePassword,
-  userPassword
-) {
-  return await bcrypt.compare(candidatePassword, userPassword);
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password") || this.isNew) return next();
+
+  this.changedPasswordAt = Date.now() - 1000;
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
+
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.changedPasswordAt) {
+    const changedTimestamp = parseInt(
+      this.changedPasswordAt.getTime() / 1000,
+      10
+    );
+    return JWTTimestamp < changedTimestamp;
+  }
+
+  return false;
+};
+
+userSchema.methods.correctPassword = async function (userPassword) {
+  return await bcrypt.compare(userPassword,this.password);
+};
+
+userSchema.methods.createPasswordResetCode = function () {
+  const resetCode = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digits code
+
+  this.passwordResetCode = resetCode;
+  this.passwordResetCodeExpires = Date.now() + 2 * 60 * 1000;
+  return resetCode;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
+  return resetToken;
 };
 
 userSchema.methods.generateOTP = function () {
@@ -109,6 +156,6 @@ userSchema.methods.generateOTP = function () {
   return otpCode;
 };
 
-const User = mongoose.model("User", userSchema);
 
+const User = mongoose.model("User", userSchema);
 module.exports = User;
