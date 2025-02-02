@@ -142,6 +142,8 @@ authRouter.post("/auth/resetPassword/:token", resetPassword);
 
 
 
-authRouter.patch("/auth/updatePassword",authMiddleware.protect,updatePassword);
+// authRouter.use(authMiddleware.protect);
+//to be reviewed 
+authRouter.patch("/auth/updatePassword", updatePassword);
 
 module.exports = authRouter;

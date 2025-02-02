@@ -14,7 +14,7 @@ class ProductController {
   initializeRoutes() {
 
 
-    this.router.post("/addProduct",pro_res("super_admin"),catchAsync(this.addProductForStaff))
+    this.router.post("/addProduct",AuthMiddleware.protect,catchAsync(this.addProductForStaff))
 
     // public routes: no need for authentication 
     this.router.get(
