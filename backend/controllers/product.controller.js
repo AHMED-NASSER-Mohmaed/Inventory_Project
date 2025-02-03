@@ -14,7 +14,7 @@ class ProductController {
   initializeRoutes() {
 
 
-    // this.router.post("/addProduct",pro_res(APP_CONFIG.SUPPERADMIN,APP_CONFIG.ADMIN),catchAsync(this.addProductForStaff))
+    this.router.post("/addProduct",pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),catchAsync(this.addProductForStaff))
 
 
     this.router.post("/addProductSeller",pro_res(APP_CONFIG.SELLER),catchAsync(this.addProductForSeller))
@@ -28,30 +28,47 @@ class ProductController {
     );
 
     this.router.get(
+      "/productsByCategory/:categoryId",
+      catchAsync(this.getProductsByCategory)
+    );
+
+    this.router.get(
+      "/productsByCategoryForSellerStaff/:categoryId", // just for the seller and the admin could handle the deactivated products 
+      // and for the admin only to handle the pending products from the seller to be presented on our store
+      pro_res(APP_CONFIG.SELLER, APP_CONFIG.ADMIN, APP_CONFIG.SUPPERADMIN),
+      catchAsync(this.getProductsByCategoryForSellerAndStaff)
+    );
+
+    this.router.get(
       "/products/:productId",
       catchAsync(this.getProduct)
     );
 
-     // Protected routes: there's a need for authentication
-    this.router.use(AuthMiddleware.protect); // token verification
+    this.router.patch(
+      "/products/approve/:productId",
+      pro_res(APP_CONFIG.ADMIN, APP_CONFIG.SUPPERADMIN), // only the admin or the super admin can accept the pending products to be presented on our store 
+      catchAsync(this.approveProductForSeller)
+    );
 
-    this.router.post(
-      "/products",
-      // AuthMiddleware.restrictTo("super_admin", "manager"), // this will be commented temporarily to test the crud operations first without constraints but it has to be uncommented later
-      catchAsync(this.createProduct)
+    this.router.patch(
+      "/products/activate/:productId",
+      pro_res(APP_CONFIG.SELLER, APP_CONFIG.ADMIN, APP_CONFIG.SUPPERADMIN),
+      catchAsync(this.activateProduct)
     );
 
 
     this.router
       .route("/products/:productId")
       .patch(
-        // AuthMiddleware.restrictTo("super_admin", "manager"), // // this will be commented temporarily to test the crud operations first without constraints but it has to be uncommented later
+        pro_res(APP_CONFIG.SELLER, APP_CONFIG.ADMIN, APP_CONFIG.SUPPERADMIN), // // this will be commented temporarily to test the crud operations first without constraints but it has to be uncommented later
         catchAsync(this.updateProduct)
       )
       .delete(
-        // AuthMiddleware.restrictTo("super_admin", "manager"),  // this will be commented temporarily to test the crud operations first without constraints but it has to be uncommented later
+        pro_res(APP_CONFIG.SELLER, APP_CONFIG.ADMIN, APP_CONFIG.SUPPERADMIN),  // this will be commented temporarily to test the crud operations first without constraints but it has to be uncommented later
         catchAsync(this.deleteProduct)
       );
+
+
   }
 
 
@@ -60,8 +77,9 @@ class ProductController {
   async addProductForSeller(req,res,next){
     const product=await productService.createProductForSeller(req.user,req.body);
 
-    res.status(APP_CONFIG.HTTP_OK).json({
-      message:product,
+    res.status(APP_CONFIG.HTTP_CREATED).json({
+      message:"success",
+      product
 
     })
   }
@@ -69,8 +87,9 @@ class ProductController {
   async addProductForStaff(req,res,next){
     const product=await productService.createProductForStaff(req.body);
 
-    res.status(APP_CONFIG.HTTP_OK).json({
-      message:product,
+    res.status(APP_CONFIG.HTTP_CREATED).json({
+      message:"success",
+      product
 
     })
   }
@@ -89,6 +108,23 @@ class ProductController {
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       product,
+    });
+  }
+
+  async getProductsByCategory(req, res, next) {
+    const products = await productService.getProductsByCategoryForEndUser(req.params.categoryId);
+    res.status(APP_CONFIG.HTTP_OK).json({
+      message: "success",
+      products,
+    });
+  }
+
+  async getProductsByCategoryForSellerAndStaff(req, res, next) {
+    console.log(req.user.userType, req.user._id)
+    const products = await productService.getProductsByCategoryForSellerAndStaff(req.params.categoryId, req.user.userType, req.user._id);
+    res.status(APP_CONFIG.HTTP_OK).json({
+      message: "success",
+      products,
     });
   }
 
@@ -115,6 +151,22 @@ class ProductController {
     await productService.deleteProductById(req.params.productId);
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
+    });
+  }
+
+  async approveProductForSeller(req, res, next) {
+    const product = await productService.approveProductForSeller(req.params.productId);
+    res.status(APP_CONFIG.HTTP_OK).json({
+      message: "success",
+      product,
+    });
+  }
+
+  async activateProduct(req, res, next) {
+    const product = await productService.activateProduct(req.params.productId, req.user.userType, req.user._id);
+    res.status(APP_CONFIG.HTTP_OK).json({
+      message: "success",
+      product,
     });
   }
 }

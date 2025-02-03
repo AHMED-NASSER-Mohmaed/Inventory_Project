@@ -13,7 +13,7 @@ class CInventoryController {
   initializeRoutes() {
     
     // protected routes: there's a need for authentication
-    this.router.use(AuthMiddleware.protect); // token verification
+    // this.router.use(AuthMiddleware.protect); // token verification
     this.router.get(
       "/cinventories",
       AuthMiddleware.restrictTo("super_admin", "manager"),

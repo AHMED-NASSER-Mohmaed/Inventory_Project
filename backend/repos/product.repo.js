@@ -74,9 +74,40 @@ class ProductRepository {
     }
   }
 
-  async getProductsByCategory(categoryId) {
+  async getProductsByCategoryForEndUser(categoryId) { // for gusts & customers
     try {
-      const products = await Product.find({ category: categoryId }).select('-createdAt -updatedAt -__v'); // - means to exclude if you wanna include don't use -
+      const products = await Product.find({ category: categoryId, isActive: true })
+        //.select('-createdAt -updatedAt -__v'); // - means to exclude if you wanna include don't use -
+      return products;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async getProductsByCategoryForDeactivatedProducts(categoryId) { // for super admin, admin, seller
+    try { // to be used later
+      const products = await Product.find({ category: categoryId, isActive: false })
+        //.select('-createdAt -updatedAt -__v'); // - means to exclude if you wanna include don't use -
+      return products;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async getProductsByCategoryForStaff(categoryId) {
+    try {
+      const products = await Product.find({ category: categoryId }) // so the seller and the admin can be able to handle the isActive and for the admin to handle the status of the pending products
+        //.select('-createdAt -updatedAt -__v'); // - means to exclude if you wanna include don't use -
+      return products;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async getProductsByCategoryForSeller(categoryId, sellerId_) {
+    try {
+      const products = await Product.find({ category: categoryId, sellerId:  sellerId_}) // so the seller and the admin can be able to handle the isActive and for the admin to handle the status of the pending products
+        //.select('-createdAt -updatedAt -__v'); // - means to exclude if you wanna include don't use -
       return products;
     } catch (err) {
       throw err;
@@ -94,6 +125,36 @@ class ProductRepository {
       throw err;
     }
   }
+
+  async approveProductForSeller(productId){
+    try {
+      let product = await Product.findByIdAndUpdate(
+        productId,
+        { status: true },
+        { new: true }
+      ).select('-createdAt -updatedAt -__v');
+      product = this.activateProduct(productId);
+      return product;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async activateProduct(productId){
+    try {
+      const product = await Product.findByIdAndUpdate(
+        productId,
+        { isActive: true },
+        { new: true }
+      ).select('-createdAt -updatedAt -__v');
+      return product;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+
+  
 }
 
 module.exports = new ProductRepository();
