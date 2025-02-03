@@ -1,5 +1,7 @@
 const UserRepository = require("../repos/user.repo");
 const APP_CONFIG=require("../config/app.config");
+const AppError = require("../utils/appError")
+
 
 class UserService {
   

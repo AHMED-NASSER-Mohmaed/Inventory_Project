@@ -5,6 +5,7 @@ const product=require("../models/product.model");
 const AppError = require('../utils/appError');
 const {APP_CONFIG} = require("../config/app.config")
 const supplier=require("../models/supplier.model");
+const CategoryRepository = require("../repos/category.repo");
 
 const category=require("../models/category.model");
 
@@ -40,17 +41,16 @@ class ProductService {
             //throw exception from databse
             const new_one =await product.create({ name:productData.name , code:productData.code ,  images:imagesURLS,
                             description:productData.description , category:productData.categoryId 
-                            ,sellerId:user._id , sellerName:user.firstName});
+                            ,sellerId:user._id , sellerName:user.firstName, status: false});
 
                 
-            console.log("hellooooo");
             
             await sinventory.createInventory({  product:new_one._id ,  providerID: user._id,
                 providerName:user.firstName , currentStock: productData.currentStock,
                 cost:productData.cost
              });
 
-             return "added successufully";
+             return new_one;
 
             }catch(err){
                 throw err;
@@ -102,7 +102,7 @@ class ProductService {
             //throw exception from databse
             const new_one =await product.create({ name:productData.name , code:productData.code ,  images:imagesURLS,
                             description:productData.description , category:productData.categoryId 
-                            ,sellerId:APP_CONFIG.COMPANY_ID , sellerName:APP_CONFIG.COMPANY_NAME });
+                            ,sellerId:APP_CONFIG.COMPANY_ID , sellerName:APP_CONFIG.COMPANY_NAME, status: true });
 
                 
             console.log("hellooooo");
@@ -112,7 +112,7 @@ class ProductService {
                 cost:productData.cost
              });
 
-             return "added successufully";
+             return new_one;
             }catch(err){
                 throw err;
             } 
@@ -157,6 +157,46 @@ class ProductService {
         }
     }
 
+    async getProductsByCategoryForEndUser(categoryId) {
+        try {
+            const categoryExists = await CategoryRepository.isCategoryExist(categoryId);
+            const categoryActive = await CategoryRepository.isCategoryActive(categoryId);
+            if (!categoryExists || !categoryActive) {
+                throw new AppError('Category does not exist', 404);
+            }
+            
+            const products = await ProductRepository.getProductsByCategoryForEndUser(categoryId); //  .populate() has been removed since there's no ref anymore
+            if (!products || products.length === 0) {
+                throw new AppError(`Products by that category don't exist`, 404);
+            }
+            return products;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async getProductsByCategoryForSellerAndStaff(categoryId, userType, sellerId_) {
+        try {
+            const categoryExists = await CategoryRepository.isCategoryExist(categoryId);
+            if (!categoryExists) {
+                throw new AppError('Category does not exist', 404);
+            }
+            let products;
+            if(userType == "seller"){
+                products = await ProductRepository.getProductsByCategoryForSeller(categoryId, sellerId_);
+            }
+            else{
+                products = await ProductRepository.getProductsByCategoryForStaff(categoryId);
+            }
+            if (!products || products.length === 0) {
+                throw new AppError(`Products by that category don't exist`, 404);
+            }
+            return products;
+        } catch (err) {
+            throw err;
+        }
+    }
+
     async getAllProducts() {
         return await ProductRepository.getAllProducts();
     }
@@ -166,6 +206,36 @@ class ProductService {
 
             const products = await ProductRepository.addProducts(productsArray);
             return products;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+
+    async approveProductForSeller(productId) {
+        try {
+            let product = await ProductRepository.approveProductForSeller( productId);
+            return product;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async activateProduct(productId, userType, sellerId_) {
+        try {
+            if(userType == "seller"){
+                const tempProduct = await this.getProductById(productId);
+                console.log(tempProduct.sellerId, sellerId_ )
+                if(tempProduct.equals( sellerId_ )){
+                    throw new AppError("You're not authorized to delete that product since it doesn't belong to you, ya norm!");
+                }
+                if(tempProduct.status == false ){
+                    throw new AppError("your product hasn't accepted yet, ya norm!");
+                }
+            }
+
+            const product = await ProductRepository.activateProduct(productId);
+            return product;
         } catch (err) {
             throw err;
         }
