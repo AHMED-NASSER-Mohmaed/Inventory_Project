@@ -7,6 +7,7 @@ const {staffService}=require("../services/staff.service");
 const prot_rest=require("../utils/authMiddlewaresOptions");
 const userService=require("../services/user.service");
 const User = require("../models/user.model");
+const validateParams=require("../middlewares/validation.middlewares");
 const route= express.Router();
 
 
@@ -25,6 +26,10 @@ const sellerOp={
     },
 
     getSeller: async (req,res,next)=>{
+
+
+
+
         const user =await sellerService.getSeller(req.params.SSN);
         
         res.status(APP_CONFIG.HTTP_OK).json({
@@ -59,7 +64,40 @@ const sellerOp={
             message:"success",
             ack,
         })
+    },
+
+    getActiveSellers:async(req,res,next)=>{
+
+        const result = await sellerService.getActiveSellersService(req.validatedParams);
+
+        res.json({
+            message: "success",
+            result
+          });
+         
+    },
+    getDeActiveSellers:async(req,res,next)=>{
+
+        const result = await sellerService.getDeActiveSellersService(req.validatedParams);
+
+        res.json({
+            message: "success",
+            result
+          });
+         
+    },
+
+    getPendingSellers:async(req,res,next)=>{
+
+        const result = await sellerService.getPendingSellersService(req.validatedParams);
+
+        res.json({
+            message: "success",
+            result
+          });
+         
     }
+
 
 }
 
@@ -104,7 +142,9 @@ const adminOp={
         })
     
     },
+
     getAllAdmins:async (req,res,next)=>{
+
         const allAdmins=await staffService.getAll(APP_CONFIG.ADMIN);
     
         res.status(APP_CONFIG.HTTP_OK).json({
@@ -120,7 +160,13 @@ const adminOp={
             message:"success",
             ack,
         })
+    },
+
+    getAdmins:async(res,req,next)=>{
+        
     }
+
+
 
 
 }
@@ -309,13 +355,17 @@ route.post("/addSeller", prot_rest("super_admin" ,"admin" ), catchAsync(sellerOp
     .delete("/deleteSeller/:SSN",prot_rest("super_admin", "admin" ),catchAsync(sellerOp.deleteSeller))
     .patch("/approveSeller/:SSN",prot_rest("super_admin" , "admin" ),catchAsync(sellerOp.approveSeller))
     .patch("/activeSeller/:SSN",prot_rest("super_admin", "admin" ),catchAsync(sellerOp.activeSellerAcount))
+    .get('/activeSellers',prot_rest("super_admin", "admin" ), validateParams , catchAsync(sellerOp.getActiveSellers))
+    .get('/deActiveSellers',prot_rest("super_admin", "admin" ), validateParams , catchAsync(sellerOp.getDeActiveSellers))
+    .get('/pendingSellers',prot_rest("super_admin", "admin" ), validateParams , catchAsync(sellerOp.getPendingSellers))
     
+
     .post("/addAdmin",prot_rest("super_admin"),catchAsync(adminOp.addAdmin))
     .get("/getAdmin/:SSN",prot_rest("super_admin"),catchAsync(adminOp.getAdmin))
     .delete("/deleteAdmin/:SSN",prot_rest("super_admin"),catchAsync(adminOp.deleteAdmin))
     .get("/getAllAdmins",prot_rest("super_admin"),catchAsync(adminOp.getAllAdmins))
     .patch("/activeAdmin/:SSN",prot_rest("super_admin"),catchAsync(adminOp.activeAdmin))
-    
+    .get("/getAdmins",validateParams,prot_rest("super_admin"),catchAsync(adminOp.getAdmins))
 
     .post("/addClerk",prot_rest("super_admin" , "admin" ),catchAsync(clerkOp.addClerk))
     .get("/getClerk/:SSN",prot_rest("super_admin" , "admin" ),catchAsync(clerkOp.getClerk))
