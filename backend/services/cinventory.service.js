@@ -1,5 +1,7 @@
 const CInventoryRepository = require("../repos/cinventory.repo");
 
+const productService= require("./product.service");
+
 class CInventoryService {
   
     async createInventory(inventoryData){
@@ -34,6 +36,17 @@ class CInventoryService {
     async getAllInventories(){
         return await CInventoryRepository.getAllInventories();
     }
+    
+    async addProductToInventory(productData){
+        try{
+            await productService.createProductForStaff(productData);
+        }catch(err){
+            throw err;
+        }
+    }
+
+
+    
 }
 
 module.exports = new CInventoryService();
