@@ -317,6 +317,11 @@ input:checked + .slider:before {
     width: 50px;
 }
 
+.dropdown-toggle{
+    background-color: var(--dark);
+    color: var(--light);
+}
+
 /* MEDIA QUERIES */
 @media screen and (max-width: 768px) {
   :host #sidebar {
