@@ -41,7 +41,7 @@ const updateUser = catchAsync(async (req, res, next) => {
 
 const deleteUser = catchAsync(async (req, res, next) => {
   await userService.deleteUser(req.params.userId);
-  res.status(204).json({
+  res.status(200).json({
     message: "success",
   });
 });
