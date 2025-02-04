@@ -9,6 +9,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
     "crypto": "^1.0.1",
@@ -16,6 +17,7 @@
     "express": "^4.21.2",
     "express-fileupload": "^1.5.1",
     "html-to-text": "^9.0.5",
+    "imagekit": "^6.0.0",
     "inventory": "file:",
     "jsonwebtoken": "^9.0.2",
     "juice": "^11.0.0",

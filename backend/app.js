@@ -4,6 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const globalErrorHandler = require("./middlewares/error.middleware");
 const cookieParser = require("cookie-parser");
+const fileUpload = require("express-fileupload");
 /******************************************************************* */
 
 /********************************************************************/
@@ -15,6 +16,14 @@ app.set("views", path.join(__dirname, "views/emails"));
 app.use(morgan("common"));
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(
+  fileUpload({
+    limits: { fileSize: 50 * 1024 * 1024 },
+    useTempFiles: false,
+    preserveExtension: true,
+  })
+);
 
 // controller registration
 
