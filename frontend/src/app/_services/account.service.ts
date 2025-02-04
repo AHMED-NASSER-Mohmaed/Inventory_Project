@@ -1,0 +1,45 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+
+export class AccountService {
+
+  constructor(public http: HttpClient) { }
+
+
+  login(email: string, password: string) : Observable<any> {
+    return this.http.post('http://127.0.0.1:3000/auth/login', { email, password });
+  }
+
+  signupForCustomer(firstName: string, lastName: string, email: string, phoneNumber: string, password: string, passwordConfirm: string , userType: string): Observable<any> {
+    return this.http.post('http://127.0.0.1:3000/auth/signup', { firstName, lastName, email, phoneNumber, password, passwordConfirm , userType });
+  }
+
+  signupForSeller(firstName: string, lastName: string, email: string, phoneNumber: string, password: string, passwordConfirm: string , userType: string, SSN: string , companyRegistrationNumber: string , companyName: string): Observable<any> {
+    return this.http.post('http://127.0.0.1:3000/auth/signup', { firstName, lastName, email, phoneNumber, password, passwordConfirm , userType , SSN , companyRegistrationNumber , companyName });
+  }
+
+  isLoggedIn = true;
+  userType : string = 'admin';
+
+  setLoginStatus(){
+    this.isLoggedIn = true;
+  }
+
+  setUserType(type: string){
+    this.userType = type;
+  }
+
+  showLoginStatus(){
+    console.log(this.isLoggedIn);
+  }
+
+
+
+
+
+}

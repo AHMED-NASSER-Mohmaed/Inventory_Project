@@ -1,0 +1,81 @@
+<div class="parent">
+	<section>
+	  <div id="loginForm">
+		<h1>Login</h1>
+		<small>Get back to your fancy watch.</small>
+		<form id="createAccountForm" #loginForm="ngForm">
+		  <input type="email" [(ngModel)]="account.email" name="email" id="email" placeholder="Email" required email>
+		  <div *ngIf="loginForm.controls['email']?.invalid && loginForm.controls['email']?.touched">
+			<small *ngIf="loginForm.controls['email']?.errors?.['required']">Email is required.</small>
+			<small *ngIf="loginForm.controls['email']?.errors?.['email']">Invalid email format.</small>
+		  </div>
+		  <input type="password" [(ngModel)]="account.password" name="password" id="password" placeholder="Password" required minlength="8">
+		  <div *ngIf="loginForm.controls['password']?.invalid && loginForm.controls['password']?.touched">
+			<small *ngIf="loginForm.controls['password']?.errors?.['required']">Password is required.</small>
+			<small *ngIf="loginForm.controls['password']?.errors?.['minlength']">Password must be at least 8 characters long.</small>
+		  </div>
+		  <button type="button" id="createAccount" (click)="login()" [disabled]="loginForm.invalid" [ngClass]="{'disabled': loginForm.invalid}">Login</button>
+		  <button type="button" id="googleLogin">
+			<img draggable="false" src="https://cdn-icons-png.flaticon.com/128/300/300221.png" alt="Google" width="14">
+			Sign in with Google
+		  </button>
+		</form>
+		<span class="login">
+		  <p>Don't have an account?</p><a id="login" routerLink="/signup" style="text-decoration: underline;">Sign up</a>
+		</span>
+		<span class="login">
+		  <p>Forget your password? </p><a id="login2" style="text-decoration: underline;">Reset</a>
+		</span>
+	  </div>
+  
+	  <div id="cover">
+		<input type="radio" name="controler" id="slide1" hidden checked>
+		<input type="radio" name="controler" id="slide2" hidden>
+		<input type="radio" name="controler" id="slide3" hidden>
+		<input type="radio" name="controler" id="slide4" hidden>
+  
+		<div id="sliderContainer">
+		  <div id="model1">
+			<h1>"Discover the elegance and precision of our watches, designed to captivate and impress effortlessly."</h1>
+			<span class="about">
+			  <div class="controlLabels">
+				<label for="slide4" class="before">←</label>
+				<label for="slide2" class="after">→</label>
+			  </div>
+			</span>
+			<img draggable="false" src="watch4.jpg" alt="model1" id="imgModel1" width="110" height="150" style="object-fit: cover">
+		  </div>
+		  <div id="model2">
+			<h1>"Experience the timeless craftsmanship of our watches, where every detail is meticulously crafted."</h1>
+			<span class="about">
+			  <div class="controlLabels">
+				<label for="slide1" class="before">←</label>
+				<label for="slide3" class="after">→</label>
+			  </div>
+			</span>
+			<img draggable="false" src="watch2.jpeg" alt="model2" id="imgModel2" width="110" height="150" style="object-fit: cover">
+		  </div>
+		  <div id="model3">
+			<h1>"Our watches are a testament to innovation, blending style and functionality seamlessly."</h1>
+			<span class="about">
+			  <div class="controlLabels">
+				<label for="slide2" class="before">←</label>
+				<label for="slide4" class="after">→</label>
+			  </div>
+			</span>
+			<img draggable="false" src="watch3.jpg" alt="model3" id="imgModel3" width="110" height="150" style="object-fit: cover">
+		  </div>
+		  <div id="model4">
+			<h1>"Enhance your look with our watches, a perfect mix of elegance and technology."</h1>
+			<span class="about">
+			  <div class="controlLabels">
+				<label for="slide3" class="before">←</label>
+				<label for="slide1" class="after">→</label>
+			  </div>
+			</span>
+			<img draggable="false" src="watch1.jpg" alt="model4" id="imgModel4" width="110" height="150" style="object-fit: cover">
+		  </div>
+		</div>
+	  </div>
+	</section>
+  </div>
