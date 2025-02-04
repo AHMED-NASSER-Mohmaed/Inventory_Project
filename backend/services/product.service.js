@@ -6,6 +6,7 @@ const AppError = require('../utils/appError');
 const {APP_CONFIG} = require("../config/app.config")
 const supplier=require("../models/supplier.model");
 const CategoryRepository = require("../repos/category.repo");
+const {sellerRepo} = require("../repos/sellers.repo");
 
 const category=require("../models/category.model");
 
@@ -28,7 +29,8 @@ class ProductService {
             //     throw new AppError("supplier dose not exist.",APP_CONFIG.HTTP_BAD_REQUEST);
             // }
 
-            let isExistCat=await category.findOne({_id:productData.categoryId})
+            console.log(productData)
+            let isExistCat=await category.findOne({_id:productData.category})
 
             
             if(!isExistCat){
@@ -40,13 +42,13 @@ class ProductService {
 
             //throw exception from databse
             const new_one =await product.create({ name:productData.name , code:productData.code ,  images:imagesURLS,
-                            description:productData.description , category:productData.categoryId 
-                            ,sellerId:user._id , sellerName:user.firstName, status: false});
+                            description:productData.description , category:productData.category
+                            ,sellerId:user._id , sellerName:`${user.firstName } ${user.lastName}`, status: false});
 
                 
             
             await sinventory.createInventory({  product:new_one._id ,  providerID: user._id,
-                providerName:user.firstName , currentStock: productData.currentStock,
+                providerName:`${user.firstName } ${user.lastName}`, currentStock: productData.currentStock,
                 cost:productData.cost
              });
 
@@ -83,13 +85,14 @@ class ProductService {
               
             
             //frontend model -- >   supplierID 
-            const isExistSupplier=await supplier.findOne({_id:productData.supplierID});
+            const isExistSupplier=await supplier.findOne({_id:productData.providerID});
 
             if(!isExistSupplier){
                 throw new AppError("supplier dose not exist.",APP_CONFIG.HTTP_BAD_REQUEST);
             }
 
-            let isExistCat=await category.findOne({_id:productData.categoryId})
+            console.log(productData.category)
+            let isExistCat=await category.findOne({_id:productData.category})
 
             
             if(!isExistCat){
@@ -101,7 +104,7 @@ class ProductService {
 
             //throw exception from databse
             const new_one =await product.create({ name:productData.name , code:productData.code ,  images:imagesURLS,
-                            description:productData.description , category:productData.categoryId 
+                            description:productData.description , category:productData.category 
                             ,sellerId:APP_CONFIG.COMPANY_ID , sellerName:APP_CONFIG.COMPANY_NAME, status: true });
 
                 
@@ -119,15 +122,121 @@ class ProductService {
          
     }
 
+
     
 
-    async updateProductById(productId, updatedData) {
-        try {
-            const product = await ProductRepository.updateProductById(productId, updatedData);
+    async updateProductById(productId, updatedData,  userType, sellerId_, isSellerInventory) {
+    try {
+        let {
+            name,
+            code,
+            cost,
+            images,
+            description,
+            currentStock,
+            category,
+            sellerId,
+            sellerName,
+            providerID,
+            providerName
+        } = updatedData;
+        if(category){
+
+            const getCategory = await CategoryRepository.getCategoryById(category);
+            if(!getCategory){
+                throw new AppError(`sorry that category doesn't exist, ya norm!`);
+            }
+        }
+        let product = await ProductRepository.getProductById(productId);
+
+        if(userType == 'seller' && !product.sellerId.equals(sellerId_)){
+            throw new AppError(`Sorry you're not authorized to update this product since it doesn't belong to you, ya norm!`);
+        }else if(userType == 'seller'){
+            product = await ProductRepository.updateProductById(productId, {
+                ...(name && { name }),
+                ...(code && { code }),
+                // ...(price && { price }),
+                ...(images && { images }),
+                ...(description && { description }),
+                // ...(quantity && { quantity }), // we can use current stock instead
+                ...(category && { category }),
+            });
+            let inv = await sinventory.updateInventoryByProductId(productId, {
+                ...(cost && { cost }),
+                ...(currentStock && { currentStock }),
+            });
+            return inv;
+        }
+        if(isSellerInventory && userType == 'staff'){ // if it reaches here then it's the admin or the super admin since there's a restrict to on the route
+            let tempSeller;
+            if(sellerId || sellerName){ // if he admin wants to update the seller of the product
+                if(product.sellerId.equals( APP_CONFIG.COMPANY_ID)){
+                    throw new AppError(`Sorry Company FIXED OBJECT SELLER cannot be modified, ya norm`, APP_CONFIG.HTTP_BAD_REQUEST);
+                }
+                tempSeller = await sellerRepo.getSellerById(sellerId);
+                if(!tempSeller){
+                    throw new AppError(`Sorry the seller you provided doesn't exist, ya norm!!`, APP_CONFIG.HTTP_BAD_REQUEST);
+                }
+                sellerName = `${tempSeller.firstName} ${tempSeller.lastName}`;
+                let providerID = sellerId;
+                let providerName = sellerName;
+                let inv = await sinventory.updateInventoryByProductId(productId, {
+                    ...(providerID && { providerID }),
+                    ...(providerName && { providerName }),
+                }); // the sinventory providerName should be consistent with the sellerId and name
+                console.log(inv);
+            }
+            product = await ProductRepository.updateProductById(productId, { // if it reaches here then it's the admin or the super admin since there's a restrict to on the route
+                ...(name && { name }),
+                ...(code && { code }),
+                // ...(price && { price }),
+                ...(images && { images }),
+                ...(description && { description }),
+                // ...(quantity && { quantity }),
+                ...(category && { category }),
+                ...(sellerId && { sellerId }),
+                ...(sellerName && { sellerName }),
+            });
+            let inv = await sinventory.updateInventoryByProductId(productId, {
+                ...(cost && { cost }),
+                 ...(currentStock && { currentStock }),
+            }); 
+            return inv;
+        }else{ // staff updating our company inventory products
+            if(providerID){
+                let tempSupplier;
+                tempSupplier = await supplier.findById(providerID);
+                if(!tempSupplier){
+                    throw new AppError(`Sorry that supplier doesn't exist, ya norm!!`);
+                }
+                providerName = tempSupplier.companyName;
+                await cinventory.updateInventoryByProductId(productId, {
+                    ...(providerID && { providerID }),
+                    ...(providerName && { providerName }),
+                }); 
+            }
+            product = await ProductRepository.updateProductById(productId, { // if it reaches here then it's the admin or the super admin since there's a restrict to on the route
+                ...(name && { name }),
+                ...(code && { code }),
+                // ...(price && { price }),
+                ...(images && { images }),
+                ...(description && { description }),
+                // ...(quantity && { quantity }),
+                ...(category && { category }),
+                ...(sellerId && { sellerId }),
+                ...(sellerName && { sellerName }),
+            });
+            let inv = await cinventory.updateInventoryByProductId(productId, {
+                ...(cost && { cost }),
+                ...(currentStock && { currentStock }),
+            }); 
             if (!product) {
                 throw new AppError('Product not found', 404);
             }
-            return product;
+            return inv;
+        }
+
+        
         } catch (err) {
             throw err;
         }
@@ -225,8 +334,8 @@ class ProductService {
         try {
             if(userType == "seller"){
                 const tempProduct = await this.getProductById(productId);
-                console.log(tempProduct.sellerId, sellerId_ )
-                if(tempProduct.equals( sellerId_ )){
+                // console.log(tempProduct.sellerId, sellerId_ )
+                if(!tempProduct.sellerId.equals( sellerId_ )){
                     throw new AppError("You're not authorized to delete that product since it doesn't belong to you, ya norm!");
                 }
                 if(tempProduct.status == false ){

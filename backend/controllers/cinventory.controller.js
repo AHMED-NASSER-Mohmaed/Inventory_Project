@@ -3,6 +3,7 @@ const cInventoryService = require("../services/cinventory.service");
 const AuthMiddleware = require("../middlewares/auth.middleware");
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
+const pro_res=require("../utils/authMiddlewaresOptions")
 
 class CInventoryController {
   constructor() {
@@ -16,26 +17,26 @@ class CInventoryController {
     // this.router.use(AuthMiddleware.protect); // token verification
     this.router.get(
       "/cinventories",
-      AuthMiddleware.restrictTo("super_admin", "manager"),
+      pro_res( APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
       catchAsync(this.getAllInventories)
     );
 
     this.router.get(
       "/cinventories/:inventoryId",
-      AuthMiddleware.restrictTo("super_admin", "manager"),
+      pro_res( APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
       catchAsync(this.getInventory)
     );
 
     this.router.post(
       "/cinventories",
-      AuthMiddleware.restrictTo("super_admin", "manager"),
+      pro_res( APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
       catchAsync(this.createInventory)
     );
 
     this.router
       .route("/cinventories/:inventoryId")
       .patch(
-        AuthMiddleware.restrictTo("super_admin", "manager"),
+        pro_res( APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         catchAsync(this.updateInventory)
       );
   }
@@ -68,7 +69,8 @@ class CInventoryController {
   async updateInventory(req, res, next) {
     const updatedInventory = await cInventoryService.updateInventoryById(
       req.params.inventoryId,
-      req.body
+      req.body,
+      req.user.userType, req.user._id
     );
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",

@@ -76,8 +76,19 @@ process.on("uncaughtException", (err) => {
           companyName:"elzamalek"
         }
 
+        const Dawoodsupplier={
+          companyRegistrationNumber:"31-21-32",
+          phoneNumber:"01118208958",
+          email:"perez@gmail.com",
+          companyName:"Madridista"
+        }
+
         if(!await Supplier.findOne({email:supplier.email})){
           console.log(await Supplier.create(supplier));
+        }
+
+        if(!await Supplier.findOne({email:Dawoodsupplier.email})){
+          console.log(await Supplier.create(Dawoodsupplier));
         }
            
          if(!await Category.findOne({name:cat.name})){
