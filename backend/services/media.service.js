@@ -57,11 +57,15 @@ async function download(fileUrl) {
     });
 
     const fileName = path.basename(fileUrl);
-    const filePath = path.join(__dirname, "../downloads", fileName);
+    const urlParts = fileUrl.split("/");
+    const folderName = urlParts[urlParts.length - 2]; // Extract folder name
 
-    // Ensure the downloads directory exists
-    if (!fs.existsSync(path.join(__dirname, "../downloads"))) {
-      fs.mkdirSync(path.join(__dirname, "../downloads"));
+    const downloadFolder = path.join(__dirname, "../downloads", folderName);
+    const filePath = path.join(downloadFolder, fileName);
+
+    // Ensure the downloads directory and subfolder exist
+    if (!fs.existsSync(downloadFolder)) {
+      fs.mkdirSync(downloadFolder, { recursive: true });
     }
 
     const writer = fs.createWriteStream(filePath);
