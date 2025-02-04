@@ -68,13 +68,13 @@ userRouter.get("/users/me", UserMiddleware.getMe, getUser);
 userRouter.patch("/users/updateMe", updateMe);
 userRouter.delete("/users/deleteMe", deleteMe);
 
-userRouter.get("/users", AuthMiddleware.restrictTo("super_admin"), getAllUsers);
-userRouter.post("/users", AuthMiddleware.restrictTo("super_admin"), createUser);
+userRouter.get("/users", AuthMiddleware.restrictTo("admin"), getAllUsers);
+userRouter.post("/users", AuthMiddleware.restrictTo("admin"), createUser);
 
 userRouter
   .route("/users/:userId")
   .get(getUser)
-  .patch(AuthMiddleware.restrictTo("super_admin"), updateUser) //! abdulrhman changed this tp superadmin!
-  .delete(AuthMiddleware.restrictTo("super_admin"), deleteUser);
+  .patch(AuthMiddleware.restrictTo("admin"), updateUser) //! abdulrhman changed this tp superadmin!
+  .delete(AuthMiddleware.restrictTo("admin"), deleteUser);
 
 module.exports = userRouter;

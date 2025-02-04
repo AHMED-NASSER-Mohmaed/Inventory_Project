@@ -37,11 +37,11 @@ export class SignupComponent implements OnDestroy {
         if(res.status){
           alert('Signup Success');
           this.accountService.setLoginStatus();
-          this.accountService.setUserType(res.data.user.userType);
+          this.accountService.setUserType(res.data.user.role);
           localStorage.setItem('token', res.token);
 
           console.log(res);
-          console.log(res.data.user.userType);
+          console.log(res.data.user.role);
           console.log(res.token);
           this.accountService.showLoginStatus();
         }

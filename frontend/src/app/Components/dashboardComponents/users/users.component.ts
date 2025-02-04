@@ -15,11 +15,19 @@ import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.c
 })
 export class UsersComponent implements OnInit , OnDestroy{
 
-  constructor(private customerService: CustomersService , public dialog: MatDialog) { }
+  
+  constructor(private customerService: CustomersService, public dialog: MatDialog) { }
   dropdownStates: boolean[] = [];
   sub: Subscription = {} as Subscription;
   sub2: Subscription = {} as Subscription;
   users: User[] = [];
+  isDarkMode: boolean = false; // Add this line
+
+
+
+
+  
+
 
   ngOnInit(): void {
     this.sub = this.customerService.getAllCustomers().subscribe({
@@ -37,8 +45,14 @@ export class UsersComponent implements OnInit , OnDestroy{
         console.log('complete');
       }
     })
-  }
 
+  
+
+    
+  }
+  toggleDarkMode(): void {
+    this.isDarkMode = !this.isDarkMode;
+  }
   openConfirmDialog(userId: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
 
@@ -71,8 +85,20 @@ export class UsersComponent implements OnInit , OnDestroy{
   }
 
   ngOnDestroy(): void {
-    this.sub.unsubscribe();
+    if(this.sub){
+      this.sub2.unsubscribe();
+    }
+
     
   }
+
+
+
+  
+
+
+
+
+  
 
 }

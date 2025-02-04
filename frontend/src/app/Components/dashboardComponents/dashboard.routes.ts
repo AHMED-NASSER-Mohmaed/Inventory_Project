@@ -8,6 +8,11 @@ export const dashRoutes: Routes = [
     component: DashboardComponent,
     title: 'Dashboard',
     children: [
+      {
+        path: '',
+        redirectTo: 'users',
+        pathMatch: 'full'
+      },
       { 
         path: 'users',
         component: UsersComponent,

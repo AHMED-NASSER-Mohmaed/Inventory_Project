@@ -11,6 +11,8 @@ export const authGuard: CanActivateFn = (route, state) => {
     return true;
   }else{
     router.navigateByUrl('/lock');
+    console.log(accountService.isLoggedIn);
+    console.log(accountService.userType);
     return false;
   }
 

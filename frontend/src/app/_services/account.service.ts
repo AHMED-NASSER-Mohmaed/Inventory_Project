@@ -8,7 +8,10 @@ import { Observable } from 'rxjs';
 
 export class AccountService {
 
-  constructor(public http: HttpClient) { }
+  constructor(public http: HttpClient) { 
+    this.isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    this.userType = localStorage.getItem('userType') || '';
+  }
 
 
   login(email: string, password: string) : Observable<any> {
@@ -23,18 +26,20 @@ export class AccountService {
     return this.http.post('http://127.0.0.1:3000/auth/signup', { firstName, lastName, email, phoneNumber, password, passwordConfirm , userType , SSN , companyRegistrationNumber , companyName });
   }
 
-  isLoggedIn = true;
-  userType : string = 'admin';
+  isLoggedIn: boolean;
+  userType: string;
 
   setLoginStatus(){
     this.isLoggedIn = true;
+    localStorage.setItem('isLoggedIn', 'true');
   }
 
-  setUserType(type: string){
+  setUserType(type: string) {
     this.userType = type;
+    localStorage.setItem('userType', type);
   }
 
-  showLoginStatus(){
+  showLoginStatus() {
     console.log(this.isLoggedIn);
   }
 

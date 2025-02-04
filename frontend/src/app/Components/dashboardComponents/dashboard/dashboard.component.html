@@ -1,108 +1,118 @@
-<!-- SIDEBAR -->
-<div class="parent3" [class.hide]="isSidebarHidden">
-    <section id="sidebar" [class.hide]="isSidebarHidden">
-        <a routerLink="#" class="brand">
-            <i class='bx bxs-watch'></i>
-            <span class="text">Watches</span>
-        </a>
-        <ul class="side-menu top">
-                <li [class.active]="activeMenu === 'users'" (click)="toggleDropdown('users'); setActiveMenu('users')">
-                <a href="javascript:void(0)">
-                    <i class='bx bxs-group'></i>
-                    <span class="text">Users</span>
-                    <i class='bx bx-chevron-down dropdown-icon' [class.rotate]="isDropdownOpen('users')"></i>
-                </a>
-                <ul class="dropdown-menu" [class.show]="isDropdownOpen('users')">
-                    <li style="text-align: center; padding: 5px 0px;">
-                        <a routerLink="/dashboard/users" style="font-size: 0.9em; background-color: #eeeeee;">
-                            <i class='bx bxs-user' style="font-size: 1.5em;"></i>
-                            <span class="text" style="font-size: 0.9em;">Customers</span>
-                        </a>
-                    </li>
-                    <li style="text-align: center; padding: 5px 0px;">
-                        <a routerLink="/dashboard/users/add" style="font-size: 0.9em; background-color: #eeeeee;">
-                            <i class='bx bx-money' style="font-size: 1.5em;"></i>
-                            <span class="text" style="font-size: 0.9em;">Sellers</span>
-                        </a>
-                    </li>
-                    <li style="text-align: center; padding: 5px 0px;">
-                        <a routerLink="/dashboard/users/add" style="font-size: 0.9em; background-color: #eeeeee;">
-                            <i class='bx bxs-package' style="font-size: 1.5em;"></i>
-                            <span class="text" style="font-size: 0.9em;">Suppliers</span>
-                        </a>
-                    </li>
-                    <li style="text-align: center; padding: 5px 0px;">
-                        <a routerLink="/dashboard/users/add" style="font-size: 0.9em; background-color: #eeeeee;">
-                            <i class='bx bxs-wallet' style="font-size: 1.5em;"></i>
-                            <span class="text" style="font-size: 0.9em;">Cashiers</span>
-                        </a>
-                    </li>
-                    <li style="text-align: center; padding: 5px 0px;">
-                        <a routerLink="/dashboard/users/add" style="font-size: 0.9em; background-color: #eeeeee;">
-                            <i class='bx bxs-briefcase' style="font-size: 1.5em;"></i>
-                            <span class="text" style="font-size: 0.9em;">Clerks</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li [class.active]="activeMenu === 'dashboard'" (click)="setActiveMenu('dashboard')">
-                <a href="javascript:void(0)">
-                    <i class='bx bxs-package'></i>
-                    <span class="text">Orders</span>
-                </a>
-            </li>
-            <li [class.active]="activeMenu === 'catagories'" (click)="setActiveMenu('catagories')">
-                <a href="javascript:void(0)">
-                    <i class='bx bxs-category'></i>
-                    <span class="text">Catagories</span>
-                </a>
-            </li>
-            <li [class.active]="activeMenu === 'products'" (click)="setActiveMenu('products')">
-                <a href="javascript:void(0)">
-                    <i class='bx bxs-shopping-bag-alt'></i>
-                    <span class="text">Products</span>
-                </a>
-            </li>
-            <li [class.active]="activeMenu === 'analytics'" (click)="setActiveMenu('analytics')">
-                <a href="javascript:void(0)">
-                    <i class='bx bxs-doughnut-chart'></i>
-                    <span class="text">Analytics</span>
-                </a>
-            </li>
-            <li [class.active]="activeMenu === 'feedbacks'" (click)="setActiveMenu('feedbacks')">
-                <a href="javascript:void(0)">
-                    <i class='bx bxs-message-dots'></i>
-                    <span class="text">Feedbacks</span>
-                </a>
-            </li>
-           
-        </ul>
-        <ul class="side-menu">
-            <li>
-                <a href="#" class="logout">
-                    <i class='bx bxs-log-out-circle'></i>
-                    <span class="text">Logout</span>
-                </a>
-            </li>
-        </ul>
-    </section>
-    <!-- SIDEBAR -->
-
-    <!-- CONTENT -->
-    <section id="content">
-        <!-- NAVBAR -->
-        <nav>
-            <i class='bx bx-menu' (click)="toggleSidebar()"></i>
-            <div class="spacer"></div>
-            <a href="#" class="profile">
-                <img src="unnamed.jpg">
+<div class="parent3">
+<section id="sidebar">
+    <a href="#" class="brand">
+        <i class='bx bxs-watch'></i>
+        <span class="text">Watches</span>
+    </a>
+    <ul class="side-menu top">
+        <li [class.active]="activeMenu === 'users'" (click)="toggleDropdown('users'); setActiveMenu('users')">
+            <a href="javascript:void(0)">
+                <i class='bx bxs-group'></i>
+                <span class="text">Users</span>
+                <i class='bx bx-chevron-down dropdown-icon' [class.rotate]="isDropdownOpen('users')"></i>
             </a>
-        </nav>
-        <!-- NAVBAR -->
+            <ul class="dropdown-menu" [class.show]="isDropdownOpen('users')">
+                <li style="text-align: center; padding: 5px 0px; width: 96%;">
+                  <a routerLink="/dashboard/users" class="dropdown-item">
+                    <i class='bx bxs-user' style="font-size: 1.5em;"></i>
+                    <span class="text" style="font-size: 0.9em;">Customers</span>
+                  </a>
+                </li>
+                <li style="text-align: center; padding: 5px 0px; width: 96%;">
+                  <a routerLink="/dashboard/users/add" class="dropdown-item">
+                    <i class='bx bx-money' style="font-size: 1.5em;"></i>
+                    <span class="text" style="font-size: 0.9em;">Sellers</span>
+                  </a>
+                </li>
+                <li style="text-align: center; padding: 5px 0px; width: 96%;">
+                  <a routerLink="/dashboard/users/add" class="dropdown-item">
+                    <i class='bx bxs-package' style="font-size: 1.5em;"></i>
+                    <span class="text" style="font-size: 0.9em;">Suppliers</span>
+                  </a>
+                </li>
+                <li style="text-align: center; padding: 5px 0px; width: 96%;">
+                  <a routerLink="/dashboard/users/add" class="dropdown-item">
+                    <i class='bx bxs-wallet' style="font-size: 1.5em;"></i>
+                    <span class="text" style="font-size: 0.9em;">Cashiers</span>
+                  </a>
+                </li>
+                <li style="text-align: center; padding: 5px 0px; width: 96%;">
+                  <a routerLink="/dashboard/users/add" class="dropdown-item">
+                    <i class='bx bxs-briefcase' style="font-size: 1.5em;"></i>
+                    <span class="text" style="font-size: 0.9em;">Clerks</span>
+                  </a>
+                </li>
+              </ul>
+        </li>
+        <li [class.active]="activeMenu === 'Orders'" (click)="setActiveMenu('Orders')">
+            <a>
+                <i class='bx bxs-package'></i>
+                <span class="text">Orders</span>
+            </a>
+        </li>
+        <li [class.active]="activeMenu === 'catagories'" (click)="setActiveMenu('catagories')">
+            <a>
+                <i class='bx bxs-category'></i>
+                <span class="text">Catagories</span>
+            </a>
+        </li>
+        <li [class.active]="activeMenu === 'products'" (click)="setActiveMenu('products')">
+            <a>
+                <i class='bx bxs-shopping-bag-alt'></i>
+                <span class="text">Products</span>
+            </a>
+        </li>
+        <li [class.active]="activeMenu === 'analytics'" (click)="setActiveMenu('analytics')">
+            <a>
+                <i class='bx bxs-doughnut-chart'></i>
+                <span class="text">Analytics</span>
+            </a>
+        </li>
+        <li [class.active]="activeMenu === 'feedbacks'" (click)="setActiveMenu('feedbacks')">
+            <a>
+                <i class='bx bxs-message-dots'></i>
+                <span class="text">Feedbacks</span>
+            </a>
+        </li>
+    </ul>
+    <ul class="side-menu">
+        <li>
+            <a  class="logout">
+                <i class='bx bxs-log-out-circle' ></i>
+                <span class="text">Logout</span>
+            </a>
+        </li>
+    </ul>
+</section>
+<!-- SIDEBAR -->
 
-        <router-outlet></router-outlet>
-        
-    </section>
-    <!-- CONTENT -->
+
+
+<!-- CONTENT -->
+<section id="content">
+    <!-- NAVBAR -->
+    <nav>
+        <i class='bx bx-menu' style="transform: scale(1.5);" ></i>
+        <form action="#">
+            <div class="form-input">
+                <button type="submit" class="search-btn" disabled style="visibility: hidden;"><i class='bx bx-tool' ></i></button>
+            </div>
+        </form>
+        <input type="checkbox" id="switch-mode" hidden >
+        <label for="switch-mode" class="switch-mode"></label>
+        <a href="#" class="notification">
+            <i class='bx bxs-bell' style="transform: scale(1.5);"></i>
+            <span class="num">10</span>
+        </a>
+        <a href="#" class="profile">
+            <img src="unnamed.jpg">
+        </a>
+    </nav>
+    <!-- NAVBAR -->
+
+    <!-- MAIN -->
+    <router-outlet></router-outlet>
+    <!-- MAIN -->
+</section>
 </div>
 
