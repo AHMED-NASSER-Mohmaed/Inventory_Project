@@ -70,6 +70,14 @@ module.exports.sellerRepo={
         }
     },
 
+    getSellerById: async (sellerId)=>{
+        try{
+            return await seller.findById(sellerId);
+        }catch(err){
+            throw err;
+        }
+    },
+
     activeSeller:async (SSN_)=>{
         try{
             //return acknolage
