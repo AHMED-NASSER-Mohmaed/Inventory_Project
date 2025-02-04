@@ -59,7 +59,7 @@
   width: 280px;
   height: 100%;
   background: var(--light);
-  z-index: 2000;
+  z-index: 200;
   font-family: var(--lato);
   transition: .3s ease;
   overflow-x: hidden;

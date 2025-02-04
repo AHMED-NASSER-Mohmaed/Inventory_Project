@@ -11,3 +11,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 	place-content: center;
 	background: #ccc;
 }
+
+mat-dialog-container {
+	/* position: fixed !important; */
+	z-index: 3000 !important;
+}

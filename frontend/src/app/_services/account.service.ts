@@ -43,6 +43,13 @@ export class AccountService {
     console.log(this.isLoggedIn);
   }
 
+  logout() {
+    this.isLoggedIn = false;
+    localStorage.setItem('isLoggedIn', 'false');
+    localStorage.removeItem('userType');
+    localStorage.removeItem('token');
+  }
+
 
 
 

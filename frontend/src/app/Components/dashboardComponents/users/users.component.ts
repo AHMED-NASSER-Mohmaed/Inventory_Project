@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { CustomersService } from '../../../_services/customers.service';
 import { User } from '../../../_models/user';
 import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-users',
@@ -20,6 +21,7 @@ export class UsersComponent implements OnInit , OnDestroy{
   dropdownStates: boolean[] = [];
   sub: Subscription = {} as Subscription;
   sub2: Subscription = {} as Subscription;
+  sub3: Subscription = {} as Subscription;
   users: User[] = [];
   isDarkMode: boolean = false; // Add this line
 
@@ -45,20 +47,23 @@ export class UsersComponent implements OnInit , OnDestroy{
   }
 
 
-  
+
 
   toggleDarkMode(): void {
     this.isDarkMode = !this.isDarkMode;
   }
+
+
   openConfirmDialog(userId: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
 
-    dialogRef.afterClosed().subscribe(result => {
+    this.sub3 = dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.deleteUser(userId);
       }
     });
   }
+  
 
   deleteUser(id: string){
     this.sub2 = this.customerService.deleteCustomer(id).subscribe({
@@ -90,7 +95,15 @@ export class UsersComponent implements OnInit , OnDestroy{
 
   ngOnDestroy(): void {
     if(this.sub){
-      this.sub2.unsubscribe();
+      this.sub.unsubscribe();
+    }
+
+    if(this.sub2){
+      this.sub.unsubscribe();
+    }
+
+    if(this.sub3){
+      this.sub.unsubscribe();
     }
 
     

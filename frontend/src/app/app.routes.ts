@@ -4,6 +4,7 @@ import { LayoutComponent } from './Components/layout/layout.component';
 import { SignupComponent } from './Components/signup/signup.component';
 import { authGuard } from './_guards/auth.guard';
 import { LockComponent } from './Components/lock/lock.component';
+import { auth2Guard } from './_guards/auth2.guard';
 
 export const routes: Routes = [
 
@@ -16,13 +17,15 @@ export const routes: Routes = [
     {
         path: 'signup',
         component: SignupComponent,
-        title: 'Signup'
+        title: 'Signup',
+        canActivate:[auth2Guard]
     },
 
     {
         path: 'login',
         component: LoginComponent,
-        title: 'Login'
+        title: 'Login',
+        canActivate:[auth2Guard]
     },
 
     {

@@ -1,5 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { AccountService } from '../../../_services/account.service';
+import { ConfirmLogoutDialogComponent } from '../../../confirm-logout-dialog/confirm-logout-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,11 +11,12 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   styleUrls: ['./dashboard.component.css'],
   imports: [RouterOutlet, RouterLink],
 })
-export class DashboardComponent implements OnInit {
-  constructor() {}
+export class DashboardComponent implements OnInit , OnDestroy {
+  constructor(public accountService: AccountService , public dialog: MatDialog , public router: Router) {}
 
   activeMenu: string = 'users';
   dropdownStates: { [key: string]: boolean } = {};
+  sub = {} as Subscription;
 
   toggleDropdown(menu: string): void {
     this.dropdownStates[menu] = !this.dropdownStates[menu];
@@ -24,6 +29,20 @@ export class DashboardComponent implements OnInit {
 
   setActiveMenu(menu: string): void {
     this.activeMenu = menu;
+  }
+
+  openConfirmDialog(){
+    const dialogRef = this.dialog.open(ConfirmLogoutDialogComponent);
+
+    this.sub = dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.router.navigateByUrl('/login');
+        this.accountService.logout();
+
+      } else {
+        console.log('User canceled logout');
+      }
+    });
   }
 
   
@@ -102,5 +121,11 @@ export class DashboardComponent implements OnInit {
       });
     }
     
+  }
+
+  ngOnDestroy(): void {
+    if(this.sub){
+      this.sub.unsubscribe();
+    }
   }
 }
