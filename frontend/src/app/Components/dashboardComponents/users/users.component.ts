@@ -23,12 +23,6 @@ export class UsersComponent implements OnInit , OnDestroy{
   users: User[] = [];
   isDarkMode: boolean = false; // Add this line
 
-
-
-
-  
-
-
   ngOnInit(): void {
     this.sub = this.customerService.getAllCustomers().subscribe({
       next: (res) => {
@@ -46,10 +40,13 @@ export class UsersComponent implements OnInit , OnDestroy{
       }
     })
 
+
+
+  }
+
+
   
 
-    
-  }
   toggleDarkMode(): void {
     this.isDarkMode = !this.isDarkMode;
   }
@@ -83,6 +80,13 @@ export class UsersComponent implements OnInit , OnDestroy{
   toggleDropdown(index: number) {
     this.dropdownStates[index] = !this.dropdownStates[index];
   }
+
+
+
+
+
+
+
 
   ngOnDestroy(): void {
     if(this.sub){

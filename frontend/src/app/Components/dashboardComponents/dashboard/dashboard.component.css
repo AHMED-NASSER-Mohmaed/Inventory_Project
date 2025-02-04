@@ -141,7 +141,7 @@
   overflow-x: hidden;
 }
 :host #sidebar .side-menu.top li.active a {
-  color: var(--blue);
+  color: var(--dark);
 }
 :host #sidebar.hide .side-menu li a {
   width: calc(48px - (4px * 2));
@@ -151,7 +151,7 @@
   color: var(--red);
 }
 :host #sidebar .side-menu.top li a:hover {
-  color: var(--dark);
+  color: var(--blue);
 }
 :host #sidebar .side-menu li a .bx {
   min-width: calc(60px  - ((4px + 6px) * 2));

@@ -313,6 +313,10 @@ input:checked + .slider:before {
   margin-bottom: 0;
 }
 
+:host .dropdown a{
+    width: 50px;
+}
+
 /* MEDIA QUERIES */
 @media screen and (max-width: 768px) {
   :host #sidebar {
