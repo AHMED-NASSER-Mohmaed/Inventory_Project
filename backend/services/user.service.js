@@ -75,7 +75,7 @@ class UserService {
   }
 
   async deleteMe(userId) {
-    return await UserRepository.deleteMe(userId);
+    return await UserRepository.deleteUser(userId);
   }
 }
 

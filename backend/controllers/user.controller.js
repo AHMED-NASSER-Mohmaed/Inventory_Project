@@ -55,7 +55,7 @@ const updateMe = catchAsync(async (req, res, next) => {
 });
 
 const deleteMe = catchAsync(async (req, res, next) => {
-  await userService.deleteMe(req.user.id);
+  await userService.deleteUser(req.user.id);
   res.status(204).json({
     message: "success",
   });
@@ -68,13 +68,21 @@ userRouter.get("/users/me", UserMiddleware.getMe, getUser);
 userRouter.patch("/users/updateMe", updateMe);
 userRouter.delete("/users/deleteMe", deleteMe);
 
-userRouter.get("/users", AuthMiddleware.restrictTo("admin"), getAllUsers);
-userRouter.post("/users", AuthMiddleware.restrictTo("admin"), createUser);
+userRouter.get(
+  "/users",
+  AuthMiddleware.restrictTo("admin", "super_admin"),
+  getAllUsers
+);
+userRouter.post(
+  "/users",
+  AuthMiddleware.restrictTo("admin", "super_admin"),
+  createUser
+);
 
 userRouter
   .route("/users/:userId")
   .get(getUser)
-  .patch(AuthMiddleware.restrictTo("admin"), updateUser)
-  .delete(AuthMiddleware.restrictTo("admin"), deleteUser);
+  .patch(AuthMiddleware.restrictTo("admin", "super_admin"), updateUser)
+  .delete(AuthMiddleware.restrictTo("admin", "super_admin"), deleteUser);
 
 module.exports = userRouter;

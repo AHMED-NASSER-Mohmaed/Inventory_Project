@@ -20,6 +20,10 @@ module.exports.APP_CONFIG = {
   BREVO_USERNAME: process.env.BREVO_USERNAME,
   BREVO_PASSWORD: process.env.BREVO_PASSWORD,
 
+  //ImageKit
+  IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY,
+  IMAGEKIT_PUBLIC_KEY: process.env.IMAGEKIT_PUBLIC_KEY,
+  IMAGEKIT_ENDPOINT_URL: process.env.IMAGEKIT_ENDPOINT_URL,
   // Successful responses (2xx)
   HTTP_OK: 200, // [delete + [returned ack  data] that is already  returned in the body.] + [get verb + returned data]
 

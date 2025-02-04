@@ -109,7 +109,6 @@ class AuthService {
       email,
       "+password +isActive +status"
     );
-
     if (user.userType == "seller" && !user.status) {
       throw new AppError("sorry, you credentials is not revised yet.", 401);
     }
