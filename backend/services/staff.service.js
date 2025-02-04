@@ -58,6 +58,8 @@ module.exports.staffService={
         }
     },
 
+    // role is my filteration rule
+
     getAll:async (role)=>{
         try{
             return await staffRepo.getALLStaffOfType(role);

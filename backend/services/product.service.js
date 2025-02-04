@@ -171,7 +171,7 @@ class ProductService {
             let tempSeller;
             if(sellerId || sellerName){ // if he admin wants to update the seller of the product
                 if(product.sellerId.equals( APP_CONFIG.COMPANY_ID)){
-                    throw new AppError(`Sorry Company FIXED OBJECT SELLER cannot be modified, ya norm`, APP_CONFIG.HTTP_BAD_REQUEST);
+                    throw new AppError(`Sorry Company FIXED OBJECT SELLER cannot be modified, ya norm!!`, APP_CONFIG.HTTP_BAD_REQUEST);
                 }
                 tempSeller = await sellerRepo.getSellerById(sellerId);
                 if(!tempSeller){

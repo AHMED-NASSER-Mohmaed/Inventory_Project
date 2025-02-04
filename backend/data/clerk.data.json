@@ -1,0 +1,137 @@
+[
+    {
+      "firstName": "Abeer",
+      "lastName": "Naser",
+      "email": "a12rnasser1@gmail.com",
+      "phoneNumber": "01010000958",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "SSN": "30011153006152"
+    },
+    {
+      "firstName": "Sara",
+      "lastName": "Mohamed",
+      "email": "saramohamed2@gmail.com",
+      "phoneNumber": "01020000958",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "SSN": "30021153006152"
+    },
+    {
+      "firstName": "Ali",
+      "lastName": "Hassan",
+      "email": "alihassan3@gmail.com",
+      "phoneNumber": "01030000958",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "SSN": "30031153006152"
+    },
+    {
+      "firstName": "Fatima",
+      "lastName": "Ahmed",
+      "email": "fatimaahmed4@gmail.com",
+      "phoneNumber": "01040000958",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "SSN": "30041153006152"
+    },
+    {
+      "firstName": "Omar",
+      "lastName": "Khalid",
+      "email": "omarkhalid5@gmail.com",
+      "phoneNumber": "01050000958",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "SSN": "30051153006152"
+    },
+    {
+      "firstName": "Lina",
+      "lastName": "Youssef",
+      "email": "linayoussef6@gmail.com",
+      "phoneNumber": "01060000958",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "SSN": "30061153006152"
+    },
+    {
+      "firstName": "Youssef",
+      "lastName": "Mahmoud",
+      "email": "youssefmahmoud7@gmail.com",
+      "phoneNumber": "01070000958",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "SSN": "30071153006152"
+    },
+    {
+      "firstName": "Hana",
+      "lastName": "Samir",
+      "email": "hanasamir8@gmail.com",
+      "phoneNumber": "01080000958",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "SSN": "30081153006152"
+    },
+    {
+      "firstName": "Karim",
+      "lastName": "Adel",
+      "email": "karimadel9@gmail.com",
+      "phoneNumber": "01090000958",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "SSN": "30091153006152"
+    },
+    {
+      "firstName": "Nour",
+      "lastName": "Tarek",
+      "email": "nourtarek10@gmail.com",
+      "phoneNumber": "01010010958",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "SSN": "30101153006152"
+    },
+    {
+      "firstName": "Ramy",
+      "lastName": "Fathy",
+      "email": "ramyfathy11@gmail.com",
+      "phoneNumber": "01011000958",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "SSN": "30111153006152"
+    },
+    {
+      "firstName": "Dina",
+      "lastName": "Walid",
+      "email": "dinawalid12@gmail.com",
+      "phoneNumber": "01012000958",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "SSN": "30121153006152"
+    },
+    {
+      "firstName": "Ahmed",
+      "lastName": "Naser",
+      "email": "ahmednaser13@gmail.com",
+      "phoneNumber": "01013000958",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "SSN": "30131153006152"
+    },
+    {
+      "firstName": "Mona",
+      "lastName": "Ibrahim",
+      "email": "monaibrahim14@gmail.com",
+      "phoneNumber": "01014000958",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "SSN": "30141153006152"
+    },
+    {
+      "firstName": "Khaled",
+      "lastName": "Adham",
+      "email": "khaledadham15@gmail.com",
+      "phoneNumber": "01015000958",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "SSN": "30151153006152"
+    }
+  ]

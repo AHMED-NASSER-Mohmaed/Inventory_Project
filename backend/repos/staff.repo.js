@@ -2,9 +2,9 @@ const Staff=require("../models/staff.model");
 const APP_CONST=require("../config/app.config");
 
 
+
+
 module.exports.staffRepo={
-
-
 
      
     createStaffOfType:async (data)=>{
@@ -49,7 +49,8 @@ module.exports.staffRepo={
         }catch(err){
             throw err;
         }
-    }
+    },
+    
     
 
 
