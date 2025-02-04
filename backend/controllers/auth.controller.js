@@ -52,7 +52,7 @@ const resetPassword = catchAsync(async (req, res) => {
 const resendVerificationEmail = catchAsync(async (req, res, next) => {
   const baseUrl = `${req.protocol}://${req.get("host")}`;
 
-  await AuthService.resendVerificationEmail(req.user.email, baseUrl);
+  await AuthService.resendVerificationEmail(req.body.email, baseUrl);
 
   res.status(200).json({
     status: "success",
@@ -108,7 +108,7 @@ authRouter.patch(
 );
 
 authRouter.get("/auth/verifyEmail/:token", verifyEmail);
-authRouter.get(
+authRouter.post(
   "/auth/resendVerificationEmail",
   authMiddleware.protect,
   resendVerificationEmail

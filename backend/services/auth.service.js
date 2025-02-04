@@ -113,16 +113,16 @@ class AuthService {
       throw new AppError("sorry, you credentials is not revised yet.", 401);
     }
 
+    if (!user || !user.isActive || !(await user.correctPassword(password))) {
+      throw new AppError("Incorrect email or password", 401);
+    }
+    
     if (user.userType === "customer" && !user.isEmailVerified) {
       throw new AppError(
         "Please verify your email address to get access.",
         401
       );
     }
-    if (!user || !user.isActive || !(await user.correctPassword(password))) {
-      throw new AppError("Incorrect email or password", 401);
-    }
-
     console.log("user", user);
     return user;
   }
