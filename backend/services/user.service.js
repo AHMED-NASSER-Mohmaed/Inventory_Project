@@ -3,9 +3,7 @@ const APP_CONFIG = require("../config/app.config");
 const AppError = require("../utils/appError");
 const userRepo = require("../repos/user.repo");
 
-
 class UserService {
-
   //done ----------------
   async getAllUsers() {
     try {
@@ -15,7 +13,7 @@ class UserService {
     }
   }
 
-  //done ----------------  
+  //done ----------------
   async getUser(userId) {
 
     try {
@@ -28,9 +26,7 @@ class UserService {
     } catch (err) {
       throw err;
     }
-
   }
-
 
   //done ------------------
   async createUser(userData) {
@@ -75,7 +71,7 @@ class UserService {
   }
 
   async deleteMe(userId) {
-    return await UserRepository.deleteMe(userId);
+    return await UserRepository.deleteUser(userId);
   }
 
   async getUsers(data) {

@@ -1,14 +1,20 @@
 const User = require("../models/user.model");
 const AppError = require("../utils/appError");
+<<<<<<< HEAD
 const {inboxResult}=require("../utils/apiFeatures");
 
+=======
+>>>>>>> feature/auth
 
 class UserRepository {
-
   //done -----------------------
   async getAllUsers() {
     try {
+<<<<<<< HEAD
       return await User.find({}, { userType: "customer" });
+=======
+      return await User.find();
+>>>>>>> feature/auth
     } catch (error) {
       throw error;
     }
@@ -16,7 +22,6 @@ class UserRepository {
 
   //checking rule if manger - > create seller , cashier , clerk , customer
   //check rule if super admin - >manager seller , cashier , clerk , customer
-
 
   //change statse
 
@@ -29,8 +34,6 @@ class UserRepository {
       throw error;
     }
   }
-
-
 
   //done ------------------
   async createUser(userData) {
@@ -107,16 +110,10 @@ class UserRepository {
     }
   }
 
-
   //done ------------------
   async deleteUser(userId) {
     try {
-
-      return await User.updateOne(
-        { _id: userId },
-        { isActive: false }
-      );
-
+      return await User.updateOne({ _id: userId }, { isActive: false });
     } catch (error) {
       throw error;
     }
@@ -125,14 +122,18 @@ class UserRepository {
   //done ------------------
   async activeUser(userId) {
     try {
+<<<<<<< HEAD
 
       //return ack.
       return await user.updateOne({ _id: userId }, { isActive: true });
 
+=======
+      //return ack.
+      return await user.updateOne({ _id: userId }, { isActive: true });
+>>>>>>> feature/auth
     } catch (err) {
       throw err;
     }
-
   }
 
 
