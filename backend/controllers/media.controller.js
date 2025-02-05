@@ -10,12 +10,15 @@ class MediaController {
   }
 
   initializeRoutes() {
+    /**
+     * if you need to post an image ---> you have to be authenticated at least
+     */
     this.router.post(
       "/media/upload",
       AuthMiddleware.protect,
       catchAsync(this.upload)
     );
-
+    //the same here  
     this.router.get(
       "/media/download",
       AuthMiddleware.protect,
@@ -87,53 +90,54 @@ class MediaController {
   }
 }
 
-// router.post(
-//   "/upload",
-//   AuthMiddleware.protect,
-//   catchAsync(async (req, res) => {
-//     try {
-//       if (!req.files || !req.files.image) {
-//         return res.status(400).json({ message: "No file uploaded." });
-//       }
+/*
+  router.post(
+    "/upload",
+    AuthMiddleware.protect,
+    catchAsync(async (req, res) => {
+      try {
+        if (!req.files || !req.files.image) {
+          return res.status(400).json({ message: "No file uploaded." });
+        }
 
-//       const uploadedFiles = Array.isArray(req.files.image)
-//         ? req.files.image
-//         : [req.files.image];
-//       const folder = "/user-uploads"; // Change folder as needed
+        const uploadedFiles = Array.isArray(req.files.image)
+          ? req.files.image
+          : [req.files.image];
+        const folder = "/user-uploads"; // Change folder as needed
 
-//       const uploadPayload = uploadedFiles.map((file) =>
-//         imageKitPayloadBuilder(file, folder)
-//       );
-//       const response = await upload({ files: uploadPayload });
+        const uploadPayload = uploadedFiles.map((file) =>
+          imageKitPayloadBuilder(file, folder)
+        );
+        const response = await upload({ files: uploadPayload });
 
-//       res.status(200).json(response);
-//     } catch (error) {
-//       console.error("Upload error:", error);
-//       res.status(500).json({ message: "Internal server error" });
-//     }
-//   })
-// );
+        res.status(200).json(response);
+      } catch (error) {
+        console.error("Upload error:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    })
+  );
 
-// router.get("/media/download/:fileId", async (req, res, next) => {
-//   const fileId = req.params.fileId;
-//   if (!fileId) {
-//     return res.status(400).json({ message: "File id is required" });
-//   }
+  router.get("/media/download/:fileId", async (req, res, next) => {
+    const fileId = req.params.fileId;
+    if (!fileId) {
+      return res.status(400).json({ message: "File id is required" });
+    }
 
-//   const response = await mediaService.download(fileId);
-//   res
-//     .status(200)
-//     .json({ message: response.message, fileURL: response.url || "" });
-// });
+    const response = await mediaService.download(fileId);
+    res
+      .status(200)
+      .json({ message: response.message, fileURL: response.url || "" });
+  });
 
-// router.delete("/media/delete/:fileId", async (req, res, next) => {
-//   const fileId = req.params.fileId;
-//   if (!fileId) {
-//     return res.status(400).json({ message: "File id is required" });
-//   }
+  router.delete("/media/delete/:fileId", async (req, res, next) => {
+    const fileId = req.params.fileId;
+    if (!fileId) {
+      return res.status(400).json({ message: "File id is required" });
+    }
 
-//   await mediaService.deleteFile(fileId);
-//   res.status(200).json({ message: "success" });
-// });
-
+    await mediaService.deleteFile(fileId);
+    res.status(200).json({ message: "success" });
+  });
+*/
 module.exports = new MediaController().router;
