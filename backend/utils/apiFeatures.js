@@ -1,12 +1,12 @@
 
 
-const inboxResult=(results,total,page,limit)=>{
 
+const inboxResult=(results,total,page,limit)=>{
 
     let result={};
 
     result.result=results;
-
+    result.total=total;
 
 
      let startIndex =(page-1)*limit;
@@ -34,4 +34,15 @@ const inboxResult=(results,total,page,limit)=>{
 
 }
 
-module.exports=inboxResult
+sendResponseToClint=(res,statusCode,message_,data_)=>{
+    res.status(statusCode).json({
+        message:message_,
+        data:data_,
+    })
+
+}
+
+
+module.exports.inboxResult=inboxResult
+
+module.exports.sendResponseToClint=sendResponseToClint;

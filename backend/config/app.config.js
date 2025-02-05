@@ -36,6 +36,9 @@ module.exports.APP_CONFIG = {
   SELLER:"seller",
 
   COMPANY_ID:"679fb5a90cb8f1f8fca97990",
-  COMPANY_NAME:"inventory system"
+  COMPANY_NAME:"inventory system",
+
+
+  SUCCESS_MESSAGE:"success",
   
 };

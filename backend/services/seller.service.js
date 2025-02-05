@@ -2,7 +2,7 @@ const { sellerRepo } = require("../repos/sellers.repo");
 const AppError = require("../utils/appError");
 const APP_CONFIG = require("../config/app.config")
 
-
+//refactored
 async function  getSellersWithCallBack(validatedParams, callBack)  {
 
     let sort = {};
@@ -86,6 +86,15 @@ module.exports.sellerService = {
         }
     },
 
+    getAllSellers:async function (params) {
+        try{
+
+            return await sellerRepo.getAllSellers();
+
+        }catch(err){
+            throw err;
+        }
+    },
 
     /*
      * 
@@ -108,7 +117,7 @@ module.exports.sellerService = {
     },
 
     getDeActiveSellersService: async (validatedParams) => {
-        return await getSellersWithCallBack(validatedParams, sellerRepo.getActiveSellers)
+        return await getSellersWithCallBack(validatedParams, sellerRepo.getDeActiveSellers)
     },
     getPendingSellersService: async (validatedParams) => {
         return await getSellersWithCallBack(validatedParams, sellerRepo.getPendingSellers);
@@ -116,6 +125,13 @@ module.exports.sellerService = {
     ,
 
 
-   
+   getSellers:async(data)=>{
+        try{
+            return await sellerRepo.getSellers(data.filters,data.sort,data.page,data.limit);
+        }catch(err){
+            throw err;
+        }
+
+   }
 
 }
