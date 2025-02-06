@@ -1,0 +1,173 @@
+[
+    {
+      "firstName": "Layla",
+      "lastName": "Hassan",
+      "email": "laylaHassan789@outlook.com",
+      "phoneNumber": "01234567890",
+      "password": "securePass123",
+      "passwordConfirm": "securePass123",
+      "SSN": "29507251234567"
+    },
+    {
+      "firstName": "Omar",
+      "lastName": "Khaled",
+      "email": "omarKhaled456@yahoo.com",
+      "phoneNumber": "01122334455",
+      "password": "OmarPass2023",
+      "passwordConfirm": "OmarPass2023",
+      "SSN": "29808151234567"
+    },
+    {
+      "firstName": "Nour",
+      "lastName": "Samir",
+      "email": "nourSamir99@gmail.com",
+      "phoneNumber": "01098765432",
+      "password": "NourSecure!",
+      "passwordConfirm": "NourSecure!",
+      "SSN": "30005181234567"
+    },
+    {
+      "firstName": "Youssef",
+      "lastName": "Ali",
+      "email": "youssefAli2023@hotmail.com",
+      "phoneNumber": "01555555555",
+      "password": "Youssef123!",
+      "passwordConfirm": "Youssef123!",
+      "SSN": "29909121234567"
+    },
+    {
+      "firstName": "Mariam",
+      "lastName": "Fouad",
+      "email": "mariamFouad77@gmail.com",
+      "phoneNumber": "01234567899",
+      "password": "MariamPass!",
+      "passwordConfirm": "MariamPass!",
+      "SSN": "30203121234567"
+    },
+    {
+      "firstName": "Karim",
+      "lastName": "Sayed",
+      "email": "karimSayed2023@outlook.com",
+      "phoneNumber": "01011223344",
+      "password": "Karim2023!",
+      "passwordConfirm": "Karim2023!",
+      "SSN": "29712121234567"
+    },
+    {
+      "firstName": "Hana",
+      "lastName": "Mahmoud",
+      "email": "hanaMahmoud55@gmail.com",
+      "phoneNumber": "01199887766",
+      "password": "HanaPass!",
+      "passwordConfirm": "HanaPass!",
+      "SSN": "30304121234567"
+    },
+    {
+      "firstName": "Ahmed",
+      "lastName": "Rashad",
+      "email": "ahmedRashad33@yahoo.com",
+      "phoneNumber": "01055667788",
+      "password": "AhmedPass!",
+      "passwordConfirm": "AhmedPass!",
+      "SSN": "30405121234567"
+    },
+    {
+      "firstName": "Farah",
+      "lastName": "Walid",
+      "email": "farahWalid22@gmail.com",
+      "phoneNumber": "01233445566",
+      "password": "Farah2023!",
+      "passwordConfirm": "Farah2023!",
+      "SSN": "30506121234567"
+    },
+    {
+      "firstName": "Tarek",
+      "lastName": "Hassan",
+      "email": "tarekHassan88@outlook.com",
+      "phoneNumber": "01099887766",
+      "password": "TarekPass!",
+      "passwordConfirm": "TarekPass!",
+      "SSN": "30607121234567"
+    },
+    {
+      "firstName": "Sara",
+      "lastName": "Mohamed",
+      "email": "saraMohamed44@yahoo.com",
+      "phoneNumber": "01122334477",
+      "password": "SaraSecure!",
+      "passwordConfirm": "SaraSecure!",
+      "SSN": "30708121234567"
+    },
+    {
+      "firstName": "Kareem",
+      "lastName": "Adel",
+      "email": "kareemAdel2023@gmail.com",
+      "phoneNumber": "01011223388",
+      "password": "Kareem2023!",
+      "passwordConfirm": "Kareem2023!",
+      "SSN": "30809121234567"
+    },
+    {
+      "firstName": "Dalia",
+      "lastName": "Samir",
+      "email": "daliaSamir55@hotmail.com",
+      "phoneNumber": "01234567888",
+      "password": "DaliaPass!",
+      "passwordConfirm": "DaliaPass!",
+      "SSN": "30910121234567"
+    },
+    {
+      "firstName": "Amir",
+      "lastName": "Fahmy",
+      "email": "amirFahmy33@outlook.com",
+      "phoneNumber": "01098765433",
+      "password": "AmirSecure!",
+      "passwordConfirm": "AmirSecure!",
+      "SSN": "31011121234567"
+    },
+    {
+      "firstName": "Lina",
+      "lastName": "Gamal",
+      "email": "linaGamal77@gmail.com",
+      "phoneNumber": "01199887755",
+      "password": "Lina2023!",
+      "passwordConfirm": "Lina2023!",
+      "SSN": "31112121234567"
+    },
+    {
+      "firstName": "Ziad",
+      "lastName": "Nasser",
+      "email": "ziadNasser99@yahoo.com",
+      "phoneNumber": "01055667799",
+      "password": "ZiadPass!",
+      "passwordConfirm": "ZiadPass!",
+      "SSN": "31213121234567"
+    },
+    {
+      "firstName": "Rana",
+      "lastName": "Osman",
+      "email": "ranaOsman11@gmail.com",
+      "phoneNumber": "01233445577",
+      "password": "RanaSecure!",
+      "passwordConfirm": "RanaSecure!",
+      "SSN": "31314121234567"
+    },
+    {
+      "firstName": "Hassan",
+      "lastName": "Ibrahim",
+      "email": "hassanIbrahim2023@hotmail.com",
+      "phoneNumber": "01099887744",
+      "password": "Hassan2023!",
+      "passwordConfirm": "Hassan2023!",
+      "SSN": "31415121234567"
+    },
+    {
+      "firstName": "Nadia",
+      "lastName": "Salah",
+      "email": "nadiaSalah66@outlook.com",
+      "phoneNumber": "01122334488",
+      "password": "NadiaPass!",
+      "passwordConfirm": "NadiaPass!",
+      "SSN": "31516121234567"
+    }
+  ]

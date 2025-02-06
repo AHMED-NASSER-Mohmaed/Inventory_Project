@@ -1,14 +1,13 @@
 const User = require("../models/user.model");
 const AppError = require("../utils/appError");
-
+const {inboxResult}=require("../utils/apiFeatures");
 
 
 class UserRepository {
-
   //done -----------------------
   async getAllUsers() {
     try {
-      return await User.find({},{userType:"customer"});   
+      return await User.find({}, { userType: "customer" });
     } catch (error) {
       throw error;
     }
@@ -16,7 +15,6 @@ class UserRepository {
 
   //checking rule if manger - > create seller , cashier , clerk , customer
   //check rule if super admin - >manager seller , cashier , clerk , customer
-
 
   //change statse
 
@@ -29,8 +27,6 @@ class UserRepository {
       throw error;
     }
   }
-
-
 
   //done ------------------
   async createUser(userData) {
@@ -107,33 +103,56 @@ class UserRepository {
     }
   }
 
-
   //done ------------------
   async deleteUser(userId) {
     try {
-
-      return await User.updateOne(
-        { _id: userId },
-        { isActive: false }
-      );
-
+      return await User.updateOne({ _id: userId }, { isActive: false });
     } catch (error) {
       throw error;
     }
   }
 
-   //done ------------------
-  async activeUser(userId){
-    try{
+  //done ------------------
+  async activeUser(userId) {
+    try {
 
       //return ack.
-      return await user.updateOne({_id:userId},{isActive:true});
+      return await user.updateOne({ _id: userId }, { isActive: true });
 
-    }catch(err){
+    } catch (err) {
       throw err;
     }
-
   }
+
+
+  async getCustomers(filters, sort, page, limit) {
+
+    try {
+
+      const [results, total] = await Promise.all([
+
+        await User.find(filters)
+          .sort(sort)
+          .skip((page - 1) * limit) // (starting index = page-1)*limit
+          .limit(limit)
+          .lean(),
+
+        await User.countDocuments(filters).exec()
+
+      ]);
+
+      // console.log("from repo", results);
+
+      return inboxResult(results, total, page, limit);
+
+    } catch (err) {
+      throw err;
+    }
+  }
+
+
+
+
 }
 
 module.exports = new UserRepository();

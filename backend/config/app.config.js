@@ -6,6 +6,7 @@ module.exports.APP_CONFIG = {
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
 
+  // FOR TESTING -> MAILTRAP
   EMAIL_USERNAME: process.env.EMAIL_USERNAME,
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
   EMAIL_HOST: process.env.EMAIL_HOST,
@@ -13,6 +14,16 @@ module.exports.APP_CONFIG = {
   EMAIL_NAME: process.env.EMAIL_NAME,
   EMAIL_FROM: process.env.EMAIL_FROM,
 
+  // REAL EMAILS -> BREVO
+  BREVO_HOST: process.env.BREVO_HOST,
+  BREVO_PORT: process.env.BREVO_PORT,
+  BREVO_USERNAME: process.env.BREVO_USERNAME,
+  BREVO_PASSWORD: process.env.BREVO_PASSWORD,
+
+  //ImageKit
+  IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY,
+  IMAGEKIT_PUBLIC_KEY: process.env.IMAGEKIT_PUBLIC_KEY,
+  IMAGEKIT_ENDPOINT_URL: process.env.IMAGEKIT_ENDPOINT_URL,
   // Successful responses (2xx)
   HTTP_OK: 200, // [delete + [returned ack  data] that is already  returned in the body.] + [get verb + returned data]
 
@@ -36,6 +47,16 @@ module.exports.APP_CONFIG = {
   SELLER:"seller",
 
   COMPANY_ID:"679fb5a90cb8f1f8fca97990",
-  COMPANY_NAME:"inventory system"
+  COMPANY_NAME:"inventory system",
+
+
+  SUCCESS_MESSAGE:"success",
   
+  ADMIN: "admin",
+  CLERK: "clerk",
+  CASHIER: "cashier",
+  CUSTOMER: "customer",
+
+
+  MAX_FILE_SIZE : 2 * 1024*1024  // 5KB in bytes 
 };
