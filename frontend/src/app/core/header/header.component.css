@@ -1,0 +1,53 @@
+
+.navbar {
+    min-height: 80px; 
+}
+
+.brandname{
+    margin-left:50px;
+}
+
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block; /* Show dropdown on hover */
+}
+
+
+.dropdown-menu {
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 8px 0;    /* top/bottom */
+
+}
+
+
+.dropdown-header {
+    font-weight: bold;
+    color: #85411c;
+    padding: 8px 20px;
+    display: block;
+    text-decoration: none;
+}
+.dropdown-item {
+    display: block;
+    width: 100%;
+    clear: both;
+    color: #585858;
+    padding: 8px 20px;
+}
+.dropdown-item:hover {
+    background-color: #f8f8f8;
+    color: #85411c;
+}
+.nav-link {
+    color: #85411c;
+}
+.nav-item.nav-link {
+    font-size: 24px;
+    color: #85411c;
+}
+
+.nav-item{
+    padding: 0 20px;
+}
