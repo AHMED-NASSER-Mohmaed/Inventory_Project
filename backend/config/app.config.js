@@ -39,7 +39,6 @@ module.exports.APP_CONFIG = {
 
   HTTP_INTERNAL_SERVER_ERROR: 500,
 
-<<<<<<< HEAD
   SUPPERADMIN:"super_admin",
   ADMIN:"admin",
   CLERK:"clerk",
@@ -53,10 +52,11 @@ module.exports.APP_CONFIG = {
 
   SUCCESS_MESSAGE:"success",
   
-=======
   ADMIN: "admin",
   CLERK: "clerk",
   CASHIER: "cashier",
   CUSTOMER: "customer",
->>>>>>> feature/auth
+
+
+  MAX_FILE_SIZE : 2 * 1024*1024  // 5KB in bytes 
 };

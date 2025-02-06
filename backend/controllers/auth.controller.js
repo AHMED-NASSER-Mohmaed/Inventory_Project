@@ -107,18 +107,15 @@ authRouter.patch(
   updatePassword
 );
 
-<<<<<<< HEAD
 
 // authRouter.use(authMiddleware.protect);
 //to be reviewed 
 authRouter.patch("/auth/updatePassword", updatePassword);
-=======
 authRouter.get("/auth/verifyEmail/:token", verifyEmail);
 authRouter.post(
   "/auth/resendVerificationEmail",
   authMiddleware.protect,
   resendVerificationEmail
 );
->>>>>>> feature/auth
 
 module.exports = authRouter;

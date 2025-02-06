@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+const { url } = require("inspector");
+const { type } = require("os");
 
 const userSchema = new mongoose.Schema(
   {
@@ -31,9 +33,7 @@ const userSchema = new mongoose.Schema(
         message: "Please provide a valid phone number",
       },
     },
-    photo: {
-      type: String,
-      default: "default.jpg",
+    photo: { fileId:{type:String, default: "default.jpg" } , url:{type:String , default:"https://ik.imagekit.io/ysypur5vc/users/default_U8x4irZXl.jpg?updatedAt=1738696160805"},
     },
     password: {
       type: String,

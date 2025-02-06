@@ -1,20 +1,13 @@
 const User = require("../models/user.model");
 const AppError = require("../utils/appError");
-<<<<<<< HEAD
 const {inboxResult}=require("../utils/apiFeatures");
 
-=======
->>>>>>> feature/auth
 
 class UserRepository {
   //done -----------------------
   async getAllUsers() {
     try {
-<<<<<<< HEAD
       return await User.find({}, { userType: "customer" });
-=======
-      return await User.find();
->>>>>>> feature/auth
     } catch (error) {
       throw error;
     }
@@ -122,15 +115,10 @@ class UserRepository {
   //done ------------------
   async activeUser(userId) {
     try {
-<<<<<<< HEAD
 
       //return ack.
       return await user.updateOne({ _id: userId }, { isActive: true });
 
-=======
-      //return ack.
-      return await user.updateOne({ _id: userId }, { isActive: true });
->>>>>>> feature/auth
     } catch (err) {
       throw err;
     }

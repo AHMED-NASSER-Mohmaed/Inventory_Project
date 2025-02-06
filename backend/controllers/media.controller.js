@@ -2,6 +2,10 @@ const { mediaService } = require("../services/media.service");
 const catchAsync = require("../utils/catchAsync");
 const { imageKitPayloadBuilder } = require("../utils/media.util");
 const AuthMiddleware = require("../middlewares/auth.middleware");
+const { APP_CONFIG } = require("../config/app.config");
+
+
+
 
 class MediaController {
   constructor() {
@@ -46,8 +50,14 @@ class MediaController {
       : [req.files.image];
     const folder = req.body.folder.toLowerCase() || "/";
 
-    const uploadPayload = uploadedFiles.map((file) =>
-      imageKitPayloadBuilder(file, folder)
+    const uploadPayload = uploadedFiles.map( function(file){ 
+
+      // //check size firstly ...
+      // if(file.size>APP_CONFIG.MAX_FILE_SIZE){
+      //   res.status(APP_CONFIG.HTTP_BAD_REQUEST).json({message:"file size exeed limit size [5M]"});
+      // }
+      return imageKitPayloadBuilder(file, folder)
+    } 
     );
     const response = await mediaService.upload({ files: uploadPayload });
 

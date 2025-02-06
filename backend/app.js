@@ -5,6 +5,7 @@ const fs = require("fs");
 const globalErrorHandler = require("./middlewares/error.middleware");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
+const { APP_CONFIG } = require("./config/app.config");
 /******************************************************************* */
 
 /********************************************************************/
@@ -19,7 +20,7 @@ app.use(cookieParser());
 
 app.use(
   fileUpload({
-    limits: { fileSize: 50 * 1024 * 1024 },
+    limits: { fileSize: APP_CONFIG.MAX_FILE_SIZE},
     useTempFiles: false,
     preserveExtension: true,
   })
