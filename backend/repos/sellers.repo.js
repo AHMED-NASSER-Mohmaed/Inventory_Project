@@ -165,7 +165,7 @@ module.exports.sellerRepo = {
                     await seller.countDocuments(filters).exec()
                 ]);
         
-                console.log("from repo" , results);
+                // console.log("from repo" , results , total);
         
                 return inboxResult(results, total, page, limit);
     
