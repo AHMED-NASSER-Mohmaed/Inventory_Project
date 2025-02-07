@@ -3,10 +3,11 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const imageKit = require("imagekit");
+
+const { imageKitPayloadBuilder } = require("../utils/media.util");
 const AppError = require("../utils/appError");
 const { IMAGEKIT_ENDPOINT_URL, IMAGEKIT_PRIVATE_KEY, IMAGEKIT_PUBLIC_KEY } =
   APP_CONFIG;
-const { imageKitPayloadBuilder } = require("../utils/media.util");
 
 // register or make image kit instance
 var imagekit = new imageKit({
@@ -21,36 +22,36 @@ var imagekit = new imageKit({
  * @returns {Object} - Uploaded file URLs and IDs.
  */
 async function upload(files, folder) {
-  if (!files || !files.image) {
-    throw new AppError("No file uploaded", 400);
+  try {
+    if (!files || !files.image) {
+      throw new AppError("No file uploaded", 400);
+    }
+
+    const uploadedFiles = Array.isArray(files.image)
+      ? files.image
+      : [files.image];
+
+    const uploadPayload = uploadedFiles.map(function (file) {
+      return imageKitPayloadBuilder(file, folder);
+    });
+
+    const uploadPromises = uploadPayload.map((file) =>
+      imagekit.upload({
+        file: Buffer.from(file.src),
+        fileName: file.fileName,
+        folder,
+      })
+    );
+
+    const uploadResults = await Promise.all(uploadPromises);
+
+    return {
+      message: "Upload successful!",
+      files: uploadResults.map(({ fileId, url }) => ({ fileId, url })),
+    };
+  } catch (error) {
+    throw error;
   }
-
-  const uploadedFiles = Array.isArray(files.image)
-    ? files.image
-    : [files.image];
-
-  const uploadPayload = uploadedFiles.map(function (file) {
-    // //check size firstly ...
-    // if(file.size>APP_CONFIG.MAX_FILE_SIZE){
-    //   res.status(APP_CONFIG.HTTP_BAD_REQUEST).json({message:"file size exeed limit size [5M]"});
-    // }
-    return imageKitPayloadBuilder(file, folder);
-  });
-
-  const uploadPromises = uploadPayload.map((file) =>
-    imagekit.upload({
-      file: Buffer.from(file.src),
-      fileName: file.fileName,
-      folder,
-    })
-  );
-
-  const uploadResults = await Promise.all(uploadPromises);
-
-  return {
-    message: "Upload successful!",
-    files: uploadResults.map(({ fileId, url }) => ({ fileId, url })),
-  };
 }
 
 /**
@@ -98,8 +99,15 @@ async function deleteFile(fileId) {
   if (!fileId) {
     throw new AppError("File ID is required.", 400);
   }
-  await imagekit.deleteFile(fileId);
-  return { message: "success" };
+  try {
+    console.log(
+      "returning from deleting process",
+      await imagekit.deleteFile(fileId)
+    );
+    return true;
+  } catch (error) {
+    throw new AppError(error.message, APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
+  }
 }
 
 module.exports.mediaService = {

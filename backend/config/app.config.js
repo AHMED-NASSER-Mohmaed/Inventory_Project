@@ -58,5 +58,23 @@ module.exports.APP_CONFIG = {
   CUSTOMER: "customer",
 
 
-  MAX_FILE_SIZE : 2 * 1024*1024  // 5KB in bytes 
+  MAX_FILE_SIZE : 2 * 1024*1024 , // 5KB in bytes 
+  
+  UDIAMGE_ID_KEY: "fileId" ,
+  UDIMAGE_URL_KEY:"url",
+   
+  UDIAMGE_ID_VALUE: "67a63846432c47641653594a",
+  UDIMAGE_URL_VALUE:"https://ik.imagekit.io/ysypur5vc/default_n6o_4prV6.jpg",
+  
+
+  DU_IMAGE_DEFALUT_OBG:{
+    "fileId" :"67a63846432c47641653594a",
+    "url" : "https://ik.imagekit.io/ysypur5vc/default_n6o_4prV6.jpg"
+  },
+  
+
+  PROFILE_IMAGE_FOLDER:"users",
+
+
+
 };

@@ -1,0 +1,174 @@
+[ 
+  {
+    "firstName": "john",
+    "lastName": "doe",
+    "email": "johnDoe22@gmail.com",
+    "phoneNumber": "01022345678",
+    "password": "securePass123"
+  },
+    {
+      "firstName": "emma",
+      "lastName": "smith",
+      "email": "emmaSmith45@gmail.com",
+      "phoneNumber": "01011122334",
+      "password": "emmaPass123"
+    },
+    {
+      "firstName": "liam",
+      "lastName": "johnson",
+      "email": "liamJohnson89@gmail.com",
+      "phoneNumber": "01022233445",
+      "password": "liamPass456"
+    },
+    {
+      "firstName": "olivia",
+      "lastName": "williams",
+      "email": "oliviaWilliams12@gmail.com",
+      "phoneNumber": "01033344556",
+      "password": "oliviaPass789"
+    },
+    {
+      "firstName": "noah",
+      "lastName": "brown",
+      "email": "noahBrown34@gmail.com",
+      "phoneNumber": "01044455667",
+      "password": "noahPass101"
+    },
+    {
+      "firstName": "ava",
+      "lastName": "jones",
+      "email": "avaJones56@gmail.com",
+      "phoneNumber": "01055566778",
+      "password": "avaPass202"
+    },
+    {
+      "firstName": "william",
+      "lastName": "garcia",
+      "email": "williamGarcia78@gmail.com",
+      "phoneNumber": "01066677889",
+      "password": "williamPass303"
+    },
+    {
+      "firstName": "sophia",
+      "lastName": "miller",
+      "email": "sophiaMiller90@gmail.com",
+      "phoneNumber": "01077788990",
+      "password": "sophiaPass404"
+    },
+    {
+      "firstName": "james",
+      "lastName": "davis",
+      "email": "jamesDavis23@gmail.com",
+      "phoneNumber": "01088899001",
+      "password": "jamesPass505"
+    },
+    {
+      "firstName": "isabella",
+      "lastName": "rodriguez",
+      "email": "isabellaRodriguez34@gmail.com",
+      "phoneNumber": "01090900112",
+      "password": "isabellaPass606"
+    },
+    {
+      "firstName": "oliver",
+      "lastName": "martinez",
+      "email": "oliverMartinez45@gmail.com",
+      "phoneNumber": "01000011223",
+      "password": "oliverPass707"
+    },
+    {
+      "firstName": "charlotte",
+      "lastName": "hernandez",
+      "email": "charlotteHernandez56@gmail.com",
+      "phoneNumber": "01011022334",
+      "password": "charlottePass808"
+    },
+    {
+      "firstName": "elijah",
+      "lastName": "lopez",
+      "email": "elijahLopez67@gmail.com",
+      "phoneNumber": "01020233445",
+      "password": "elijahPass909"
+    },
+    {
+      "firstName": "amelia",
+      "lastName": "gonzalez",
+      "email": "ameliaGonzalez78@gmail.com",
+      "phoneNumber": "01033344556",
+      "password": "ameliaPass1010"
+    },
+    {
+      "firstName": "lucas",
+      "lastName": "wilson",
+      "email": "lucasWilson89@gmail.com",
+      "phoneNumber": "01040455667",
+      "password": "lucasPass1111"
+    },
+    {
+      "firstName": "mia",
+      "lastName": "anderson",
+      "email": "miaAnderson90@gmail.com",
+      "phoneNumber": "01055566978",
+      "password": "miaPass1212"
+    },
+    {
+      "firstName": "mason",
+      "lastName": "thomas",
+      "email": "masonThomas01@gmail.com",
+      "phoneNumber": "01066677819",
+      "password": "masonPass1313"
+    },
+    {
+      "firstName": "harper",
+      "lastName": "taylor",
+      "email": "harperTaylor12@gmail.com",
+      "phoneNumber": "01077788990",
+      "password": "harperPass1414"
+    },
+    {
+      "firstName": "ethan",
+      "lastName": "moore",
+      "email": "ethanMoore23@gmail.com",
+      "phoneNumber": "01083899001",
+      "password": "ethanPass1515"
+    },
+    {
+      "firstName": "evelyn",
+      "lastName": "jackson",
+      "email": "evelynJackson34@gmail.com",
+      "phoneNumber": "01097900112",
+      "password": "evelynPass1616"
+    },
+    {
+      "firstName": "logan",
+      "lastName": "white",
+      "email": "loganWhite45@gmail.com",
+      "phoneNumber": "01010011223",
+      "password": "loganPass1717"
+    },
+    {
+      "firstName": "moacca",
+      "lastName": "reda",
+      "email": "loga1White45@gmail.com",
+      "phoneNumber": "01001011223",
+      "password": "loganPass1717"
+    },
+    {
+      "firstName": "Uqchuv",
+      "lastName": "Fejdt",
+      "email": "uqchuv3fejdt@gmail.com",
+      "phoneNumber": "01063497141",
+      "password": "UqchuvPass5587"
+    },
+    {
+      "firstName": "Onijus",
+      "lastName": "Mqwtk",
+      "email": "onijus43mqwtk@gmail.com",
+      "phoneNumber": "01029507918",
+      "password": "OnijusPass8659"
+    }
+  
+  ]
+
+
+  

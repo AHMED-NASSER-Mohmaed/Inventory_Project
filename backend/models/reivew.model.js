@@ -10,4 +10,12 @@ const ReviewSchema=mongoose.Schema({
     timestamps: true,
 })
 
+
+
+const user_product=mongoose.Schema({
+	customerId: {type:mongoose.Schema.ObjectId},
+	productId:{type : mongoose.Schema.ObjectId},
+})
+
+
 module.exports=mongoose.module("Review",ReviewSchema);
