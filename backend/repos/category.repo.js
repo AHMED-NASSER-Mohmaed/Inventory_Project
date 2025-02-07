@@ -55,6 +55,19 @@ class CategoryRepository {
     }
   }
 
+  async activateCategoryById(categoryId) { // soft delete
+    try {
+      const category = await Category.findByIdAndUpdate(
+        categoryId,
+        { isActive: true },
+        { new: true }
+      ).select('-createdAt -updatedAt -__v');
+      return category;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   async isCategoryExist(categoryId) {
     try {
       const category = await Category.findById(categoryId);
