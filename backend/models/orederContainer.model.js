@@ -15,7 +15,7 @@ const OrderContainerSchema = new mongoose.Schema({
         { order: { type: mongoose.Schema.ObjectId, requried: true, unique: true, ref: "Order" } }
     ],
 
-    clerkId: {  type: String, required: true },
+    
 
     cashierId: { type: String, required: true },
 
