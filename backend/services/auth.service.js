@@ -82,7 +82,9 @@ class AuthService {
   async verifyEmail(paramToken) {
     const token = crypto.createHash("sha256").update(paramToken).digest("hex");
     const user = await AuthRepository.findByVerificationToken(token);
+    
     console.log(user);
+
     if (!user) {
       return { status: "invalid_token" };
     }
