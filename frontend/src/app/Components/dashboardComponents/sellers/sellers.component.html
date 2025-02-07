@@ -76,8 +76,8 @@
                                     <p>{{ user.companyName }}</p>
                                 </td>
                                 <td>
-                                    <span class="status process" [class.active]="user.status" [class.deactivated]="!user.status" style="min-width: 100px; display: inline-block; text-align: center;">
-                                        {{user.status ? 'Activated' : 'Deactivated'}}
+                                    <span class="status process" [class.active]="user.isActive" [class.deactivated]="!user.isActive" style="min-width: 100px; display: inline-block; text-align: center;">
+                                        {{user.isActive ? 'Activated' : 'Deactivated'}}
                                     </span>
                                 </td>
                                 <td>
@@ -91,9 +91,9 @@
                                             <div class="dropdown-divider"></div>
                                             <a class="dropdown-item p-3" href="#"><i class='bx bx-edit'></i> Update</a>
                                             <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item p-3" (click)="user.status ? openConfirmDialog(user.SSN) : activateSeller(user.SSN)" style="cursor:pointer;">
-                                                <i class='bx' [ngClass]="{'bx-check-circle': !user.status, 'bx-x-circle': user.status}"></i>
-                                                {{user.status ? 'Deactivate' : 'Activate'}}
+                                            <a class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user.SSN) : activateSeller(user.SSN)" style="cursor:pointer;">
+                                                <i class='bx' [ngClass]="{'bx-check-circle': !user.isActive, 'bx-x-circle': user.isActive}"></i>
+                                                {{user.isActive ? 'Deactivate' : 'Activate'}}
                                             </a>
                                         </div>
                                     </div>

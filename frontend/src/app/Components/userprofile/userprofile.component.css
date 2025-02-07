@@ -212,10 +212,6 @@ span {
     font-size: .5em;
     color: #777777;
 }
-input:focus {
-    /* outline: none; */
-    /* border: 1px solid #3FB6A8; */
-}
 
 
 .valid#firstName,

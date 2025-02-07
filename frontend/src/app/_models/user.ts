@@ -14,7 +14,9 @@ export class User {
         public companyRegistrationNumber: string,
         public createdAt: string,
         public updatedAt: string,
-        public status: string
+        public status: string,
+        public isActive: string
+
     ){}
 
 }

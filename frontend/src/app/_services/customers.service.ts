@@ -26,14 +26,10 @@ export class CustomersService {
   }
 
   deActiveSeller(SSN: string): Observable<any> {
-    let headers2 = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-
-    return this.http.delete(`${this.baseUrl}/deleteSeller/${SSN}`, {headers: headers2});
-  }
+    return this.http.delete(`${this.baseUrl}/deleteSeller/${SSN}`, {headers: this.headers});
+  } //! deactivate --> isactive
 
   activateSeller(SSN: string): Observable<any> {
-    console.log(this.token);
-    console.log(this.headers);
     return this.http.patch(`${this.baseUrl}/activeSeller/${SSN}`, {headers: this.headers});
-  }
+  } //! approve --> status  ,, 
 }
