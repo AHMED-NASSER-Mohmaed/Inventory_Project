@@ -37,7 +37,8 @@ class MediaController {
    * Uploads an image to ImageKit and returns its URL.
    */
   async upload(req, res) {
-    const response = await mediaService.upload(req.files);
+    const folder = req.url.split("/")[1];
+    const response = await mediaService.upload(req.files, folder);
     res.status(200).json(response);
   }
 

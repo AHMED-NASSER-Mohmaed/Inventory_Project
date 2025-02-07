@@ -20,7 +20,7 @@ var imagekit = new imageKit({
  * @param {Array} files - Array of file payloads and folder name.
  * @returns {Object} - Uploaded file URLs and IDs.
  */
-async function upload(files) {
+async function upload(files, folder) {
   if (!files || !files.image) {
     throw new AppError("No file uploaded", 400);
   }
@@ -28,7 +28,6 @@ async function upload(files) {
   const uploadedFiles = Array.isArray(files.image)
     ? files.image
     : [files.image];
-  const folder = "/test";
 
   const uploadPayload = uploadedFiles.map(function (file) {
     // //check size firstly ...
@@ -42,7 +41,7 @@ async function upload(files) {
     imagekit.upload({
       file: Buffer.from(file.src),
       fileName: file.fileName,
-      folder: file.folder, // Store in a specific folder
+      folder,
     })
   );
 

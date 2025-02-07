@@ -116,7 +116,7 @@ class AuthService {
     if (!user || !user.isActive || !(await user.correctPassword(password))) {
       throw new AppError("Incorrect email or password", 401);
     }
-
+    // uncomment later
     // if (!user.isEmailVerified) {
     //   throw new AppError(
     //     "Please verify your email address to get access.",
