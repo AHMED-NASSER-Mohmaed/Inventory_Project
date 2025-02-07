@@ -1,23 +1,14 @@
-const UserRepository = require("../repos/user.repo");
 const APP_CONFIG = require("../config/app.config");
 const AppError = require("../utils/appError");
 const userRepo = require("../repos/user.repo");
 
 class UserService {
-  //done ----------------
-  async getAllUsers() {
-    try {
-      return await UserRepository.getAllUsers();
-    } catch (err) {
-      throw err;
-    }
-  }
-
+  
   //done ----------------
   async getUser(userId) {
 
     try {
-      const user = await UserRepository.getUser(userId);
+      const user = await userRepo.getUser(userId);
       console.log("i'm the logined one :", user)
       if (!user) {
         throw new AppError("No user found with this id", APP_CONFIG.HTTP_BAD_REQUEST);
@@ -31,20 +22,31 @@ class UserService {
   //done ------------------
   async createUser(userData) {
     try {
-      return await UserRepository.createUser(userData);
+       return await userRepo.createUser(userData);
     } catch (err) {
       throw err;
     }
   }
 
   async updateUser(userId, newData) {
-    return await UserRepository.updateUser(userId, newData);
+    return await userRepo.updateUser(userId, newData);
+  }
+
+  async updateUserImage(userId, imageInfo){
+    try{
+      console.log("from service : ",imageInfo)
+      if(userId && imageInfo)
+        return await userRepo.updateUserImage(userId,imageInfo);
+      
+    }catch(err){
+      throw err;
+    }
   }
 
   //done ------------------
   async deleteUser(userId) {
     try {
-      const ack = await UserRepository.deleteUser(userId);
+      const ack = await userRepo.deleteUser(userId);
       if (!ack.acknowledged) {
         throw new AppError("No user found with this id", APP_CONFIG.HTTP_BAD_REQUEST);
       }
@@ -57,7 +59,7 @@ class UserService {
   //done ------------------
   async activeUser(userId) {
     try {
-      const ack = await UserRepository.activeUser(userId);
+      const ack = await userRepo.activeUser(userId);
       if (!ack.acknowledged) {
         throw new AppError("No user found with this id", APP_CONFIG.HTTP_BAD_REQUEST);
       }
@@ -66,14 +68,7 @@ class UserService {
     }
   }
 
-  async updateMe(userId, newData) {
-    return await UserRepository.updateMe(userId, newData);
-  }
-
-  async deleteMe(userId) {
-    return await UserRepository.deleteUser(userId);
-  }
-
+  //pagination
   async getUsers(data) {
     try {
       return await userRepo.getCustomers(data.filters, data.sort, data.page, data.limit);
@@ -81,6 +76,32 @@ class UserService {
       throw err;
     }
   }
+
+
+  async isAttributeExist(userId,name,value){
+    try{
+      return await userRepo.isAttributeExists(userId,name,value);
+    }catch(err){
+      throw err;
+    }
+  }
+
+
+  async getUserImageId(userId){
+    try{
+      const imageId= await userRepo.getUserImageId(userId);
+
+      if(!imageId)
+        throw new AppError("User Not Found",APP_CONFIG.HTTP_NOT_FOUND);
+
+      return imageId;
+      
+    }catch(err){
+      throw err;
+    }
+  }
+
+  
 }
 
 module.exports = new UserService();

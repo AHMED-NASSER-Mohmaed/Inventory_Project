@@ -3,6 +3,8 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const imageKit = require("imagekit");
+const { imageKitPayloadBuilder } = require("../utils/media.util");
+const AppError = require("../utils/appError");
 const { IMAGEKIT_ENDPOINT_URL, IMAGEKIT_PRIVATE_KEY, IMAGEKIT_PUBLIC_KEY } =
   APP_CONFIG;
 
@@ -13,12 +15,51 @@ var imagekit = new imageKit({
   urlEndpoint: IMAGEKIT_ENDPOINT_URL,
 });
 
+
+
+
+ /**
+   * Uploads an image to ImageKit and returns its URL and id .
+   */
+
+ async function upload(files, folder) {
+  try{
+    
+      if(!files || !files.image) 
+        throw new AppError(APP_CONFIG.HTTP_NOT_FOUND, "No file uploaded.")
+      
+      const uploadedFiles = Array.isArray( files.image)
+        ? files.image
+        : [files.image];
+
+      // const folder =folder.toLowerCase() || "/";
+
+      const uploadPayload = uploadedFiles.map( function(file){  
+        return imageKitPayloadBuilder(file, folder)
+      });
+
+
+      return await uploadToImageKit({ files: uploadPayload });
+
+  }catch(err){
+    throw err;
+  }
+
+}//end of uplaod image
+
+
+
+ 
+
+
+
 /**
  * Uploads a file or multiple files to ImageKit.
  * @param {Array} files - Array of file payloads and folder name.
  * @returns {Object} - Uploaded file URLs and IDs.
  */
-async function upload({ files }) {
+async function uploadToImageKit({ files }) {
+
   try {
     if (!Array.isArray(files) || files.length === 0) {
       throw new Error("Invalid file input!");
@@ -35,14 +76,16 @@ async function upload({ files }) {
     const uploadResults = await Promise.all(uploadPromises);
 
     return {
-      message: "Upload successful!",
-      files: uploadResults.map(({ fileId, url }) => ({ fileId, url })),
+      files: uploadResults.map( ( { fileId, url } ) => ( { fileId, url })),
     };
-  } catch (error) {
-    console.error("Error during file upload:", error);
-    return { message: "Upload failed", error: error.message };
+    
+  } catch (err) {
+
+    throw err;
   }
-}
+
+}//end of upload to image kit 
+
 
 /**
  * Downloads a file from the given URL and saves it locally.
@@ -88,14 +131,14 @@ async function download(fileUrl) {
  */
 async function deleteFile(fileId) {
   try {
-    await imagekit.deleteFile(fileId);
-    return { message: "success" };
+    console.log("returning from deleting process",await imagekit.deleteFile(fileId));
+    return true;
   } catch (error) {
-    console.error(error);
+    throw new AppError( error.message , APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR );
   }
 }
 
-module.exports.mediaService = {
+module.exports = {
   upload,
   download,
   deleteFile,
