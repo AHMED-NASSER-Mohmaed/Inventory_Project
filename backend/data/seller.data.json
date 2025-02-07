@@ -11,6 +11,7 @@
       "companyName": "Tech Innovators",
       "companyRegistrationNumber": "1234"
     },
+
     {
       "firstName": "Mohamed",
       "lastName": "Hassan",
@@ -94,7 +95,8 @@
       "SSN": "3089012345678",
       "companyName": "Tech Pioneers",
       "companyRegistrationNumber": "8901"
-    },
+    }
+    ,
     {
       "firstName": "Nour",
       "lastName": "Walid",
@@ -170,39 +172,39 @@
     {
       "firstName": "Mona",
       "lastName": "Adham",
-      "email": "monaadham15@gmail.com",
-      "phoneNumber": "01051234567",
+      "email": "mohabAhmed@gmail.com",
+      "phoneNumber": "01145946617",
       "password": "admindod",
       "passwordConfirm": "admindod",
       "userType": "seller",
-      "SSN": "3051234567890",
-      "companyName": "Bright Tech",
-      "companyRegistrationNumber": "5123"
+      "SSN": "30101101206039",
+      "companyName": "solo Tech",
+      "companyRegistrationNumber": "3698"
     },
-   
-        {
-          "firstName": "John",
-          "lastName": "Doe",
-          "email": "johndoe123@gmail.com",
-          "phoneNumber": "01012345678",
-          "password": "admindod",
-          "passwordConfirm": "admindod",
-          "userType": "seller",
-          "SSN": "3012345678901",
-          "companyName": "Tech Solutions",
-          "companyRegistrationNumber": "1234"
-        },
+    {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "johndoe123@gmail.com",
+      "phoneNumber": "01012945678",
+      "password": "admindod",
+      "passwordConfirm": "admindod",
+      "userType": "seller",
+      "SSN": "3012345673901",
+      "companyName": "Tech Solutions",
+      "companyRegistrationNumber": "1034"
+    },
         {
           "firstName": "Jane",
           "lastName": "Smith",
           "email": "janesmith456@gmail.com",
-          "phoneNumber": "01098765432",
+          "phoneNumber": "01098705432",
           "password": "admindod",
           "passwordConfirm": "admindod",
           "userType": "seller",
           "SSN": "3098765432109",
-          "companyName": "Innovate Inc.",
-          "companyRegistrationNumber": "5678"
+          "companyName": "mimi Inc.",
+          "companyRegistrationNumber": "5378"
         }
+     
      
   ]

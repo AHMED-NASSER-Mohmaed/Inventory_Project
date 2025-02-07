@@ -2,10 +2,12 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
-const { url } = require("inspector");
-const { type } = require("os");
+const { APP_CONFIG } = require("../config/app.config");
+
+
 
 const userSchema = new mongoose.Schema(
+
   {
     firstName: {
       type: "string",
@@ -33,7 +35,11 @@ const userSchema = new mongoose.Schema(
         message: "Please provide a valid phone number",
       },
     },
-    photo: { fileId:{type:String, default: "default.jpg" } , url:{type:String , default:"https://ik.imagekit.io/ysypur5vc/users/default_U8x4irZXl.jpg?updatedAt=1738696160805"},
+    photo: { 
+      
+        fileId:{ type:String , default :  APP_CONFIG.UDIAMGE_ID_VALUE} , 
+        URL:{type:String , default: APP_CONFIG.UDIMAGE_URL_VALUE   },
+      
     },
     password: {
       type: String,
@@ -61,42 +67,39 @@ const userSchema = new mongoose.Schema(
       enum: ["staff", "customer", "seller"],
       required: true,
       default: "customer",
+      select:false,
     },
     isActive: {
       type: Boolean,
       default: true,
       select: false,
     },
+
     changedPasswordAt: Date,
     passwordResetCode: Number,
     passwordResetCodeExpires: Date,
-    passwordResetToken: String,
-    passwordResetTokenExpires: Date,
-    emailVerificationToken: String,
-    emailVerificationTokenExpires: Date,
+
+    passwordResetToken: {type:String , select:false},
+
+    passwordResetTokenExpires: {type:Date , select:false},
+
+    emailVerificationToken: {type:String , select:false},
+
+    emailVerificationTokenExpires: {type:Date , select:false},
+
     isEmailVerified: {
       type: Boolean,
       default: false,
+      select:false,
     },
 
-    // otp: {
-    //   type: String,
-    //   select: false,
-    // },
-    // otpExpires: {
-    //   type: Date,
-    //   select: false,
-    // },
-    // isPhoneVerified: {
-    //   type: Boolean,
-    //   default: false,
-    // },
+     
   },
   { discriminatorKey: "kind", timestamps: true }, // 'kind' acts as a discriminator field
   {
     timestamps: true,
-  }
-);
+  },
+   );
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();

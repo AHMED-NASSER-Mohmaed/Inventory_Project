@@ -169,9 +169,6 @@ module.exports.sellerRepo = {
         
                 return inboxResult(results, total, page, limit);
     
-               
-    
-    
     
             }catch(err){
                 throw err;

@@ -10,7 +10,6 @@ const SellerSchema = new mongoose.Schema(
     status:{
       type: Boolean,
       default: false,
-      select: false,
     }
   },
   {
