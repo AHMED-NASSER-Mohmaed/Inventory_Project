@@ -71,8 +71,7 @@ const userSchema = new mongoose.Schema(
     },
     isActive: {
       type: Boolean,
-      default: true,
-      select: false,
+      default: true
     },
 
     changedPasswordAt: Date,
