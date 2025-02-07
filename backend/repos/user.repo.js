@@ -152,7 +152,7 @@ class UserRepository {
 
     try{
 
-      console.log(imageInfo,"from repo");
+      console.log("image info : ",imageInfo,"from repo");
        return await User.updateOne({_id:userId},{"photo":imageInfo});
     }catch(err){
       throw err;

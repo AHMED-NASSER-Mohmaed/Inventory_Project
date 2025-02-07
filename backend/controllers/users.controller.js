@@ -358,6 +358,8 @@ const customerOp = {
     
         const oldFileId= await userService.getUserImageId(req.params.id);
 
+        console.log(oldFileId);
+
         //delete image from imagekit  if user it's not the default image
         if ( !(oldFileId['photo']['fileId'] ===  APP_CONFIG.UDIAMGE_ID_VALUE)   ){
             console.log("the one that is exist is not equal to the default one");
@@ -371,8 +373,9 @@ const customerOp = {
             throw new AppError("something went wrong", APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
         }
 
+        console.log("===>",imageInfo['files'][0]);
         //this line may be throw an exception from database.
-        const result = await userService.updateUserImage(req.params.id, imageInfo[0]);
+        const result = await userService.updateUserImage(req.params.id, imageInfo['files'][0]);
 
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 

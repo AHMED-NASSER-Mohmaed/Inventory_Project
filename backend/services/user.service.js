@@ -34,6 +34,7 @@ class UserService {
 
   async updateUserImage(userId, imageInfo){
     try{
+      console.log("from service : ",imageInfo)
       if(userId && imageInfo)
         return await userRepo.updateUserImage(userId,imageInfo);
       

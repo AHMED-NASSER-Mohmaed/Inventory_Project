@@ -61,7 +61,7 @@ module.exports.APP_CONFIG = {
   MAX_FILE_SIZE : 2 * 1024*1024 , // 5KB in bytes 
   
   UDIAMGE_ID_KEY: "fileId" ,
-  UDIMAGE_URL_KEY:"URL",
+  UDIMAGE_URL_KEY:"url",
    
   UDIAMGE_ID_VALUE: "67a63846432c47641653594a",
   UDIMAGE_URL_VALUE:"https://ik.imagekit.io/ysypur5vc/default_n6o_4prV6.jpg",
@@ -69,7 +69,7 @@ module.exports.APP_CONFIG = {
 
   DU_IMAGE_DEFALUT_OBG:{
     "fileId" :"67a63846432c47641653594a",
-    "URL" : "https://ik.imagekit.io/ysypur5vc/default_n6o_4prV6.jpg"
+    "url" : "https://ik.imagekit.io/ysypur5vc/default_n6o_4prV6.jpg"
   },
   
 

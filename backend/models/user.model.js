@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema(
     photo: { 
       
         fileId:{ type:String , default :  APP_CONFIG.UDIAMGE_ID_VALUE} , 
-        URL:{type:String , default: APP_CONFIG.UDIMAGE_URL_VALUE   },
+        url:{type:String , default: APP_CONFIG.UDIMAGE_URL_VALUE   },
       
     },
     password: {
