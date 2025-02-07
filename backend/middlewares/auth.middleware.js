@@ -3,7 +3,8 @@ const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const JWT_Manager = require("../utils/jwt.manager");
 
-module.exports.protect = catchAsync(async (req, res, next) => {
+module.exports.
+protect = catchAsync(async (req, res, next) => {
   let token;
   if (
     req.headers.authorization &&
@@ -28,6 +29,19 @@ module.exports.protect = catchAsync(async (req, res, next) => {
       )
     );
 
+  // if (
+  //   !currentUser.isEmailVerified &&
+  //   req.path !== "/auth/resendVerificationEmail" &&
+  //   req.path !== "/users/me"
+  // ) {
+  //   return next(
+  //     new AppError(
+  //       "Please verify your email address to access this resource.",
+  //       401
+  //     )
+  //   );
+  // }
+
   if (currentUser.changedPasswordAfter(decoded.payload.iat)) {
     return next(
       new AppError("User recently changed password! Please log in again.", 401)
@@ -40,12 +54,11 @@ module.exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-
- 
 module.exports.restrictTo = (...userTypes) => {
-
   return (req, res, next) => {
     //userType , role  
+    userTypes = userTypes.flat();
+    console.log(userTypes);
     if ( !userTypes.includes(req.user.userType) && !userTypes.includes(req.user.role) ) { // to be reviewed
       return next(
         new AppError("You do not have permission to perform this action", 403)
@@ -53,5 +66,4 @@ module.exports.restrictTo = (...userTypes) => {
     }
     next();
   };
-
 };

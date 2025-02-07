@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+const { url } = require("inspector");
+const { type } = require("os");
 
 const userSchema = new mongoose.Schema(
   {
@@ -31,9 +33,7 @@ const userSchema = new mongoose.Schema(
         message: "Please provide a valid phone number",
       },
     },
-    photo: {
-      type: String,
-      default: "default.jpg",
+    photo: { fileId:{type:String, default: "default.jpg" } , url:{type:String , default:"https://ik.imagekit.io/ysypur5vc/users/default_U8x4irZXl.jpg?updatedAt=1738696160805"},
     },
     password: {
       type: String,
@@ -72,6 +72,12 @@ const userSchema = new mongoose.Schema(
     passwordResetCodeExpires: Date,
     passwordResetToken: String,
     passwordResetTokenExpires: Date,
+    emailVerificationToken: String,
+    emailVerificationTokenExpires: Date,
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
 
     // otp: {
     //   type: String,
@@ -126,7 +132,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 };
 
 userSchema.methods.correctPassword = async function (userPassword) {
-  return await bcrypt.compare(userPassword,this.password);
+  return await bcrypt.compare(userPassword, this.password);
 };
 
 userSchema.methods.createPasswordResetCode = function () {
@@ -149,13 +155,25 @@ userSchema.methods.createPasswordResetToken = function () {
   return resetToken;
 };
 
+userSchema.methods.createEmailVerificationToken = function () {
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+
+  this.emailVerificationToken = crypto
+    .createHash("sha256")
+    .update(verificationToken)
+    .digest("hex");
+
+  this.emailVerificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // Expires in 24 hours
+
+  return verificationToken;
+};
+
 userSchema.methods.generateOTP = function () {
   const otpCode = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digits
   this.otp = otpCode;
   this.otpExpires = Date.now() + 10 * 60 * 1000;
   return otpCode;
 };
-
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;

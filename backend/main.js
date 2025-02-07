@@ -7,6 +7,12 @@ const { DATABASE } = require("./database/mongo/index");
 const app = require("./app");
 const Staff =require("./models/staff.model");
 
+const Seller=require("./models/seller.model");
+
+const Category = require("./models/category.model");
+
+const Supplier = require("./models/supplier.model");
+
 const port = APP_CONFIG.HTTP_PORT || 5000;
 
 
@@ -42,11 +48,65 @@ process.on("uncaughtException", (err) => {
           role:"super_admin",
         }
       
-        
-        
+        let seller={
+          "firstName": "ahmed",
+          "lastName": "nasser",
+          "email": "ahmed664422@gmail.com",
+          "phoneNumber": "01118208958",
+
+          "password":"admin123",
+          "passwordConfirm":"admin123",
+
+          "userType": "seller",
+          "SSN": "30101101206152",
+          "companyName": "inentory system",
+          "companyRegistrationNumber": "30-10-15",
+          "status": true,
+        }
+
+       
+        cat={ 
+          name:"male",
+        }
+
+        const supplier={
+          companyRegistrationNumber:"31-21-39",
+          phoneNumber:"01018208958",
+          email:"mortada@gmail.com",
+          companyName:"elzamalek"
+        }
+
+        const Dawoodsupplier={
+          companyRegistrationNumber:"31-21-32",
+          phoneNumber:"01118208958",
+          email:"perez@gmail.com",
+          companyName:"Madridista"
+        }
+
+        if(!await Supplier.findOne({email:supplier.email})){
+          console.log(await Supplier.create(supplier));
+        }
+
+        if(!await Supplier.findOne({email:Dawoodsupplier.email})){
+          console.log(await Supplier.create(Dawoodsupplier));
+        }
+           
+         if(!await Category.findOne({name:cat.name})){
+            console.log(await Category.create(cat));
+         }
+          
+
         if( !await Staff.findOne({SSN:superAdmin.SSN}) ){
+
+          await Staff.deleteOne({SSN:superAdmin.SSN});
           console.log("super admin created");
           await Staff.create(superAdmin);
+
+        }
+
+        if(!await Seller.findOne({SSN:seller.SSN})){
+          await Seller.create(seller);
+          console.log("our seller record inserted");
         }
       
       console.log("App database has connected successfully");

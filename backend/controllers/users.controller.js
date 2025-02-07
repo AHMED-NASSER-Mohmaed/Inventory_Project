@@ -1,16 +1,16 @@
 const express = require("express");
 const catchAsync=require("../utils/catchAsync")
 const {sellerService}= require("../services/seller.service");
-const authMiddleware=require("../middlewares/auth.middleware");
 const { APP_CONFIG } = require("../config/app.config");
 const {staffService}=require("../services/staff.service");
 const prot_rest=require("../utils/authMiddlewaresOptions");
 const userService=require("../services/user.service");
-const User = require("../models/user.model");
+const {validateParams,validateAdminRouteParmas, validatorForQueries}=require("../middlewares/validation.middlewares");
+const {sendResponseToClint}=require("../utils/apiFeatures");
+
 const route= express.Router();
 
-
-
+ 
 
 const sellerOp={
 
@@ -18,114 +18,144 @@ const sellerOp={
         // req.body.role=APP_CONFIG.CLERK;
         req.body.passwordConfirm=req.body.password
         const user=await sellerService.createSeller(req.body);
-        res.status(APP_CONFIG.HTTP_CREATED).json({
-            message:"success",
-            user,
-        })
+
+        sendResponseToClint(res,APP_CONFIG.HTTP_CREATED,APP_CONFIG.HTTP_OK,user);
     },
 
     getSeller: async (req,res,next)=>{
         const user =await sellerService.getSeller(req.params.SSN);
         
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message:"success",
-            user,
-        })
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,user);
+        
     },
 
     deleteSeller: async (req,res,next)=>{
         const ack=await sellerService.deleteSeller(req.params.SSN);
     
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message:"success",
-            ack,
-        })
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,ack);
+        
     },
 
     approveSeller: async (req,res,next)=>{
 
         console.log(req.params);
         const ack=await sellerService.approveSeller(req.params.SSN);
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message:"success",
-            ack,
-        })
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,ack);
+        
     },
 
     activeSellerAcount:async (req,res,next)=>{
         console.log(req.params.SSN);
         const ack=await sellerService.activeSeller(req.params.SSN);
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message:"success",
-            ack,
-        })
-    }
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,ack);
+        
+    },
+
+    getActiveSellers:async(req,res,next)=>{
+        const result = await sellerService.getActiveSellersService(req.validatedParams);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+    },
+
+    getDeActiveSellers:async(req,res,next)=>{
+
+        const result = await sellerService.getDeActiveSellersService(req.validatedParams);
+
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+
+    },
+
+    getPendingSellers:async(req,res,next)=>{
+        const result = await sellerService.getPendingSellersService(req.validatedParams);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+
+    },
+
+    getAllSellers:async(req,res,next)=>{
+        const sellers= await sellerService.getAllSellers();
+        sendResponseToClint(res , APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE , sellers);
+    },
+
+
+    getSellers:async(req,res,next)=>{
+        const result = await sellerService.getSellers(req.validatedParams);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+    },
+
+ 
+
+    allowedFilters:["isActive","status", "undefined" ],
+    allowedFilterValues:["true","false","undefined"],
+    allowedSort:['createdAt',"name"],
 
 }
 
 
-/******************************************************************* */
+/********************************************************************/
 
 const adminOp={
+
     addAdmin:async (req,res,next)=>{
-    
         //attach role on data
         req.body.role=APP_CONFIG.ADMIN;
         req.body.managerId=req.user._id;
     
         req.body.passwordConfirm=req.body.password
     
-        const admin=await staffService.createStaff(req.body);
-    
-    
-        res.status(APP_CONFIG.HTTP_CREATED).json({
-            message:"success",
-            admin,
-        })
+        const result=await staffService.createStaff(req.body);
+        
+
+        sendResponseToClint(res,APP_CONFIG.HTTP_CREATED ,APP_CONFIG.SUCCESS_MESSAGE,result);
+      
     
     },
     deleteAdmin:async (req,res,next)=>{
 
-        const ack=await staffService.deleteStaff({SSN:req.params.SSN,role:APP_CONFIG.ADMIN});
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message:"success",
-            ack,
-        })
+        const result=await staffService.deleteStaff({SSN:req.params.SSN,role:APP_CONFIG.ADMIN});
+        
+         sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+        
     
     },
     getAdmin:async (req,res,next)=>{
 
-        const admin=await staffService.getStaff({SSN:req.params.SSN,role:APP_CONFIG.ADMIN});
+        const result=await staffService.getStaff({SSN:req.params.SSN,role:APP_CONFIG.ADMIN});
     
-    
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message:"success",
-            admin,
-        })
-    
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+      
     },
+
     getAllAdmins:async (req,res,next)=>{
-        const allAdmins=await staffService.getAll(APP_CONFIG.ADMIN);
+
+        const result=await staffService.getAll(APP_CONFIG.ADMIN);
     
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message:"success",
-            allAdmins,
-        })
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+        
     },
 
     activeAdmin:async (req,res,next)=>{
-        const ack=await staffService.activeStaff({SSN:req.params.SSN,role:APP_CONFIG.ADMIN});
-    
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message:"success",
-            ack,
-        })
+
+        const result=await staffService.activeStaff({SSN:req.params.SSN,role:APP_CONFIG.ADMIN});
+
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+        
+    },
+
+
+    // //paggination -->filter --- sort
+    getAdmins:async(req,res,next)=>{
+        req.validatedParams.filters['role']=APP_CONFIG.ADMIN;
+        const result = await staffService.getStaffByFilter(req.validatedParams);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
     }
 
+    ,
+    allowedFilters:["isActive","undefined"],
+    allowedFilterValues:["true","false","undefined"],
+    allowedSort:['createdAt',"name"],
 
 }
  
-/********************************************************************** */
+/***********************************************************************/
 
 const clerkOp={
     addClerk:async (req,res,next)=>{
@@ -172,7 +202,8 @@ const clerkOp={
         })
     
     },
-    activeClerk:async (req,res,nect)=>{
+
+    activeClerk:async (req,res,next)=>{
     
         const ack=await staffService.activeStaff({SSN:req.params.SSN,role:APP_CONFIG.CLERK});
     
@@ -180,10 +211,24 @@ const clerkOp={
             message:"success",
             ack,
         })
-    }
+    },
+    getClerks:async (req,res,next)=>{
+
+        req.validatedParams.filters['role']=APP_CONFIG.CLERK;
+        
+
+        const result = await staffService.getStaffByFilter(req.validatedParams);
+
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+
+    },
+
+    allowedFilters:["isActive","undefined"],
+    allowedFilterValues:["true","false"],
+    allowedSort:['createdAt',"name"],
 }
    
-/********************************************************************************* */
+/**********************************************************************************/
 
 const cashierOp={
 
@@ -240,7 +285,20 @@ const cashierOp={
             message:"success",
             ack,
         })
-    }
+    },
+
+    getCashiers:async (req,res,next)=>{
+        req.validatedParams.filters['role']=APP_CONFIG.CASHIER;
+        
+
+        const result = await staffService.getStaffByFilter(req.validatedParams);
+
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+    },
+
+    allowedFilters:["isActive","undefined"],
+    allowedFilterValues:["true","false"],
+    allowedSort:['createdAt',"name"],
 
 }
  
@@ -256,46 +314,44 @@ const customerOp={
         req.body.passwordConfirm=req.body.password;
         const customer= await userService.createUser(req.body);
 
-        res.status(APP_CONFIG.HTTP_CREATED).json({
-            message:"success",
-            customer,
-        })
+        sendResponseToClint(res,APP_CONFIG.HTTP_CREATED,APP_CONFIG.SUCCESS_MESSAGE,customer);
+
 
     },
 
     deleteCustomer:async (req,res,next)=>{
         const ack= await userService.deleteUser(req.params.id);
-         res.status(APP_CONFIG.HTTP_OK).json({
-            message:"success",
-            ack,
-         })
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,ack);
+
     },
 
     activeCustomer:async (req,res,next)=>{
         const ack=await userService.activeUser(req.params.id);
 
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message:"success",
-            ack,
-         })
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,ack);
+
     },
 
     getCustomer:async (req,res,next)=>{
         const customer=await userService.getUser(res.params.id);
-        res.status(APP_CONFIG.HTTP_OK).json({
-            status:"success",
-            customer,
-        })
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,customer);
+
     },
 
     getAllCustomers: async (req,res,next)=>{
         const customers = await userService.getAllUsers();
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,customers);
+    },
 
-        res.status(APP_CONFIG.HTTP_OK).json({
-            status:"success",
-            customers,
-        })
-    }
+    getCustomer:async (req,res,next)=>{
+        const result = await userService.getUsers(req.validatedParams);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+    },
+    
+    allowedFilters:["isActive","undefined"],
+    allowedFilterValues:["true","false"],
+    allowedSort:['createdAt',"name"],
+
      
 }
 
@@ -309,34 +365,63 @@ route.post("/addSeller", prot_rest("super_admin" ,"admin" ), catchAsync(sellerOp
     .delete("/deleteSeller/:SSN",prot_rest("super_admin", "admin" ),catchAsync(sellerOp.deleteSeller))
     .patch("/approveSeller/:SSN",prot_rest("super_admin" , "admin" ),catchAsync(sellerOp.approveSeller))
     .patch("/activeSeller/:SSN",prot_rest("super_admin", "admin" ),catchAsync(sellerOp.activeSellerAcount))
+
+    // refactored
+    // .get('/activeSellers', prot_rest("super_admin", "admin" ), validateParams , catchAsync(sellerOp.getActiveSellers) )
+    // .get('/deActiveSellers',prot_rest("super_admin", "admin" ), validateParams , catchAsync(sellerOp.getDeActiveSellers))
+    // .get('/pendingSellers',prot_rest("super_admin", "admin" ), validateParams,catchAsync(sellerOp.getPendingSellers))
     
+    .get('/allSellers',prot_rest("super_admin", "admin" ),catchAsync(sellerOp.getAllSellers ))
+    .get("/getSellers",prot_rest("super_admin", "admin" ) , 
+    validatorForQueries(sellerOp.allowedFilters,sellerOp.allowedFilterValues,sellerOp.allowedSort),
+    catchAsync(sellerOp.getSellers))
+
+
+
+
+
+
+
     .post("/addAdmin",prot_rest("super_admin"),catchAsync(adminOp.addAdmin))
     .get("/getAdmin/:SSN",prot_rest("super_admin"),catchAsync(adminOp.getAdmin))
     .delete("/deleteAdmin/:SSN",prot_rest("super_admin"),catchAsync(adminOp.deleteAdmin))
     .get("/getAllAdmins",prot_rest("super_admin"),catchAsync(adminOp.getAllAdmins))
     .patch("/activeAdmin/:SSN",prot_rest("super_admin"),catchAsync(adminOp.activeAdmin))
+    .get("/getAdmins", prot_rest("super_admin") , validatorForQueries(adminOp.allowedFilters,adminOp.allowedFilterValues,adminOp.allowedSort),
+    catchAsync(adminOp.getAdmins))
     
+
+
 
     .post("/addClerk",prot_rest("super_admin" , "admin" ),catchAsync(clerkOp.addClerk))
     .get("/getClerk/:SSN",prot_rest("super_admin" , "admin" ),catchAsync(clerkOp.getClerk))
     .delete("/deleteClerk/:SSN",prot_rest("super_admin" ,  "admin" ),catchAsync(clerkOp.deleteClerk))
-    .get("/getAllClerks",prot_rest("super_admin" ,  "admin" ),catchAsync(clerkOp.getAllClerks))
+    // .get("/getAllClerks",prot_rest("super_admin" ,  "admin" ),catchAsync(clerkOp.getAllClerks))
     .patch("/activeClerk/:SSN",prot_rest("super_admin" ,  "admin" ),catchAsync(clerkOp.activeClerk))
+
+    .get("/getClerks" ,prot_rest(APP_CONFIG.SUPPERADMIN,APP_CONFIG.ADMIN), 
+    validatorForQueries(clerkOp.allowedFilters,clerkOp.allowedFilterValues,clerkOp.allowedSort) ,
+    catchAsync(clerkOp.getClerks))
     
 
+ 
     .post("/addCashier",prot_rest("super_admin" , "admin"),catchAsync(cashierOp.addCashier))
     .get("/getCashier/:SSN",prot_rest("super_admin" , "admin"),catchAsync(cashierOp.getCashier))
     .delete("/deleteCashier/:SSN",prot_rest("super_admin" , "admin"),catchAsync(cashierOp.deleteCashier))
-    .get("/getAllCashiers",prot_rest("super_admin" , "admin"),catchAsync(cashierOp.getAllCashiers))
+    // .get("/getAllCashiers",prot_rest("super_admin" , "admin"),catchAsync(cashierOp.getAllCashiers))
     .patch("/activeCashier/:SSN",prot_rest("super_admin" , "admin"),catchAsync(cashierOp.activeCashier))
-    
+    .get("/getCashiers",prot_rest(APP_CONFIG.SUPPERADMIN,APP_CONFIG.ADMIN), 
+    validatorForQueries(cashierOp.allowedFilters,cashierOp.allowedFilterValues,cashierOp.allowedSort) ,
+    catchAsync(cashierOp.getCashiers))
+
 
     .post("/addCustomer",prot_rest("super_admin" , "admin"),catchAsync(customerOp.addCustomer))
     .get("/getCustomer/:id",prot_rest("super_admin" , "admin"),catchAsync(customerOp.getCustomer ))
-    .get("/getAllCustomers",prot_rest("super_admin" , "admin"),catchAsync(customerOp.getAllCustomers))
+    // .get("/getAllCustomers",prot_rest("super_admin" , "admin"),catchAsync(customerOp.getAllCustomers))
     .delete("/deleteCustomer/:id",prot_rest("super_admin" , "admin"),catchAsync(customerOp.deleteCustomer))
     .patch("/activeCustomer/:id",prot_rest("super_admin" , "admin"),catchAsync(customerOp.activeCustomer))
-
+    .get("/getCustomers",prot_rest("super_admin" , "admin"), 
+    validatorForQueries(cashierOp.allowedFilters,cashierOp.allowedFilterValues,cashierOp.allowedSort))
 
 
 module.exports=route;

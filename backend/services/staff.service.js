@@ -3,14 +3,9 @@ const AppError=require("../utils/appError");
 
 module.exports.staffService={
     
-
-
     createStaff: async (data)=>{
-
         try{
-
             return await staffRepo.createStaffOfType(data);
-
         }catch(err){
             throw err;
         }
@@ -58,9 +53,19 @@ module.exports.staffService={
         }
     },
 
+    // role is my filteration rule
+
     getAll:async (role)=>{
         try{
             return await staffRepo.getALLStaffOfType(role);
+        }catch(err){
+            throw err;
+        }
+    },
+
+    getStaffByFilter:async(data)=>{
+        try{
+            return await staffRepo.getStaffOfTypeByFilter(data.filters,data.sort,data.page,data.limit);
         }catch(err){
             throw err;
         }
