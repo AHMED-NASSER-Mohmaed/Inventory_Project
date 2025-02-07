@@ -3,6 +3,7 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const imageKit = require("imagekit");
+
 const { imageKitPayloadBuilder } = require("../utils/media.util");
 const AppError = require("../utils/appError");
 const { IMAGEKIT_ENDPOINT_URL, IMAGEKIT_PRIVATE_KEY, IMAGEKIT_PUBLIC_KEY } =
@@ -15,77 +16,43 @@ var imagekit = new imageKit({
   urlEndpoint: IMAGEKIT_ENDPOINT_URL,
 });
 
-
-
-
- /**
-   * Uploads an image to ImageKit and returns its URL and id .
-   */
-
- async function upload(files, folder) {
-  try{
-    
-      if(!files || !files.image) 
-        throw new AppError(APP_CONFIG.HTTP_NOT_FOUND, "No file uploaded.")
-      
-      const uploadedFiles = Array.isArray( files.image)
-        ? files.image
-        : [files.image];
-
-      // const folder =folder.toLowerCase() || "/";
-
-      const uploadPayload = uploadedFiles.map( function(file){  
-        return imageKitPayloadBuilder(file, folder)
-      });
-
-
-      return await uploadToImageKit({ files: uploadPayload });
-
-  }catch(err){
-    throw err;
-  }
-
-}//end of uplaod image
-
-
-
- 
-
-
-
 /**
  * Uploads a file or multiple files to ImageKit.
  * @param {Array} files - Array of file payloads and folder name.
  * @returns {Object} - Uploaded file URLs and IDs.
  */
-async function uploadToImageKit({ files }) {
-
+async function upload(files, folder) {
   try {
-    if (!Array.isArray(files) || files.length === 0) {
-      throw new Error("Invalid file input!");
+    if (!files || !files.image) {
+      throw new AppError("No file uploaded", 400);
     }
 
-    const uploadPromises = files.map((file) =>
+    const uploadedFiles = Array.isArray(files.image)
+      ? files.image
+      : [files.image];
+
+    const uploadPayload = uploadedFiles.map(function (file) {
+      return imageKitPayloadBuilder(file, folder);
+    });
+
+    const uploadPromises = uploadPayload.map((file) =>
       imagekit.upload({
         file: Buffer.from(file.src),
         fileName: file.fileName,
-        folder: file.folder, // Store in a specific folder
+        folder,
       })
     );
 
     const uploadResults = await Promise.all(uploadPromises);
 
     return {
-      files: uploadResults.map( ( { fileId, url } ) => ( { fileId, url })),
+      message: "Upload successful!",
+      files: uploadResults.map(({ fileId, url }) => ({ fileId, url })),
     };
-    
-  } catch (err) {
-
-    throw err;
+  } catch (error) {
+    throw error;
   }
-
-}//end of upload to image kit 
-
+}
 
 /**
  * Downloads a file from the given URL and saves it locally.
@@ -93,35 +60,34 @@ async function uploadToImageKit({ files }) {
  * @returns {Object} - An object containing a success message and the local file path.
  */
 async function download(fileUrl) {
-  try {
-    const response = await axios({
-      url: fileUrl,
-      responseType: "stream",
-    });
-
-    const fileName = path.basename(fileUrl);
-    const urlParts = fileUrl.split("/");
-    const folderName = urlParts[urlParts.length - 2]; // Extract folder name
-
-    const downloadFolder = path.join(__dirname, "../downloads", folderName);
-    const filePath = path.join(downloadFolder, fileName);
-
-    // Ensure the downloads directory and subfolder exist
-    if (!fs.existsSync(downloadFolder)) {
-      fs.mkdirSync(downloadFolder, { recursive: true });
-    }
-
-    const writer = fs.createWriteStream(filePath);
-    response.data.pipe(writer);
-
-    return new Promise((resolve, reject) => {
-      writer.on("finish", () => resolve({ message: "success", filePath }));
-      writer.on("error", (error) => reject({ message: "error", error }));
-    });
-  } catch (error) {
-    console.error(error);
-    return { message: "error", error };
+  if (!fileUrl) {
+    throw new AppError("File URL is required", 400);
   }
+
+  const response = await axios({
+    url: fileUrl,
+    responseType: "stream",
+  });
+
+  const fileName = path.basename(fileUrl);
+  const urlParts = fileUrl.split("/");
+  const folderName = urlParts[urlParts.length - 2]; // Extract folder name
+
+  const downloadFolder = path.join(__dirname, "../downloads", folderName);
+  const filePath = path.join(downloadFolder, fileName);
+
+  // Ensure the downloads directory and subfolder exist
+  if (!fs.existsSync(downloadFolder)) {
+    fs.mkdirSync(downloadFolder, { recursive: true });
+  }
+
+  const writer = fs.createWriteStream(filePath);
+  response.data.pipe(writer);
+
+  return new Promise((resolve, reject) => {
+    writer.on("finish", () => resolve({ message: "success", filePath }));
+    writer.on("error", (error) => reject({ message: "error", error }));
+  });
 }
 
 /**
@@ -130,15 +96,21 @@ async function download(fileUrl) {
  * @returns {Object} - An object with a success message.
  */
 async function deleteFile(fileId) {
+  if (!fileId) {
+    throw new AppError("File ID is required.", 400);
+  }
   try {
-    console.log("returning from deleting process",await imagekit.deleteFile(fileId));
+    console.log(
+      "returning from deleting process",
+      await imagekit.deleteFile(fileId)
+    );
     return true;
   } catch (error) {
-    throw new AppError( error.message , APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR );
+    throw new AppError(error.message, APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
   }
 }
 
-module.exports = {
+module.exports.mediaService = {
   upload,
   download,
   deleteFile,
