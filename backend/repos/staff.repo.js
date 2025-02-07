@@ -1,7 +1,7 @@
 const Staff=require("../models/staff.model");
 const APP_CONST=require("../config/app.config");
 
-
+const {inboxResult}=require("../utils/apiFeatures")
 
 
 module.exports.staffRepo={
@@ -52,7 +52,33 @@ module.exports.staffRepo={
     },
     
     
+    getStaffOfTypeByFilter:async (filters,sort,page,limit)=>{
 
+        try{
+            
+            const [results, total] = await Promise.all([
+
+                await Staff.find(filters)
+                    .sort(sort)
+                    .skip((page - 1) * limit) // (starting index = page-1)*limit
+                    .limit(limit)
+                    .lean(),
+    
+                await Staff.countDocuments(filters).exec()
+            ]);
+    
+            // console.log("from repo" , results);
+    
+            return inboxResult(results, total, page, limit);
+
+           
+
+
+
+        }catch(err){
+            throw err;
+        }
+    }
 
 
 }

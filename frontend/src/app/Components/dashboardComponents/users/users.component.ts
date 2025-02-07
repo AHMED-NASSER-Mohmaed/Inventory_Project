@@ -29,7 +29,7 @@ export class UsersComponent implements OnInit , OnDestroy{
     this.sub = this.customerService.getAllCustomers().subscribe({
       next: (res) => {
         // this.users = res.users.filter((user: User) => user.userType === "customer"); //! this returns all types! , usertype seller doesn't return anything
-        this.users = res.users.filter((user: User) => user.kind === "Customer"); //! this works
+        this.users = res.users.filter((user: User) => user.kind === "customer"); //! this works
         console.log(res);
         console.log(this.users);
         this.dropdownStates = new Array(this.users.length).fill(false);

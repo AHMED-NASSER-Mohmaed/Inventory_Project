@@ -1,0 +1,409 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito:400,900|Montserrat|Roboto');
+
+:root {
+    --logo: #3DBB3D;
+    --gray: #777777;
+    --black: #070707;
+    --green: #7ED386;
+    --aqua: #3FB6A8;
+    --white: #FFFFFF;
+    --hulu: 'Nunito Sans', sans-serif;
+    --heading: 'Montserrat', sans-serif;
+    --body: 'Roboto', sans-serif;
+}
+
+
+.container {
+    background: #FFFFFF;
+    width: 90%;
+    max-width: 1600px;
+    height: 57em;
+    margin: 0 auto;
+    position: relative;
+    margin-top: 4.5%;
+    box-shadow: 2px 5px 20px rgba(119, 119, 119, .5);
+    padding: 20px;
+}
+
+.logo {
+    float: right;
+    margin-right: 12px;
+    margin-top: 12px;
+    font-family: 'Nunito Sans', sans-serif;
+    color: #070707;
+    font-weight: 900;
+    font-size: 1.5em;
+    letter-spacing: 1px;
+}
+
+.CTA {
+    width: 80px;
+    height: 40px;
+    right: -20px;
+    bottom: 0;
+    margin-bottom: 90px;
+    position: absolute;
+    z-index: 1;
+    background: #070707;
+    font-size: 1em;
+    transform: rotate(-90deg);
+    transition: all .5s ease-in-out;
+    cursor: pointer;
+}
+.CTA h1 {
+    color: #FFFFFF;
+    margin-top: 10px;
+    margin-left: 9px;
+}
+.CTA:hover {
+    background: #070707;
+    transform: scale(1.1);
+}
+
+.leftbox {
+    float: left;
+    top: -5%;
+    left: 5%;
+    position: absolute;
+    width: 15%;
+    height: 110%;
+    background: #3a3a3a;
+    box-shadow: 3px 3px 10px rgba(119, 119, 119, .5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+nav a {
+    list-style: none;
+    padding: 35px;
+    color: #FFFFFF;
+    font-size: 2.3em; /* Increased font size for larger icons */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all .3s ease-in-out;
+    text-align: center;
+    margin-top: 2.6em;
+    text-decoration: none;
+
+}
+nav a:hover {
+    color: #a5a5a5;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+nav a:first-child {
+    margin-top: 7px;
+}
+
+.leftbox nav .active {
+    color: #a5a5a5;
+}
+
+.rightbox {
+    float: right;
+    width: 75%;
+    height: 100%;
+    font-size: 2em;
+}
+
+.profile, .payment, .subscription, .privacy, .settings {
+    transition: opacity .5s ease-in;
+    position: absolute;
+    width: 70%;
+}
+
+h1 {
+    font-family: 'Montserrat', sans-serif;
+    color: #070707;
+    font-size: 1.2em;
+    margin-top: 40px;
+    margin-bottom: 35px;
+}
+
+h2 {
+    color: #777777;
+    font-family: 'Roboto', sans-serif;
+    width: 80%;
+    text-transform: uppercase;
+    font-size: 0.7em;
+    letter-spacing: 1px;
+    margin-left: 2px;
+    padding-top: 1em;
+}
+.firstImage{
+    margin: 1em 0px;
+}
+
+.image-container {
+    position: relative;
+    display: inline-block;
+}
+  
+.btn {
+    float: right;
+    font-family: 'Roboto', sans-serif;
+    text-transform: uppercase;
+    font-size: 10px;
+    border: none;
+    color: #070707;
+    cursor: pointer;
+}
+
+.change-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    height: 65%;
+    border-radius: 180px;
+}
+  
+.rightbox .profile .image-container:hover .change-btn {
+    display: block;
+}
+  
+.change-btn i {
+    margin-right: 5px;
+}
+
+.btnSave{
+    border-width: 1px;
+    border-style: solid;
+    border-image: linear-gradient(to right, #000000, rgba(129, 129, 129, 0.5)) 1 0%;
+    border-top: 0;
+    width: 5%;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .7em;
+    padding: 7px 0;
+    color: #070707;
+    margin-top: 2em;
+    float: right;
+    font-family: 'Roboto', sans-serif;
+    text-transform: uppercase;
+    border: none;
+    color: #070707;
+    cursor: pointer;
+    border-radius: 20px;
+}
+
+p , input{
+    border-width: 1px;
+    border-style: solid;
+    border-image: linear-gradient(to right, #000000, rgba(129, 129, 129, 0.5)) 1 0%;
+    border-top: 0;
+    width: 80%;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .7em;
+    padding: 7px 0;
+    color: #070707;
+    padding: 10px 10px;
+}
+span {
+    font-size: .5em;
+    color: #777777;
+}
+input:focus {
+    /* outline: none; */
+    /* border: 1px solid #3FB6A8; */
+}
+
+
+.valid#firstName,
+.valid#lastName,
+.valid#email,
+.valid#phoneNumber {
+    border: 1.7px solid rgb(127, 190, 125);
+    border-radius: 4px; 
+}
+
+.invalid#firstName,
+.invalid#lastName,
+.invalid#email,
+.invalid#phoneNumber {
+    border: 1.7px solid rgb(187, 108, 108);
+    border-radius: 4px; 
+}
+  
+  button.btnSave.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+
+.btn:hover {
+    text-decoration: underline;
+    font-weight: 900;
+}
+
+input {
+    border: 1px solid lighten(#777777, 40%);
+    font-family: 'Roboto', sans-serif;
+    padding: 2px;
+    margin: 0;
+    padding: 6px;
+
+}
+
+.privacy h2 {
+    margin-top: 25px;
+}
+
+.settings h2 {
+    margin-top: 25px;
+}
+
+.noshow {
+    opacity: 0;
+}
+
+footer {
+    position: absolute;
+    width: 20%;
+    bottom: 0;
+    right: -20px;
+    text-align: right;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Roboto', sans-serif;
+}
+footer p {
+    border: none;
+    padding: 0;
+}
+footer a {
+    color: #ffffff;
+    text-decoration: none;
+}
+footer a:hover {
+    color: #7d7d7d;
+}
+
+@media (max-width: 1200px) {
+    .container {
+        width: 95%;
+        height: 800px;
+        margin-top: 5.4em;
+    }
+    .leftbox {
+        width: 20%;
+    }
+    .rightbox {
+        width: 70%;
+        height: 100%;
+    }
+
+    .btnSave{
+        margin-right: 2em;
+        width: 8%;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+        margin-top: 5%;
+        height: 100%;
+        padding-top: 60px; 
+
+    }
+    
+    .leftbox {
+        width: 80%;
+        height: 60px;
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, 0);
+        flex-direction: row;
+        justify-content: center; 
+        padding: 0;
+        z-index: 100;
+    }
+    
+    .rightbox {
+        width: 90%;
+        float: none;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    nav {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    nav a {
+        padding: 0 15px;
+        font-size: 1.5em;
+        height: 60px;
+        margin-top: 0em;
+        margin-right: 2em;
+    }
+    
+    .profile, .payment, .subscription, .privacy, .settings {
+        width: 90%;
+    }
+
+    .btnSave{
+        margin-right: 6.2em;
+        margin-top: 3em;
+    }
+}
+
+
+@media (max-width: 540px) {
+    
+    
+    nav a {
+        margin-right: 1em;
+    }
+
+    .rightbox{
+        width: 100%;
+    }
+    
+    .leftbox {
+        width: 90%;
+    }
+
+    .btnSave{
+        margin-right: 5em;
+        width: 15%;
+    }
+}
+
+@media (max-width: 380px) {
+
+    .btnSave{
+        margin-right: 3em;
+        width: 15%;
+    }
+
+    .leftbox {
+        width: 95%;
+    }
+
+    .rightbox{
+        width: 100%;
+    }
+    
+    
+    nav a {
+        margin-right: 0.5em;
+    }
+    
+}

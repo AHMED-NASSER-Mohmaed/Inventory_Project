@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+    <div class="container">
+        <!-- <div id="logo">
+        </div> -->
+        <div class="leftbox">
+            <nav>
+                <a id="subscription"><i class="fa-solid fa-house"></i></a>
+                <a id="profile" class="active"><i class="fa fa-user"></i></a>
+                <a id="payment"><i class="fa fa-box"></i></a>
+                <a id="settings"><i class="fa-solid fa-shield-halved"></i></a>
+                <a id="privacy"><i class="fa-solid fa-right-from-bracket" style="transform: rotate(180deg);"></i></a>
+            </nav>
+        </div>
+        <div class="rightbox">
+            <div class="profile">
+                <h1>Personal Info</h1>
+                <div class="image-container">
+                    <img [src]="userP" width="100" height="100" style="border-radius: 180px;" class="firstImage" />
+                    <input type="file" class="btn change-btn" style="display: none;" id="imageUpload"
+                        (change)="onImageChange($event)" />
+                    <button class="btn change-btn" (click)="triggerImageUpload()"><i class="fa fa-pencil"></i> Change</button>
+                </div>
+        
+                <form #personalInfoForm="ngForm">
+                    <h2>First Name</h2>
+                    <input type="text" [(ngModel)]="user.firstName" name="firstName" [disabled]="!isEditing" required
+                        minlength="3" #firstName="ngModel"
+                        [ngClass]="{'valid': firstName.valid, 'invalid': firstName.invalid && firstName.touched}"
+                        id="firstName" />
+        
+                    <h2>Last Name</h2>
+                    <input type="text" [(ngModel)]="user.lastName" name="lastName" [disabled]="!isEditing" required
+                        minlength="3" #lastName="ngModel"
+                        [ngClass]="{'valid': lastName.valid, 'invalid': lastName.invalid && lastName.touched}" id="lastName" />
+        
+                    <h2>Phone Number</h2>
+                    <input type="text" [(ngModel)]="user.phoneNumber" name="phoneNumber" [disabled]="!isEditing" required
+                        pattern="^(010|011|012|015)[0-9]{8}$" #phoneNumber="ngModel"
+                        [ngClass]="{'valid': phoneNumber.valid, 'invalid': phoneNumber.invalid && phoneNumber.touched}"
+                        id="phoneNumber" />
+        
+                    <h2>Email</h2>
+                    <input type="email" [(ngModel)]="user.email" name="email" [disabled]="!isEditing" required email
+                        #email="ngModel" [ngClass]="{'valid': email.valid, 'invalid': email.invalid && email.touched}"
+                        id="email" />
+                </form>
+        
+                <button class="btnSave" (click)="handleSaveClick()" [disabled]="personalInfoForm.invalid"
+                    [ngClass]="{'disabled': personalInfoForm.invalid}">
+                    <i class="fa {{ isEditing ? 'fa-check' : 'fa-pencil' }}"></i>
+                </button>
+            </div>
+            <!-- <div class="payment noshow">
+                <h1>Payment Info</h1>
+                <h2>Payment Method</h2>
+                <p>Mastercard •••• •••• •••• 0000 <button class="btn">update</button></p>
+                <h2>Billing Address</h2>
+                <p>1234 Example Ave | Seattle, WA <button class="btn">change</button></p>
+                <h2>Zipcode</h2>
+                <p>999000</p>
+                <h2>Billing History</h2>
+                <p>2018<button class="btn">view</button></p>
+                <h2>Redeem Gift Subscription </h2>
+                <p><input type="text" placeholder="Enter Gift Code" /> <button class="btn">Redeem</button></p>
+            </div>
+        
+            <div class="subscription noshow">
+                <h1>Your Subscription</h1>
+                <h2>Payment Date</h2>
+                <p>05-15-2018 <button class="btn">pay now</button></p>
+                <h2>Your Next Charge</h2>
+                <p>$8.48<span> includes tax</span></p>
+                <h2>Hulu Base Plan</h2>
+                <p>Limited Commercials <button class="btn">change plan</button></p>
+                <h2>Add-ons</h2>
+                <p>None <button class="btn">manage</button></p>
+                <h2>Monthly Recurring Total </h2>
+                <p>$7.99/month</p>
+            </div>
+        
+            <div class="privacy noshow">
+                <h1>Privacy Settings</h1>
+                <h2>Manage Email Notifications<button class="btn">manage</button></h2>
+                <p></p>
+                <h2>Manage Privacy Settings<button class="btn">manage</button></h2>
+                <p></p>
+                <h2>View Terms of Use <button class="btn">view</button></h2>
+                <p></p>
+                <h2>Personalize Ad Experience <button class="btn">update</button></h2>
+                <p></p>
+                <h2>Protect Your Account <button class="btn">protect</button></h2>
+                <p></p>
+            </div>
+            <div class="settings noshow">
+                <h1>Account Settings</h1>
+                <h2>Sync Watchlist to My Stuff<button class="btn">sync</button></h2>
+                <p></p>
+                <h2>Hold Your Subscription<button class="btn">hold</button></h2>
+                <p></p>
+                <h2>Cancel Your Subscription <button class="btn">cancel</button></h2>
+                <p></p>
+                <h2>Your Devices <button class="btn">Manage Devices</button></h2>
+                <p></p>
+                <h2>Referrals <button class="btn">get $10</button></h2>
+                <p></p>
+            </div> -->
+        </div>
+    </div>

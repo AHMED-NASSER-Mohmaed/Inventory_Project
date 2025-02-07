@@ -5,6 +5,7 @@ import { SignupComponent } from './Components/signup/signup.component';
 import { authGuard } from './_guards/auth.guard';
 import { LockComponent } from './Components/lock/lock.component';
 import { auth2Guard } from './_guards/auth2.guard';
+import { UserprofileComponent } from './Components/userprofile/userprofile.component';
 
 export const routes: Routes = [
 
@@ -44,6 +45,12 @@ export const routes: Routes = [
         path: 'lock',
         component: LockComponent,
         title: 'Locked'
+    },
+
+    {
+        path: "profile",
+        component: UserprofileComponent,
+        title: 'Profile',
     }
 
 ];

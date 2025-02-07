@@ -5,26 +5,20 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class CustomersService {
+export class CustomersProfileService {
 
   constructor(public http: HttpClient) { }
 
-  private baseUrl = 'http://localhost:3000';
-
-  getAllCustomers(): Observable<any> {
+  getMe(): Observable<any> {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get('http://127.0.0.1:3000/users', {headers} );
+    return this.http.get('http://127.0.0.1:3000/users/me', {headers} );
   }
 
-  deleteCustomer(id: string): Observable<any> {
+  updateMe(firstName: string , lastName: string , phoneNumber: string , email: string): Observable<any> {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.delete('http://127.0.0.1:3000/users/' + id, {headers});
-  }
-
-  getPaginatedSellers(page: number, limit: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/getSellers?limit=${limit}&page=${page}`);
+    return this.http.patch('http://127.0.0.1:3000/users/updateMe', {firstName, lastName, phoneNumber, email}, {headers});
   }
 }

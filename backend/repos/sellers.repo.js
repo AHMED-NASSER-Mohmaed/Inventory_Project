@@ -1,7 +1,7 @@
 const seller = require("../models/seller.model");
-const inboxResult = require("../utils/apiFeatures");
+const {inboxResult} = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
-const { activeUser } = require("./user.repo");
+// const { activeUser } = require("./user.repo");
 
 
 
@@ -36,8 +36,6 @@ const deactiveFilter = { isActive: false, status: true }
 
 
 module.exports.sellerRepo = {
-
-
 
 
     /**
@@ -150,6 +148,34 @@ module.exports.sellerRepo = {
         return await getSellerByFilter(page, limit, sort, pendingFilter)
     },
 
+    /****************************************************** */
 
+    getSellers:async (filters,sort,page,limit)=>{
+    
+            try{
+                
+                const [results, total] = await Promise.all([
+    
+                    await seller.find(filters)
+                        .sort(sort)
+                        .skip((page - 1) * limit) // (starting index = page-1)*limit
+                        .limit(limit)
+                        .lean(),
+        
+                    await seller.countDocuments(filters).exec()
+                ]);
+        
+                console.log("from repo" , results);
+        
+                return inboxResult(results, total, page, limit);
+    
+               
+    
+    
+    
+            }catch(err){
+                throw err;
+            }
+        }
 
 }

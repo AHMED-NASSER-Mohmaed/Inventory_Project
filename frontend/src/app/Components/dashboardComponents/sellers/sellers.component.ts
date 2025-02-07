@@ -27,11 +27,14 @@ export class SellersComponent {
   totalPages: number = 1;
 
   ngOnInit(): void {
-    this.sub = this.customerService.getAllCustomers().subscribe({
+    this.fetchSellers();
+  }
+
+  fetchSellers(): void {
+    this.sub = this.customerService.getPaginatedSellers(this.currentPage, this.itemsPerPage).subscribe({
       next: (res) => {
-        this.users = res.users.filter((user: User) => user.kind === "Seller");
-        this.totalPages = Math.ceil(this.users.length / this.itemsPerPage);
-        this.updatePaginatedUsers();
+        this.users = res.users;
+        this.totalPages = res.totalPages;
         this.dropdownStates = new Array(this.users.length).fill(false);
       },
       error: (error) => {
@@ -43,23 +46,17 @@ export class SellersComponent {
     });
   }
 
-  updatePaginatedUsers(): void {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    this.paginatedUsers = this.users.slice(startIndex, endIndex);
-  }
-
   nextPage(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
-      this.updatePaginatedUsers();
+      this.fetchSellers();
     }
   }
 
   previousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
-      this.updatePaginatedUsers();
+      this.fetchSellers();
     }
   }
 
@@ -82,7 +79,7 @@ export class SellersComponent {
       next: (res) => {
         console.log(res);
         this.users = this.users.filter((user) => user._id !== id);
-        this.updatePaginatedUsers();
+        this.fetchSellers();
         console.log(this.users);
       },
       error: (error) => {

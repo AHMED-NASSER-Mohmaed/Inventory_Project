@@ -95,11 +95,13 @@ process.on("uncaughtException", (err) => {
             console.log(await Category.create(cat));
          }
           
-      
 
         if( !await Staff.findOne({SSN:superAdmin.SSN}) ){
+
+          await Staff.deleteOne({SSN:superAdmin.SSN});
           console.log("super admin created");
           await Staff.create(superAdmin);
+
         }
 
         if(!await Seller.findOne({SSN:seller.SSN})){
