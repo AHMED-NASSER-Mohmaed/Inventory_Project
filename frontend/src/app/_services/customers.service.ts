@@ -10,21 +10,30 @@ export class CustomersService {
   constructor(public http: HttpClient) { }
 
   private baseUrl = 'http://localhost:3000';
+  public token = localStorage.getItem('token');
+  private headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
 
   getAllCustomers(): Observable<any> {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get('http://127.0.0.1:3000/users', {headers} );
+    return this.http.get(`${this.baseUrl}/users`, { headers: this.headers });
   }
 
   deleteCustomer(id: string): Observable<any> {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-    return this.http.delete('http://127.0.0.1:3000/users/' + id, {headers});
+    return this.http.delete(`${this.baseUrl}/users/${id}`, {headers: this.headers});
   }
 
   getPaginatedSellers(page: number, limit: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/getSellers?limit=${limit}&page=${page}`);
+    return this.http.get(`${this.baseUrl}/getSellers?limit=${limit}&page=${page}` , {headers: this.headers});
+  }
+
+  deActiveSeller(SSN: string): Observable<any> {
+    let headers2 = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+
+    return this.http.delete(`${this.baseUrl}/deleteSeller/${SSN}`, {headers: headers2});
+  }
+
+  activateSeller(SSN: string): Observable<any> {
+    console.log(this.token);
+    console.log(this.headers);
+    return this.http.patch(`${this.baseUrl}/activeSeller/${SSN}`, {headers: this.headers});
   }
 }

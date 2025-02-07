@@ -62,7 +62,7 @@ const deleteMe = catchAsync(async (req, res, next) => {
 });
 
 // Routes
-userRouter.use(AuthMiddleware.protect);
+// userRouter.use(AuthMiddleware.protect);
 
 userRouter.get("/users/me", UserMiddleware.getMe, getUser);
 userRouter.patch("/users/updateMe", updateMe);

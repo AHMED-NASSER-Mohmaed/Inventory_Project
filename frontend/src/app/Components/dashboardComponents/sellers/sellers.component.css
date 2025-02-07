@@ -263,9 +263,6 @@ input:checked + .slider:before {
   border-radius: 50%;
   object-fit: cover;
 }
-:host #content main .table-data .order table tbody tr:hover {
-  background: var(--grey);
-}
 :host #content main .table-data .order table tr td .status {
   font-size: 10px;
   padding: 6px 16px;
@@ -332,10 +329,11 @@ input:checked + .slider:before {
     background-color: var(--dark);
     color: var(--light);
     border: none;
-    padding: 10px 20px;
-    margin: 0 5px;
+    padding: 10px 7px;
+    margin: 0 1%;
     cursor: pointer;
     border-radius: 5px;
+    text-align: center;
   }
   
   .pagination-controls button:disabled {
@@ -358,6 +356,14 @@ input:checked + .slider:before {
     left: 200px;
   }
 
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-left: 50%;
+    transform: translate(-50%);
+  }
+
 }
 
 @media screen and (max-width: 576px) {
@@ -373,6 +379,18 @@ input:checked + .slider:before {
   :host #content main .table-data .order table {
     min-width: 420px;
   }
+
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-left: 90%;
+    /* transform: translate(-50%); */
+  }
+
+  .pagination-controls button {
+  margin: 0 20%;
+  }
 }
 
 @media screen and (max-width: 387px) {
@@ -383,6 +401,18 @@ input:checked + .slider:before {
         height: 25px;
         margin: 10px 0; 
     }
+
+    .pagination-controls {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      margin-left: 120%;
+      /* transform: translate(-50%); */
+    }
+
+    .pagination-controls button {
+      margin-left: 10px;
+      }
     
     .head-flex {
         flex-direction: column;

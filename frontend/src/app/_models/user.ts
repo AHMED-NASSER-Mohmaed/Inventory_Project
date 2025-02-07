@@ -2,11 +2,11 @@ export class User {
 
     constructor(
         public _id: string,
+        public photo: {URL: string , fileId: string},
         public firstName: string,
         public lastName: string,
         public email: string ,
         public phoneNumber: string ,
-        public photo: string,
         public userType: string,
         public kind: string,
         public SSN: string,
@@ -14,7 +14,7 @@ export class User {
         public companyRegistrationNumber: string,
         public createdAt: string,
         public updatedAt: string,
-        public isActive: string
+        public status: string
     ){}
 
 }
