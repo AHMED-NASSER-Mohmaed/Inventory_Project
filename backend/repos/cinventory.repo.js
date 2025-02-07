@@ -39,6 +39,21 @@ class CInventoryRepository {
     }
   }
 
+  async updateInventoriesByProviderId(providerId, companyName) {
+    try {
+      const updateData = {providerName: companyName};
+      const result =  await CInventory.updateMany(
+        { providerID: providerId },
+        updateData,
+        {  runValidators: true }
+      );
+      return result;
+      
+    } catch (err) {
+      throw err;
+    }
+  }
+
 
   async updateInventoryByProductId(productId, updateData) {
     try {

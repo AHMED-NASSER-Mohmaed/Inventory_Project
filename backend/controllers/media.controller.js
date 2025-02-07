@@ -48,6 +48,7 @@ class MediaController {
     const uploadedFiles = Array.isArray(req.files.image)
       ? req.files.image
       : [req.files.image];
+    
     const folder = req.body.folder.toLowerCase() || "/";
 
     const uploadPayload = uploadedFiles.map( function(file){ 

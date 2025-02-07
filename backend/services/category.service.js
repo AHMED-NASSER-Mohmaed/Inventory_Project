@@ -35,7 +35,7 @@ class CategoryService {
 
     async updateCategoryById(categoryId, updateData) {
         try {
-            const category = await CategoryRepository.updateCategoryById(categoryId, updateData);
+            const category = await CategoryRepository.updateCategoryById(categoryId, updateData); // no need to update since we're using ref on the products scheme
             if (!category) {
                 throw new AppError('Category not found', 404);
             }
@@ -48,6 +48,18 @@ class CategoryService {
     async deleteCategoryById(categoryId) {
         try {
             const category = await CategoryRepository.deleteCategoryById(categoryId);
+            if (!category) {
+                throw new AppError('Category not found', 404);
+            }
+            return category;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async activateCategoryById(categoryId) {
+        try {
+            const category = await CategoryRepository.activateCategoryById(categoryId);
             if (!category) {
                 throw new AppError('Category not found', 404);
             }
