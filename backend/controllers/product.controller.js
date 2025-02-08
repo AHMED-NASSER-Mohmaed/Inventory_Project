@@ -75,7 +75,11 @@ class ProductController {
       "/getProducts",
       validatorForQueries(this.allowedFilterFileds, this.allowedFileterFildesValues, this.allowedSortFileds, this.allowedSortFiledsValues),
       catchAsync(this.getProducts),
+    )
 
+    this.router.patch(
+      "/updateProductMedia",
+      catchAsync(this.updateProductMedia)
     )
 
   }
@@ -98,7 +102,7 @@ class ProductController {
 
     // console.log("i am here guy..");
 
-    let filters = { _id: req.query.catId, isActive: true }
+    let filters = { _id: req.query.catId , isActive: true }
 
     let arrOfChlidCat = await categoryService.getCategoies(filters);
 
@@ -112,7 +116,10 @@ class ProductController {
     req.validatedParams['projection']={ "isActive":0,
       "status": 0,
       "createdAt": 0,
-      "updatedAt": 0};
+      "updatedAt": 0,
+      "category" : 0,  
+      "sellerId" : 0,
+    };
 
     let result = await productService.getProducts(req.validatedParams);
 
@@ -218,13 +225,15 @@ class ProductController {
     });
   }
 
-  async updateProductImages(res,req,next){
+  async updateProductMedia(res,req,next){
 
     if(!req.params.id) // product id 
       throw new AppError("invalid parameter",APP_CONFIG.HTTP_BAD_REQUEST);
 
     
     const oldImages= (await productService.getProductById(req.params.id)).images;
+
+    console.log(oldImages);
 
 
 
