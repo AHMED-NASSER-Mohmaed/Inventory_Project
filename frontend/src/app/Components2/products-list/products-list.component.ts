@@ -1,67 +1,55 @@
-import { Component } from '@angular/core';
-// import { HeaderComponent } from "../../core/header/header.component";
+import { Component, OnInit } from '@angular/core';
 import { ProductsService } from '../../_services/products.service';
-import { Product } from '../../_models/products';
-import { OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-products-list',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './products-list.component.html',
-  styleUrl: './products-list.component.css'
+  styleUrls: ['./products-list.component.css']  // Corrected styleUrl to styleUrls
 })
 export class ProductsListComponent implements OnInit {
   products: any;
-  products2:any;
-
-  categories:any;
-  categories2:any;
-
+  products2: any;
+  categories: any;
+  categories2: any;
+  activeCategory: any;
+  selectedCategoryId: string | null = null; 
+  brandsByCategory:any;
 
   constructor(private productsService: ProductsService) { }
 
   ngOnInit(): void {
     this.productsService.getAll().subscribe({
-
       next: (data) => {
-
-        console.log(data);
-         this.products = data;
-         console.log(this.products);
-         this.products2=this.products.products;
-         console.log(this.products2);
-
+        this.products = data;
+        this.products2 = this.products.products;
       },
       error: (error) => {
         console.error('Error fetching products', error);
       }
     });
 
-
     this.productsService.getAllcategories().subscribe({
-
       next: (data) => {
-
-        console.log(data);
-         this.categories = data;
-         console.log(this.categories);
-         this.categories2=this.categories.categories;
-         console.log(this.categories2);
-
+        this.categories = data;
+        this.categories2 = this.categories.categories;
+        this.activeCategory = this.categories2.filter((obj: { parentCatId: any }) => obj.parentCatId === null);
       },
       error: (error) => {
-        console.error('Error fetching products', error);
+        console.error('Error fetching categories', error);
       }
     });
   }
 
- 
-  
+  onCategoryChange(value: string | null): void {
+    if (value !== null) {
+      this.selectedCategoryId = value;
+      this.brandsByCategory = this.categories2.filter((obj: { parentCatId: any }) => obj.parentCatId === this.selectedCategoryId);
 
-
-
-
+      console.log('Selected brand ID:', this.brandsByCategory);
+    }
+  }
 }

@@ -16,7 +16,8 @@
 }
 
 .filter-btn {
-    width: 90%;
+    margin: 10px;
+    width: 40%;
     border-radius: 0.25rem;
     color: white;
     background-color: #85411c;
