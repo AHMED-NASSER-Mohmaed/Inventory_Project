@@ -353,31 +353,49 @@ const customerOp = {
 
     updateProfileImage: async function (req, res, next) {
 
-       if(!req.params.id)
-        throw new AppError("invalid parameter",APP_CONFIG.HTTP_BAD_REQUEST);
-    
-        const oldFileId= await userService.getUserImageId(req.params.id);
+
+        let isFaildToUpload = false , imageInfo=null;
+        let error = null;
+
+        if (!req.params.id)
+            throw new AppError("invalid parameter", APP_CONFIG.HTTP_BAD_REQUEST);
+
+        const oldFileId = await userService.getUserImageId(req.params.id);
 
         console.log(oldFileId);
 
-        //delete image from imagekit  if user it's not the default image
-        if ( !(oldFileId['photo']['fileId'] ===  APP_CONFIG.UDIAMGE_ID_VALUE)   ){
-            console.log("the one that is exist is not equal to the default one");
-            console.log(await deleteFile(oldFileId['photo']['fileId']));
-        }
- 
-        const imageInfo = await upload(req.files, APP_CONFIG.PROFILE_IMAGE_FOLDER);
+        try {
+            //delete image from imagekit  if user it's not the default image
+            if (!(oldFileId['photo']['fileId'] === APP_CONFIG.UDIAMGE_ID_VALUE)) {
+                console.log("the one that is exist is not equal to the default one");
+                await deleteFile(oldFileId['photo']['fileId']);
+            }
 
-        if (!imageInfo) {
-            await userService.updateUserImage(id,APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
-            throw new AppError("something went wrong", APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
+            imageInfo = await upload(req.files, APP_CONFIG.PROFILE_IMAGE_FOLDER);
+            const result = await userService.updateUserImage(req.params.id, imageInfo['files'][0]);
+            sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+
+        } catch (err) {
+            error = err;
+        } finally {
+
+            if (!imageInfo) {
+                await userService.updateUserImage(id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
+                throw new AppError("something went wrong", APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
+            }
+
+
+            if (error != null) {
+                throw error;
+            }
+
         }
 
-        console.log("===>",imageInfo['files'][0]);
+
+
+        // console.log("===>",imageInfo['files'][0]);
         //this line may be throw an exception from database.
-        const result = await userService.updateUserImage(req.params.id, imageInfo['files'][0]);
 
-        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 
     },
 
