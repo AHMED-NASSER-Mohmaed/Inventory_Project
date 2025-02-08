@@ -1,0 +1,97 @@
+<div class="container-fluid">
+    <div class="row">
+       <!-- Sidebar Column -->
+<div class="col-md-4 col-lg-3">
+    <aside class="sidebar pt-4 bg-light">
+        <p  class="filterHeader">Filter by</p>
+        <hr>
+        <!-- Gender  -->
+        <div class="mb-3">
+            <label class="form-label">Gender</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="gender" value="men" id="genderMen">
+                <label class="form-check-label" for="genderMen">
+                    Male
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="gender" value="women" id="genderWomen">
+                <label class="form-check-label" for="genderWomen">
+                    Female
+                </label>
+            </div>
+            <hr>
+        </div>
+        
+
+        <!-- Price Filter -->
+        <!-- <div class="mb-3">
+            <label for="priceRange" class="form-label">Price</label>
+            <input type="range" class="form-range" id="priceRange" min="0" max="500" oninput="priceOutput.value = priceRange.value">
+            <output id="priceOutput">250</output> Le
+        </div> -->
+
+        <!-- Brand  -->
+        <div class="mb-3">
+            <label class="form-label">Brands</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="brand" value="brand1" id="brand1">
+                <label class="form-check-label" for="brand1">
+                    Casio
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="brand" value="brand2" id="brand2">
+                <label class="form-check-label" for="brand2">
+                    Tommy
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="brand" value="brand3" id="brand3">
+                <label class="form-check-label" for="brand3">
+                    Rolex
+                </label>
+            </div>
+        </div>
+        
+        <!-- Filter Button -->
+        <button class="btn filter-btn" type="button">Apply Filters</button>
+    </aside>
+</div>
+
+
+        <!-- Page Content  -->
+        <div class="col-md-8 col-lg-9">
+            <div class="row">
+                <!-- Product Column -->
+                <div *ngFor="let product of products2"  class="col-md-4">
+                    <div class="image-container position-relative">
+                        <img src="assets/12-300x300.png" class="card-img-top product-img" alt="...">
+                        <div class="overlay-icons">
+                            <a class="product-item product-link product-icon" href="#"><i class="fas fa-heart"></i></a>
+                            <a class="product-item product-link product-icon" href="#"><i class="fas fa-eye"></i></a>
+                        </div>
+                        <button class="btn add-to-cart-btn">Add to Cart</button>
+                    </div>
+                    <div class="img-body">
+                        <h5 class="card-title">{{product.name}}</h5>
+                        <p class="card-price">{{product.price}} le</p>
+                        <p class="card-seller">Sold by: {{product.sellerName}}</p>
+                    </div>
+                </div>
+
+
+
+    
+
+
+            </div>
+        </div>
+
+
+
+        
+
+
+    </div>
+</div>

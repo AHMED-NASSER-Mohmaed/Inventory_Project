@@ -6,12 +6,23 @@ import { authGuard } from './_guards/auth.guard';
 import { LockComponent } from './Components/lock/lock.component';
 import { HeaderComponent } from './core/header/header.component';
 import { SliderComponent } from './Components2/HomePage/slider/slider.component';
-import { CategoryComponent } from './Components2/category/category.component';
-import { FeaturedProductsComponent } from './Components2/featured-products/featured-products.component';
-import { SaleComponent } from './Components2/sale/sale.component';
+
+import { FeaturedProductsComponent } from './Components2/HomePage/featured-products/featured-products.component';
+import { SaleComponent } from './Components2/HomePage/sale/sale.component';
+import { CategoryComponent } from './Components2/HomePage/category/category.component';
 import { FooterComponent } from './core/footer/footer.component';
+import { ProductsComponent } from './Components/dashboardComponents/products/products.component';
+import { ProductsListComponent } from './Components2/products-list/products-list.component';
+import { LandingPageComponent } from './Components2/HomePage/landing-page/landing-page.component';
 
 export const routes: Routes = [
+
+
+    {
+
+        path:'LandingPage',
+        component:LandingPageComponent,
+    },
     {
         path:'header',
         component: HeaderComponent,
@@ -25,9 +36,9 @@ export const routes: Routes = [
     ,
 
     {
-        path: 'Featured',
-        component:FeaturedProductsComponent,
-        }
+        path: 'featured-products',
+        component: FeaturedProductsComponent
+    }    
 ,
     {
         path: 'category',
@@ -50,10 +61,18 @@ export const routes: Routes = [
 
     },
 
+   {
+    path:'products',
+    component:ProductsListComponent,
+   }
+   ,
+
+
+
     {
         // default route
         path: '',
-        redirectTo:'footer',
+        redirectTo:'LandingPage',
         pathMatch:'full'
     },
 
@@ -94,3 +113,7 @@ export const routes: Routes = [
 
 
 ];
+
+
+
+
