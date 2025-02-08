@@ -1,17 +1,9 @@
 const User = require("../models/user.model");
 const AppError = require("../utils/appError");
-const {inboxResult}=require("../utils/apiFeatures");
-
+const {inboxResult,checkIfAttributeExists}=require("../utils/apiFeatures");
+const { throttle } = require("lodash");
 
 class UserRepository {
-  //done -----------------------
-  async getAllUsers() {
-    try {
-      return await User.find({}, { userType: "customer" });
-    } catch (error) {
-      throw error;
-    }
-  }
 
   //checking rule if manger - > create seller , cashier , clerk , customer
   //check rule if super admin - >manager seller , cashier , clerk , customer
@@ -31,7 +23,9 @@ class UserRepository {
   //done ------------------
   async createUser(userData) {
     try {
+      
       return await User.create(userData);
+      
     } catch (error) {
       throw error;
     }
@@ -125,17 +119,20 @@ class UserRepository {
   }
 
 
+  //pagination
   async getCustomers(filters, sort, page, limit) {
+
+    console.log(sort);
+
 
     try {
 
       const [results, total] = await Promise.all([
-
         await User.find(filters)
           .sort(sort)
           .skip((page - 1) * limit) // (starting index = page-1)*limit
-          .limit(limit)
-          .lean(),
+          .limit(limit).select("-__v")
+          ,
 
         await User.countDocuments(filters).exec()
 
@@ -150,6 +147,34 @@ class UserRepository {
     }
   }
 
+
+  async updateUserImage(userId,imageInfo){
+
+    try{
+
+      console.log("image info : ",imageInfo,"from repo");
+       return await User.updateOne({_id:userId},{"photo":imageInfo});
+    }catch(err){
+      throw err;
+    }
+
+  }
+
+  async isAttributeExists(userId,name,value){
+    return await checkIfAttributeExists(User,userId,name,value);
+  }
+
+  async getUserImageId(userId){
+
+    try{
+
+      return await User.findById({_id:userId},{"photo.fileId":1, "_id":0});
+
+    }catch(err){
+      throw err;
+    }
+
+  }
 
 
 

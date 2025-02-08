@@ -12,6 +12,7 @@ const Seller=require("./models/seller.model");
 const Category = require("./models/category.model");
 
 const Supplier = require("./models/supplier.model");
+const User = require("./models/user.model");
 
 const port = APP_CONFIG.HTTP_PORT || 5000;
 
@@ -48,6 +49,10 @@ process.on("uncaughtException", (err) => {
           role:"super_admin",
         }
       
+        // console.log("delete all",await User.find({userType:"customer"}));
+        // console.log("delete all",await User.find({userType:"staff"}));
+        // console.log("delete all",await User.find({userType:"seller"}));
+
         let seller={
           "firstName": "ahmed",
           "lastName": "nasser",
@@ -95,12 +100,12 @@ process.on("uncaughtException", (err) => {
             console.log(await Category.create(cat));
          }
           
-
-        if( !await Staff.findOne({SSN:superAdmin.SSN}) ){
-
-          await Staff.deleteOne({SSN:superAdmin.SSN});
-          console.log("super admin created");
-          await Staff.create(superAdmin);
+         
+         if( !await Staff.findOne({SSN:superAdmin.SSN}) ){
+           
+           // await Staff.deleteOne({SSN:superAdmin.SSN});
+           console.log("super admin created");
+           await Staff.create(superAdmin);
 
         }
 

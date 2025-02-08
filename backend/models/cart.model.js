@@ -12,6 +12,8 @@ const CartSchema = new mongoose.Schema({
     ],
     
     customerId : { type : [mongoose.Schema.ObjectId,"not valid user id"] , required:true , },
+    // session id 
+    // 
 
     isGuest:{ type:Boolean , default:false },
 

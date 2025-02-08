@@ -4,10 +4,6 @@ const validator = require("validator");
 const SupplierSchema = new mongoose.Schema({
     
     companyName: { type: String, required: [true , "please provide a company name"] , unique:true,
-      validate:{
-        validator:uniquenessVal("companyName"),
-        message: "company name is aleardy exist. Please use a different company name."
-      }
      },
 
     email: { type: String, required:[true,"please provide a email"], unique: true,
@@ -16,13 +12,10 @@ const SupplierSchema = new mongoose.Schema({
     ,
 
     phoneNumber: { type: String, required:[true,"please provide a company name"], unique:true,
-      validate: {
-        validator: uniquenessVal('phoneNumber'),
-        message: "Phone number already exists. Please use a different phone number.", // Custom error message
-      }
      },
 
     companyRegistrationNumber: { type: String, required: true, unique:true },
+    isActive: {type: Boolean, default: true}
     
   });
   

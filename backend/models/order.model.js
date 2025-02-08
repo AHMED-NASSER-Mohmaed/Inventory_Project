@@ -7,8 +7,8 @@ const OrderSchema = new mongoose.Schema({
       enum: [
         "Pending",
         "preparing",
-        "OnComplete",
-        "Completed",
+        // "OnComplete",
+        "Completed", //prepared 
         "OnTheWay",
         "Delivered",
         "Cancelled",
@@ -16,22 +16,24 @@ const OrderSchema = new mongoose.Schema({
       default: "Pending",
     },
     products:[ 
-    {
-	    productId:{type:mongoose.Schema.ObjectId, required:true , unique:true},
-        //we will set this var with undefined when we are going to set order via internet for seller.
-	    productName:{type:String},
-	    productCode:{type:number},
-	    productImage:{ type:String , default:"default.png" },
-	    price:{type:Number},
-	    totalPrice:{type:String},
-	    requiredQty:{type:number,},
-	    isAvailable:{type:Boolean , default:true},
-    
-    },
+      {
+        productId:{type:mongoose.Schema.ObjectId, required:true , unique:true },
+          //we will set this var with undefined when we are going to set order via internet for seller.
+        productName:{type:String},
+        productCode:{type:number},
+        productImage:{ type:String , default:"default.png" },
+        price:{type:Number},
+        totalPrice:{type:String},
+        requiredQty:{type:number,},
+        isAvailable:{type:Boolean , default:true },
+      
+      },
     ],
+
+    clerkId: {  type: String, required: true },
     totalPrice:{type:number , },
     totalQty:{type:number,},
-    isAllAvailable:{ type:Boolean , default:true }
+    // isAllAvailable : { type:Boolean , default:true }
     
 }, {
     timestamps: true,
