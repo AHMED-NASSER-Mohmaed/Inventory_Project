@@ -67,7 +67,7 @@ const userSchema = new mongoose.Schema(
       enum: ["staff", "customer", "seller"],
       required: true,
       default: "customer",
-      select:false,
+      // select:false,
     },
     isActive: {
       type: Boolean,

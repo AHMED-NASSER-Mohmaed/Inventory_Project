@@ -3,7 +3,9 @@ const productService = require("../services/product.service");
 const AuthMiddleware = require("../middlewares/auth.middleware");
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
-const pro_res=require("../utils/authMiddlewaresOptions")
+const pro_res = require("../utils/authMiddlewaresOptions")
+const { validatorForQueries } = require("../middlewares/validation.middlewares");
+const categoryService = require("../services/category.service");
 
 class ProductController {
   constructor() {
@@ -14,10 +16,10 @@ class ProductController {
   initializeRoutes() {
 
 
-    this.router.post("/addProduct",pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),catchAsync(this.addProductForStaff))
+    this.router.post("/addProduct", pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(this.addProductForStaff))
 
 
-    this.router.post("/addProductSeller",pro_res(APP_CONFIG.SELLER),catchAsync(this.addProductForSeller))
+    this.router.post("/addProductSeller", pro_res(APP_CONFIG.SELLER), catchAsync(this.addProductForSeller))
 
 
 
@@ -69,26 +71,72 @@ class ProductController {
       );
 
 
+    this.router.get(
+      "/getProducts",
+      validatorForQueries(this.allowedFilterFileds, this.allowedFileterFildesValues, this.allowedSortFileds, this.allowedSortFiledsValues),
+      catchAsync(this.getProducts),
+
+    )
+
   }
 
 
 
-  
-  async addProductForSeller(req,res,next){
-    const product=await productService.createProductForSeller(req.user,req.body);
+  //filters --> by category
+  //  input [cat id] 
+  // sort by peice --> incommig feature numbver of sales 
+  //input is [price] = ['asc' , "desc"] 
+
+
+  allowedFilterFileds = ["isActive", "status", 'undefined']
+  allowedFileterFildesValues = ["true", 'undefined']
+
+  allowedSortFileds = ['price']
+  allowedSortFiledsValues = ['asc', 'desc'];
+
+  async getProducts(req, res, next) {
+
+    // console.log("i am here guy..");
+
+    let filters = { _id: req.query.catId, isActive: true }
+
+    let arrOfChlidCat = await categoryService.getCategoies(filters);
+
+    if (!arrOfChlidCat.length)
+      throw new AppError("invalid category id ", APP_CONFIG.HTTP_NOT_FOUND);
+
+    req.validatedParams['filters']['category'] = arrOfChlidCat;
+    req.validatedParams['filters']['isActive'] = true;
+    req.validatedParams['filters']['status'] = true;
+
+    req.validatedParams['projection']={ "isActive":0,
+      "status": 0,
+      "createdAt": 0,
+      "updatedAt": 0};
+
+    let result = await productService.getProducts(req.validatedParams);
+
+    res.status(200).json({
+      message: "success",
+      result,
+    })
+  }
+
+  async addProductForSeller(req, res, next) {
+    const product = await productService.createProductForSeller(req.user, req.body);
 
     res.status(APP_CONFIG.HTTP_CREATED).json({
-      message:"success",
+      message: "success",
       product
 
     })
   }
 
-  async addProductForStaff(req,res,next){
-    const product=await productService.createProductForStaff(req.body);
+  async addProductForStaff(req, res, next) {
+    const product = await productService.createProductForStaff(req.body);
 
     res.status(APP_CONFIG.HTTP_CREATED).json({
-      message:"success",
+      message: "success",
       product
 
     })
@@ -169,6 +217,51 @@ class ProductController {
       product,
     });
   }
+
+  async updateProductImages(res,req,next){
+
+    if(!req.params.id) // product id 
+      throw new AppError("invalid parameter",APP_CONFIG.HTTP_BAD_REQUEST);
+
+    
+    const oldImages= (await productService.getProductById(req.params.id)).images;
+
+
+
+
+  }
+/*
+    async function (req, res, next) {
+
+    if(!req.params.id)
+     throw new AppError("invalid parameter",APP_CONFIG.HTTP_BAD_REQUEST);
+ 
+     const oldFileId= await userService.getUserImageId(req.params.id);
+
+     console.log(oldFileId);
+
+     //delete image from imagekit  if user it's not the default image
+     if ( !(oldFileId['photo']['fileId'] ===  APP_CONFIG.UDIAMGE_ID_VALUE)   ){
+         console.log("the one that is exist is not equal to the default one");
+         console.log(await deleteFile(oldFileId['photo']['fileId']));
+     }
+
+     const imageInfo = await upload(req.files, APP_CONFIG.PROFILE_IMAGE_FOLDER);
+
+     if (!imageInfo) {
+         await userService.updateUserImage(id,APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
+         throw new AppError("something went wrong", APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
+     }
+
+     console.log("===>",imageInfo['files'][0]);
+     //this line may be throw an exception from database.
+     const result = await userService.updateUserImage(req.params.id, imageInfo['files'][0]);
+
+     sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+
+ },
+*/
+
 }
 
 module.exports = new ProductController().router;

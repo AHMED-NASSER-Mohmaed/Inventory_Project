@@ -1,8 +1,9 @@
+const { filter } = require('lodash');
 const Product = require('../models/product.model');
 const AppError = require('../utils/appError');
-
+const { inboxResult } = require("../utils/apiFeatures")
 class ProductRepository {
-  
+
   async createProduct(productData) {
     try {
       const product = await Product.create(productData);
@@ -15,7 +16,9 @@ class ProductRepository {
 
   async getProductById(productId) {
     try {
-      const product = await Product.findById(productId).select('-createdAt -updatedAt -__v'); //  .populate() has been removed since there's no ref anymore
+      const product = await Product.findById(productId)
+        .select('-__v')
+        .populate("category") //has been removed since there's no ref anymore
       return product;
     } catch (err) {
       throw err;
@@ -24,7 +27,7 @@ class ProductRepository {
 
   async getAllProducts() {
     try {
-      const products = await Product.find().select('-createdAt -updatedAt -__v'); //  .populate() has been removed since there's no ref anymore
+      const products = await Product.find().select('-__v').populate() //has been removed since there's no ref anymore
       return products;
     } catch (err) {
       throw err;
@@ -33,7 +36,9 @@ class ProductRepository {
 
   async updateProductById(productId, updateData) {
     try {
-      const product = await Product.findByIdAndUpdate(productId, updateData, { new: true, runValidators: true }).select('-createdAt -updatedAt -__v');
+      const product = await Product.findByIdAndUpdate(productId, updateData, { new: true, runValidators: true })
+        .select('-__v')
+        .populate("category");
       return product;
     } catch (err) {
       throw err;
@@ -58,7 +63,7 @@ class ProductRepository {
         productId,
         { isActive: false },
         { new: true }
-      ).select('-createdAt -updatedAt -__v');;
+      ).select('-__v').populate("category");
       return product;
     } catch (err) {
       throw err;
@@ -77,7 +82,7 @@ class ProductRepository {
   async getProductsByCategoryForEndUser(categoryId) { // for gusts & customers
     try {
       const products = await Product.find({ category: categoryId, isActive: true })
-        //.select('-createdAt -updatedAt -__v'); // - means to exclude if you wanna include don't use -
+      //.select('-createdAt -updatedAt -__v'); // - means to exclude if you wanna include don't use -
       return products;
     } catch (err) {
       throw err;
@@ -87,7 +92,7 @@ class ProductRepository {
   async getProductsByCategoryForDeactivatedProducts(categoryId) { // for super admin, admin, seller
     try { // to be used later
       const products = await Product.find({ category: categoryId, isActive: false })
-        //.select('-createdAt -updatedAt -__v'); // - means to exclude if you wanna include don't use -
+      //.select('-createdAt -updatedAt -__v'); // - means to exclude if you wanna include don't use -
       return products;
     } catch (err) {
       throw err;
@@ -97,7 +102,7 @@ class ProductRepository {
   async getProductsByCategoryForStaff(categoryId) {
     try {
       const products = await Product.find({ category: categoryId }) // so the seller and the admin can be able to handle the isActive and for the admin to handle the status of the pending products
-        //.select('-createdAt -updatedAt -__v'); // - means to exclude if you wanna include don't use -
+      //.select('-createdAt -updatedAt -__v'); // - means to exclude if you wanna include don't use -
       return products;
     } catch (err) {
       throw err;
@@ -106,8 +111,8 @@ class ProductRepository {
 
   async getProductsByCategoryForSeller(categoryId, sellerId_) {
     try {
-      const products = await Product.find({ category: categoryId, sellerId:  sellerId_}) // so the seller and the admin can be able to handle the isActive and for the admin to handle the status of the pending products
-        //.select('-createdAt -updatedAt -__v'); // - means to exclude if you wanna include don't use -
+      const products = await Product.find({ category: categoryId, sellerId: sellerId_ }) // so the seller and the admin can be able to handle the isActive and for the admin to handle the status of the pending products
+      //.select('-createdAt -updatedAt -__v'); // - means to exclude if you wanna include don't use -
       return products;
     } catch (err) {
       throw err;
@@ -126,7 +131,7 @@ class ProductRepository {
     }
   }
 
-  async approveProductForSeller(productId){
+  async approveProductForSeller(productId) {
     try {
       let product = await Product.findByIdAndUpdate(
         productId,
@@ -140,7 +145,7 @@ class ProductRepository {
     }
   }
 
-  async activateProduct(productId){
+  async activateProduct(productId) {
     try {
       const product = await Product.findByIdAndUpdate(
         productId,
@@ -153,8 +158,47 @@ class ProductRepository {
     }
   }
 
+  async getProducts(page, limit, sort, filters, prjection={}) {
+    try {
 
-  
+      const [results, total] = await Promise.all([
+
+        await Product.find({
+
+          isActive: filters['isActive'], // Ensure filters['isActive'] is defined
+          status: filters['status'],     // Ensure filters['status'] is defined
+          category: { $in: filters['category'] } // Ensure filters['category'] is an array
+
+        },prjection)
+          .sort(sort)
+          .skip((page - 1) * limit) // (starting index = page-1)*limit
+          .limit(limit)
+          .select("-__v")
+          .populate("category")
+          .lean()
+        ,
+
+        await Product.countDocuments({
+
+          isActive: filters['isActive'], // Ensure filters['isActive'] is defined
+          status: filters['status'],     // Ensure filters['status'] is defined
+          category: { $in: filters['category'] } // Ensure filters['category'] is an array
+
+        }).exec()
+
+      ]);
+
+      return inboxResult(results, total, page, limit);
+
+    } catch (err) {
+      throw err;
+    }
+
+
+
+  }
+
+
 }
 
 module.exports = new ProductRepository();

@@ -50,13 +50,14 @@ const validatorForQueries = (allowedFilter, allowedFilterValues, allowedSort) =>
     // Validate sort (optional)
     let sort = { createdAt: -1 }; // Default sort
 
-    if (req.query.sort) {
+    console.log("sort from req :",req.query.sort)
 
+    if (req.query.sort) {
       try {
 
         const [field, order] = req.query.sort.split(':'); // Split field and order
 
-        console.log(field,order,allowedSort);
+        console.log("from her ",field,order,allowedSort);
 
 
 
@@ -64,7 +65,7 @@ const validatorForQueries = (allowedFilter, allowedFilterValues, allowedSort) =>
           
           sort = { [field]: order === 'asc' ? 1 : -1 }; // Set sort object
 
-          // console.log("wellcome",sort)
+          console.log("wellcome",sort)
         } else {
           throw new AppError("Invalid sort field", APP_CONFIG.HTTP_BAD_REQUEST )
         }
@@ -77,16 +78,13 @@ const validatorForQueries = (allowedFilter, allowedFilterValues, allowedSort) =>
 
     }
 
-    // console.log("a7a:",req.query.filters);
+    console.log("a7med:",req.query.filters);
 
     let filters = {}
 
     if (req.query.filters) {
 
       try {
-
-       
-
         let filterObjects = [];
         
         filterObjects = req.query.filters.split(' ');
@@ -96,15 +94,13 @@ const validatorForQueries = (allowedFilter, allowedFilterValues, allowedSort) =>
         
         filterObjects.forEach(element => {
           [field, value] = element.split(":");
-          
-          
           if ( !(allowedFilter.includes(field) && allowedFilterValues.includes(value)) ) {
+           
             throw new AppError( "Invalid filter fields",APP_CONFIG.HTTP_BAD_REQUEST)
              
           }
 
           filters[field] = value; // insert filter objects
-
         });
 
       } catch (e) {
