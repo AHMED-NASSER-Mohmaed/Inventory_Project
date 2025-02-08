@@ -128,7 +128,6 @@ class ProductController {
 
   async addProductForSeller(req, res, next) {
     const product = await productService.createProductForSeller(req.user, req.body);
-
     res.status(APP_CONFIG.HTTP_CREATED).json({
       message: "success",
       product
