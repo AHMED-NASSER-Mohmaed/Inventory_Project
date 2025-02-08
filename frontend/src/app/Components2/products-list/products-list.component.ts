@@ -17,6 +17,10 @@ export class ProductsListComponent implements OnInit {
   products: any;
   products2:any;
 
+  categories:any;
+  categories2:any;
+
+
   constructor(private productsService: ProductsService) { }
 
   ngOnInit(): void {
@@ -35,9 +39,26 @@ export class ProductsListComponent implements OnInit {
         console.error('Error fetching products', error);
       }
     });
+
+
+    this.productsService.getAllcategories().subscribe({
+
+      next: (data) => {
+
+        console.log(data);
+         this.categories = data;
+         console.log(this.categories);
+         this.categories2=this.categories.categories;
+         console.log(this.categories2);
+
+      },
+      error: (error) => {
+        console.error('Error fetching products', error);
+      }
+    });
   }
 
-
+ 
   
 
 
