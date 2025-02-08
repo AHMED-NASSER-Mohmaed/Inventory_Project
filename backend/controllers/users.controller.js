@@ -380,7 +380,16 @@ const customerOp = {
 
             if (!imageInfo) {
                 await userService.updateUserImage(id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
+<<<<<<< HEAD
                 throw new AppError(error.message, APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
+=======
+                throw new AppError("something went wrong", APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
+            }
+
+
+            if (error != null) {
+                throw error;
+>>>>>>> main
             }
 
         }
