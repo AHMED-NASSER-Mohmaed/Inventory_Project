@@ -3,7 +3,8 @@ const productService = require("../services/product.service");
 const AuthMiddleware = require("../middlewares/auth.middleware");
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
-const pro_res=require("../utils/authMiddlewaresOptions")
+const pro_res = require("../utils/authMiddlewaresOptions");
+const reviewRouter = require("./review.controller");
 
 class ProductController {
   constructor() {
@@ -12,20 +13,22 @@ class ProductController {
   }
 
   initializeRoutes() {
+    this.router.use("/products/:productId/reviews", reviewRouter);
 
-
-    this.router.post("/addProduct",pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),catchAsync(this.addProductForStaff))
-
-
-    this.router.post("/addProductSeller",pro_res(APP_CONFIG.SELLER),catchAsync(this.addProductForSeller))
-
-
-
-    // public routes: no need for authentication 
-    this.router.get(
-      "/products",
-      catchAsync(this.getAllProducts)
+    this.router.post(
+      "/addProduct",
+      pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+      catchAsync(this.addProductForStaff)
     );
+
+    this.router.post(
+      "/addProductSeller",
+      pro_res(APP_CONFIG.SELLER),
+      catchAsync(this.addProductForSeller)
+    );
+
+    // public routes: no need for authentication
+    this.router.get("/products", catchAsync(this.getAllProducts));
 
     this.router.get(
       "/productsByCategory/:categoryId",
@@ -33,20 +36,17 @@ class ProductController {
     );
 
     this.router.get(
-      "/productsByCategoryForSellerStaff/:categoryId", // just for the seller and the admin could handle the deactivated products 
+      "/productsByCategoryForSellerStaff/:categoryId", // just for the seller and the admin could handle the deactivated products
       // and for the admin only to handle the pending products from the seller to be presented on our store
       pro_res(APP_CONFIG.SELLER, APP_CONFIG.ADMIN, APP_CONFIG.SUPPERADMIN),
       catchAsync(this.getProductsByCategoryForSellerAndStaff)
     );
 
-    this.router.get(
-      "/products/:productId",
-      catchAsync(this.getProduct)
-    );
+    this.router.get("/products/:productId", catchAsync(this.getProduct));
 
     this.router.patch(
       "/products/approve/:productId",
-      pro_res(APP_CONFIG.ADMIN, APP_CONFIG.SUPPERADMIN), // only the admin or the super admin can accept the pending products to be presented on our store 
+      pro_res(APP_CONFIG.ADMIN, APP_CONFIG.SUPPERADMIN), // only the admin or the super admin can accept the pending products to be presented on our store
       catchAsync(this.approveProductForSeller)
     );
 
@@ -56,7 +56,6 @@ class ProductController {
       catchAsync(this.activateProduct)
     );
 
-
     this.router
       .route("/products/:productId")
       .patch(
@@ -64,34 +63,30 @@ class ProductController {
         catchAsync(this.updateProduct)
       )
       .delete(
-        pro_res(APP_CONFIG.SELLER, APP_CONFIG.ADMIN, APP_CONFIG.SUPPERADMIN),  // this will be commented temporarily to test the crud operations first without constraints but it has to be uncommented later
+        pro_res(APP_CONFIG.SELLER, APP_CONFIG.ADMIN, APP_CONFIG.SUPPERADMIN), // this will be commented temporarily to test the crud operations first without constraints but it has to be uncommented later
         catchAsync(this.deleteProduct)
       );
-
-
   }
 
-
-
-  
-  async addProductForSeller(req,res,next){
-    const product=await productService.createProductForSeller(req.user,req.body);
+  async addProductForSeller(req, res, next) {
+    const product = await productService.createProductForSeller(
+      req.user,
+      req.body
+    );
 
     res.status(APP_CONFIG.HTTP_CREATED).json({
-      message:"success",
-      product
-
-    })
+      message: "success",
+      product,
+    });
   }
 
-  async addProductForStaff(req,res,next){
-    const product=await productService.createProductForStaff(req.body);
+  async addProductForStaff(req, res, next) {
+    const product = await productService.createProductForStaff(req.body);
 
     res.status(APP_CONFIG.HTTP_CREATED).json({
-      message:"success",
-      product
-
-    })
+      message: "success",
+      product,
+    });
   }
 
   async getAllProducts(req, res, next) {
@@ -112,7 +107,9 @@ class ProductController {
   }
 
   async getProductsByCategory(req, res, next) {
-    const products = await productService.getProductsByCategoryForEndUser(req.params.categoryId);
+    const products = await productService.getProductsByCategoryForEndUser(
+      req.params.categoryId
+    );
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       products,
@@ -120,8 +117,13 @@ class ProductController {
   }
 
   async getProductsByCategoryForSellerAndStaff(req, res, next) {
-    console.log(req.user.userType, req.user._id)
-    const products = await productService.getProductsByCategoryForSellerAndStaff(req.params.categoryId, req.user.userType, req.user._id);
+    console.log(req.user.userType, req.user._id);
+    const products =
+      await productService.getProductsByCategoryForSellerAndStaff(
+        req.params.categoryId,
+        req.user.userType,
+        req.user._id
+      );
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       products,
@@ -155,7 +157,9 @@ class ProductController {
   }
 
   async approveProductForSeller(req, res, next) {
-    const product = await productService.approveProductForSeller(req.params.productId);
+    const product = await productService.approveProductForSeller(
+      req.params.productId
+    );
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       product,
@@ -163,7 +167,11 @@ class ProductController {
   }
 
   async activateProduct(req, res, next) {
-    const product = await productService.activateProduct(req.params.productId, req.user.userType, req.user._id);
+    const product = await productService.activateProduct(
+      req.params.productId,
+      req.user.userType,
+      req.user._id
+    );
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       product,

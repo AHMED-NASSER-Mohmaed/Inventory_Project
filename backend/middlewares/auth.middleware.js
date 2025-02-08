@@ -3,8 +3,7 @@ const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const JWT_Manager = require("../utils/jwt.manager");
 
-module.exports.
-protect = catchAsync(async (req, res, next) => {
+module.exports.protect = catchAsync(async (req, res, next) => {
   let token;
   if (
     req.headers.authorization &&
@@ -56,10 +55,14 @@ protect = catchAsync(async (req, res, next) => {
 
 module.exports.restrictTo = (...userTypes) => {
   return (req, res, next) => {
-    //userType , role  
+    //userType , role
     userTypes = userTypes.flat();
     console.log(userTypes);
-    if ( !userTypes.includes(req.user.userType) && !userTypes.includes(req.user.role) ) { // to be reviewed
+    if (
+      !userTypes.includes(req.user.userType) &&
+      !userTypes.includes(req.user.role)
+    ) {
+      // to be reviewed
       return next(
         new AppError("You do not have permission to perform this action", 403)
       );

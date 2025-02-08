@@ -38,7 +38,7 @@ class MediaController {
    */
   async upload(req, res) {
     const folder = req.url.split("/")[1];
-    const response = await mediaService.upload(req.files, folder);
+    const response = await mediaService.upload(req.files, "/");
     res.status(200).json(response);
   }
 

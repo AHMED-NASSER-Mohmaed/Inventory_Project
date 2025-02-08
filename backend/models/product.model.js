@@ -1,64 +1,79 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 
-const ProductSchema = new mongoose.Schema({
-    name: { 
-        type: String, 
-        required: [true, "Please provide the product name"] 
+const ProductSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Please provide the product name"],
     },
     code: {
-        type: String, 
-        required: [true, "Please provide the product code"],
-        unique: true
+      type: String,
+      required: [true, "Please provide the product code"],
+      unique: true,
     },
-    price: { 
-        type: Number, 
-        min: [0, "Price cannot be negative"]
+    price: {
+      type: Number,
+      min: [0, "Price cannot be negative"],
     },
-    images: [{ 
+    images: [
+      {
         type: String,
         validate: {
-            validator: function (url) {
-                return validator.isURL(url);
-            },
-            message: "Please provide valid URLs for images"
-        }
-    }],
-    description: { 
-        type: String 
+          validator: function (url) {
+            return validator.isURL(url);
+          },
+          message: "Please provide valid URLs for images",
+        },
+      },
+    ],
+    description: {
+      type: String,
     },
-    quantity: { 
-        type: Number, 
-        // required: [true, "Please provide the product quantity"],
-        min: [0, "Quantity cannot be negative"]
+    quantity: {
+      type: Number,
+      // required: [true, "Please provide the product quantity"],
+      min: [0, "Quantity cannot be negative"],
     },
-    category: { 
-        type: mongoose.Schema.ObjectId, 
-        required: [true, "Please provide the product category"],
-        // ref:"Category" // it should be uncommented but till we make the category CRUD operations it will stay commented
-    }
-    ,
-    sellerId: { // there will be an object in the seller model in order to be used here when we wanna create a product without external seller
-        type: mongoose.Schema.ObjectId, 
-        required: [true, "Please provide the seller"] 
+    category: {
+      type: mongoose.Schema.ObjectId,
+      required: [true, "Please provide the product category"],
+      // ref:"Category" // it should be uncommented but till we make the category CRUD operations it will stay commented
     },
-    sellerName: { 
-        type: String, 
-        required: [true, "Please provide the seller name"] 
+    sellerId: {
+      // there will be an object in the seller model in order to be used here when we wanna create a product without external seller
+      type: mongoose.Schema.ObjectId,
+      required: [true, "Please provide the seller"],
+    },
+    sellerName: {
+      type: String,
+      required: [true, "Please provide the seller name"],
     },
     isActive: {
-        type: Boolean, 
-        default: false  
+      type: Boolean,
+      default: false,
     },
 
     status: {
-        type: Boolean, 
-        default: false
-    }
-    
-}, {
+      type: Boolean,
+      default: false,
+    },
+    rating: {
+      type: Number,
+      default: 0,
+      min: [0, "Rating must be at least 1"],
+      max: [5, "Rating must be at most 5"],
+      set: (val) => Math.round(val * 10) / 10,
+    },
+    ratingsQuantity: {
+      type: Number,
+      default: 0,
+    },
+  },
+  {
     timestamps: true,
-});
+  }
+);
 
 const Product = mongoose.model("Product", ProductSchema);
 module.exports = Product;

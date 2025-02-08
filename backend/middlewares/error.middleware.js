@@ -9,6 +9,7 @@ const handleCastErrorDB = (err) => {
 const handleDuplicateFieldsDB = (err) => {
   try {
     const duplicatedFields = [];
+    console.log(err);
     for (const key in err.keyValue) {
       if (err.keyPattern.hasOwnProperty(key)) {
         duplicatedFields.push(key);
@@ -17,8 +18,13 @@ const handleDuplicateFieldsDB = (err) => {
 
     // Creating the message
     let message = "";
+    console.log(duplicatedFields);
     if (duplicatedFields.length === 1) {
       message += `This ${duplicatedFields} already exists.`;
+    }
+
+    if (duplicatedFields.length > 1) {
+      message += "You already have a posted a review for this product.";
     }
 
     return new AppError(message, 409);
