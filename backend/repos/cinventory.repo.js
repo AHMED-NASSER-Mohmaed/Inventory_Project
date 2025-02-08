@@ -6,7 +6,9 @@ class CInventoryRepository {
   async createInventory(inventoryData) {
     try {
       const inventory = await CInventory.create(inventoryData);
-      return inventory;
+      const populatedInventory = await this.getInventoryById(inventory._id);
+
+      return populatedInventory;
     } catch (err) {
       throw err;
     }
