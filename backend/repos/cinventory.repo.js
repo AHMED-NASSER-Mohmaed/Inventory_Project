@@ -16,7 +16,13 @@ class CInventoryRepository {
 
   async getInventoryById(inventoryId) {
     try {
-      const inventory = await CInventory.findById(inventoryId).populate('product');
+      const inventory = await CInventory.findById(inventoryId)
+      .populate({
+        path: 'product',       // First, populate 'product'
+        populate: {
+          path: 'category',    // Then, populate 'category' inside 'product'
+        },
+      });
       return inventory;
     } catch (err) {
       throw err;

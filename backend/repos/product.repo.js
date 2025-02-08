@@ -16,7 +16,9 @@ class ProductRepository {
 
   async getProductById(productId) {
     try {
-      const product = await Product.findById(productId).select('-createdAt -updatedAt -__v'); //  .populate() has been removed since there's no ref anymore
+      const product = await Product.findById(productId)
+                      .select('-__v')
+                      .populate("category") //has been removed since there's no ref anymore
       return product;
     } catch (err) {
       throw err;
@@ -25,7 +27,7 @@ class ProductRepository {
 
   async getAllProducts() {
     try {
-      const products = await Product.find().select('-createdAt -updatedAt -__v'); //  .populate() has been removed since there's no ref anymore
+      const products = await Product.find().select('-__v').populate() //has been removed since there's no ref anymore
       return products;
     } catch (err) {
       throw err;
@@ -34,7 +36,9 @@ class ProductRepository {
 
   async updateProductById(productId, updateData) {
     try {
-      const product = await Product.findByIdAndUpdate(productId, updateData, { new: true, runValidators: true }).select('-createdAt -updatedAt -__v');
+      const product = await Product.findByIdAndUpdate(productId, updateData, { new: true, runValidators: true })
+                    .select('-__v')
+                    .populate("category");
       return product;
     } catch (err) {
       throw err;
@@ -59,7 +63,7 @@ class ProductRepository {
         productId,
         { isActive: false },
         { new: true }
-      ).select('-createdAt -updatedAt -__v');;
+      ).select('-__v').populate("category");
       return product;
     } catch (err) {
       throw err;

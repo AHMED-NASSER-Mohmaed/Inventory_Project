@@ -79,7 +79,7 @@ const sellerOp = {
 
 
     getSellers: async (req, res, next) => {
-        req.validatedParams.filters['status']=true;
+        req.validatedParams.filters['status'] = true;
         const result = await sellerService.getSellers(req.validatedParams);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 
@@ -88,13 +88,13 @@ const sellerOp = {
 
 
 
-    allowedFilters: ["isActive", "undefined" ],
+    allowedFilters: ["isActive", "undefined"],
     allowedFilterValues: ["true", "false", "undefined"],
     //we can use those values with the different route beacuase the frist cond in if will be false.
     allowedSort: ['createdAt', "name"],
 
 
-    allowedSellerfilters:["undefined"],
+    allowedSellerfilters: ["undefined"],
     // allowedFilterValues: ["undefined"],
 
 
@@ -325,7 +325,7 @@ const customerOp = {
         req.body.passwordConfirm = req.body.password;
         const customer = await userService.createUser(req.body);
 
-        sendResponseToClint(res, APP_CONFIG.HTTP_CREATED, APP_CONFIG.SUCCESS_MESSAGE, customer!=null?true:false);
+        sendResponseToClint(res, APP_CONFIG.HTTP_CREATED, APP_CONFIG.SUCCESS_MESSAGE, customer != null ? true : false);
     },
 
     deleteCustomer: async (req, res, next) => {
@@ -342,7 +342,7 @@ const customerOp = {
     },
 
     getCustomer: async (req, res, next) => {
- 
+
         const customer = await userService.getUser(req.params.id);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, customer);
 
@@ -362,31 +362,49 @@ const customerOp = {
 
     updateProfileImage: async function (req, res, next) {
 
-       if(!req.params.id)
-        throw new AppError("invalid parameter",APP_CONFIG.HTTP_BAD_REQUEST);
-    
-        const oldFileId= await userService.getUserImageId(req.params.id);
+
+        let isFaildToUpload = false , imageInfo=null;
+        let error = null;
+
+        if (!req.params.id)
+            throw new AppError("invalid parameter", APP_CONFIG.HTTP_BAD_REQUEST);
+
+        const oldFileId = await userService.getUserImageId(req.params.id);
 
         console.log(oldFileId);
 
-        //delete image from imagekit  if user it's not the default image
-        if ( !(oldFileId['photo']['fileId'] ===  APP_CONFIG.UDIAMGE_ID_VALUE)   ){
-            console.log("the one that is exist is not equal to the default one");
-            console.log(await deleteFile(oldFileId['photo']['fileId']));
-        }
- 
-        const imageInfo = await upload(req.files, APP_CONFIG.PROFILE_IMAGE_FOLDER);
+        try {
+            //delete image from imagekit  if user it's not the default image
+            if (!(oldFileId['photo']['fileId'] === APP_CONFIG.UDIAMGE_ID_VALUE)) {
+                console.log("the one that is exist is not equal to the default one");
+                await deleteFile(oldFileId['photo']['fileId']);
+            }
 
-        if (!imageInfo) {
-            await userService.updateUserImage(id,APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
-            throw new AppError("something went wrong", APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
+            imageInfo = await upload(req.files, APP_CONFIG.PROFILE_IMAGE_FOLDER);
+            const result = await userService.updateUserImage(req.params.id, imageInfo['files'][0]);
+            sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+
+        } catch (err) {
+            error = err;
+        } finally {
+
+            if (!imageInfo) {
+                await userService.updateUserImage(id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
+                throw new AppError("something went wrong", APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
+            }
+
+
+            if (error != null) {
+                throw error;
+            }
+
         }
 
-        console.log("===>",imageInfo['files'][0]);
+
+
+        // console.log("===>",imageInfo['files'][0]);
         //this line may be throw an exception from database.
-        const result = await userService.updateUserImage(req.params.id, imageInfo['files'][0]);
 
-        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 
     },
 
@@ -419,8 +437,8 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
 
     .get("/pendingSellers",
         validatorForQueries(sellerOp.allowedSellerfilters,
-             sellerOp.allowedFilterValues, sellerOp.allowedSort)
-        ,prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+            sellerOp.allowedFilterValues, sellerOp.allowedSort)
+        , prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         catchAsync(sellerOp.getPendingSellers))
 
 
@@ -456,7 +474,7 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
     .get("/getCashiers", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         validatorForQueries(cashierOp.allowedFilters, cashierOp.allowedFilterValues, cashierOp.allowedSort),
         catchAsync(cashierOp.getCashiers))
-    
+
 
 
     /*************************************************************************************************** */
@@ -465,13 +483,13 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
 
     .post("/addCustomer",
 
-        prot_rest( APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
 
         catchAsync(customerOp.addCustomer)) //end of post 
 
 
     .get("/getCustomer/:id",
-        prot_rest( APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER ),
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
         catchAsync(customerOp.getCustomer)) //end of customer id
 
 
@@ -483,7 +501,7 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
 
     //why we send user id -->for admin super admin --- we will genarlize it through
     .patch("/updateProfileImage/:id",
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN,APP_CONFIG.SELLER ,APP_CONFIG.CUSTOMER),
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER, APP_CONFIG.CUSTOMER),
         catchAsync(customerOp.updateProfileImage)
     )
 
