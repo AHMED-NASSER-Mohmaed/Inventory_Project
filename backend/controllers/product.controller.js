@@ -118,6 +118,7 @@ class ProductController {
       "createdAt": 0,
       "updatedAt": 0,
       "category" : 0,  
+      "sellerId" : 0,
     };
 
     let result = await productService.getProducts(req.validatedParams);
