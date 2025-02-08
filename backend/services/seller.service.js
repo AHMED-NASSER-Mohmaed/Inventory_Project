@@ -99,7 +99,7 @@ module.exports.sellerService = {
     getAllSellers:async function (params) {
         try{
 
-            return await sellerRepo.getAllSellers();
+            return await sellerRepo.getSellers();
 
         }catch(err){
             throw err;

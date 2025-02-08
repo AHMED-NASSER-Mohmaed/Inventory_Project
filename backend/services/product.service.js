@@ -8,6 +8,8 @@ const supplier=require("../models/supplier.model");
 const CategoryRepository = require("../repos/category.repo");
 const {sellerRepo} = require("../repos/sellers.repo");
 
+const SupplierRepository = require("../repos/supplier.repo");
+
 const category=require("../models/category.model");
 const productRepo = require("../repos/product.repo");
 
@@ -86,7 +88,8 @@ class ProductService {
               
             
             //frontend model -- >   supplierID 
-            const isExistSupplier=await supplier.findOne({_id:productData.providerID});
+            // const isExistSupplier=await supplier.findOne({_id:productData.providerID});
+            const isExistSupplier = await SupplierRepository.getSupplierById(productData.supplierID);
 
             if(!isExistSupplier){
                 throw new AppError("supplier dose not exist.",APP_CONFIG.HTTP_BAD_REQUEST);
@@ -111,12 +114,12 @@ class ProductService {
                 
             console.log("hellooooo");
             
-            await cinventory.createInventory({  product:new_one._id ,   providerID:isExistSupplier._id,
+            const invProduct = await cinventory.createInventory({  product:new_one._id ,   providerID:isExistSupplier._id,
                 providerName:isExistSupplier.companyName , currentStock: productData.currentStock,
                 cost:productData.cost
              });
 
-             return new_one;
+             return invProduct;
             }catch(err){
                 throw err;
             } 
