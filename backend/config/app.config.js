@@ -39,42 +39,55 @@ module.exports.APP_CONFIG = {
 
   HTTP_INTERNAL_SERVER_ERROR: 500,
 
-  SUPPERADMIN:"super_admin",
-  ADMIN:"admin",
-  CLERK:"clerk",
-  CASHIER:"cashier",
-  CUSTOMER:"customer",
-  SELLER:"seller",
+  SUPPERADMIN: "super_admin",
+  ADMIN: "admin",
+  CLERK: "clerk",
+  CASHIER: "cashier",
+  CUSTOMER: "customer",
+  SELLER: "seller",
 
-  COMPANY_ID:"679fb5a90cb8f1f8fca97990",
-  COMPANY_NAME:"inventory system",
+  COMPANY_ID: "679fb5a90cb8f1f8fca97990",
+  COMPANY_NAME: "inventory system",
 
 
-  SUCCESS_MESSAGE:"success",
-  
+  SUCCESS_MESSAGE: "success",
+
   ADMIN: "admin",
   CLERK: "clerk",
   CASHIER: "cashier",
   CUSTOMER: "customer",
 
 
-  MAX_FILE_SIZE : 2 * 1024*1024 , // 5KB in bytes 
-  
-  UDIAMGE_ID_KEY: "fileId" ,
-  UDIMAGE_URL_KEY:"url",
-   
+  MAX_FILE_SIZE: 2 * 1024 * 1024, // 5KB in bytes 
+
+  UDIAMGE_ID_KEY: "fileId",
+  UDIMAGE_URL_KEY: "url",
+
   UDIAMGE_ID_VALUE: "67a63846432c47641653594a",
-  UDIMAGE_URL_VALUE:"https://ik.imagekit.io/ysypur5vc/default_n6o_4prV6.jpg",
-  
+  UDIMAGE_URL_VALUE: "https://ik.imagekit.io/ysypur5vc/default_n6o_4prV6.jpg",
 
-  DU_IMAGE_DEFALUT_OBG:{
-    "fileId" :"67a63846432c47641653594a",
-    "url" : "https://ik.imagekit.io/ysypur5vc/default_n6o_4prV6.jpg"
+
+  DU_IMAGE_DEFALUT_OBG: {
+    "fileId": "67a63846432c47641653594a",
+    "url": "https://ik.imagekit.io/ysypur5vc/default_n6o_4prV6.jpg"
   },
-  
+  PROFILE_IMAGE_FOLDER: "users",
 
-  PROFILE_IMAGE_FOLDER:"users",
+  /**********************************************************************************************/
+
+  PDIAMGE_ID_KEY: "fileId",
+  PDIMAGE_URL_KEY: "url",
+
+  PDIAMGE_ID_KEY: "67a79f83432c47641634dffc",
+  PDIAMGE_URL_VALUE: "https://ik.imagekit.io/ysypur5vc/Untitled_azZLiI3tg.jpg",
 
 
+  DP_IMAGE_DEFALUT_OBG: {
+    "fileId": "67a79f83432c47641634dffc",
+    "url": "https://ik.imagekit.io/ysypur5vc/Untitled_azZLiI3tg.jpg"
+  },
+
+  PROFILE_IMAGE_FOLDER: "products",
+  /************************************************************************************************/
 
 };

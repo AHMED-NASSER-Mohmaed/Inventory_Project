@@ -84,7 +84,6 @@ const sellerOp = {
     },
 
 
-
     allowedFilters: ["isActive", "status", "undefined"],
     allowedFilterValues: ["true", "false", "undefined"],
     allowedSort: ['createdAt', "name"],
