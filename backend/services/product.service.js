@@ -9,6 +9,7 @@ const CategoryRepository = require("../repos/category.repo");
 const {sellerRepo} = require("../repos/sellers.repo");
 
 const category=require("../models/category.model");
+const productRepo = require("../repos/product.repo");
 
 
 class ProductService {
@@ -121,9 +122,6 @@ class ProductService {
             } 
          
     }
-
-
-    
 
     async updateProductById(productId, updatedData,  userType, sellerId_, isSellerInventory) {
     try {
@@ -347,6 +345,16 @@ class ProductService {
             return product;
         } catch (err) {
             throw err;
+        }
+    }
+
+    async getProducts(validatedParams){
+        try{
+
+            return await productRepo.getProducts(validatedParams.page,validatedParams.limit, validatedParams.sort,validatedParams.filters);
+
+        }catch(error){
+            throw error;
         }
     }
 

@@ -4,6 +4,8 @@ const AuthMiddleware = require("../middlewares/auth.middleware");
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
 const pro_res=require("../utils/authMiddlewaresOptions")
+const {validatorForQueries}=require("../middlewares/validation.middlewares");
+const categoryService=require("../services/category.service");
 
 class ProductController {
   constructor() {
@@ -69,7 +71,57 @@ class ProductController {
       );
 
 
+      this.router.get(
+        "/getProducts",
+        validatorForQueries(this.allowedFilterFileds,this.allowedFileterFildesValues,this.allowedSortFileds,this.allowedSortFiledsValues),
+        catchAsync(this.getProducts),
+        
+      )
+
   }
+
+
+
+    //filters --> by category
+    //  input [cat id] 
+    // sort by peice --> incommig feature numbver of sales 
+    //input is [price] = ['asc' , "desc"] 
+
+
+    allowedFilterFileds=['undefined']
+    allowedFileterFildesValues=['undefined']
+
+    allowedSortFileds=['price']
+    allowedSortFiledsValues=['asc','desc']
+
+
+    async getProducts(req , res , next){
+
+      console.log("i am here guy..");
+        let arrOfChlidCat=await categoryService.getChildCategoies(req.query.catId);
+        
+        console.log(req.validatedParams,"validated params ");
+
+
+
+        console.log(arrOfChlidCat,"arr of child s ");
+
+
+        if(!arrOfChlidCat.length)
+            throw new AppError("invalid category id ",APP_CONFIG.HTTP_NOT_FOUND);
+
+        req.validatedParams['filters']['category']=arrOfChlidCat;
+
+        let result= await productService.getProducts(req.validatedParams);
+
+        res.status(200).json({
+            message:"success",
+            result,
+        })
+
+
+    } 
+
 
 
 

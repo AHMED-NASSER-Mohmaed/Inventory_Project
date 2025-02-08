@@ -47,7 +47,7 @@ const sellerOp = {
     },
 
     activeSellerAcount: async (req, res, next) => {
-        console.log(req.params.SSN);
+        // console.log(req.params.SSN);
         const ack = await sellerService.activeSeller(req.params.SSN);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
 
@@ -79,15 +79,24 @@ const sellerOp = {
 
 
     getSellers: async (req, res, next) => {
+        req.validatedParams.filters['status']=true;
         const result = await sellerService.getSellers(req.validatedParams);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+
     },
 
 
 
-    allowedFilters: ["isActive", "status", "undefined"],
+
+    allowedFilters: ["isActive", "undefined" ],
     allowedFilterValues: ["true", "false", "undefined"],
+    //we can use those values with the different route beacuase the frist cond in if will be false.
     allowedSort: ['createdAt', "name"],
+
+
+    allowedSellerfilters:["undefined"],
+    // allowedFilterValues: ["undefined"],
+
 
 }
 
@@ -400,13 +409,19 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
     .patch("/approveSeller/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.approveSeller))
     .patch("/activeSeller/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.activeSellerAcount))
 
-
+    /*
     .get('/allSellers', prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.getAllSellers))
+    */
     .get("/getSellers", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         validatorForQueries(sellerOp.allowedFilters, sellerOp.allowedFilterValues, sellerOp.allowedSort),
         catchAsync(sellerOp.getSellers))
 
 
+    .get("/pendingSellers",
+        validatorForQueries(sellerOp.allowedSellerfilters,
+             sellerOp.allowedFilterValues, sellerOp.allowedSort)
+        ,prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        catchAsync(sellerOp.getPendingSellers))
 
 
 

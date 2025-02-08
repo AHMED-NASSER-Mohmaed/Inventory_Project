@@ -1,6 +1,7 @@
+const { filter } = require('lodash');
 const Product = require('../models/product.model');
 const AppError = require('../utils/appError');
-
+const {inboxResult}=require("../utils/apiFeatures")
 class ProductRepository {
   
   async createProduct(productData) {
@@ -153,7 +154,38 @@ class ProductRepository {
     }
   }
 
+  async getProducts(page,limit,sort,filters){
+    try{
 
+      // console.log(page ,  "  " , limit , " ", filters );
+
+      const [results, total] = await Promise.all([
+
+        // { field: { $in: [<value1>, <value2>, ... <valueN> ] } }
+
+        await Product.find({  category :{$in : filter['category'] }  })
+          .sort(sort)
+          .skip((page - 1) * limit) // (starting index = page-1)*limit
+          .limit(limit)
+          .select("-__v")
+          .lean()
+          ,
+
+        await Product.countDocuments({  category :{$in : filter['category'] }  }).exec()
+
+      ]);
+
+      return inboxResult(results, total, page, limit);
+
+    }catch(err){
+      throw err;
+    }
+
+
+  }
+
+   
+ 
   
 }
 

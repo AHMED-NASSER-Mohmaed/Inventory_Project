@@ -13,7 +13,8 @@ const ProductSchema = new mongoose.Schema({
     },
     price: { 
         type: Number, 
-        min: [0, "Price cannot be negative"]
+        min: [0, "Price cannot be negative"],
+        default: 100,
     },
     images: [{ 
         type: String,
@@ -25,7 +26,7 @@ const ProductSchema = new mongoose.Schema({
         }
     }],
     description: { 
-        type: String 
+        type: String , default : "this is a good product." 
     },
     quantity: { 
         type: Number, 

@@ -1,8 +1,9 @@
+const { APP_CONFIG } = require("../config/app.config");
 const CategoryRepository = require("../repos/category.repo");
 const AppError = require("../utils/appError");
 
 class CategoryService {
-  
+
     async createCategory(categoryData) {
         try {
             const category = await CategoryRepository.createCategory(categoryData);
@@ -104,6 +105,23 @@ class CategoryService {
             throw err;
         }
     }
+
+    //get child categories
+    async getChildCategoies(categoryId) {
+
+        try {
+
+            return await CategoryRepository.getChildCategoies(categoryId);
+            
+        } catch (error) {
+            throw error
+        }
+
+
+    }
+
+
+
 }
 
 module.exports = new CategoryService();

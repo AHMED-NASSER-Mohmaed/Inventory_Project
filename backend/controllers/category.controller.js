@@ -3,7 +3,9 @@ const categoryService = require("../services/category.service");
 const AuthMiddleware = require("../middlewares/auth.middleware");
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
-const pro_res=require("../utils/authMiddlewaresOptions")
+const pro_res=require("../utils/authMiddlewaresOptions");
+const AppError = require("../utils/appError");
+
 
 
 class CategoryController {
@@ -35,6 +37,10 @@ class CategoryController {
             catchAsync(this.getCategoryById)
         );
     
+        this.router.get(
+            "/getCategoriesChilds/:catId",
+            catchAsync(this.getClidCat),
+        )
     
     
     
@@ -49,6 +55,24 @@ class CategoryController {
             pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
             catchAsync(this.deleteCategoryById)
         )
+    }
+
+  
+
+
+
+    async getClidCat(req,res,next){
+        console.log("helloo");
+        if(!req.params.catId)
+            throw new AppError("inavalid param",APP_CONFIG.HTTP_BAD_REQUEST);
+
+        const Childs= await categoryService.getChildCategoies(req.params.catId);
+
+        res.status(200).json({
+            message:"success",
+            Childs,
+        })
+
     }
 
     async getAllCategories(req, res, next) {
