@@ -1,0 +1,29 @@
+<div class="seller-dialog-container">
+    <h2 mat-dialog-title class="text-center mb-4 dialog-title">Seller Information</h2>
+    <mat-dialog-content class="p-4 bg-light rounded content-container">
+        <div class="info-grid">
+            <p class="info-item">
+                <strong class="label">Name:</strong> 
+                <span class="value">{{ data.firstName }} {{ data.lastName }}</span>
+            </p>
+            <p class="info-item">
+                <strong class="label">Company Name:</strong> 
+                <span class="value">{{ data.companyName }}</span>
+            </p>
+            <p class="info-item">
+                <strong class="label">Email:</strong> 
+                <span class="value">{{ data.email }}</span>
+            </p>
+            <p class="info-item">
+                <strong class="label">Phone Number:</strong> 
+                <span class="value">{{ data.phoneNumber }}</span>
+            </p>
+            <p class="info-item">
+                <strong class="label">Status:</strong> 
+                <span class="value" [class.active]="data.isActive" [class.inactive]="!data.isActive">
+                    {{ data.isActive ? 'Active' : 'Deactivated' }}
+                </span>
+            </p>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions class="d-flex justify-content-end p-3"></mat-dialog-actions>

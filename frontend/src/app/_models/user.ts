@@ -2,7 +2,7 @@ export class User {
 
     constructor(
         public _id: string,
-        public photo: {URL: string , fileId: string},
+        public photo: {url: string , fileId: string},
         public firstName: string,
         public lastName: string,
         public email: string ,
@@ -15,7 +15,7 @@ export class User {
         public createdAt: string,
         public updatedAt: string,
         public status: string,
-        public isActive: string
+        public isActive: Boolean
 
     ){}
 

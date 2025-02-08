@@ -10,26 +10,48 @@ export class CustomersService {
   constructor(public http: HttpClient) { }
 
   private baseUrl = 'http://localhost:3000';
-  public token = localStorage.getItem('token');
-  private headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
 
   getAllCustomers(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/users`, { headers: this.headers });
+    return this.http.get(`${this.baseUrl}/users`, { headers: this.getHeaders() });
   }
 
   deleteCustomer(id: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/users/${id}`, {headers: this.headers});
+    return this.http.delete(`${this.baseUrl}/users/${id}`, { headers: this.getHeaders() });
   }
 
   getPaginatedSellers(page: number, limit: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/getSellers?limit=${limit}&page=${page}` , {headers: this.headers});
+    return this.http.get(`${this.baseUrl}/getSellers?limit=${limit}&page=${page}`, { headers: this.getHeaders() });
   }
 
   deActiveSeller(SSN: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/deleteSeller/${SSN}`, {headers: this.headers});
-  } //! deactivate --> isactive
+    return this.http.delete(`${this.baseUrl}/deleteSeller/${SSN}`, { headers: this.getHeaders() });
+  }
 
-  activateSeller(SSN: string): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/activeSeller/${SSN}`, {headers: this.headers});
-  } //! approve --> status  ,, 
+  activateSeller2(SSN: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/activeSeller/${SSN}`, { headers: this.getHeaders() });
+  }
+
+  changeImage(id: string, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    for (const entry of formData.entries()) {
+        console.log(entry[0], entry[1]);
+    }
+
+    const headers = this.getHeaders();
+    headers.delete('Content-Type'); 
+
+    return this.http.patch(
+        `${this.baseUrl}/updateProfileImage/${id}`,
+        formData,
+        { headers: headers }
+    );
+}
+  
 }

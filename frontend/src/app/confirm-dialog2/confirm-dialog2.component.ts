@@ -5,17 +5,17 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-confirm-dialog',
-  templateUrl: './confirm-dialog.component.html',
+  templateUrl: './confirm-dialog2.component.html',
   imports: [MatIconModule , MatDialogModule]
 })
-export class ConfirmDialogComponent {
-  constructor(public dialogRef: MatDialogRef<ConfirmDialogComponent>) {}
+export class ConfirmDialogComponent2 {
+  constructor(public dialogRef: MatDialogRef<ConfirmDialogComponent2>) {}
 
   onClose(): void {
     this.dialogRef.close(false);
   }
 
-  onDeactivate(): void {
+  onActivate(): void {
     this.dialogRef.close(true);
   }
 }

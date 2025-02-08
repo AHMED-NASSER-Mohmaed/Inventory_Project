@@ -1,8 +1,5 @@
-<!-- CONTENT -->
 <div class="parent3" [ngClass]="{'dark': isDarkMode}">
     <section id="content">
-    
-        <!-- MAIN -->
         <main>
             <div class="head-title">
                 <div class="left">
@@ -15,43 +12,30 @@
                             </label>
                         </div>
                     </div>
-    
-                    
                     <ul class="breadcrumb">
-                        <li>
-                            <a href="#">Dashboard</a>
-                        </li>
-                        <li><i class='bx bx-chevron-right' ></i></li>
-                        <li>
-                            <a href="#">Users</a>
-                        </li>
-                        <li><i class='bx bx-chevron-right' ></i></li>
-                        <li>
-                            <a class="active" href="#">Sellers</a>
-                        </li>
+                        <li><a href="#">Dashboard</a></li>
+                        <li><i class='bx bx-chevron-right'></i></li>
+                        <li><a href="#">Users</a></li>
+                        <li><i class='bx bx-chevron-right'></i></li>
+                        <li><a class="active" href="#">Sellers</a></li>
                     </ul>
                 </div>
-                
             </div>
-    
             <ul class="box-info">
                 <li>
-                    <i class='bx bx-money' ></i>
+                    <i class='bx bx-money'></i>
                     <span class="text">
                         <h3>{{total}}</h3>
                         <p>Sellers</p>
                     </span>
                 </li>
-        
             </ul>
-    
-    
             <div class="table-data">
                 <div class="order">
                     <div class="head">
                         <h3>Sellers</h3>
-                        <i class='bx bx-search' ></i>
-                        <i class='bx bx-filter' ></i>
+                        <i class='bx bx-search'></i>
+                        <i class='bx bx-filter'></i>
                     </div>
                     <table style="border-spacing: 15px; border-collapse: separate;">
                         <thead>
@@ -66,32 +50,25 @@
                         <tbody>
                             <tr *ngFor="let user of users; let i = index">
                                 <td>
-                                    <img [src]="user.photo.URL">
+                                    <img [src]="user.photo.url">
                                     <p>{{ user.firstName }}</p>
                                 </td>
                                 <td>{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
-
-                                
-                                <td>
-                                    <p>{{ user.companyName }}</p>
-                                </td>
+                                <td><p>{{ user.companyName }}</p></td>
                                 <td>
                                     <span class="status process" [class.active]="user.isActive" [class.deactivated]="!user.isActive" style="min-width: 100px; display: inline-block; text-align: center;">
-                                        {{user.isActive ? 'Activated' : 'Deactivated'}}
+                                        {{user.isActive ? 'Active' : 'Deactivated'}}
                                     </span>
                                 </td>
                                 <td>
                                     <div class="dropdown" [ngClass]="{'show': dropdownStates[i]}" (click)="toggleDropdown(i)">
-                                        <a class="btn btn-secondary dropdown-toggle btn-lg" role="button" id="dropdownMenuLink" aria-haspopup="true" aria-expanded="false" style=" padding: 0px 5px; padding-left: 8px;">
+                                        <a class="btn btn-secondary dropdown-toggle btn-lg" role="button" id="dropdownMenuLink" aria-haspopup="true" aria-expanded="false" style="padding: 0px 5px; padding-left: 8px;">
                                             ...
                                         </a>
-                                        
                                         <div class="dropdown-menu dropdown-menu-lg" [ngClass]="{'show': dropdownStates[i]}" aria-labelledby="dropdownMenuLink" style="min-width: 200px;">
-                                            <a class="dropdown-item p-3" href="#"><i class='bx bx-show'></i> Show</a>
+                                            <a class="dropdown-item p-3" (click)="showSellerInfo(user)" data-toggle="modal" data-target="#sellerInfoModal"><i class='bx bx-show'></i> Show</a>
                                             <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item p-3" href="#"><i class='bx bx-edit'></i> Update</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user.SSN) : activateSeller(user.SSN)" style="cursor:pointer;">
+                                            <a class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user.SSN) : openConfirmDialog2(user.SSN)" style="cursor:pointer;">
                                                 <i class='bx' [ngClass]="{'bx-check-circle': !user.isActive, 'bx-x-circle': user.isActive}"></i>
                                                 {{user.isActive ? 'Deactivate' : 'Activate'}}
                                             </a>
@@ -108,6 +85,69 @@
                 </div>
             </div>
         </main>
-        <!-- MAIN -->
     </section>
+
+    <div class="modal fade" id="sellerInfoModal" tabindex="-1" role="dialog" aria-labelledby="sellerInfoModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="sellerInfoModalLabel">Seller Details</h5>
+          </div>
+          <div class="modal-body">
+            <div class="seller-image-container">
+                <img [src]="selectedUser?.photo?.url" alt="{{selectedUser?.firstName}}" class="seller-img">
+                <input type="file" id="imageUploadSeller" style="display: none;" (change)="onImageChangeSeller($event)">
+                <button class="btn change-btn" (click)="triggerImageUploadSeller()"><i class="fa fa-pencil"></i> Change</button>
+            </div>
+            <form #editForm="ngForm">
+              <div class="info-grid" *ngIf="selectedUser">
+                <div class="info-item">
+                  <strong class="label">First Name:</strong>
+                  <div class="input-wrapper" [ngClass]="{'valid': firstNameInput.touched && firstNameInput.valid, 'invalid': firstNameInput.touched && firstNameInput.invalid}">
+                    <input type="text" required [(ngModel)]="selectedUser.firstName" name="firstName" #firstNameInput="ngModel" [disabled]="!editing" class="value">
+                  </div>
+                </div>
+                <div class="info-item">
+                  <strong class="label">Last Name:</strong>
+                  <div class="input-wrapper" [ngClass]="{'valid': lastNameInput.touched && lastNameInput.valid, 'invalid': lastNameInput.touched && lastNameInput.invalid}">
+                    <input type="text" required [(ngModel)]="selectedUser.lastName" name="lastName" #lastNameInput="ngModel" [disabled]="!editing" class="value">
+                  </div>
+                </div>
+                <div class="info-item">
+                  <strong class="label">Company Name:</strong>
+                  <div class="input-wrapper" [ngClass]="{'valid': companyNameInput.touched && companyNameInput.valid, 'invalid': companyNameInput.touched && companyNameInput.invalid}">
+                    <input type="text" required [(ngModel)]="selectedUser.companyName" name="companyName" #companyNameInput="ngModel" [disabled]="!editing" class="value">
+                  </div>
+                </div>
+                <div class="info-item">
+                  <strong class="label">Email:</strong>
+                  <div class="input-wrapper" [ngClass]="{'valid': emailInput.touched && emailInput.valid, 'invalid': emailInput.touched && emailInput.invalid}">
+                    <input type="email" required [(ngModel)]="selectedUser.email" name="email" #emailInput="ngModel" [disabled]="!editing" class="value">
+                  </div>
+                </div>
+                <div class="info-item">
+                  <strong class="label">Phone Number:</strong>
+                  <div class="input-wrapper" [ngClass]="{'valid': phoneInput.touched && phoneInput.valid, 'invalid': phoneInput.touched && phoneInput.invalid}">
+                    <input type="text" required [(ngModel)]="selectedUser.phoneNumber" name="phoneNumber" #phoneInput="ngModel" [disabled]="!editing" class="value">
+                  </div>
+                </div>
+                <div class="info-item">
+                  <strong class="label">Status:</strong>
+                  <input type="text" [value]="selectedUser.isActive ? 'Activated' : 'Deactivated'" name="status" disabled class="value">
+                </div>
+                
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" (click)="toggleEdit($event)" id="updateBtn" [disabled]="editing && !editForm.valid" [style.opacity]="editing && !editForm.valid ? 0.5 : 1">
+              <i class='bx' [ngClass]="{'bx-pen': !editing, 'bx-check': editing}"></i>
+            </button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                <i class='bx bx-x'></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
