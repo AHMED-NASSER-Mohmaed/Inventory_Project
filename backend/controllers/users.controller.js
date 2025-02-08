@@ -47,7 +47,7 @@ const sellerOp = {
     },
 
     activeSellerAcount: async (req, res, next) => {
-        // console.log(req.params.SSN);
+        console.log(req.params.SSN);
         const ack = await sellerService.activeSeller(req.params.SSN);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
 
@@ -79,24 +79,15 @@ const sellerOp = {
 
 
     getSellers: async (req, res, next) => {
-        req.validatedParams.filters['status'] = true;
         const result = await sellerService.getSellers(req.validatedParams);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
-
     },
 
 
 
-
-    allowedFilters: ["isActive", "undefined"],
+    allowedFilters: ["isActive", "status", "undefined"],
     allowedFilterValues: ["true", "false", "undefined"],
-    //we can use those values with the different route beacuase the frist cond in if will be false.
     allowedSort: ['createdAt', "name"],
-
-
-    allowedSellerfilters: ["undefined"],
-    // allowedFilterValues: ["undefined"],
-
 
 }
 
@@ -325,7 +316,7 @@ const customerOp = {
         req.body.passwordConfirm = req.body.password;
         const customer = await userService.createUser(req.body);
 
-        sendResponseToClint(res, APP_CONFIG.HTTP_CREATED, APP_CONFIG.SUCCESS_MESSAGE, customer != null ? true : false);
+        sendResponseToClint(res, APP_CONFIG.HTTP_CREATED, APP_CONFIG.SUCCESS_MESSAGE, customer!=null?true:false);
     },
 
     deleteCustomer: async (req, res, next) => {
@@ -342,7 +333,7 @@ const customerOp = {
     },
 
     getCustomer: async (req, res, next) => {
-
+ 
         const customer = await userService.getUser(req.params.id);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, customer);
 
@@ -390,12 +381,7 @@ const customerOp = {
 
             if (!imageInfo) {
                 await userService.updateUserImage(id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
-                throw new AppError("something went wrong", APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
-            }
-
-
-            if (error != null) {
-                throw error;
+                throw new AppError(error.message, APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
             }
 
         }
@@ -427,19 +413,13 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
     .patch("/approveSeller/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.approveSeller))
     .patch("/activeSeller/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.activeSellerAcount))
 
-    /*
+
     .get('/allSellers', prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.getAllSellers))
-    */
     .get("/getSellers", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         validatorForQueries(sellerOp.allowedFilters, sellerOp.allowedFilterValues, sellerOp.allowedSort),
         catchAsync(sellerOp.getSellers))
 
 
-    .get("/pendingSellers",
-        validatorForQueries(sellerOp.allowedSellerfilters,
-            sellerOp.allowedFilterValues, sellerOp.allowedSort)
-        , prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-        catchAsync(sellerOp.getPendingSellers))
 
 
 
@@ -474,7 +454,7 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
     .get("/getCashiers", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         validatorForQueries(cashierOp.allowedFilters, cashierOp.allowedFilterValues, cashierOp.allowedSort),
         catchAsync(cashierOp.getCashiers))
-
+    
 
 
     /*************************************************************************************************** */
@@ -483,13 +463,13 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
 
     .post("/addCustomer",
 
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
+        prot_rest( APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
 
         catchAsync(customerOp.addCustomer)) //end of post 
 
 
     .get("/getCustomer/:id",
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
+        prot_rest( APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER ),
         catchAsync(customerOp.getCustomer)) //end of customer id
 
 
@@ -501,7 +481,7 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
 
     //why we send user id -->for admin super admin --- we will genarlize it through
     .patch("/updateProfileImage/:id",
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER, APP_CONFIG.CUSTOMER),
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN,APP_CONFIG.SELLER ,APP_CONFIG.CUSTOMER),
         catchAsync(customerOp.updateProfileImage)
     )
 

@@ -353,8 +353,9 @@ class ProductService {
 
     async getProducts(validatedParams){
         try{
-
-            return await productRepo.getProducts(validatedParams.page,validatedParams.limit, validatedParams.sort,validatedParams.filters);
+            // console.log("from service",validatedParams);
+            return await productRepo.getProducts(validatedParams.page,validatedParams.limit,
+                 validatedParams.sort,validatedParams.filters,validatedParams.projection);
 
         }catch(error){
             throw error;

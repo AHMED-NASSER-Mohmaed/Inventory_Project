@@ -113,13 +113,13 @@ class CategoryRepository {
   //if the passed one is parent category 
   //if the passed one is child the the output will be array of only one id that represent the child category.
 
-  async getChildCategoies(categoryId) {
+  async getCategoies(filters) {
 
     try {
+      //filters = categoryId + isActive .
+      const selectedCategory = await Category.findOne(filters);
 
-      const selectedCategory = await Category.findOne({ _id: categoryId, isActive: true });
-
-      console.log(selectedCategory , " this is the selected cat from repo");
+      // console.log(selectedCategory , " this is the selected cat from repo");
 
 
 
@@ -129,12 +129,12 @@ class CategoryRepository {
 
         if (selectedCategory['parentCatId'] == null) { // this mean this cat is parent
 
-          arrOfCild = await Category.find({ parentCatId: categoryId, isActive: true }, { _id: 1 } );
+          arrOfCild = await Category.find(filters);
 
         }
 
         if (!arrOfCild.length) {
-          arrOfCild.push(categoryId);
+          arrOfCild.push(selectedCategory);
         }
 
         return arrOfCild;

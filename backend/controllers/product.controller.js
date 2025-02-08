@@ -3,9 +3,9 @@ const productService = require("../services/product.service");
 const AuthMiddleware = require("../middlewares/auth.middleware");
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
-const pro_res=require("../utils/authMiddlewaresOptions")
-const {validatorForQueries}=require("../middlewares/validation.middlewares");
-const categoryService=require("../services/category.service");
+const pro_res = require("../utils/authMiddlewaresOptions")
+const { validatorForQueries } = require("../middlewares/validation.middlewares");
+const categoryService = require("../services/category.service");
 
 class ProductController {
   constructor() {
@@ -16,10 +16,10 @@ class ProductController {
   initializeRoutes() {
 
 
-    this.router.post("/addProduct",pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),catchAsync(this.addProductForStaff))
+    this.router.post("/addProduct", pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(this.addProductForStaff))
 
 
-    this.router.post("/addProductSeller",pro_res(APP_CONFIG.SELLER),catchAsync(this.addProductForSeller))
+    this.router.post("/addProductSeller", pro_res(APP_CONFIG.SELLER), catchAsync(this.addProductForSeller))
 
 
 
@@ -71,76 +71,76 @@ class ProductController {
       );
 
 
-      this.router.get(
-        "/getProducts",
-        validatorForQueries(this.allowedFilterFileds,this.allowedFileterFildesValues,this.allowedSortFileds,this.allowedSortFiledsValues),
-        catchAsync(this.getProducts),
-        
-      )
+    this.router.get(
+      "/getProducts",
+      validatorForQueries(this.allowedFilterFileds, this.allowedFileterFildesValues, this.allowedSortFileds, this.allowedSortFiledsValues),
+      catchAsync(this.getProducts),
+
+    )
 
   }
 
 
 
-    //filters --> by category
-    //  input [cat id] 
-    // sort by peice --> incommig feature numbver of sales 
-    //input is [price] = ['asc' , "desc"] 
+  //filters --> by category
+  //  input [cat id] 
+  // sort by peice --> incommig feature numbver of sales 
+  //input is [price] = ['asc' , "desc"] 
 
 
-    allowedFilterFileds=['undefined']
-    allowedFileterFildesValues=['undefined']
+  allowedFilterFileds = ["isActive", "status", 'undefined']
+  allowedFileterFildesValues = ["true", 'undefined']
 
-    allowedSortFileds=['price']
-    allowedSortFiledsValues=['asc','desc']
+  allowedSortFileds = ['price']
+  allowedSortFiledsValues = ['asc', 'desc'];
 
+  async getProducts(req, res, next) {
 
-    async getProducts(req , res , next){
+    console.log("i am here guy..");
 
-      console.log("i am here guy..");
-        let arrOfChlidCat=await categoryService.getChildCategoies(req.query.catId);
-        
-        console.log(req.validatedParams,"validated params ");
+    let filters = { _id: req.query.catId, isActive: true }
 
+    let arrOfChlidCat = await categoryService.getCategoies(filters);
 
+    if (!arrOfChlidCat.length)
+      throw new AppError("invalid category id ", APP_CONFIG.HTTP_NOT_FOUND);
 
-        console.log(arrOfChlidCat,"arr of child s ");
+    req.validatedParams['filters']['category'] = arrOfChlidCat;
+    req.validatedParams['filters']['isActive'] = true;
+    req.validatedParams['filters']['status'] = true;
 
+    req.validatedParams['projection']={ "isActive":0,
+      "status": 0,
+      "createdAt": 0,
+      "updatedAt": 0};
 
-        if(!arrOfChlidCat.length)
-            throw new AppError("invalid category id ",APP_CONFIG.HTTP_NOT_FOUND);
+    let result = await productService.getProducts(req.validatedParams);
 
-        req.validatedParams['filters']['category']=arrOfChlidCat;
-
-        let result= await productService.getProducts(req.validatedParams);
-
-        res.status(200).json({
-            message:"success",
-            result,
-        })
-
-
-    } 
-
-
+    res.status(200).json({
+      message: "success",
+      result,
+    })
+  }
 
 
-  
-  async addProductForSeller(req,res,next){
-    const product=await productService.createProductForSeller(req.user,req.body);
+
+
+
+  async addProductForSeller(req, res, next) {
+    const product = await productService.createProductForSeller(req.user, req.body);
 
     res.status(APP_CONFIG.HTTP_CREATED).json({
-      message:"success",
+      message: "success",
       product
 
     })
   }
 
-  async addProductForStaff(req,res,next){
-    const product=await productService.createProductForStaff(req.body);
+  async addProductForStaff(req, res, next) {
+    const product = await productService.createProductForStaff(req.body);
 
     res.status(APP_CONFIG.HTTP_CREATED).json({
-      message:"success",
+      message: "success",
       product
 
     })

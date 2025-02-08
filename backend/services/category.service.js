@@ -107,11 +107,11 @@ class CategoryService {
     }
 
     //get child categories
-    async getChildCategoies(categoryId) {
-
+    async getCategoies(validatedParams) {
+        //validated params --> represent only filters
         try {
 
-            return await CategoryRepository.getChildCategoies(categoryId);
+            return await CategoryRepository.getCategoies(validatedParams);
             
         } catch (error) {
             throw error
