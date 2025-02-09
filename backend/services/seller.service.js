@@ -40,7 +40,7 @@ module.exports.sellerService = {
         try {
 
             const seller=await sellerRepo.getSeller(SSN);
-
+            console.log(seller);
             if(!seller['status'])
                 throw new AppError("you cannot de-active pending seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
 

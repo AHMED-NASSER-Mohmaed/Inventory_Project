@@ -24,7 +24,8 @@
   --grey: #eee;
   --dark-grey: #AAAAAA;
   --dark: #342E37;
-  --red: #DB504A;
+  --red: #ff423b;
+  --green: #3fff45;
   --yellow: #FFCE26;
   --light-yellow: #FFF2C6;
   --orange: #FD7238;
@@ -48,9 +49,6 @@
   transition: 0.5s;
 
 }
-
-
-
 
 .head-flex {
     display: flex;
@@ -100,19 +98,12 @@ input:checked + .slider:before {
     transform: translateX(25px);
 }
 
-
-
-
 /* CONTENT */
 :host #content {
   width: 100% ;
   left: 280px;
   transition: .3s ease;
 }
-
-
-
-
 
 /* MAIN */
 :host #content main {
@@ -341,11 +332,262 @@ input:checked + .slider:before {
     cursor: not-allowed;
 }
 
+#sellerInfoModal .modal-dialog {
+    max-width: 500px;
+    margin: 30px auto;
+}
+
+#sellerInfoModal .modal-content {
+    border-radius: 0; 
+}
+
+#sellerInfoModal .modal-header {
+    background: linear-gradient(90deg, var(--dark), #eee);
+    padding: 20px;
+    border-bottom: none;
+    font-family: var(--poppins);
+    border-radius: 0;
+}
+
+#sellerInfoModal .modal-header .modal-title {
+    color: #fff;
+    font-size: 1.5em;
+    font-weight: 500;
+}
+
+#sellerInfoModal .modal-header .close {
+    color: #fff;
+    font-size: 1.2em;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+#sellerInfoModal .modal-header .close:hover {
+    opacity: 1;
+}
+
+#sellerInfoModal .modal-body {
+    padding: 25px 20px;
+    font-size: 0.95em;
+    color: var(--dark);
+    background: #fff;
+    font-family: var(--poppins);
+}
+
+#sellerInfoModal .modal-body .info-grid {
+    display: grid;
+    grid-gap: 15px;
+    row-gap: 30px; 
+}
+
+#sellerInfoModal .modal-body .info-item {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  align-items: center;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+#sellerInfoModal .modal-body .info-item .label {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+#sellerInfoModal .modal-body .info-item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #ccc, transparent);
+    margin-top: 10px;
+}
+
+#sellerInfoModal .modal-body .seller-image-container {
+    display: block;
+    margin: 0 auto 30px auto; 
+    text-align: center; 
+    max-width: 100px;
+    border-radius: 50%;
+}
+#sellerInfoModal .modal-body .seller-image-container .seller-img {
+  max-width: 100px;
+  min-height: 100px;
+  border-radius: 50%;
+  border: 3px solid var(--dark); 
+}
+
+:host .parent3.dark #sellerInfoModal .modal-body .seller-image-container .seller-img {
+    border: 3px solid var(--blue); 
+}
 
 
+#sellerInfoModal .modal-body .info-grid .value {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: inherit;
+    color: inherit;
+    margin-left: 10%;      
+    padding-left: 8px;   
+    position: relative; 
+}
+#sellerInfoModal .modal-body .info-grid .value:enabled {
+    border-bottom: none;
+}
+
+.input-wrapper {
+  position: relative;
+}
+.input-wrapper.valid::after {
+  content: '✓';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+  line-height: 20px;
+}
+.input-wrapper.invalid::after {
+  content: '✗';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #F44336;
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+  line-height: 20px;
+}
+
+#sellerInfoModal .modal-body .info-grid .value.valid::after {
+    content: '✓';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    color: #fff;
+    font-size: 14px;
+    text-align: center;
+    line-height: 20px;
+}
+#sellerInfoModal .modal-body .info-grid .value.invalid::after {
+    content: '✗';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #F44336;
+    color: #fff;
+    font-size: 14px;
+    text-align: center;
+    line-height: 20px;
+}
+
+.seller-image-container {
+  position: relative;
+  display: inline-block;
+}
 
 
-/* MEDIA QUERIES */
+.change-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
+.seller-image-container:hover .change-btn {
+  display: block;
+}
+
+#sellerInfoModal .modal-footer {
+    background: #f1f1f1;
+    border-top: none;
+    padding: 15px 20px;
+    font-family: var(--poppins);
+}
+
+#sellerInfoModal .modal-footer .btn {
+    background-color: var(--dark);  
+    border: none;
+    font-size: 1.2em;               
+    padding: 10px 15px;             
+    transition: background-color 0.3s ease;
+    color: var(--light);
+    margin-right: 1em;
+}
+
+#sellerInfoModal .modal-footer .btn:hover {
+    background-color: var(--dark-grey);
+    color: var(--dark);
+}
+
+#sellerInfoModal .modal-footer .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+:host .parent3.dark #sellerInfoModal .modal-content {
+    background: var(--grey);
+}
+:host .parent3.dark #sellerInfoModal .modal-header {
+    background: linear-gradient(135deg, var(--dark), var(--grey));
+}
+:host .parent3.dark #sellerInfoModal .modal-body {
+    background: var(--grey);
+    color: var(--dark);
+}
+:host .parent3.dark #sellerInfoModal .modal-footer {
+    background: var(--grey);
+}
+
+:host .parent3.dark #sellerInfoModal .modal-header .modal-title,
+:host .parent3.dark #sellerInfoModal .modal-header .close {
+    color: var(--light); 
+}
+:host .parent3.dark #sellerInfoModal .modal-body,
+:host .parent3.dark #sellerInfoModal .modal-footer {
+    color: var(--dark); 
+}
+
 @media screen and (max-width: 768px) {
   :host #sidebar {
     width: 200px;
@@ -385,7 +627,6 @@ input:checked + .slider:before {
     justify-content: center;
     margin-top: 20px;
     margin-left: 90%;
-    /* transform: translate(-50%); */
   }
 
   .pagination-controls button {
@@ -407,7 +648,6 @@ input:checked + .slider:before {
       justify-content: center;
       margin-top: 20px;
       margin-left: 120%;
-      /* transform: translate(-50%); */
     }
 
     .pagination-controls button {

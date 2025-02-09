@@ -16,3 +16,7 @@ mat-dialog-container {
 	/* position: fixed !important; */
 	z-index: 3000 !important;
 }
+
+.cdk-overlay-container {
+  z-index: 5000 !important;
+}
