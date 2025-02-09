@@ -26,10 +26,10 @@ class ProductController {
 
 
     // public routes: no need for authentication 
-    // this.router.get(
-    //   "/products",
-    //   catchAsync(this.getAllProducts)
-    // );
+    this.router.get(
+      "/products",
+      catchAsync(this.getAllProducts)
+    );
 
     this.router.get(
       "/productsByCategory/:categoryId",
@@ -101,9 +101,7 @@ class ProductController {
 
   async Products(req, res, next) {
 
-    
-
-    let result = await productService.getProducts(req.validatedParams);
+      let result = await productService.getProducts(req.validatedParams);
 
 
 
@@ -130,18 +128,22 @@ class ProductController {
   allowedSortFileds = ['price']
   allowedSortFiledsValues = ['asc', 'desc'];
 
+
   async getProducts(req, res, next) {
 
     // console.log("i am here guy..");
 
-    let filters = { _id: req.query.catId, isActive: true }
+    
+    let filters = { isActive: true }
+    
+    
+    if(req.query.catId){
 
-    let arrOfChlidCat = await categoryService.getCategoies(filters);
+      let arrOfChlidCat = await categoryService.getCategoies(filters);
+      req.validatedParams['filters']['category'] = arrOfChlidCat;
+      console.log("from here");
 
-    if (!arrOfChlidCat.length)
-      throw new AppError("invalid category id ", APP_CONFIG.HTTP_NOT_FOUND);
-
-    req.validatedParams['filters']['category'] = arrOfChlidCat;
+    }
     req.validatedParams['filters']['isActive'] = true;
     req.validatedParams['filters']['status'] = true;
 
@@ -161,6 +163,8 @@ class ProductController {
       result,
     })
   }
+
+
 
   async addProductForSeller(req, res, next) {
     const product = await productService.createProductForSeller(req.user, req.body);
@@ -182,7 +186,9 @@ class ProductController {
   }
 
   async getAllProducts(req, res, next) {
+
     const products = await productService.getAllProducts();
+
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       results: products.length,
