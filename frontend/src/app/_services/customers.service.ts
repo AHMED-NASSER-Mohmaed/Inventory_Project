@@ -32,7 +32,9 @@ export class CustomersService {
     return this.http.delete(`${this.baseUrl}/deleteSeller/${SSN}`, { headers: this.getHeaders() });
   }
 
-  activateSeller(SSN: string): Observable<any> {
+
+
+  activateSeller(SSN: string){
     return this.http.patch(`${this.baseUrl}/activeSeller/${SSN}`, { headers: this.getHeaders() });
   }
 

@@ -94,15 +94,30 @@ module.exports.sellerRepo = {
     //retun acknowlage , or throw exception
     approveSeller: async (SSN_) => {
         try {
-            return await seller.updateOne({ SSN: SSN_ }, {
+            console.log("ssn",SSN_);
+            return await seller.updateOne({ SSN : SSN_ }, {
                 $set: { status: true }
             });
+
         } catch (err) {
             throw err;
         }
     },
 
-    getSeller: async (SSN) => {
+    updateSellerById: async(sellerId, updateData)=>{
+        try{
+            const updatedSeller = await seller.findByIdAndUpdate(
+                sellerId,
+                updateData,
+                { new: true, runValidators: true }
+            );
+            return updatedSeller; 
+        }catch(err){
+            throw err;
+        }
+    },
+
+    getSeller: async (SSN_) => {
         try {
             return await seller.findOne({ SSN: SSN_ });
         } catch (err) {
@@ -113,6 +128,7 @@ module.exports.sellerRepo = {
     activeSeller: async (SSN_) => {
         try {
             //return acknolage
+            
             return await seller.updateOne({ SSN: SSN_ }, { isActive: true })
         } catch (err) {
             throw err;

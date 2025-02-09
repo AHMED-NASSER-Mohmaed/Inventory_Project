@@ -171,15 +171,15 @@ export class SellersComponent implements OnInit, OnDestroy {
 
   toggleEdit(event?: any): void {
     if (this.editing) {
-      // Save mode: use backupUser for reversion if needed
       const workingBackup = { ...this.backupUser }; // Existing backup of data when editing was activated
       this.sub5 = this.customerService.updateSeller(this.selectedUser._id, this.selectedUser).subscribe({
         next: (res: any) => {
-          if (res.data.acknowledged) {
+          if (res.message === 'success') {
             const index = this.users.findIndex(u => u.SSN === this.selectedUser.SSN);
             if (index !== -1) {
+              //! update the user in the users array
               this.users[index] = { ...this.selectedUser };
-              // Update backup after a successful save
+              //! Update backup user
               this.backupUser = { ...this.selectedUser };
             }
           } else {

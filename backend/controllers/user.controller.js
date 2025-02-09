@@ -3,6 +3,7 @@ const userService = require("../services/user.service");
 const UserMiddleware = require("../middlewares/user.middleware");
 const AuthMiddleware = require("../middlewares/auth.middleware");
 const catchAsync = require("../utils/catchAsync");
+const prot_rest = require("../utils/authMiddlewaresOptions");
 
 const userRouter = express.Router();
 
@@ -62,27 +63,23 @@ const deleteMe = catchAsync(async (req, res, next) => {
 });
 
 // Routes
-// userRouter.use(AuthMiddleware.protect);
-
-userRouter.get("/users/me", UserMiddleware.getMe, getUser);
-userRouter.patch("/users/updateMe", updateMe);
-userRouter.delete("/users/deleteMe", deleteMe);
 
 userRouter.get(
-  "/users",
-  AuthMiddleware.restrictTo("admin", "super_admin"),
-  getAllUsers
+  "/users/me",
+  AuthMiddleware.protect,
+  UserMiddleware.getMe,
+  getUser
 );
-userRouter.post(
-  "/users",
-  AuthMiddleware.restrictTo("admin", "super_admin"),
-  createUser
-);
+userRouter.patch("/users/updateMe", AuthMiddleware.protect, updateMe);
+userRouter.delete("/users/deleteMe", AuthMiddleware.protect, deleteMe);
+
+userRouter.get("/users", prot_rest("admin", "super_admin"), getAllUsers);
+userRouter.post("/users", prot_rest("admin", "super_admin"), createUser);
 
 userRouter
   .route("/users/:userId")
   .get(getUser)
-  .patch(AuthMiddleware.restrictTo("admin", "super_admin"), updateUser)
-  .delete(AuthMiddleware.restrictTo("admin", "super_admin"), deleteUser);
+  .patch(prot_rest("admin", "super_admin"), updateUser)
+  .delete(prot_rest("admin", "super_admin"), deleteUser);
 
 module.exports = userRouter;
