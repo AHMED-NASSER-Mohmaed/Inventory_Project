@@ -59,6 +59,7 @@ module.exports.restrictTo = (...userTypes) => {
     //userType , role  
     userTypes = userTypes.flat();
     console.log(userTypes);
+    console.log(`request user type from post: ${req.user.userType}`);
     if ( !userTypes.includes(req.user.userType) && !userTypes.includes(req.user.role) ) { // to be reviewed
       return next(
         new AppError("You do not have permission to perform this action", 403)

@@ -43,15 +43,16 @@ class ProductService {
             //upload images to kit 
             let imagesURLS=[]
 
+
             //throw exception from databse
             const new_one =await product.create({ name:productData.name , code:productData.code ,  images:imagesURLS,
                             description:productData.description , category:productData.category
-                            ,sellerId:user._id , sellerName:`${user.firstName } ${user.lastName}`, status: false});
+                            ,sellerId:user._id , sellerName: user.companyName, status: false});
 
                 
             
             await sinventory.createInventory({  product:new_one._id ,  providerID: user._id,
-                providerName:`${user.firstName } ${user.lastName}`, currentStock: productData.currentStock,
+                providerName: user.companyName, currentStock: productData.currentStock,
                 cost:productData.cost
              });
 
@@ -112,7 +113,6 @@ class ProductService {
                             ,sellerId:APP_CONFIG.COMPANY_ID , sellerName:APP_CONFIG.COMPANY_NAME, status: true });
 
                 
-            console.log("hellooooo");
             
             const invProduct = await cinventory.createInventory({  product:new_one._id ,   providerID:isExistSupplier._id,
                 providerName:isExistSupplier.companyName , currentStock: productData.currentStock,
@@ -178,7 +178,7 @@ class ProductService {
                 if(!tempSeller){
                     throw new AppError(`Sorry the seller you provided doesn't exist, ya norm!!`, APP_CONFIG.HTTP_BAD_REQUEST);
                 }
-                sellerName = `${tempSeller.firstName} ${tempSeller.lastName}`;
+                sellerName = tempSeller.companyName;
                 let providerID = sellerId;
                 let providerName = sellerName;
                 let inv = await sinventory.updateInventoryByProductId(productId, {

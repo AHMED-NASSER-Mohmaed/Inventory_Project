@@ -104,6 +104,19 @@ module.exports.sellerRepo = {
         }
     },
 
+    updateSellerById: async(sellerId, updateData)=>{
+        try{
+            const updatedSeller = await seller.findByIdAndUpdate(
+                sellerId,
+                updateData,
+                { new: true, runValidators: true }
+            );
+            return updatedSeller; 
+        }catch(err){
+            throw err;
+        }
+    },
+
     getSeller: async (SSN_) => {
         try {
             return await seller.findOne({ SSN: SSN_ });
