@@ -12,6 +12,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 	background: #ccc;
 }
 
+
+html {
+	scroll-behavior: smooth;
+  }
+
+
 mat-dialog-container {
 	/* position: fixed !important; */
 	z-index: 3000 !important;
