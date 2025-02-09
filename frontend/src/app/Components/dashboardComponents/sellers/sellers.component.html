@@ -95,45 +95,53 @@
           </div>
           <div class="modal-body">
             <div class="seller-image-container">
-                <img [src]="selectedUser?.photo?.url" alt="{{selectedUser?.firstName}}" class="seller-img">
+                <img [src]="selectedUser.photo?.url" alt="{{selectedUser.firstName}}" class="seller-img">
                 <input type="file" id="imageUploadSeller" style="display: none;" (change)="onImageChangeSeller($event)">
                 <button class="btn change-btn" (click)="triggerImageUploadSeller()"><i class="fa fa-pencil"></i> Change</button>
             </div>
             <form #editForm="ngForm">
               <div class="info-grid" *ngIf="selectedUser">
-                <div class="info-item">
-                  <strong class="label">First Name:</strong>
-                  <div class="input-wrapper" [ngClass]="{'valid': firstNameInput.touched && firstNameInput.valid, 'invalid': firstNameInput.touched && firstNameInput.invalid}">
-                    <input type="text" required [(ngModel)]="selectedUser.firstName" name="firstName" #firstNameInput="ngModel" [disabled]="!editing" class="value">
-                  </div>
+              <div class="info-item">
+                <strong class="label">First Name:</strong>
+                <div class="input-wrapper" [ngClass]="{'valid': firstNameInput.touched && firstNameInput.valid, 'invalid': firstNameInput.touched && firstNameInput.invalid}">
+                <input type="text" required minlength="3" maxlength="10" [(ngModel)]="selectedUser.firstName" name="firstName" #firstNameInput="ngModel" [disabled]="!editing" class="value">
                 </div>
-                <div class="info-item">
-                  <strong class="label">Last Name:</strong>
-                  <div class="input-wrapper" [ngClass]="{'valid': lastNameInput.touched && lastNameInput.valid, 'invalid': lastNameInput.touched && lastNameInput.invalid}">
-                    <input type="text" required [(ngModel)]="selectedUser.lastName" name="lastName" #lastNameInput="ngModel" [disabled]="!editing" class="value">
-                  </div>
+              </div>
+              <div class="info-item">
+                <strong class="label">Last Name:</strong>
+                <div class="input-wrapper" [ngClass]="{'valid': lastNameInput.touched && lastNameInput.valid, 'invalid': lastNameInput.touched && lastNameInput.invalid}">
+                  <input type="text" required minlength="3" maxlength="10" [(ngModel)]="selectedUser.lastName" name="lastName" #lastNameInput="ngModel" [disabled]="!editing" class="value">
+                </div>
                 </div>
                 <div class="info-item">
                   <strong class="label">Company Name:</strong>
-                  <div class="input-wrapper" [ngClass]="{'valid': companyNameInput.touched && companyNameInput.valid, 'invalid': companyNameInput.touched && companyNameInput.invalid}">
-                    <input type="text" required [(ngModel)]="selectedUser.companyName" name="companyName" #companyNameInput="ngModel" [disabled]="!editing" class="value">
-                  </div>
+                    <div class="input-wrapper" [ngClass]="{'valid': companyNameInput.touched && companyNameInput.valid, 'invalid': companyNameInput.touched && companyNameInput.invalid}">
+                    <input type="text" required minlength="3" maxlength="15" pattern="^[a-zA-Z0-9]+(?: [a-zA-Z0-9]+){0,3}$" [(ngModel)]="selectedUser.companyName" name="companyName" #companyNameInput="ngModel" [disabled]="!editing" class="value">
+                    </div>
+                </div>
+                <div class="info-item">
+                  <strong class="label">Company Reg#:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': regNumberInput.touched && regNumberInput.valid, 'invalid': regNumberInput.touched && regNumberInput.invalid}">
+                    <input type="number" required pattern="^[0-9]{4}$" [(ngModel)]="selectedUser.companyRegistrationNumber" name="companyRegistrationNumber" #regNumberInput="ngModel" [disabled]="!editing" class="value">
+                    </div>
                 </div>
                 <div class="info-item">
                   <strong class="label">Email:</strong>
-                  <div class="input-wrapper" [ngClass]="{'valid': emailInput.touched && emailInput.valid, 'invalid': emailInput.touched && emailInput.invalid}">
-                    <input type="email" required [(ngModel)]="selectedUser.email" name="email" #emailInput="ngModel" [disabled]="!editing" class="value">
-                  </div>
+                    <div class="input-wrapper" [ngClass]="{'valid': emailInput.touched && emailInput.valid, 'invalid': emailInput.touched && emailInput.invalid}">
+                    <input type="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" [(ngModel)]="selectedUser.email" name="email" #emailInput="ngModel" [disabled]="!editing" class="value">
+                    </div>
                 </div>
                 <div class="info-item">
                   <strong class="label">Phone Number:</strong>
-                  <div class="input-wrapper" [ngClass]="{'valid': phoneInput.touched && phoneInput.valid, 'invalid': phoneInput.touched && phoneInput.invalid}">
-                    <input type="text" required [(ngModel)]="selectedUser.phoneNumber" name="phoneNumber" #phoneInput="ngModel" [disabled]="!editing" class="value">
-                  </div>
+                    <div class="input-wrapper" [ngClass]="{'valid': phoneInput.touched && phoneInput.valid, 'invalid': phoneInput.touched && phoneInput.invalid}">
+                    <input type="text" required pattern="^(010|011|012|015)\d{8}$" [(ngModel)]="selectedUser.phoneNumber" name="phoneNumber" #phoneInput="ngModel" [disabled]="!editing" class="value">
+                    </div>
                 </div>
                 <div class="info-item">
-                  <strong class="label">Status:</strong>
-                  <input type="text" [value]="selectedUser.isActive ? 'Activated' : 'Deactivated'" name="status" disabled class="value">
+                  <strong class="label">SSN:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': ssnInput.touched && ssnInput.valid, 'invalid': ssnInput.touched && ssnInput.invalid}">
+                    <input type="number" required pattern="^[0-9]{14}$" [(ngModel)]="selectedUser.SSN" name="SSN" #ssnInput="ngModel" [disabled]="!editing" class="value">
+                    </div>
                 </div>
                 
               </div>
