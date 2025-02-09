@@ -48,6 +48,20 @@ export class LoginComponent implements OnDestroy{
               this.router.navigateByUrl('/dashboard');
             }, 1500);
           }
+
+          if(res.data.user.role === 'super_admin' && this.accountService.isLoggedIn){
+            setTimeout(() => {
+              this.router.navigateByUrl('/dashboard');
+            }, 1500);
+          }
+
+          if(res.data.user.role === 'customer' && this.accountService.isLoggedIn){
+            setTimeout(() => {
+              this.router.navigateByUrl('/dashboard');
+            }, 1500);
+          }
+
+          
         }
       },
       error: (error) => {
