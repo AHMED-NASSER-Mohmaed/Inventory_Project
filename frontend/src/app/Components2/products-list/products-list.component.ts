@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './products-list.component.html',
-  styleUrls: ['./products-list.component.css']  // Corrected styleUrl to styleUrls
+  styleUrls: ['./products-list.component.css']  
 })
 export class ProductsListComponent implements OnInit {
   products: any;
