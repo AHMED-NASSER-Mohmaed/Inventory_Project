@@ -25,6 +25,8 @@ var imagekit = new imageKit({
  async function upload(files, folder) {
   try{
     
+      // console.log("filess : ", files);
+      
       if(!files || !files.image) 
         throw new AppError(APP_CONFIG.HTTP_NOT_FOUND, "No file uploaded.")
       
@@ -42,7 +44,7 @@ var imagekit = new imageKit({
       return await uploadToImageKit({ files: uploadPayload });
 
   }catch(err){
-    throw err;
+    throw err 
   }
 
 }//end of uplaod image
