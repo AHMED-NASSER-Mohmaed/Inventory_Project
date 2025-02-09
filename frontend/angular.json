@@ -36,11 +36,13 @@
               "node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.css",
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+              "node_modules/ngx-toastr/toastr.css"
             ],
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
-              "node_modules/@popperjs/core/dist/umd/popper.min.js"
+              "node_modules/@popperjs/core/dist/umd/popper.min.js",
+              "node_modules/jquery/dist/jquery.min.js"
             ]
           },
           "configurations": {
@@ -106,7 +108,9 @@
       }
     }
   },
+  
   "cli": {
-    "analytics": "0510b564-40bf-46ed-b713-b4938d1f6e9a"
+    "analytics": false
   }
 }
+

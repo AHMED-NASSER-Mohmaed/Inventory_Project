@@ -7,7 +7,7 @@ const prot_rest = require("../utils/authMiddlewaresOptions");
 const userService = require("../services/user.service");
 const { validateParams, validateAdminRouteParmas, validatorForQueries } = require("../middlewares/validation.middlewares");
 const { sendResponseToClint } = require("../utils/apiFeatures");
-const { deleteFile, upload } = require("../services/media.service");
+const { deleteFiles, upload } = require("../services/media.service");
 const AppError = require("../utils/appError");
 
 const route = express.Router();
@@ -80,6 +80,11 @@ const sellerOp = {
 
     getSellers: async (req, res, next) => {
         const result = await sellerService.getSellers(req.validatedParams);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
+    updateSeller: async (req, res, next) => {
+        const result = await sellerService.updateSellerById(req.params.sellerId, req.body, req.user.userType); // to be continued
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
@@ -367,7 +372,7 @@ const customerOp = {
             //delete image from imagekit  if user it's not the default image
             if (!(oldFileId['photo']['fileId'] === APP_CONFIG.UDIAMGE_ID_VALUE)) {
                 console.log("the one that is exist is not equal to the default one");
-                await deleteFile(oldFileId['photo']['fileId']);
+                await deleteFiles([oldFileId['photo']['fileId']]);
             }
 
             imageInfo = await upload(req.files, APP_CONFIG.PROFILE_IMAGE_FOLDER);
@@ -379,7 +384,7 @@ const customerOp = {
         } finally {
 
             if (!imageInfo) {
-                await userService.updateUserImage(id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
+                await userService.updateUserImage(req.params.id , APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
                 throw new AppError(error.message, APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
             }
 
@@ -408,7 +413,7 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
     .delete("/deleteSeller/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.deleteSeller))
     .patch("/approveSeller/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.approveSeller))
     .patch("/activeSeller/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.activeSellerAcount))
-
+    .patch("/updateSeller/:sellerId", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER), catchAsync(sellerOp.updateSeller))
 
     .get('/allSellers', prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.getAllSellers))
     .get("/getSellers", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),

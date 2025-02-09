@@ -15,7 +15,7 @@ export class ConfirmDialogComponent {
     this.dialogRef.close(false);
   }
 
-  onDelete(): void {
+  onDeactivate(): void {
     this.dialogRef.close(true);
   }
 }

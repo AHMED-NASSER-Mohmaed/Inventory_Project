@@ -2,6 +2,7 @@ const { filter } = require('lodash');
 const Product = require('../models/product.model');
 const AppError = require('../utils/appError');
 const { inboxResult } = require("../utils/apiFeatures")
+
 class ProductRepository {
 
   async createProduct(productData) {
@@ -158,6 +159,22 @@ class ProductRepository {
     }
   }
 
+  async updateProductBysellerId(providerId, updateData){ // only to update the seller name if it was changed by the seller in his profile or by the admin
+    try{
+      const {companyName, ...rest} = updateData;
+      const sellerName = companyName;
+
+      await Product.updateMany(
+        { sellerId: providerId },
+        { sellerName },
+        { new: true, runValidators: true }
+      );
+      return true;
+    }catch(err){
+      throw err;
+    }
+  }
+
   async getProducts(page, limit, sort, filters, prjection={}) {
     try {
 
@@ -195,6 +212,35 @@ class ProductRepository {
     }
 
 
+
+
+  }
+
+  async updateProductMedia(id,productRepo){
+
+    try{
+
+      return await Product.updateOne({_id:id},
+        {$set:{images:productRepo}}
+      );
+
+    }catch(error){
+      throw error;
+    }
+
+  }
+
+  async updateProductMedia(id,productRepo){
+
+    try{
+
+      return await Product.updateOne({_id:id},
+        {$set:{images:productRepo}}
+      );
+
+    }catch(error){
+      throw error;
+    }
 
   }
 

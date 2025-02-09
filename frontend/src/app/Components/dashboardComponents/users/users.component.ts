@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { CustomersService } from '../../../_services/customers.service';
 import { User } from '../../../_models/user';
 import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-users',
@@ -15,17 +16,20 @@ import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.c
 })
 export class UsersComponent implements OnInit , OnDestroy{
 
-  constructor(private customerService: CustomersService , public dialog: MatDialog) { }
+  
+  constructor(private customerService: CustomersService, public dialog: MatDialog) { }
   dropdownStates: boolean[] = [];
   sub: Subscription = {} as Subscription;
   sub2: Subscription = {} as Subscription;
+  sub3: Subscription = {} as Subscription;
   users: User[] = [];
+  isDarkMode: boolean = false;
 
   ngOnInit(): void {
     this.sub = this.customerService.getAllCustomers().subscribe({
       next: (res) => {
         // this.users = res.users.filter((user: User) => user.userType === "customer"); //! this returns all types! , usertype seller doesn't return anything
-        this.users = res.users.filter((user: User) => user.kind === "Customer"); //! this works
+        this.users = res.users.filter((user: User) => user.kind === "customer"); //! this works
         console.log(res);
         console.log(this.users);
         this.dropdownStates = new Array(this.users.length).fill(false);
@@ -37,17 +41,29 @@ export class UsersComponent implements OnInit , OnDestroy{
         console.log('complete');
       }
     })
+
+
+
   }
+
+
+
+
+  toggleDarkMode(): void {
+    this.isDarkMode = !this.isDarkMode;
+  }
+
 
   openConfirmDialog(userId: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
 
-    dialogRef.afterClosed().subscribe(result => {
+    this.sub3 = dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.deleteUser(userId);
       }
     });
   }
+  
 
   deleteUser(id: string){
     this.sub2 = this.customerService.deleteCustomer(id).subscribe({
@@ -70,9 +86,36 @@ export class UsersComponent implements OnInit , OnDestroy{
     this.dropdownStates[index] = !this.dropdownStates[index];
   }
 
+
+
+
+
+
+
+
   ngOnDestroy(): void {
-    this.sub.unsubscribe();
+    if(this.sub){
+      this.sub.unsubscribe();
+    }
+
+    if(this.sub2){
+      this.sub.unsubscribe();
+    }
+
+    if(this.sub3){
+      this.sub.unsubscribe();
+    }
+
     
   }
+
+
+
+  
+
+
+
+
+  
 
 }

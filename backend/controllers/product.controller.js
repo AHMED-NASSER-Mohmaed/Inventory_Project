@@ -6,6 +6,8 @@ const { APP_CONFIG } = require("../config/app.config");
 const pro_res = require("../utils/authMiddlewaresOptions")
 const { validatorForQueries } = require("../middlewares/validation.middlewares");
 const categoryService = require("../services/category.service");
+const AppError = require("../utils/appError");
+const { deleteFiles, upload } = require("../services/media.service");
 
 class ProductController {
   constructor() {
@@ -24,10 +26,10 @@ class ProductController {
 
 
     // public routes: no need for authentication 
-    this.router.get(
-      "/products",
-      catchAsync(this.getAllProducts)
-    );
+    // this.router.get(
+    //   "/products",
+    //   catchAsync(this.getAllProducts)
+    // );
 
     this.router.get(
       "/productsByCategory/:categoryId",
@@ -78,9 +80,39 @@ class ProductController {
     )
 
     this.router.patch(
-      "/updateProductMedia",
+      "/updateProductMedia/:id",
+      pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER),
       catchAsync(this.updateProductMedia)
     )
+
+
+    this.router.get(
+      "/Products",
+
+
+
+    )
+
+
+
+
+  }
+
+
+  async Products(req, res, next) {
+
+    
+
+    let result = await productService.getProducts(req.validatedParams);
+
+
+
+
+    res.status(200).json({
+      message: "success",
+      result,
+    })
+
 
   }
 
@@ -102,7 +134,7 @@ class ProductController {
 
     // console.log("i am here guy..");
 
-    let filters = { _id: req.query.catId , isActive: true }
+    let filters = { _id: req.query.catId, isActive: true }
 
     let arrOfChlidCat = await categoryService.getCategoies(filters);
 
@@ -113,12 +145,13 @@ class ProductController {
     req.validatedParams['filters']['isActive'] = true;
     req.validatedParams['filters']['status'] = true;
 
-    req.validatedParams['projection']={ "isActive":0,
+    req.validatedParams['projection'] = {
+      "isActive": 0,
       "status": 0,
       "createdAt": 0,
       "updatedAt": 0,
-      "category" : 0,  
-      "sellerId" : 0,
+      "category": 0,
+      "sellerId": 0,
     };
 
     let result = await productService.getProducts(req.validatedParams);
@@ -131,7 +164,6 @@ class ProductController {
 
   async addProductForSeller(req, res, next) {
     const product = await productService.createProductForSeller(req.user, req.body);
-
     res.status(APP_CONFIG.HTTP_CREATED).json({
       message: "success",
       product
@@ -159,6 +191,8 @@ class ProductController {
   }
 
   async getProduct(req, res, next) {
+
+
     const product = await productService.getProductById(req.params.productId);
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
@@ -192,17 +226,40 @@ class ProductController {
   }
 
   async updateProduct(req, res, next) {
+
+    if (user.userType == APP_CONFIG.SELLER) {
+      await this.verifySeller(req.params.productId)
+    }
+
+
+
     const updatedProduct = await productService.updateProductById(
       req.params.productId,
       req.body
     );
+
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       updatedProduct,
     });
+
+  }
+
+
+  async verifySeller(productId) {
+    let product = await product.getProductById({ _id: productId });
+
+    if (product.sellerId !== user._id) {
+      throw new AppError("you are not autorized.", APP_CONFIG.HTTP_UNAUTHORIZED)
+    }
   }
 
   async deleteProduct(req, res, next) {
+
+    if (user.userType == APP_CONFIG.SELLER) {
+      await this.verifySeller(req.params.productId);
+    }
+
     await productService.deleteProductById(req.params.productId);
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
@@ -218,6 +275,7 @@ class ProductController {
   }
 
   async activateProduct(req, res, next) {
+
     const product = await productService.activateProduct(req.params.productId, req.user.userType, req.user._id);
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
@@ -225,51 +283,77 @@ class ProductController {
     });
   }
 
-  async updateProductMedia(res,req,next){
+  async updateProductMedia(req, res, next) {
 
-    if(!req.params.id) // product id 
-      throw new AppError("invalid parameter",APP_CONFIG.HTTP_BAD_REQUEST);
+    if (!req.params.id) {
+      throw new AppError("Invalid parameter", APP_CONFIG.HTTP_BAD_REQUEST);
+    }
 
-    
-    const oldImages= (await productService.getProductById(req.params.id)).images;
-
-    console.log(oldImages);
+    const product = await productService.getProductById(req.params.id);
 
 
+
+    if (user.userType == APP_CONFIG.SELLER && product._id != user._id)
+      throw new AppError("you are not authorized", APP_CONFIG.HTTP_UNAUTHORIZED);
+
+
+
+
+    const incommigImages = req.files.keepedImages || [];
+    const uploadedImages = req.files['image'] || [];
+
+
+
+    if ((incommigImages.length + uploadedImages.length) > APP_CONFIG.MAX_IMAGE_COUNT) {
+      console.log("freeeking that")
+      throw new AppError("Can't upload more than four images!", APP_CONFIG.HTTP_BAD_REQUEST);
+    }
+
+
+
+    let deletedMedia = [];
+
+    let originalImages = product.images;
+
+    if (originalImages.length > incommigImages.length) {
+
+      for (let i = originalImages.length - 1; i >= 0; i--) {
+
+        if (!incommigImages.includes(originalImages[i])) {
+          deletedMedia.push(originalImages[i]['fileId']);
+          originalImages.splice(i, 1);
+        }
+
+      }
+
+
+      if (!await deleteFiles(deletedMedia)) {
+        console.log("Deleted media successfully.");
+        if (originalImages.length === 0) {
+          await productService.updateProductMedia([APP_CONFIG.DP_IMAGE_DEFALUT_OBG]);
+        }
+        throw new AppError("Something went wrong while deleting files", APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
+      }
+    }
+
+    const newImages = await upload(req.files, APP_CONFIG.PRODUCT_IMAGE_FOLDER);
+
+
+    console.log("done");
+    // Update the product with the new images
+    const updatedImages = [...originalImages, ...newImages.files];
+    await productService.updateProductMedia(req.params.id, updatedImages);
+
+
+
+    res.status(APP_CONFIG.HTTP_OK).json({
+      message: "Product media updated successfully",
+      data: updatedImages,
+    });
 
 
   }
-/*
-    async function (req, res, next) {
 
-    if(!req.params.id)
-     throw new AppError("invalid parameter",APP_CONFIG.HTTP_BAD_REQUEST);
- 
-     const oldFileId= await userService.getUserImageId(req.params.id);
-
-     console.log(oldFileId);
-
-     //delete image from imagekit  if user it's not the default image
-     if ( !(oldFileId['photo']['fileId'] ===  APP_CONFIG.UDIAMGE_ID_VALUE)   ){
-         console.log("the one that is exist is not equal to the default one");
-         console.log(await deleteFile(oldFileId['photo']['fileId']));
-     }
-
-     const imageInfo = await upload(req.files, APP_CONFIG.PROFILE_IMAGE_FOLDER);
-
-     if (!imageInfo) {
-         await userService.updateUserImage(id,APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
-         throw new AppError("something went wrong", APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
-     }
-
-     console.log("===>",imageInfo['files'][0]);
-     //this line may be throw an exception from database.
-     const result = await userService.updateUserImage(req.params.id, imageInfo['files'][0]);
-
-     sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
-
- },
-*/
 
 }
 

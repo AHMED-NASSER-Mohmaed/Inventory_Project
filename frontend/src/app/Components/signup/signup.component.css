@@ -246,7 +246,7 @@ input[type="radio"] {
 .valid#ssn,
 .valid#companyRegNumber,
 .valid#companyName {
-    border: 1.3px solid rgb(233, 168, 168);
+    border: 1.3px solid rgb(170, 233, 168);
 }
 
 .invalid#firstName,

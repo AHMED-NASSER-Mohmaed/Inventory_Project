@@ -2,6 +2,9 @@ const { sellerRepo } = require("../repos/sellers.repo");
 const AppError = require("../utils/appError");
 const APP_CONFIG = require("../config/app.config")
 
+const sellerInventoryRepo = require("../repos/sinventory.repo");
+const productRepo = require("../repos/product.repo");
+
 //refactored
 async function  getSellersWithCallBack(validatedParams, callBack)  {
 
@@ -37,7 +40,7 @@ module.exports.sellerService = {
         try {
 
             const seller=await sellerRepo.getSeller(SSN);
-
+            console.log(seller);
             if(!seller['status'])
                 throw new AppError("you cannot de-active pending seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
 
@@ -142,6 +145,46 @@ module.exports.sellerService = {
             throw err;
         }
 
+   },
+
+   updateSellerById: async(sellerId, updateData, userType)=>{
+
+        try{
+
+            const { firstName, lastName,  phoneNumber,  SSN, companyName, companyRegistrationNumber, ...rest} = updateData;
+
+            
+            
+            if(userType == 'seller'){
+                return await sellerRepo.updateSellerById(sellerId, {
+                    ...(firstName !== undefined && { firstName }),
+                    ...(lastName !== undefined && { lastName }),
+                    ...(phoneNumber !== undefined && { phoneNumber })
+                });
+            }else if(userType == 'staff'){
+
+                if(companyName){
+                   const isUpdatedInventories = await sellerInventoryRepo.updateInventoryByProviderId(sellerId, {companyName});
+                    const isUpdatedProducts = await productRepo.updateProductBysellerId(sellerId, {companyName});
+                    if(!isUpdatedInventories || !isUpdatedProducts){
+                        throw new AppError("Failed to update related schemes!!");
+                    }
+                }
+
+                return await sellerRepo.updateSellerById(sellerId, {
+                    ...(firstName !== undefined && { firstName }),
+                    ...(lastName !== undefined && { lastName }),
+                    ...(phoneNumber !== undefined && { phoneNumber }),
+                    ...(SSN !== undefined && {SSN}),
+                    ...(companyName !== undefined && { companyName }),
+                    ...(companyRegistrationNumber !== undefined && { companyRegistrationNumber }),
+                  });
+
+            }
+            
+        }catch(err){
+
+        }
    }
 
 }

@@ -1,3 +1,4 @@
+const { update, first } = require('lodash');
 const SInventory = require('../models/sinventory.model');
 const AppError = require('../utils/appError');
 
@@ -54,6 +55,23 @@ class SInventoryRepository {
       await inventory.save({ runValidators: true });
       const inv = await SInventory.findById(inventory._id).populate('product')
       return inv;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async updateInventoryByProviderId(providerId, updateData) {
+    try {
+      const { companyName, ...rest} = updateData; 
+      const providerName = companyName;
+
+       await SInventory.updateMany(
+        { providerID: providerId },
+        { providerName },
+        { new: true, runValidators: true }
+      );
+
+      return true;
     } catch (err) {
       throw err;
     }

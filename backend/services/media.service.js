@@ -25,6 +25,8 @@ var imagekit = new imageKit({
  async function upload(files, folder) {
   try{
     
+      // console.log("filess : ", files);
+      
       if(!files || !files.image) 
         throw new AppError(APP_CONFIG.HTTP_NOT_FOUND, "No file uploaded.")
       
@@ -42,7 +44,7 @@ var imagekit = new imageKit({
       return await uploadToImageKit({ files: uploadPayload });
 
   }catch(err){
-    throw err;
+    throw err 
   }
 
 }//end of uplaod image
@@ -128,7 +130,7 @@ async function download(fileUrl) {
  * Deletes a file from ImageKit using its file ID.
  * @param {string} fileId - The ID of the file to delete.
  * @returns {Object} - An object with a success message.
- */
+ *//*
 async function deleteFile(fileId) {
   try {
     console.log("returning from deleting process",await imagekit.deleteFile(fileId));
@@ -136,10 +138,27 @@ async function deleteFile(fileId) {
   } catch (error) {
     throw new AppError( error.message , APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR );
   }
+}*/
+
+
+async function deleteFiles(fileIds) {
+  try {
+    // Delete all files in parallel and wait for completion
+    await Promise.all(
+      fileIds.map(async (fileId) => {
+        const result = await imagekit.deleteFile(fileId);
+        console.log(`Deleted file ${fileId}:`, result);
+      })
+    );
+    return true; // Return true only if all deletions succeed
+  } catch (error) {
+    // Throw a custom error with the original message
+    throw new AppError(error.message, APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
+  }
 }
 
 module.exports = {
   upload,
   download,
-  deleteFile,
+  deleteFiles,
 };
