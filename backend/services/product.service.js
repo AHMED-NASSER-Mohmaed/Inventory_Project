@@ -1,4 +1,3 @@
-const ProductRepository = require("../repos/product.repo");
 const cinventory=require("../repos/cinventory.repo");
 const sinventory=require("../repos/sinventory.repo");
 const product=require("../models/product.model");
@@ -11,6 +10,7 @@ const {sellerRepo} = require("../repos/sellers.repo");
 const SupplierRepository = require("../repos/supplier.repo");
 
 const category=require("../models/category.model");
+
 const productRepo = require("../repos/product.repo");
 
 
@@ -148,12 +148,12 @@ class ProductService {
                 throw new AppError(`sorry that category doesn't exist, ya norm!`);
             }
         }
-        let product = await ProductRepository.getProductById(productId);
+        let product = await productRepo.getProductById(productId);
 
         if(userType == 'seller' && !product.sellerId.equals(sellerId_)){
             throw new AppError(`Sorry you're not authorized to update this product since it doesn't belong to you, ya norm!`);
         }else if(userType == 'seller'){
-            product = await ProductRepository.updateProductById(productId, {
+            product = await productRepo.updateProductById(productId, {
                 ...(name && { name }),
                 ...(code && { code }),
                 // ...(price && { price }),
@@ -187,7 +187,7 @@ class ProductService {
                 }); // the sinventory providerName should be consistent with the sellerId and name
                 console.log(inv);
             }
-            product = await ProductRepository.updateProductById(productId, { // if it reaches here then it's the admin or the super admin since there's a restrict to on the route
+            product = await productRepo.updateProductById(productId, { // if it reaches here then it's the admin or the super admin since there's a restrict to on the route
                 ...(name && { name }),
                 ...(code && { code }),
                 // ...(price && { price }),
@@ -216,7 +216,7 @@ class ProductService {
                     ...(providerName && { providerName }),
                 }); 
             }
-            product = await ProductRepository.updateProductById(productId, { // if it reaches here then it's the admin or the super admin since there's a restrict to on the route
+            product = await productRepo.updateProductById(productId, { // if it reaches here then it's the admin or the super admin since there's a restrict to on the route
                 ...(name && { name }),
                 ...(code && { code }),
                 // ...(price && { price }),
@@ -245,7 +245,7 @@ class ProductService {
 
     async deleteProductById(productId) {
         try {
-            const product = await ProductRepository.deleteProductById(productId);
+            const product = await productRepo.deleteProductById(productId);
             if (!product) {
                 throw new AppError('Product not found', 404);
             }
@@ -257,7 +257,7 @@ class ProductService {
 
     async getProductById(productId) {
         try {
-            const product = await ProductRepository.getProductById(productId); //  .populate() has been removed since there's no ref anymore
+            const product = await productRepo.getProductById(productId); //  .populate() has been removed since there's no ref anymore
             if (!product) {
                 throw new AppError('Product not found', 404);
             }
@@ -275,7 +275,7 @@ class ProductService {
                 throw new AppError('Category does not exist', 404);
             }
             
-            const products = await ProductRepository.getProductsByCategoryForEndUser(categoryId); //  .populate() has been removed since there's no ref anymore
+            const products = await productRepo.getProductsByCategoryForEndUser(categoryId); //  .populate() has been removed since there's no ref anymore
             if (!products || products.length === 0) {
                 throw new AppError(`Products by that category don't exist`, 404);
             }
@@ -293,10 +293,10 @@ class ProductService {
             }
             let products;
             if(userType == "seller"){
-                products = await ProductRepository.getProductsByCategoryForSeller(categoryId, sellerId_);
+                products = await productRepo.getProductsByCategoryForSeller(categoryId, sellerId_);
             }
             else{
-                products = await ProductRepository.getProductsByCategoryForStaff(categoryId);
+                products = await productRepo.getProductsByCategoryForStaff(categoryId);
             }
             if (!products || products.length === 0) {
                 throw new AppError(`Products by that category don't exist`, 404);
@@ -308,13 +308,13 @@ class ProductService {
     }
 
     async getAllProducts() {
-        return await ProductRepository.getAllProducts();
+        return await productRepo.getAllProducts();
     }
 
     async addProducts(productsArray) {
         try {
 
-            const products = await ProductRepository.addProducts(productsArray);
+            const products = await productRepo.addProducts(productsArray);
             return products;
         } catch (err) {
             throw err;
@@ -324,7 +324,7 @@ class ProductService {
 
     async approveProductForSeller(productId) {
         try {
-            let product = await ProductRepository.approveProductForSeller( productId);
+            let product = await productRepo.approveProductForSeller( productId);
             return product;
         } catch (err) {
             throw err;
@@ -344,7 +344,7 @@ class ProductService {
                 }
             }
 
-            const product = await ProductRepository.activateProduct(productId);
+            const product = await productRepo.activateProduct(productId);
             return product;
         } catch (err) {
             throw err;
@@ -360,6 +360,19 @@ class ProductService {
         }catch(error){
             throw error;
         }
+    }
+
+    /*************************************************/
+
+    async updateProductMedia(id,productMedia){
+        try{
+
+            return await productRepo.updateProductMedia(id,productMedia);
+
+        }catch(err){
+            throw err;
+        }
+
     }
 
 

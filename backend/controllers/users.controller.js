@@ -7,7 +7,7 @@ const prot_rest = require("../utils/authMiddlewaresOptions");
 const userService = require("../services/user.service");
 const { validateParams, validateAdminRouteParmas, validatorForQueries } = require("../middlewares/validation.middlewares");
 const { sendResponseToClint } = require("../utils/apiFeatures");
-const { deleteFile, upload } = require("../services/media.service");
+const { deleteFiles, upload } = require("../services/media.service");
 const AppError = require("../utils/appError");
 
 const route = express.Router();
@@ -372,7 +372,7 @@ const customerOp = {
             //delete image from imagekit  if user it's not the default image
             if (!(oldFileId['photo']['fileId'] === APP_CONFIG.UDIAMGE_ID_VALUE)) {
                 console.log("the one that is exist is not equal to the default one");
-                await deleteFile(oldFileId['photo']['fileId']);
+                await deleteFiles(oldFileId['photo']['fileId']);
             }
 
             imageInfo = await upload(req.files, APP_CONFIG.PROFILE_IMAGE_FOLDER);
@@ -385,22 +385,10 @@ const customerOp = {
 
             if (!imageInfo) {
                 await userService.updateUserImage(id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
-<<<<<<< HEAD
                 throw new AppError(error.message, APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
-=======
-                throw new AppError("something went wrong", APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
-            }
-
-
-            if (error != null) {
-                throw error;
->>>>>>> main
             }
 
         }
-
-
-
         // console.log("===>",imageInfo['files'][0]);
         //this line may be throw an exception from database.
 

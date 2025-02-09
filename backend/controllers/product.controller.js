@@ -6,6 +6,8 @@ const { APP_CONFIG } = require("../config/app.config");
 const pro_res = require("../utils/authMiddlewaresOptions")
 const { validatorForQueries } = require("../middlewares/validation.middlewares");
 const categoryService = require("../services/category.service");
+const { AppError } = require("../utils/appError");
+const {deleteFiles,upload}=require("../services/media.service");
 
 class ProductController {
   constructor() {
@@ -75,7 +77,11 @@ class ProductController {
       "/getProducts",
       validatorForQueries(this.allowedFilterFileds, this.allowedFileterFildesValues, this.allowedSortFileds, this.allowedSortFiledsValues),
       catchAsync(this.getProducts),
+    )
 
+    this.router.patch(
+      "/updateProductMedia/:id",
+      catchAsync(this.updateProductMedia)
     )
 
   }
@@ -109,10 +115,14 @@ class ProductController {
     req.validatedParams['filters']['isActive'] = true;
     req.validatedParams['filters']['status'] = true;
 
-    req.validatedParams['projection']={ "isActive":0,
+    req.validatedParams['projection'] = {
+      "isActive": 0,
       "status": 0,
       "createdAt": 0,
-      "updatedAt": 0};
+      "updatedAt": 0,
+      "category": 0,
+      "sellerId": 0,
+    };
 
     let result = await productService.getProducts(req.validatedParams);
 
@@ -217,49 +227,88 @@ class ProductController {
     });
   }
 
-  async updateProductImages(res,req,next){
+  async updateProductMedia(req, res, next) {
 
-    if(!req.params.id) // product id 
-      throw new AppError("invalid parameter",APP_CONFIG.HTTP_BAD_REQUEST);
-
-    
-    const oldImages= (await productService.getProductById(req.params.id)).images;
+    // console.log(!req.params.id);
 
 
+    // if(req.body.images.length+req.files.length > APP_CONFIG.MAX_IMAGE_COUNT )
+    //   throw new AppError("con't upload more than four images!",APP_CONFIG.HTTP_BAD_REQUEST);
 
+    if (!req.params.id) // product id 
+      throw new AppError("invalid parameter", APP_CONFIG.HTTP_BAD_REQUEST);
+
+    let deletedMedia = [];
+
+    const originalImages = (await productService.getProductById(req.params.id))['images'];
+
+    if (originalImages.length > req.body.images)//then we have to delete some of images
+    {
+
+      // we have to specify the objs that is not exist in the old array and delete them from image kit.
+
+      originalImages.forEach((element,index) => {
+
+        if (!req.body.images.include(element)) {
+          deletedMedia.push(element);
+          originalImages.splice(index,1);
+        }
+
+      })
+
+      if(!await deleteFiles(deletedMedia)){
+        if(!originalImages.length){
+          await productService.updateProductMedia([APP_CONFIG.DP_IMAGE_DEFALUT_OBG]);
+        }
+        throw new AppError("somthing wen wrong",APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
+      }
+      console.log("fuck you");
+    }
+
+
+
+    // await upload(req.files,PRODUCT_IMAGE_FOLDER)
+
+
+    console.log("old images:", originalImages);
+
+    console.log("files :",req.files);
+
+
+    console.log("preserved images : ", req.body.images.length);
 
   }
-/*
-    async function (req, res, next) {
-
-    if(!req.params.id)
-     throw new AppError("invalid parameter",APP_CONFIG.HTTP_BAD_REQUEST);
- 
-     const oldFileId= await userService.getUserImageId(req.params.id);
-
-     console.log(oldFileId);
-
-     //delete image from imagekit  if user it's not the default image
-     if ( !(oldFileId['photo']['fileId'] ===  APP_CONFIG.UDIAMGE_ID_VALUE)   ){
-         console.log("the one that is exist is not equal to the default one");
-         console.log(await deleteFile(oldFileId['photo']['fileId']));
-     }
-
-     const imageInfo = await upload(req.files, APP_CONFIG.PROFILE_IMAGE_FOLDER);
-
-     if (!imageInfo) {
-         await userService.updateUserImage(id,APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
-         throw new AppError("something went wrong", APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
-     }
-
-     console.log("===>",imageInfo['files'][0]);
-     //this line may be throw an exception from database.
-     const result = await userService.updateUserImage(req.params.id, imageInfo['files'][0]);
-
-     sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
-
- },
-*/
+  /*
+      async function (req, res, next) {
+  
+      if(!req.params.id)
+       throw new AppError("invalid parameter",APP_CONFIG.HTTP_BAD_REQUEST);
+   
+       const oldFileId= await userService.getUserImageId(req.params.id);
+  
+       console.log(oldFileId);
+  
+       //delete image from imagekit  if user it's not the default image
+       if ( !(oldFileId['photo']['fileId'] ===  APP_CONFIG.UDIAMGE_ID_VALUE)   ){
+           console.log("the one that is exist is not equal to the default one");
+           console.log(await deleteFile(oldFileId['photo']['fileId']));
+       }
+  
+       const imageInfo = await upload(req.files, APP_CONFIG.PROFILE_IMAGE_FOLDER);
+  
+       if (!imageInfo) {
+           await userService.updateUserImage(id,APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
+           throw new AppError("something went wrong", APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
+       }
+  
+       console.log("===>",imageInfo['files'][0]);
+       //this line may be throw an exception from database.
+       const result = await userService.updateUserImage(req.params.id, imageInfo['files'][0]);
+  
+       sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+  
+   },
+  */
 
 }
 
