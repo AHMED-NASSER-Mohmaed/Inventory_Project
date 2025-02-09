@@ -9,12 +9,14 @@ import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.c
 import { ConfirmDialogComponent2 } from '../../../confirm-dialog2/confirm-dialog2.component';
 import { ConfirmDialogImgchangeComponent } from '../../../confirm-dialog-imgchange/confirm-dialog-imgchange.component';
 
+
 @Component({
   selector: 'app-sellers',
   imports: [CommonModule, FormsModule],
   templateUrl: './sellers.component.html',
   styleUrl: './sellers.component.css'
 })
+
 export class SellersComponent implements OnInit, OnDestroy {
   constructor(private customerService: CustomersService, public dialog: MatDialog) { }
   dropdownStates: boolean[] = [];
