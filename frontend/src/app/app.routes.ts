@@ -6,10 +6,73 @@ import { authGuard } from './_guards/auth.guard';
 import { LockComponent } from './Components/lock/lock.component';
 import { auth2Guard } from './_guards/auth2.guard';
 import { UserprofileComponent } from './Components/userprofile/userprofile.component';
+import { HeaderComponent } from './core/header/header.component';
+import { SliderComponent } from './Components2/HomePage/slider/slider.component';
+
+import { FeaturedProductsComponent } from './Components2/HomePage/featured-products/featured-products.component';
+import { SaleComponent } from './Components2/HomePage/sale/sale.component';
+import { CategoryComponent } from './Components2/HomePage/category/category.component';
+import { FooterComponent } from './core/footer/footer.component';
+import { ProductsComponent } from './Components/dashboardComponents/products/products.component';
+import { ProductsListComponent } from './Components2/products-list/products-list.component';
+import { LandingPageComponent } from './Components2/HomePage/landing-page/landing-page.component';
 
 export const routes: Routes = [
 
+
     {
+
+        path:'LandingPage',
+        component:LandingPageComponent,
+    },
+    {
+        path:'header',
+        component: HeaderComponent,
+        
+     }
+    ,
+    {
+    path: 'slider',
+    component:SliderComponent,
+    }
+    ,
+
+    {
+        path: 'featured-products',
+        component: FeaturedProductsComponent
+    }    
+,
+    {
+        path: 'category',
+        component:CategoryComponent,
+    }
+
+    ,
+
+
+    {
+        path: 'sale',
+        component:SaleComponent,
+    }
+
+    ,
+
+    { 
+        path:'footer',
+        component:FooterComponent,
+
+    },
+
+   {
+    path:'products',
+    component:ProductsListComponent,
+   }
+   ,
+
+
+
+    {
+        // default route
         path: '',
         redirectTo:'signup',
         pathMatch:'full'
@@ -41,6 +104,8 @@ export const routes: Routes = [
         ]
     },
 
+
+
     {
         path: 'lock',
         component: LockComponent,
@@ -53,4 +118,12 @@ export const routes: Routes = [
         title: 'Profile',
     }
 
+,
+ 
+
+
 ];
+
+
+
+

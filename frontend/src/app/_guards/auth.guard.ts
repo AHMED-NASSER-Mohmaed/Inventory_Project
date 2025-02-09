@@ -6,7 +6,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   const accountService = inject(AccountService);
   const router = inject(Router);
 
-  if (accountService.isLoggedIn && accountService.userType === 'super_admin') {
+  if (accountService.isLoggedIn && (accountService.userType === 'super_admin' || accountService.userType === 'admin')) {
     return true;
   } else {
     router.navigateByUrl('/lock');
