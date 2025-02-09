@@ -87,7 +87,9 @@ module.exports.APP_CONFIG = {
     "url": "https://ik.imagekit.io/ysypur5vc/Untitled_azZLiI3tg.jpg"
   },
 
-  PROFILE_IMAGE_FOLDER: "products",
+  PRODUCT_IMAGE_FOLDER: "products",
+
+  MAX_IMAGE_COUNT:4,
   /************************************************************************************************/
 
 };

@@ -2,6 +2,7 @@ const { filter } = require('lodash');
 const Product = require('../models/product.model');
 const AppError = require('../utils/appError');
 const { inboxResult } = require("../utils/apiFeatures")
+
 class ProductRepository {
 
   async createProduct(productData) {
@@ -195,6 +196,20 @@ class ProductRepository {
     }
 
 
+
+  }
+
+  async updateProductMedia(id,productRepo){
+
+    try{
+
+      return await Product.updateOne({_id:id},
+        {$set:{images:productRepo}}
+      );
+
+    }catch(error){
+      throw error;
+    }
 
   }
 
