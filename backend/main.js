@@ -13,7 +13,7 @@ const Category = require("./models/category.model");
 
 const Supplier = require("./models/supplier.model");
 const User = require("./models/user.model");
-
+const Product = require("./models/product.model")
 const port = APP_CONFIG.HTTP_PORT || 5000;
 
 
@@ -101,7 +101,8 @@ process.on("uncaughtException", (err) => {
          }
           
          
-         
+
+        // console.log(await Product.deleteOne({_id:"67a75405e18e6927a8c1083e"}))
 
 
 

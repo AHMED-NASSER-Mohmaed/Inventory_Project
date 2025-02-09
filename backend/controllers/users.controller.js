@@ -384,7 +384,7 @@ const customerOp = {
         } finally {
 
             if (!imageInfo) {
-                await userService.updateUserImage(req.params.id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
+                await userService.updateUserImage(req.params.id , APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
                 throw new AppError(error.message, APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
             }
 

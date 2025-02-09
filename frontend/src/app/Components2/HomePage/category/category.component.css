@@ -1,0 +1,44 @@
+.image-container {
+    position: relative;
+    overflow: hidden;
+    height: 400px;
+}
+
+.image-container a {
+    height: 100%; 
+    display: block;
+}
+
+.card-img-top {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    transition: transform 0.3s ease; 
+}
+
+.card-img-top:hover {
+    transform: scale(1.1); 
+}
+
+.categoryCaption {
+    position: absolute;
+    bottom: 10%; 
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+}
+
+.categoryBtn {
+    color: white;
+    font-size: 35px;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    opacity: 0.9; /* Slightly transparent */
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+    text-decoration: none;
+    
+        font-family: 'Baskerville Serial', serif;
+    
+}
+
