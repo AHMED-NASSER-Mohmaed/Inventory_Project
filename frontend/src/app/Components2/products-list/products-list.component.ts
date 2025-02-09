@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './products-list.component.html',
-  styleUrls: ['./products-list.component.css']  
+  styleUrls: ['./products-list.component.css']  // Corrected styleUrl to styleUrls
 })
 export class ProductsListComponent implements OnInit {
   products: any;
@@ -22,15 +22,15 @@ export class ProductsListComponent implements OnInit {
   constructor(private productsService: ProductsService) { }
 
   ngOnInit(): void {
-    this.productsService.getAll().subscribe({
-      next: (data) => {
-        this.products = data;
-        this.products2 = this.products.products;
-      },
-      error: (error) => {
-        console.error('Error fetching products', error);
-      }
-    });
+    // this.productsService.getAll().subscribe({
+    //   next: (data) => {
+    //     this.products = data;
+    //     this.products2 = this.products.products;
+    //   },
+    //   error: (error) => {
+    //     console.error('Error fetching products', error);
+    //   }
+    // });
 
     this.productsService.getAllcategories().subscribe({
       next: (data) => {
