@@ -8,6 +8,7 @@ const { validatorForQueries } = require("../middlewares/validation.middlewares")
 const categoryService = require("../services/category.service");
 const AppError = require("../utils/appError");
 const { deleteFiles, upload } = require("../services/media.service");
+const { filter } = require("lodash");
 
 class ProductController {
   constructor() {
@@ -26,10 +27,10 @@ class ProductController {
 
 
     // public routes: no need for authentication 
-    // this.router.get(
-    //   "/products",
-    //   catchAsync(this.getAllProducts)
-    // );
+    this.router.get(
+      "/products",
+      catchAsync(this.getAllProducts)
+    );
 
     this.router.get(
       "/productsByCategory/:categoryId",
@@ -73,6 +74,7 @@ class ProductController {
       );
 
 
+    //site products
     this.router.get(
       "/getProducts",
       validatorForQueries(this.allowedFilterFileds, this.allowedFileterFildesValues, this.allowedSortFileds, this.allowedSortFiledsValues),
@@ -87,10 +89,10 @@ class ProductController {
 
 
     this.router.get(
-      "/Products",
-
-
-
+      "/CProducts",
+      pro_res(APP_CONFIG.SUPPERADMIN,APP_CONFIG.ADMIN),
+      validatorForQueries(this.allowedFilterFileds,this.allowedFileterFildesValues,this.allowedSortFileds,this.allowedSortFiledsValues),
+      catchAsync(this.CProducts)
     )
 
 
@@ -98,15 +100,27 @@ class ProductController {
 
   }
 
+  allowedFilterFileds = [ "isActive" , 'undefined' ]
+  allowedFileterFildesValues = [ "true", "false" , 'undefined']
 
-  async Products(req, res, next) {
+  allowedSortFileds = ['price',"createdAt"]
+  allowedSortFiledsValues = ['asc', 'desc'];
 
+
+  async CProducts(req, res, next){
+
+    req.validatedParams['filters']['sellerId']=APP_CONFIG.COMPANY_ID;
+
+
+    if(req.query.catId){
+
+      let arrOfChlidCat = await categoryService.getCategoies(filters);
+      req.validatedParams['filters']['category'] = arrOfChlidCat;
+      // console.log("from here");
+
+    } 
     
-
     let result = await productService.getProducts(req.validatedParams);
-
-
-
 
     res.status(200).json({
       message: "success",
@@ -117,40 +131,31 @@ class ProductController {
   }
 
 
-
-  //filters --> by category
-  //  input [cat id] 
-  // sort by peice --> incommig feature numbver of sales 
-  //input is [price] = ['asc' , "desc"] 
-
-
-  allowedFilterFileds = ["isActive", "status", 'undefined']
-  allowedFileterFildesValues = ["true", 'undefined']
-
-  allowedSortFileds = ['price']
-  allowedSortFiledsValues = ['asc', 'desc'];
-
   async getProducts(req, res, next) {
 
-    // console.log("i am here guy..");
-
-    let filters = { _id: req.query.catId, isActive: true }
-
-    let arrOfChlidCat = await categoryService.getCategoies(filters);
-
-    if (!arrOfChlidCat.length)
-      throw new AppError("invalid category id ", APP_CONFIG.HTTP_NOT_FOUND);
-
-    req.validatedParams['filters']['category'] = arrOfChlidCat;
+    
+    
+    
     req.validatedParams['filters']['isActive'] = true;
     req.validatedParams['filters']['status'] = true;
+    
+    if(req.query.catId){
+
+      let filters = { isActive: true , _id : req.query.catId }
+
+      let arrOfChlidCat = await categoryService.getCategoies(filters);
+      
+      req.validatedParams['filters']['category'] = arrOfChlidCat;
+      
+    }
+
+    
 
     req.validatedParams['projection'] = {
       "isActive": 0,
       "status": 0,
       "createdAt": 0,
       "updatedAt": 0,
-      "category": 0,
       "sellerId": 0,
     };
 
@@ -161,6 +166,8 @@ class ProductController {
       result,
     })
   }
+
+
 
   async addProductForSeller(req, res, next) {
     const product = await productService.createProductForSeller(req.user, req.body);
@@ -182,7 +189,9 @@ class ProductController {
   }
 
   async getAllProducts(req, res, next) {
+
     const products = await productService.getAllProducts();
+
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       results: products.length,
@@ -227,12 +236,7 @@ class ProductController {
 
   async updateProduct(req, res, next) {
 
-    if (user.userType == APP_CONFIG.SELLER) {
-      await this.verifySeller(req.params.productId)
-    }
-
-
-
+    
     const updatedProduct = await productService.updateProductById(
       req.params.productId,
       req.body
@@ -293,7 +297,7 @@ class ProductController {
 
 
 
-    if (user.userType == APP_CONFIG.SELLER && product._id != user._id)
+    if (req.user.userType == APP_CONFIG.SELLER && product._id != req.user._id)
       throw new AppError("you are not authorized", APP_CONFIG.HTTP_UNAUTHORIZED);
 
 

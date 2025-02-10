@@ -366,7 +366,6 @@ class ProductService {
 
     async updateProductMedia(id,productMedia){
         try{
-
             return await productRepo.updateProductMedia(id,productMedia);
 
         }catch(err){
@@ -375,6 +374,15 @@ class ProductService {
 
     }
 
+    // async getProductsByFilter(filters){
+    //     try{
+
+    //         return await productRepo.getProductByFilter(filters); 
+
+    //     }catch(err){
+    //         throw err;
+    //     }
+    // }
 
 }
 
