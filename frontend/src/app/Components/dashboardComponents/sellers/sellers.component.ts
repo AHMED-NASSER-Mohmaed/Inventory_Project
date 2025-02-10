@@ -8,13 +8,14 @@ import { CustomersService } from '../../../_services/customers.service';
 import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.component';
 import { ConfirmDialogComponent2 } from '../../../confirm-dialog2/confirm-dialog2.component';
 import { ConfirmDialogImgchangeComponent } from '../../../confirm-dialog-imgchange/confirm-dialog-imgchange.component';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 
 @Component({
   selector: 'app-sellers',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule , MatButtonToggleModule],
   templateUrl: './sellers.component.html',
-  styleUrl: './sellers.component.css'
+  styleUrls: ['./sellers.component.css' , './sellers.component.scss']
 })
 
 export class SellersComponent implements OnInit, OnDestroy {

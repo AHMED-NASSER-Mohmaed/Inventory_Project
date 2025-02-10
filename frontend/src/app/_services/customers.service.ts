@@ -32,10 +32,12 @@ export class CustomersService {
     return this.http.delete(`${this.baseUrl}/deleteSeller/${SSN}`, { headers: this.getHeaders() });
   }
 
+  activateSeller(SSN: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/activeSeller/${SSN}`, {}, { headers: this.getHeaders() });
+  }
 
-
-  activateSeller(SSN: string){
-    return this.http.patch(`${this.baseUrl}/activeSeller/${SSN}`, { headers: this.getHeaders() });
+  getPaginatedWaitingSellers(page: number, limit: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/pendingSellers?page=${page}&limit=${limit}`, { headers: this.getHeaders() });
   }
 
   changeImage(id: string, file: File): Observable<any> {

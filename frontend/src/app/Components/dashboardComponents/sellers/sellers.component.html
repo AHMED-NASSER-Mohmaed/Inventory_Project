@@ -34,9 +34,19 @@
                 <div class="order">
                     <div class="head">
                         <h3>Sellers</h3>
-                        <i class='bx bx-search'></i>
+                        <form action="#">
+                            <div class="form-input">
+                                <input type="search" placeholder="Search...">
+                                <button type="submit" class="search-btn"><i class='bx bx-search' ></i></button>
+                            </div>
+                        </form>
+                        <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
+                            <mat-button-toggle value="bold" checked>Approved</mat-button-toggle>
+                            <mat-button-toggle value="italic" (click)="ShowWaitingSellers()">Waiting</mat-button-toggle>
+                        </mat-button-toggle-group>
                         <i class='bx bx-filter'></i>
                     </div>
+
                     <table style="border-spacing: 15px; border-collapse: separate;">
                         <thead>
                             <tr>
@@ -56,7 +66,7 @@
                                 <td>{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
                                 <td><p>{{ user.companyName }}</p></td>
                                 <td>
-                                    <span class="status process" [class.active]="user.isActive" [class.deactivated]="!user.isActive" [style]="{'min-width': '100px', 'display': 'inline-block', 'text-align': 'center', 'color': user.isActive ? '#3fff45' : '#ff423b'}">
+                                    <span class="status process" [class.active]="user.isActive" [class.deactivated]="!user.isActive" [style]="{'min-width': '100px', 'display': 'inline-block', 'text-align': 'center', 'color': user.isActive ? '#2ed134' : '#e6382f'}">
                                         {{user.isActive ? 'Active' : 'Deactivated'}}
                                     </span>
                                 </td>

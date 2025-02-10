@@ -189,6 +189,64 @@ input:checked + .slider:before {
   color: var(--dark);	
 }
 
+/* ////////////////////!!!!! */
+
+
+:host #content main form {
+	max-width: 400px;
+	width: 100%;
+	margin-right: auto;
+}
+:host #content main form .form-input {
+	display: flex;
+	align-items: center;
+	height: 36px;
+}
+:host #content main form .form-input input {
+	flex-grow: 1;
+	padding: 0 16px;
+	height: 100%;
+	border: none;
+	background: var(--grey);
+	border-radius: 36px 0 0 36px;
+	outline: none;
+	width: 100%;
+	color: var(--dark);
+  &::placeholder {
+    color: var(--dark);
+    opacity: 0.6;
+  }
+}
+:host #content main form .form-input button {
+	width: 36px;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: var(--dark);
+	color: var(--light);
+	font-size: 18px;
+	border: none;
+	outline: none;
+	border-radius: 0 36px 36px 0;
+	cursor: pointer;
+}
+
+mat-button-toggle-group{
+  border-radius: 30px;
+  border-width: 1.5px;
+  /* flex-wrap: wrap; */
+  min-width: 10%;
+}
+
+mat-button-toggle{
+  color: var(--dark);
+  background-color: var(--grey);
+  width: 100%;
+}
+
+
+/* //!!!!!!!!!!!!!!!!!! */
 :host #content main .table-data {
   display: flex;
   flex-wrap: wrap;
@@ -588,6 +646,12 @@ input[type="number"] {
     color: var(--dark); 
 }
 
+@media screen and (max-width: 895px) {
+  mat-button-toggle-group{
+    flex-wrap: wrap;
+  }
+}
+
 @media screen and (max-width: 768px) {
   :host #sidebar {
     width: 200px;
@@ -606,6 +670,17 @@ input[type="number"] {
     transform: translate(-50%);
   }
 
+  :host #content main .table-data .head form {
+    min-width: 20%;
+    max-width: 45%;
+  }
+
+  mat-button-toggle-group{
+    width: 25%;
+    min-width: 30%;
+  }
+  
+
 }
 
 @media screen and (max-width: 576px) {
@@ -616,10 +691,30 @@ input[type="number"] {
   }
 
   :host #content main .table-data .head {
-    min-width: 420px;
+    min-width: 520px;
   }
+
+  :host #content main .table-data .head h3 {
+    margin-right: 0;
+  }
+
+  :host #content main .table-data .head form {
+    min-width: 200px;
+    max-width: 250px;
+  }
+
+  mat-button-toggle-group{
+    width: 20%;
+    min-width: 25%;
+  }
+  
+  mat-button-toggle{
+    font-size: 0.9em;
+  }
+
   :host #content main .table-data .order table {
     min-width: 420px;
+
   }
 
   .pagination-controls {
@@ -648,6 +743,10 @@ input[type="number"] {
       justify-content: center;
       margin-top: 20px;
       margin-left: 120%;
+    }
+
+    :host #content main .table-data .head form {
+      min-width: 250px;
     }
 
     .pagination-controls button {
