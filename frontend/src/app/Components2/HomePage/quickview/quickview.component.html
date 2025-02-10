@@ -9,8 +9,14 @@
                 <img [src]="selectedProduct.images[0].url" alt="Product Image">
             </div>
             <div class="product-details">
-                <p class="price">{{ selectedProduct?.price }}</p>
+                <p class="price">{{ selectedProduct?.price }} le</p>
                 <p class="description">{{ selectedProduct?.description }}</p>
+
+                <div class="quantity-control">
+                    <button (click)="decreaseQuantity()">-</button>
+                    <span>{{ quantity }}</span>
+                    <button (click)="increaseQuantity()">+</button>
+                </div>
                 <button class="add-to-cart-btn">Add to Cart</button>
             </div>
         </div>

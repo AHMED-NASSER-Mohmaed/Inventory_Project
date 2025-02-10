@@ -15,8 +15,8 @@
     background-color: white;
     padding: 20px;
     border-radius: 8px;
-    width: 80%;
-    max-width: 600px;
+    width: 90%; /* Increase the width */
+    max-width: 800px; /* Increase the max-width */
 }
 
 .modal-header {
@@ -42,7 +42,7 @@
 
 .product-image img {
     width: 100%;
-    max-width: 200px;
+    max-width: 300px; /* Increase the image size */
 }
 
 .product-details {
@@ -65,6 +65,26 @@
 
 .description {
     margin: 10px 0;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.quantity-control button {
+    background-color: #85411c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.quantity-control span {
+    font-size: 18px;
 }
 
 .add-to-cart-btn {

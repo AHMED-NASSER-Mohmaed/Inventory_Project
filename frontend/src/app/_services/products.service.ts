@@ -30,7 +30,17 @@ export class ProductsService {
     ;
   }
  
-  getPaginatedProducts(page: number, limit: number ,sort:string ,catId:string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/getProducts?limit=${limit}&page=${page}&sort=${sort}&catId=${catId}`,{ headers: this.getHeaders() });
-  }
+  getPaginatedProducts(page: number, itemsPerPage: number, sort: string, categoryId: string,) {
+    const params = {
+        page: page,
+        limit: itemsPerPage,
+        sort: sort,
+        catId: categoryId ,
+        
+    };
+    return this.http.get(`${this.baseUrl}/getProducts`, { params });
 }
+}  
+
+
+
