@@ -43,13 +43,11 @@ export class AccountService {
 
   setLoginStatus(){
     this.isLoggedIn = true;
-    console.log("from service", this.isLoggedIn);
     // Removed localStorage update.
   }
 
   setUserType(type: string) {
     this.userType = type;
-    console.log("User type changed at", new Date().toISOString(), "to:", this.userType);
     // Removed localStorage update.
   }
 
