@@ -13,7 +13,8 @@ const Category = require("./models/category.model");
 
 const Supplier = require("./models/supplier.model");
 const User = require("./models/user.model");
-const Product = require("./models/product.model")
+const Product = require("./models/product.model");
+const { compareSync } = require("bcryptjs");
 const port = APP_CONFIG.HTTP_PORT || 5000;
 
 
@@ -105,6 +106,12 @@ process.on("uncaughtException", (err) => {
         // console.log(await Product.deleteOne({_id:"67a75405e18e6927a8c1083e"}))
 
 
+        //  console.log(await Product.findOneAndUpdate({_id:"67a9225b98300b78c4cbc296"},{"category": "67a92096523f30d9de2d71ea" },{new:true}));
+
+        //  console.log(await Category.deleteMany({"parentCatId":"67a92f7992df3a4b6957625d"}));
+
+
+        
 
          if( !await Staff.findOne({SSN:superAdmin.SSN}) ){
            

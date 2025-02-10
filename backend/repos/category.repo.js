@@ -117,6 +117,9 @@ class CategoryRepository {
 
     try {
       //filters = categoryId + isActive .
+
+      console.log("filters:",filters);
+
       const selectedCategory = await Category.findOne(filters);
 
       // console.log(selectedCategory , " this is the selected cat from repo");
@@ -127,14 +130,15 @@ class CategoryRepository {
       let arrOfCild = [];
       if (selectedCategory) { // this mean category is exit
 
+        // console.log("fuck father:",selectedCategory['parentCatId']==null);
         if (selectedCategory['parentCatId'] == null) { // this mean this cat is parent
 
-          arrOfCild = await Category.find(filters);
+          arrOfCild = await Category.find({parentCatId:selectedCategory._id,isActive:true},{_id:1});
 
         }
 
         if (!arrOfCild.length) {
-          arrOfCild.push(selectedCategory);
+          arrOfCild.push(selectedCategory._id);
         }
 
         return arrOfCild;
