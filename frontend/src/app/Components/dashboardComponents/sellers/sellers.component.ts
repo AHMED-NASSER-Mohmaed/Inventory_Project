@@ -36,6 +36,7 @@ export class SellersComponent implements OnInit, OnDestroy {
   hasNextPage: boolean = false;
   hasPreviousPage: boolean = false;
   userCache: { [page: number]: User[] } = {};
+  waitingUserCache: { [page: number]: User[] } = {};
   total: number = 0;
   selectedUser: User = {} as User;
   backupUser: User = {} as User; // <-- new backup property
@@ -74,6 +75,35 @@ export class SellersComponent implements OnInit, OnDestroy {
     }
   }
 
+
+  fetchWaitingSellers(): void {
+    if (this.waitingUserCache[this.currentPage]) {
+      // Load waiting cache
+      this.users = this.waitingUserCache[this.currentPage];
+      this.updatePaginationState();
+    } else {
+      // Fetch from server and cache in waitingUserCache
+      this.sub = this.customerService.getPaginatedWaitingSellers(this.currentPage, this.itemsPerPage).subscribe({
+        next: (res) => {
+          this.users = res.data.result;
+          this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
+          this.hasNextPage = !!res.data.next;
+          this.hasPreviousPage = !!res.data.previous;
+          this.dropdownStates = new Array(this.users.length).fill(false);
+          this.waitingUserCache[this.currentPage] = this.users; // caching waiting sellers
+          this.updatePaginationState();
+          this.total = res.data.total - 1;
+          console.log(this.users);
+        },
+        error: (error) => {
+          console.log(error);
+        },
+        complete: () => {
+          console.log('complete');
+        }
+      });
+    }
+  }
   updatePaginationState(): void {
     this.hasNextPage = this.currentPage < this.totalPages;
     this.hasPreviousPage = this.currentPage > 1;

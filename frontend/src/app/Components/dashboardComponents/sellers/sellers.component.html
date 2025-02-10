@@ -42,7 +42,8 @@
                         </form>
                         <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
                             <mat-button-toggle value="bold" checked>Approved</mat-button-toggle>
-                            <mat-button-toggle value="italic" (click)="ShowWaitingSellers()">Waiting</mat-button-toggle>
+                            <mat-button-toggle value="italic" (click)="fetchWaitingSellers()">Waiting</mat-button-toggle>
+                            <mat-button-toggle value="thin" (click)="fetchWaitingSellers()">Recjected</mat-button-toggle>
                         </mat-button-toggle-group>
                         <i class='bx bx-filter'></i>
                     </div>
@@ -78,7 +79,7 @@
                                         <div class="dropdown-menu dropdown-menu-lg" [ngClass]="{'show': dropdownStates[i]}" aria-labelledby="dropdownMenuLink" style="min-width: 200px;">
                                             <a class="dropdown-item p-3" (click)="showSellerInfo(user)" data-toggle="modal" data-target="#sellerInfoModal"><i class='bx bx-show'></i> Show</a>
                                             <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user.SSN) : openConfirmDialog2(user.SSN)" style="cursor:pointer;">
+                                            <a class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user._id) : openConfirmDialog2(user._id)" style="cursor:pointer;">
                                                 <i class='bx' [ngClass]="{'bx-check-circle': !user.isActive, 'bx-x-circle': user.isActive}"></i>
                                                 {{user.isActive ? 'Deactivate' : 'Activate'}}
                                             </a>

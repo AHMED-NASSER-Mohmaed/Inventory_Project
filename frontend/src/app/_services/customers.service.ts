@@ -28,12 +28,14 @@ export class CustomersService {
     return this.http.get(`${this.baseUrl}/getSellers?limit=${limit}&page=${page}`, { headers: this.getHeaders() });
   }
 
-  deActiveSeller(SSN: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/deleteSeller/${SSN}`, { headers: this.getHeaders() });
+  
+
+  deActiveSeller(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/deleteSeller/${id}`, { headers: this.getHeaders() });
   }
 
-  activateSeller(SSN: string): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/activeSeller/${SSN}`, {}, { headers: this.getHeaders() });
+  activateSeller(id: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/activeSeller/${id}`, {}, { headers: this.getHeaders() });
   }
 
   getPaginatedWaitingSellers(page: number, limit: number): Observable<any> {
