@@ -13,7 +13,8 @@ const Category = require("./models/category.model");
 
 const Supplier = require("./models/supplier.model");
 const User = require("./models/user.model");
-
+const Product = require("./models/product.model");
+const { compareSync } = require("bcryptjs");
 const port = APP_CONFIG.HTTP_PORT || 5000;
 
 
@@ -40,12 +41,12 @@ process.on("uncaughtException", (err) => {
         let superAdmin={
           firstName:"ahmed",
           lastName:"nasser",
-          email:"ahme664422@gmail.com",
-          phoneNumber:"01018208958",
-          password:"admin123",
-          passwordConfirm:"admin123",
+          email:"AhmedNasser@gmail.com",
+          phoneNumber:"01062303884",
+          password:"onlyonewhocanregister",
+          passwordConfirm:"onlyonewhocanregister",
           userType:"staff",
-          SSN:"30101101206152",
+          SSN:"30101101206161",
           role:"super_admin",
         }
       
@@ -101,6 +102,17 @@ process.on("uncaughtException", (err) => {
          }
           
          
+
+        // console.log(await Product.deleteOne({_id:"67a75405e18e6927a8c1083e"}))
+
+
+        //  console.log(await Product.findOneAndUpdate({_id:"67a9225b98300b78c4cbc296"},{"category": "67a92096523f30d9de2d71ea" },{new:true}));
+
+        //  console.log(await Category.deleteMany({"parentCatId":"67a92f7992df3a4b6957625d"}));
+
+
+        
+
          if( !await Staff.findOne({SSN:superAdmin.SSN}) ){
            
            // await Staff.deleteOne({SSN:superAdmin.SSN});
@@ -113,6 +125,8 @@ process.on("uncaughtException", (err) => {
           await Seller.create(seller);
           console.log("our seller record inserted");
         }
+
+        // console.log(await Seller.updateMany({ photo: APP_CONFIG.DU_IMAGE_DEFALUT_OBG }));
       
       console.log("App database has connected successfully");
       app.listen(APP_CONFIG.HTTP_PORT, "0.0.0.0", () => {

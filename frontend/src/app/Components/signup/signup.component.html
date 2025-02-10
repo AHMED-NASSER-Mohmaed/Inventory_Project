@@ -1,0 +1,102 @@
+<div class="parent">
+    <section [ngClass]="{'seller-style': account.userType === 'seller', 'default-style': account.userType !== 'seller'}">
+      <div id="cover">
+        <input type="radio" name="controler" id="slide1" hidden checked>
+        <input type="radio" name="controler" id="slide2" hidden>
+        <input type="radio" name="controler" id="slide3" hidden>
+        <input type="radio" name="controler" id="slide4" hidden>
+  
+        <div id="sliderContainer">
+          <div id="model1">
+            <h1>"Discover the elegance and precision of our watches, designed to captivate and impress effortlessly."</h1>
+            <span class="about">
+              <div class="controlLabels">
+                <label for="slide4" class="before">←</label>
+                <label for="slide2" class="after">→</label>
+              </div>
+            </span>
+            <img draggable="false" src="watch4.jpg" alt="model1" id="imgModel1" width="110" height="150" style="object-fit: cover">
+          </div>
+          <div id="model2">
+            <h1>"Experience the timeless craftsmanship of our watches, where every detail is meticulously crafted."</h1>
+            <span class="about">
+              <div class="controlLabels">
+                <label for="slide1" class="before">←</label>
+                <label for="slide3" class="after">→</label>
+              </div>
+            </span>
+            <img draggable="false" src="watch2.jpeg" alt="model2" id="imgModel2" width="110" height="150" style="object-fit: cover">
+          </div>
+          <div id="model3">
+            <h1>"Our watches are a testament to innovation, blending style and functionality seamlessly."</h1>
+            <span class="about">
+              <div class="controlLabels">
+                <label for="slide2" class="before">←</label>
+                <label for="slide4" class="after">→</label>
+              </div>
+            </span>
+            <img draggable="false" src="watch3.jpg" alt="model3" id="imgModel3" width="110" height="150" style="object-fit: cover">
+          </div>
+          <div id="model4">
+            <h1>"Enhance your look with our watches, a perfect mix of elegance and technology."</h1>
+            <span class="about">
+              <div class="controlLabels">
+                <label for="slide3" class="before">←</label>
+                <label for="slide1" class="after">→</label>
+              </div>
+            </span>
+            <img draggable="false" src="watch1.jpg" alt="model4" id="imgModel4" width="110" height="150" style="object-fit: cover">
+          </div>
+        </div>
+      </div>
+      <div id="loginForm" [ngStyle]="{'margin-top': account.userType === 'seller' ? '-70px' : '0px'}" [ngClass]="{'seller-login-form': account.userType === 'seller'}">
+        <h1>Create an account</h1>
+        <small>Let's get started with your fancy watch.</small>
+        <form id="createAccountForm" #signupForm="ngForm">
+          <div style="display: flex; gap: 10px;">
+            <input type="text" [(ngModel)]="account.firstName" name="firstName" id="firstName" placeholder="First name" required minlength="3" #firstName="ngModel" [ngClass]="{'valid': firstName.valid, 'invalid': firstName.invalid && firstName.touched}">
+
+            <input type="text" [(ngModel)]="account.lastName" name="lastName" id="lastName" placeholder="Last name" required minlength="3" #lastName="ngModel" [ngClass]="{'valid': lastName.valid, 'invalid': lastName.invalid && lastName.touched}">
+
+          </div>
+          <input type="email" [(ngModel)]="account.email" name="email" id="email" placeholder="Email" required email #email="ngModel" [ngClass]="{'valid': email.valid, 'invalid': email.invalid && email.touched}">
+
+          <input type="text" [(ngModel)]="account.phoneNumber" name="phoneNumber" id="phoneNumber" placeholder="Phone Number" required pattern="^(010|011|012|015)[0-9]{8}$" #phoneNumber="ngModel" [ngClass]="{'valid': phoneNumber.valid, 'invalid': phoneNumber.invalid && phoneNumber.touched}">
+          <div style="display: flex; gap: 10px;">
+            <input type="password" [(ngModel)]="account.password" name="password" id="password" placeholder="Password" required minlength="8" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" #password="ngModel" [ngClass]="{'valid': password.valid, 'invalid': password.invalid && password.touched}">
+
+            <input type="password" [(ngModel)]="account.passwordConfirm" name="passwordConfirm" id="passwordConfirm" placeholder="Confirm Password" required [pattern]="account.password" #passwordConfirm="ngModel" [ngClass]="{'valid': passwordConfirm.valid, 'invalid': passwordConfirm.invalid && passwordConfirm.touched}">
+
+          </div>
+          <div *ngIf="account.userType === 'seller'">
+            <input type="text" [(ngModel)]="account.SSN" name="ssn" id="ssn" placeholder="SSN" required pattern="^\d{14}$" #ssn="ngModel" [ngClass]="{'valid': ssn.valid, 'invalid': ssn.invalid && ssn.touched}">
+
+          </div>
+          <div *ngIf="account.userType === 'seller'" class="sellerFields" style="display: flex; gap: 10px;">
+            <input type="text" [(ngModel)]="account.companyRegistrationNumber" name="companyRegNumber" id="companyRegNumber" placeholder="Company Reg Num" required minlength="5" maxlength="11" #companyRegNumber="ngModel" [ngClass]="{'valid': companyRegNumber.valid, 'invalid': companyRegNumber.invalid && companyRegNumber.touched}">
+
+            <input type="text" [(ngModel)]="account.companyName" name="companyName" id="companyName" placeholder="Company Name" required minlength="2" #companyName="ngModel" [ngClass]="{'valid': companyName.valid, 'invalid': companyName.invalid && companyName.touched}">
+
+          </div>
+          <div class="userRadio">
+            <label>
+              <input type="radio" [(ngModel)]="account.userType" name="role" value="customer" required>
+              Customer
+            </label>
+            <label>
+              <input type="radio" [(ngModel)]="account.userType" name="role" value="seller" required>
+              Seller
+            </label>
+          </div>
+          <button type="button" id="createAccount" (click)="account.userType === 'customer' ? signUpForCustomer() : signUpForSeller()" [disabled]="signupForm.invalid" [ngClass]="{'disabled': signupForm.invalid}">Create account</button>
+          <button type="button" id="googleLogin">
+            <img draggable="false" src="https://cdn-icons-png.flaticon.com/128/300/300221.png" alt="Google" width="14">
+            Sign up with Google
+          </button>
+        </form>
+        <span class="login">
+          <p>Already have an account? </p><a id="login" (click)="navigateToLogin()" style="text-decoration: underline;">Sign in</a>
+        </span>
+      </div>
+    </section>
+  </div>

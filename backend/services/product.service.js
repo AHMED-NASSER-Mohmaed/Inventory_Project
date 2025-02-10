@@ -1,4 +1,3 @@
-const ProductRepository = require("../repos/product.repo");
 const cinventory=require("../repos/cinventory.repo");
 const sinventory=require("../repos/sinventory.repo");
 const product=require("../models/product.model");
@@ -8,7 +7,11 @@ const supplier=require("../models/supplier.model");
 const CategoryRepository = require("../repos/category.repo");
 const {sellerRepo} = require("../repos/sellers.repo");
 
+const SupplierRepository = require("../repos/supplier.repo");
+
 const category=require("../models/category.model");
+
+const productRepo = require("../repos/product.repo");
 
 
 class ProductService {
@@ -40,15 +43,16 @@ class ProductService {
             //upload images to kit 
             let imagesURLS=[]
 
+
             //throw exception from databse
             const new_one =await product.create({ name:productData.name , code:productData.code ,  images:imagesURLS,
                             description:productData.description , category:productData.category
-                            ,sellerId:user._id , sellerName:`${user.firstName } ${user.lastName}`, status: false});
+                            ,sellerId:user._id , sellerName: user.companyName, status: user._id==APP_CONFIG.COMPANY_ID?true : false});
 
                 
             
             await sinventory.createInventory({  product:new_one._id ,  providerID: user._id,
-                providerName:`${user.firstName } ${user.lastName}`, currentStock: productData.currentStock,
+                providerName: user.companyName, currentStock: productData.currentStock,
                 cost:productData.cost
              });
 
@@ -85,7 +89,8 @@ class ProductService {
               
             
             //frontend model -- >   supplierID 
-            const isExistSupplier=await supplier.findOne({_id:productData.providerID});
+            // const isExistSupplier=await supplier.findOne({_id:productData.providerID});
+            const isExistSupplier = await SupplierRepository.getSupplierById(productData.supplierID);
 
             if(!isExistSupplier){
                 throw new AppError("supplier dose not exist.",APP_CONFIG.HTTP_BAD_REQUEST);
@@ -108,22 +113,18 @@ class ProductService {
                             ,sellerId:APP_CONFIG.COMPANY_ID , sellerName:APP_CONFIG.COMPANY_NAME, status: true });
 
                 
-            console.log("hellooooo");
             
-            await cinventory.createInventory({  product:new_one._id ,   providerID:isExistSupplier._id,
+            const invProduct = await cinventory.createInventory({  product:new_one._id ,   providerID:isExistSupplier._id,
                 providerName:isExistSupplier.companyName , currentStock: productData.currentStock,
                 cost:productData.cost
              });
 
-             return new_one;
+             return invProduct;
             }catch(err){
                 throw err;
             } 
          
     }
-
-
-    
 
     async updateProductById(productId, updatedData,  userType, sellerId_, isSellerInventory) {
     try {
@@ -147,12 +148,12 @@ class ProductService {
                 throw new AppError(`sorry that category doesn't exist, ya norm!`);
             }
         }
-        let product = await ProductRepository.getProductById(productId);
+        let product = await productRepo.getProductById(productId);
 
         if(userType == 'seller' && !product.sellerId.equals(sellerId_)){
             throw new AppError(`Sorry you're not authorized to update this product since it doesn't belong to you, ya norm!`);
         }else if(userType == 'seller'){
-            product = await ProductRepository.updateProductById(productId, {
+            product = await productRepo.updateProductById(productId, {
                 ...(name && { name }),
                 ...(code && { code }),
                 // ...(price && { price }),
@@ -177,7 +178,7 @@ class ProductService {
                 if(!tempSeller){
                     throw new AppError(`Sorry the seller you provided doesn't exist, ya norm!!`, APP_CONFIG.HTTP_BAD_REQUEST);
                 }
-                sellerName = `${tempSeller.firstName} ${tempSeller.lastName}`;
+                sellerName = tempSeller.companyName;
                 let providerID = sellerId;
                 let providerName = sellerName;
                 let inv = await sinventory.updateInventoryByProductId(productId, {
@@ -186,7 +187,7 @@ class ProductService {
                 }); // the sinventory providerName should be consistent with the sellerId and name
                 console.log(inv);
             }
-            product = await ProductRepository.updateProductById(productId, { // if it reaches here then it's the admin or the super admin since there's a restrict to on the route
+            product = await productRepo.updateProductById(productId, { // if it reaches here then it's the admin or the super admin since there's a restrict to on the route
                 ...(name && { name }),
                 ...(code && { code }),
                 // ...(price && { price }),
@@ -215,7 +216,7 @@ class ProductService {
                     ...(providerName && { providerName }),
                 }); 
             }
-            product = await ProductRepository.updateProductById(productId, { // if it reaches here then it's the admin or the super admin since there's a restrict to on the route
+            product = await productRepo.updateProductById(productId, { // if it reaches here then it's the admin or the super admin since there's a restrict to on the route
                 ...(name && { name }),
                 ...(code && { code }),
                 // ...(price && { price }),
@@ -244,7 +245,7 @@ class ProductService {
 
     async deleteProductById(productId) {
         try {
-            const product = await ProductRepository.deleteProductById(productId);
+            const product = await productRepo.deleteProductById(productId);
             if (!product) {
                 throw new AppError('Product not found', 404);
             }
@@ -256,7 +257,7 @@ class ProductService {
 
     async getProductById(productId) {
         try {
-            const product = await ProductRepository.getProductById(productId); //  .populate() has been removed since there's no ref anymore
+            const product = await productRepo.getProductById(productId); //  .populate() has been removed since there's no ref anymore
             if (!product) {
                 throw new AppError('Product not found', 404);
             }
@@ -274,7 +275,7 @@ class ProductService {
                 throw new AppError('Category does not exist', 404);
             }
             
-            const products = await ProductRepository.getProductsByCategoryForEndUser(categoryId); //  .populate() has been removed since there's no ref anymore
+            const products = await productRepo.getProductsByCategoryForEndUser(categoryId); //  .populate() has been removed since there's no ref anymore
             if (!products || products.length === 0) {
                 throw new AppError(`Products by that category don't exist`, 404);
             }
@@ -292,10 +293,10 @@ class ProductService {
             }
             let products;
             if(userType == "seller"){
-                products = await ProductRepository.getProductsByCategoryForSeller(categoryId, sellerId_);
+                products = await productRepo.getProductsByCategoryForSeller(categoryId, sellerId_);
             }
             else{
-                products = await ProductRepository.getProductsByCategoryForStaff(categoryId);
+                products = await productRepo.getProductsByCategoryForStaff(categoryId);
             }
             if (!products || products.length === 0) {
                 throw new AppError(`Products by that category don't exist`, 404);
@@ -307,13 +308,13 @@ class ProductService {
     }
 
     async getAllProducts() {
-        return await ProductRepository.getAllProducts();
+        return await productRepo.getAllProducts();
     }
 
     async addProducts(productsArray) {
         try {
 
-            const products = await ProductRepository.addProducts(productsArray);
+            const products = await productRepo.addProducts(productsArray);
             return products;
         } catch (err) {
             throw err;
@@ -323,7 +324,7 @@ class ProductService {
 
     async approveProductForSeller(productId) {
         try {
-            let product = await ProductRepository.approveProductForSeller( productId);
+            let product = await productRepo.approveProductForSeller( productId);
             return product;
         } catch (err) {
             throw err;
@@ -343,13 +344,45 @@ class ProductService {
                 }
             }
 
-            const product = await ProductRepository.activateProduct(productId);
+            const product = await productRepo.activateProduct(productId);
             return product;
         } catch (err) {
             throw err;
         }
     }
 
+    async getProducts(validatedParams){
+        try{
+            // console.log("from service",validatedParams);
+            return await productRepo.getProducts(validatedParams.page,validatedParams.limit,
+                 validatedParams.sort,validatedParams.filters,validatedParams.projection);
+
+        }catch(error){
+            throw error;
+        }
+    }
+
+    /*************************************************/
+
+    async updateProductMedia(id,productMedia){
+        try{
+            return await productRepo.updateProductMedia(id,productMedia);
+
+        }catch(err){
+            throw err;
+        }
+
+    }
+
+    // async getProductsByFilter(filters){
+    //     try{
+
+    //         return await productRepo.getProductByFilter(filters); 
+
+    //     }catch(err){
+    //         throw err;
+    //     }
+    // }
 
 }
 

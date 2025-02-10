@@ -1,8 +1,9 @@
+const { APP_CONFIG } = require('../config/app.config');
 const Category = require('../models/category.model');
 const AppError = require('../utils/appError');
 
 class CategoryRepository {
-  
+
   async createCategory(categoryData) {
     try {
       const category = await Category.create(categoryData);
@@ -106,6 +107,50 @@ class CategoryRepository {
       throw err;
     }
   }
+
+
+  //this function will return array of child category or empty array
+  //if the passed one is parent category 
+  //if the passed one is child the the output will be array of only one id that represent the child category.
+
+  async getCategoies(filters) {
+
+    try {
+      //filters = categoryId + isActive .
+
+      console.log("filters:",filters);
+
+      const selectedCategory = await Category.findOne(filters);
+
+      // console.log(selectedCategory , " this is the selected cat from repo");
+
+
+
+      //if parent id equal to null then this main category may have child categories.
+      let arrOfCild = [];
+      if (selectedCategory) { // this mean category is exit
+
+        // console.log("fuck father:",selectedCategory['parentCatId']==null);
+        if (selectedCategory['parentCatId'] == null) { // this mean this cat is parent
+
+          arrOfCild = await Category.find({parentCatId:selectedCategory._id,isActive:true},{_id:1});
+
+        }
+
+        if (!arrOfCild.length) {
+          arrOfCild.push(selectedCategory._id);
+        }
+
+        return arrOfCild;
+
+      }
+
+    } catch (error) {
+      throw error;
+    }
+
+  }
+
 }
 
 module.exports = new CategoryRepository();
