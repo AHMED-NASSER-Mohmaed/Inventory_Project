@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Product } from '../../_models/products';
+import { Product } from '../../../_models/products';
 import { CommonModule } from '@angular/common';
 import { Output, EventEmitter } from '@angular/core';
 @Component({
@@ -10,7 +10,7 @@ import { Output, EventEmitter } from '@angular/core';
 })
 export class QuickviewComponent {
   @Input() isVisible: boolean = false;
-  @Input() selectedProduct: Product | null = null;
+  @Input() selectedProduct: Product | any;
   @Output() closeModalEvent = new EventEmitter<void>();
 
 

@@ -93,6 +93,18 @@
     transition: bottom 0.3s ease;
 }
 
+.image-container{
+
+
+    width: 250px;
+    height: 250px;
+
+}
+.product-img{
+   width: 100%;
+   height: 100%;
+}
+
 .add-to-cart-btn:hover {
     background-color: #000000;
     color: white;
@@ -150,4 +162,60 @@
 
 .product-link:hover {
     color: #85411c;
+}
+
+
+/* Pagination Controls */
+
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 30px 0;
+    gap: 10px;
+}
+
+.pagination-controls button {
+    background-color: #85411c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.pagination-controls button:hover:not([disabled]) {
+    background-color: #6a3416; 
+    transform: translateY(-2px);
+}
+
+.pagination-controls button[disabled] {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.pagination-controls button i {
+    vertical-align: middle; /
+}
+
+.pagination-controls button.active {
+    background-color: #6a3416; 
+    font-weight: bold;
+}
+
+/* Responsive Pagination */
+@media (max-width: 768px) {
+    .pagination-controls {
+        flex-wrap: wrap; 
+    }
+
+    .pagination-controls button {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
 }

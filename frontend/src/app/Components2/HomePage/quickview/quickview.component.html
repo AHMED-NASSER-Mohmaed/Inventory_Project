@@ -6,10 +6,10 @@
         </div>
         <div class="modal-body">
             <div class="product-image">
-                <!-- <img [src]="selectedProduct?.image" alt="Product Image"> -->
+                <img [src]="selectedProduct.images[0].url" alt="Product Image">
             </div>
             <div class="product-details">
-                <p class="price">555555555{{ selectedProduct?.price }}</p>
+                <p class="price">{{ selectedProduct?.price }}</p>
                 <p class="description">{{ selectedProduct?.description }}</p>
                 <button class="add-to-cart-btn">Add to Cart</button>
             </div>

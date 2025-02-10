@@ -1,3 +1,5 @@
+<app-header></app-header>
+
 <div class="container-fluid">
     <div class="row">
        <!-- Sidebar Column -->
@@ -12,8 +14,8 @@
                 <input class="form-check-input" type="radio" name="gender" [value]="activeCategory._id"
                  (change)="onCategoryChange(activeCategory._id)" id="gender{{activeCategory._id}}">
                 <label class="form-check-label" for="gender{{activeCategory._id}}">
-    {{activeCategory.name}}
-</label>
+                 {{activeCategory.name}}
+                 </label>
 
             </div>
             <hr>
@@ -54,9 +56,9 @@
         <div class="col-md-8 col-lg-9">
             <div class="row">
                 <!-- Product Column -->
-                <div *ngFor="let product of products2"  class="col-md-4">
-                    <div class="image-container position-relative">
-                        <img src="assets/12-300x300.png" class="card-img-top product-img" alt="...">
+                <div *ngFor="let product of products"  class="col-md-4">
+                    <div class="image-container position-relative   ">
+                        <img [src]="product.images[0].url"  class="card-img-top product-img  " alt="...">
                         <div class="overlay-icons">
                             <a class="product-item product-link product-icon" href="#"><i class="fas fa-heart"></i></a>
                             <a class="product-item product-link product-icon" href="#"><i class="fas fa-eye"></i></a>
@@ -71,10 +73,6 @@
                 </div>
 
 
-
-    
-
-
             </div>
         </div>
 
@@ -85,3 +83,22 @@
 
     </div>
 </div>
+
+<div  class="pagination-controls">
+    <button (click)="previousPage()" [disabled]="currentPage === 1"><i class='bx bx-chevron-left' style="font-size: 1.7em;"></i></button>
+    <div *ngFor="let page of pagesArray"><button  (click)="selectedPage(page)" [disabled]="currentPage === page"  >{{page}}</button></div>
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages"><i class='bx bx-chevron-right' style="font-size: 1.7em;"></i></button>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<app-footer></app-footer>
