@@ -125,11 +125,11 @@ module.exports.sellerRepo = {
         }
     },
 
-    activeSeller: async (SSN_) => {
+    activeSeller: async (id) => {
         try {
             //return acknowlage
 
-            return await seller.updateOne({ SSN: SSN_ }, { isActive: true })
+            return await seller.updateOne({ _id: id}, { isActive: true })
         } catch (err) {
             throw err;
         }

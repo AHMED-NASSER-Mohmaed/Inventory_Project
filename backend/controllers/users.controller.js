@@ -49,8 +49,8 @@ const sellerOp = {
     },
 
     activeSellerAcount: async (req, res, next) => {
-        console.log(req.params.SSN);
-        const ack = await sellerService.activeSeller(req.params.SSN);
+        
+        const ack = await sellerService.activeSeller(req.params.id);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
 
     },
@@ -138,7 +138,7 @@ const sellerOp = {
     },
 
     getSellerCount: async (req,res,next)=>{
-        
+
         if( req.validatedParams.filters.status === "0" ) //then is active is no of use ... pending
         {
             if( req.validatedParams.filters.isActive === "false" ){
@@ -496,7 +496,10 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
     .patch("/approveSeller/:id",
          prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), 
          catchAsync(sellerOp.approveSeller))
-    .patch("/activeSeller/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.activeSellerAcount))
+
+    .patch("/activeSeller/:id",
+         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+          catchAsync(sellerOp.activeSellerAcount))
     
     .patch("/updateSeller/:sellerId",
          prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER),

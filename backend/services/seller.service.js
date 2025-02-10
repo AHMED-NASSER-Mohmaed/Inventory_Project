@@ -60,16 +60,18 @@ module.exports.sellerService = {
     },
 
     //done
-    activeSeller: async (SSN) => {
+    activeSeller: async (id) => {
         try {
 
-            const seller=await sellerRepo.getSeller(SSN);
+            const seller=await sellerRepo.getSeller(id);
 
             if(!seller['status'])
                 throw new AppError("you cannot active pending seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
+            else if(seller['status']==-1)
+                throw new AppError("you cannot active rejected seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
                 
                 
-            const ack= await sellerRepo.activeSeller(SSN);
+            const ack= await sellerRepo.activeSeller(id);
 
             if (!ack.acknowledged) {
                 throw new AppError("user not found", APP_CONFIG.HTTP_BAD_REQUEST);
