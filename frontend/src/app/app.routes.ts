@@ -16,6 +16,10 @@ import { FooterComponent } from './core/footer/footer.component';
 import { ProductsComponent } from './Components/dashboardComponents/products/products.component';
 import { ProductsListComponent } from './Components2/products-list/products-list.component';
 import { LandingPageComponent } from './Components2/HomePage/landing-page/landing-page.component';
+import { ShoppingcartComponent } from './Components3/shoppingcart/shoppingcart.component';
+import { CheckoutDetailsComponent } from './Components3/checkout-details/checkout-details.component';
+import { OrderCompeleteComponent } from './Components3/order-compelete/order-compelete.component';
+import { CartMainComponent } from './Components3/cart-main/cart-main.component';
 
 export const routes: Routes = [
 
@@ -121,6 +125,13 @@ export const routes: Routes = [
 ,
  
 
+{path: "maincart", component: CartMainComponent,
+    children: [
+        {path: "", component: ShoppingcartComponent},
+        {path: "checkout", component: CheckoutDetailsComponent},
+        {path: "completeorder", component: OrderCompeleteComponent},
+    ]
+},
 
 ];
 

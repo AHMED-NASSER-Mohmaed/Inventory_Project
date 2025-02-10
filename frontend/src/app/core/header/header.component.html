@@ -25,7 +25,7 @@
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Her
                         </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" >
                             <a class="dropdown-item" href="#">Rolex</a>
                             <a class="dropdown-item" href="#">Casio</a>
                             <a class="dropdown-item" href="#">Tissot</a>
@@ -33,17 +33,17 @@
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" [routerLink]="['/products']">Shop</a>         
+                        <a class="nav-link" [routerLink]="['/products']"  routerLinkActive="router-link-active">Shop</a>         
                     </li>
                   
                     <li class="nav-item">
-                        <a class="nav-link" [routerLink]="['/footer']">About us</a>         
+                        <a class="nav-link" [routerLink]="['/footer']"  routerLinkActive="router-link-active">About us</a>         
                     </li>
                 </ul>
             </div>
             <div class="navbar-nav">
-                <a class="nav-item nav-link nav-icon " href="#"><i class="fas fa-user"></i></a>
-                <a class="nav-item nav-link nav-icon " href="#"><i class="fas fa-shopping-cart"></i></a>
+                <a class="nav-item nav-link nav-icon " ><i class="fas fa-user"></i></a>
+                <a class="nav-item nav-link nav-icon "  [routerLink]="['/maincart']"  routerLinkActive="router-link-active" ><i class="fas fa-shopping-cart"></i></a>
             </div>
         </div>
     </nav>

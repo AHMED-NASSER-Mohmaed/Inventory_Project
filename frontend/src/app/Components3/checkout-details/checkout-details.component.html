@@ -1,0 +1,141 @@
+<div class="container my-5">
+    <div class="row ">
+        <!-- Checkout Form -->
+        <form class="col-12 col-lg-7 checkout-form mb-5 mb-md-0" #checkoutForm="ngForm" (ngSubmit)="onSubmit()">
+            <h2>Customer Information</h2>
+            <input type="email" name="email" [(ngModel)]="checkoutData.email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" required placeholder="Email Address *" #email="ngModel">
+            @if(email.invalid && email.touched){
+                @if(email.errors?.['required']){
+
+                    <div class="error">Email is required</div>
+                }
+                @if(email.errors?.['pattern']){
+                    <div class="error">Invalid E-mail format</div>
+                }
+            }
+
+            <h2>Billing Details</h2>
+            <div class="form-group d-flex">
+                <input type="text" name="firstName" [(ngModel)]="checkoutData.firstName" required placeholder="First name *" pattern="^[a-zA-Z]{3,}$" #firstName="ngModel">
+                <input type="text" name="lastName" [(ngModel)]="checkoutData.lastName" required placeholder="Last name *" #lastName="ngModel" pattern="^[a-zA-Z]{3,}$" >
+            </div>
+            @if(firstName.invalid && firstName.touched){
+                @if(firstName.errors?.['required']){
+                    
+                    <div class="error">First Name is required</div>
+                }
+                @if(firstName.errors?.['pattern']){
+                    <div class="error">Invalid Name format (should be at least 3 chars)</div>
+                }
+            }
+            @if(lastName.invalid && lastName.touched){
+                @if(lastName.errors?.['required']){
+                    
+                    <div class="error">Last Name is required</div>
+                }
+                @if(lastName.errors?.['pattern']){
+                    <div class="error">Invalid Name format (should be at least 3 chars)</div>
+                }
+            }
+            <div class="form-group d-flex">
+                <select name="country" #region="ngModel" [(ngModel)]="checkoutData.country" required>
+                    <option value="">Region *</option>
+                    <option value="Alexandria">Alexandria</option>
+                </select>
+                <input type="text" name="postcode" #postcode="ngModel" pattern="^\d{6}$" required [(ngModel)]="checkoutData.postcode" placeholder="Postcode / ZIP">
+            </div>
+            @if(region.invalid && region.touched){
+                <div class="error">
+                    Country is required
+                </div>
+            }
+            @if(postcode.invalid && postcode.touched){
+                @if(postcode.errors?.['required']){
+                    
+                    <div class="error">
+                        Post Code is required
+                    </div>
+                }
+                @if(postcode.errors?.['pattern']){
+                    <div class="error">
+                        Post code should be 6 numbers only, ya norm!!
+                    </div>
+                }
+            }
+            <input type="text" name="address" [(ngModel)]="checkoutData.address" placeholder="House number and street name" required pattern=".{5,}" #address="ngModel">
+
+            @if(address.invalid && address.touched){
+                @if(address.errors?.['required']){
+                    <div class="error">Address is required</div>
+                }
+                @if(address.errors?.['pattern']){
+                    <div class="error">Address must be at least 5 characters long</div>
+                }
+            }
+
+            <div class="form-group d-flex">
+                <input type="text" name="phone1" [(ngModel)]="checkoutData.phone1" pattern="(011|010|012|015)[0-9]{8}$" required #phone1="ngModel" placeholder="Phone number 1">
+                <input type="text" name="phone2" [(ngModel)]="checkoutData.phone2" #phone2="ngModel" placeholder="Phone number 2">
+            </div>
+            @if(phone1.invalid && phone1.touched){
+                @if(phone1.errors?.['required']){
+                    <div class="error">
+                        Phone number is required
+                    </div>
+                }
+                @if(phone1.errors?.['pattern']){
+                    <div class="error">
+                        phone number should be 11 numbers and starts with(011, 010, 012, 015)
+                    </div>
+                }
+            }
+
+            <h2>Additional Information</h2>
+            <textarea name="notes" [(ngModel)]="checkoutData.notes" placeholder="Notes about your order, e.g., special notes for delivery"></textarea>
+
+            <h2>Payment</h2>
+            <label>
+                <input type="radio" name="paymentMethod" [(ngModel)]="checkoutData.paymentMethod" value="cod" required #paymentMethod="ngModel" class="me-auto"> Cash on delivery
+            </label>
+
+            @if(paymentMethod.invalid && paymentMethod.touched){
+                @if(paymentMethod.errors?.['required']){
+                    <div class="error">
+                        Please select a payment method.
+                    </div>
+                }
+            }
+            <button type="submit" class="btn btn-dark w-100 checkout-button" [disabled]="checkoutForm.invalid">Place ORDER {{getTotalAmount() | currency}}</button>
+        </form>
+
+        <!-- Order Summary -->
+        <div class="order-summary col-12 col-lg-5 ">
+            <h2>Your Order</h2>
+            <div class="summary-content">
+                <table class="table">
+                    @for (product of products; track product.name){
+                        <tr>
+                            <td>
+                                <img [src]="product.image" alt="Silver Bracelet" class="product-img">
+                                <span>{{product.name}}</span>
+                            </td>
+                            <td>{{product.price | currency}}</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>Subtotal</td>
+                        <td>{{ getSubtotal() | currency }}</td>
+                    </tr>
+                    <tr>
+                        <td>Shipping fees</td>
+                        <td>{{ shippingFees | currency }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td><strong>{{ getTotalAmount() | currency}}</strong></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
