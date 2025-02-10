@@ -47,7 +47,7 @@ class ProductService {
             //throw exception from databse
             const new_one =await product.create({ name:productData.name , code:productData.code ,  images:imagesURLS,
                             description:productData.description , category:productData.category
-                            ,sellerId:user._id , sellerName: user.companyName, status: false});
+                            ,sellerId:user._id , sellerName: user.companyName, status: user._id==APP_CONFIG.COMPANY_ID?true : false});
 
                 
             

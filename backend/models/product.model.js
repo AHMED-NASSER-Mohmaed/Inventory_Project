@@ -20,7 +20,7 @@ const ProductSchema = new mongoose.Schema({
     images: [
 
         {
-            fileId: { type: String, default: APP_CONFIG.PDIAMGE_ID_KEY },
+            fileId: { type: String, default: APP_CONFIG.UDIAMGE_ID_VALUE },
 
 
             url: {

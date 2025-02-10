@@ -106,10 +106,13 @@ class ProductController {
   allowedSortFileds = ['price',"createdAt"]
   allowedSortFiledsValues = ['asc', 'desc'];
 
+  //status must be true 
+
 
   async CProducts(req, res, next){
 
     req.validatedParams['filters']['sellerId']=APP_CONFIG.COMPANY_ID;
+    req.validatedParams['filters']['status']=true;
 
 
     if(req.query.catId){
@@ -132,9 +135,6 @@ class ProductController {
 
 
   async getProducts(req, res, next) {
-
-    
-    
     
     req.validatedParams['filters']['isActive'] = true;
     req.validatedParams['filters']['status'] = true;
@@ -144,12 +144,10 @@ class ProductController {
       let filters = { isActive: true , _id : req.query.catId }
 
       let arrOfChlidCat = await categoryService.getCategoies(filters);
-      
+
       req.validatedParams['filters']['category'] = arrOfChlidCat;
       
     }
-
-    
 
     req.validatedParams['projection'] = {
       "isActive": 0,

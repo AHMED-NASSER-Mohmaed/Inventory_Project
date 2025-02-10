@@ -24,7 +24,8 @@ const sellerOp = {
         sendResponseToClint(res, APP_CONFIG.HTTP_CREATED, APP_CONFIG.HTTP_OK, user);
     },
 
-    getSeller: async (req, res, next) => {
+    getSellerBy: async (req, res, next) => {
+
         const user = await sellerService.getSeller(req.params.SSN);
 
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, user);
@@ -32,7 +33,8 @@ const sellerOp = {
     },
 
     deleteSeller: async (req, res, next) => {
-        const ack = await sellerService.deleteSeller(req.params.SSN);
+
+        const ack = await sellerService.deleteSeller(req.params.id);
 
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
 
@@ -40,8 +42,8 @@ const sellerOp = {
 
     approveSeller: async (req, res, next) => {
 
-        console.log(req.params);
-        const ack = await sellerService.approveSeller(req.params.SSN);
+       
+        const ack = await sellerService.approveSeller(req.params.id);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
 
     },
@@ -52,7 +54,15 @@ const sellerOp = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
 
     },
+    //by id
+    rejectSeller: async (req,res,next)=>{
+        // console.log(req.params.id);
+        const ack=await sellerService.rejectSeller(req.params.id);
+        
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,ack);
+    },
 
+    /*
     getActiveSellers: async (req, res, next) => {
         const result = await sellerService.getActiveSellersService(req.validatedParams);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
@@ -71,16 +81,55 @@ const sellerOp = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 
     },
+    */
 
     getAllSellers: async (req, res, next) => {
+
         const sellers = await sellerService.getAllSellers();
+
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, sellers);
     },
 
 
     getSellers: async (req, res, next) => {
+        
+
+        // if(req.validatedParams.status === 1 ) // then is ative may be undefined or true false ... approve
+        
+
+        if( req.validatedParams.filters.status === "0" ) //then is active is no of use ... pending
+        {
+            if( req.validatedParams.filters.isActive === "false" ){
+                delete req.validatedParams.filters.isActive;
+            }   
+        }
+
+
+        if(req.validatedParams.filters.status === "-1") // only rejected people  
+        {   
+            console.log("hello")
+            if(req.validatedParams.filters.isActive === "false"){
+                delete req.validatedParams.filters.isActive;
+            }
+        }
+
+        console.log(req.validatedParams.filters);
+        
+        
+        
+        const result = await sellerService.getSellers(req.validatedParams);
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+
+    },
+
+
+    getPendingSellers: async (req, res, next) => {
+        console.log(req.validatedParams);
+        req.validatedParams[ 'filters' ][ 'status' ]= true ;
         const result = await sellerService.getSellers(req.validatedParams);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+
     },
 
     updateSeller: async (req, res, next) => {
@@ -88,10 +137,37 @@ const sellerOp = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
+    getSellerCount: async (req,res,next)=>{
+        
+        if( req.validatedParams.filters.status === "0" ) //then is active is no of use ... pending
+        {
+            if( req.validatedParams.filters.isActive === "false" ){
+                delete req.validatedParams.filters.isActive;
+            }   
+        }
+        if(req.validatedParams.filters.status === "-1") // only rejected people  
+        {   
+            console.log("hello")
+            if(req.validatedParams.filters.isActive === "false"){
+                delete req.validatedParams.filters.isActive;
+            }
+        }
+        
+        const result = await sellerService.getCountByFilter(req.validatedParams.filters);
 
-    allowedFilters: ["isActive", "status", "undefined"],
-    allowedFilterValues: ["true", "false", "undefined"],
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+
+
+    },
+
+
+    FieldName: [ [ "isActive" , "undefined" ] , [ "status" , "undefined" ] ],
+    filedsValues : [ [ "true" , "false" , "undefined" ], [ "-1" , "0" , "1" , "undefined" ]] ,
     allowedSort: ['createdAt', "name"],
+
+    // allowedSearchFields:["name","SNN","phoneNumber"],
+    
+    
 
 }
 
@@ -320,7 +396,7 @@ const customerOp = {
         req.body.passwordConfirm = req.body.password;
         const customer = await userService.createUser(req.body);
 
-        sendResponseToClint(res, APP_CONFIG.HTTP_CREATED, APP_CONFIG.SUCCESS_MESSAGE, customer!=null?true:false);
+        sendResponseToClint(res, APP_CONFIG.HTTP_CREATED, APP_CONFIG.SUCCESS_MESSAGE, customer != null ? true : false);
     },
 
     deleteCustomer: async (req, res, next) => {
@@ -337,7 +413,7 @@ const customerOp = {
     },
 
     getCustomer: async (req, res, next) => {
- 
+
         const customer = await userService.getUser(req.params.id);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, customer);
 
@@ -358,7 +434,7 @@ const customerOp = {
     updateProfileImage: async function (req, res, next) {
 
 
-        let isFaildToUpload = false , imageInfo=null;
+        let isFaildToUpload = false, imageInfo = null;
         let error = null;
 
         if (!req.params.id)
@@ -384,7 +460,7 @@ const customerOp = {
         } finally {
 
             if (!imageInfo) {
-                await userService.updateUserImage(req.params.id , APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
+                await userService.updateUserImage(req.params.id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
                 throw new AppError(error.message, APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
             }
 
@@ -409,18 +485,47 @@ const customerOp = {
 
 
 route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.addSeller))
-    .get("/getSeller/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.getSeller))
-    .delete("/deleteSeller/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.deleteSeller))
-    .patch("/approveSeller/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.approveSeller))
-    .patch("/activeSeller/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.activeSellerAcount))
-    .patch("/updateSeller/:sellerId", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER), catchAsync(sellerOp.updateSeller))
+    
+    .get( "/getSeller/:SSN" , 
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),catchAsync(sellerOp.getSellerBySSN))
 
-    .get('/allSellers', prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.getAllSellers))
-    .get("/getSellers", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-        validatorForQueries(sellerOp.allowedFilters, sellerOp.allowedFilterValues, sellerOp.allowedSort),
+    .delete("/deleteSeller/:id", 
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), 
+        catchAsync(sellerOp.deleteSeller))
+
+    .patch("/approveSeller/:id",
+         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), 
+         catchAsync(sellerOp.approveSeller))
+    .patch("/activeSeller/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.activeSellerAcount))
+    
+    .patch("/updateSeller/:sellerId",
+         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER),
+     catchAsync(sellerOp.updateSeller))
+
+    
+    .patch("/rejectSeller/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN,APP_CONFIG.ADMIN),
+        catchAsync(sellerOp.rejectSeller))
+
+
+    .get("/getSellers", 
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        validatorForQueries( sellerOp.FieldName , sellerOp.filedsValues, sellerOp.allowedSort),
         catchAsync(sellerOp.getSellers))
 
+    .get("/sellerCount",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        validatorForQueries( sellerOp.FieldName , sellerOp.filedsValues),
+        catchAsync(sellerOp.getSellerCount)
+    )
 
+
+/*
+    .get("/pendingSellers",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        validatorForQueries( ['undefined'] , ['undefined'] , sellerOp.allowedSort),
+        catchAsync(sellerOp.getPendingSellers),
+    )*/
 
 
 
@@ -455,7 +560,7 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
     .get("/getCashiers", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         validatorForQueries(cashierOp.allowedFilters, cashierOp.allowedFilterValues, cashierOp.allowedSort),
         catchAsync(cashierOp.getCashiers))
-    
+
 
 
     /*************************************************************************************************** */
@@ -464,13 +569,13 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
 
     .post("/addCustomer",
 
-        prot_rest( APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
 
         catchAsync(customerOp.addCustomer)) //end of post 
 
 
     .get("/getCustomer/:id",
-        prot_rest( APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER ),
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
         catchAsync(customerOp.getCustomer)) //end of customer id
 
 
@@ -482,7 +587,7 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
 
     //why we send user id -->for admin super admin --- we will genarlize it through
     .patch("/updateProfileImage/:id",
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN,APP_CONFIG.SELLER ,APP_CONFIG.CUSTOMER),
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER, APP_CONFIG.CUSTOMER),
         catchAsync(customerOp.updateProfileImage)
     )
 
