@@ -7,10 +7,16 @@ const SellerSchema = new mongoose.Schema(
     companyName: { type: String, required: true ,  unique:true},
     companyRegistrationNumber: { type: String, required: true, unique:true },
     
+
+    // 0 --> represent pending
+    // 1 --> approved
+    //-1 --> rejected
+
     status:{
-      type: Boolean,
-      default: false,
+      type: Number,
+      default: 0,
     }
+    
   },
   {
     timestamps: true,

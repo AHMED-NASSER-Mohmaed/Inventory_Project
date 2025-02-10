@@ -116,9 +116,12 @@ class AuthService {
       throw new AppError("Incorrect email or password", 401);
     }
     
-    if ( user.userType == "seller" && !user.status) {
-      throw new AppError("sorry, you credentials is not revised yet.", 401);
-    }
+    if ( user.userType == "seller" ) {
+      if(user.status==0)
+        throw new AppError("sorry, you credentials is not revised yet.", 401);
+      else if(user.status==-1)
+        throw new AppError("sorry, your credentials is rejected");
+    } // ahmed updates
     
     // uncomment later
     // if (!user.isEmailVerified) {

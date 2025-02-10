@@ -111,7 +111,12 @@ process.on("uncaughtException", (err) => {
         //  console.log(await Category.deleteMany({"parentCatId":"67a92f7992df3a4b6957625d"}));
 
 
+        // console.log(await Seller.updateMany({status:false},{$set:{status:0 }}))
+
         
+        // console.log(await Seller.updateMany({status:true},{$set:{status:1 }}))
+
+        // console.log(await Product.collection.drop());
 
          if( !await Staff.findOne({SSN:superAdmin.SSN}) ){
            
