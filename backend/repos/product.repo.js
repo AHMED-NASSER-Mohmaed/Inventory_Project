@@ -178,8 +178,7 @@ class ProductRepository {
   async getProducts(page, limit, sort, filters, prjection={}) {
     try {
 
-      if( filters['category']&& filters['category'].lenngh ){
-        console.log(filters['category'])
+      if( filters['category']){
         const [results, total] = await Promise.all([
 
           await Product.find({
@@ -191,7 +190,6 @@ class ProductRepository {
             .skip((page - 1) * limit) // (starting index = page-1)*limit
             .limit(limit)
             .select("-__v")
-            .populate("category")
             .lean()
           ,
   
@@ -204,6 +202,7 @@ class ProductRepository {
           }).exec()
   
         ]);
+        console.log(results);
 
         return inboxResult(results, total, page, limit);
       }else{
@@ -215,7 +214,6 @@ class ProductRepository {
             .skip((page - 1) * limit) // (starting index = page-1)*limit
             .limit(limit)
             .select("-__v")
-            .populate("category")
             .lean()
           ,
   
