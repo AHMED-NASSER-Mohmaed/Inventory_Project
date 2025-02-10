@@ -41,12 +41,12 @@ process.on("uncaughtException", (err) => {
         let superAdmin={
           firstName:"ahmed",
           lastName:"nasser",
-          email:"ahme664422@gmail.com",
-          phoneNumber:"01018208958",
-          password:"admin123",
-          passwordConfirm:"admin123",
+          email:"AhmedNasser@gmail.com",
+          phoneNumber:"01062303884",
+          password:"onlyonewhocanregister",
+          passwordConfirm:"onlyonewhocanregister",
           userType:"staff",
-          SSN:"30101101206152",
+          SSN:"30101101206161",
           role:"super_admin",
         }
       
