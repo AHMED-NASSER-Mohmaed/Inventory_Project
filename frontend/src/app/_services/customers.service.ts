@@ -40,6 +40,7 @@ export class CustomersService {
 
   getPaginatedWaitingSellers(page: number, limit: number): Observable<any> {
     return this.http.get(`${this.baseUrl}/pendingSellers?page=${page}&limit=${limit}`, { headers: this.getHeaders() });
+    // http://localhost:3000/getSellers?filters=isActive:false+status:0&page=1&limit=10
   }
 
   changeImage(id: string, file: File): Observable<any> {

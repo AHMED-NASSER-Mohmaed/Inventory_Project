@@ -43,12 +43,10 @@ export class AccountService {
 
   setLoginStatus(){
     this.isLoggedIn = true;
-    // Removed localStorage update.
   }
 
   setUserType(type: string) {
     this.userType = type;
-    // Removed localStorage update.
   }
 
   showLoginStatus() {
@@ -58,6 +56,6 @@ export class AccountService {
   logout() {
     this.isLoggedIn = false;
     this.userType = '';
-    // Removed localStorage cleanup.
+    localStorage.removeItem('token');
   }
 }

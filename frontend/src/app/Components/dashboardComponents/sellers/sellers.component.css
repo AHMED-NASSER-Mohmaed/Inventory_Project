@@ -667,20 +667,24 @@ input[type="number"] {
 
 @media screen and (max-width: 986px) {
   mat-button-toggle-group{
-    flex-wrap: wrap;
-    height: auto;
     width: 12%;
     min-width: 20%;
     max-width: 27%;
     border-radius: 20px;
   }
-  mat-button-toggle{
-    font-size: 0.9em;
+}
+
+@media screen and (max-width: 930px) {
+  mat-button-toggle-group{
+
+    width: 12%;
+    min-width: 27%;
+    max-width: 27%;
   }
 }
 
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 785px) {
   :host #sidebar {
     width: 200px;
   }
@@ -705,7 +709,7 @@ input[type="number"] {
 
   mat-button-toggle-group{
     width: 25%;
-    min-width: 27%;
+    min-width: 29%;
   }
   
 
