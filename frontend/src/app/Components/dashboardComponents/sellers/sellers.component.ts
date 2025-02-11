@@ -9,41 +9,78 @@ import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.c
 import { ConfirmDialogComponent2 } from '../../../confirm-dialog2/confirm-dialog2.component';
 import { ConfirmDialogImgchangeComponent } from '../../../confirm-dialog-imgchange/confirm-dialog-imgchange.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import {MatDividerModule} from '@angular/material/divider';
+import { ConfirmDialogApprovesellerComponent } from '../../../confirm-dialog-approveseller/confirm-dialog-approveseller.component';
+import { ConfirmDialogRejectsellerComponent } from '../../../confirm-dialog-rejectseller/confirm-dialog-rejectseller.component';
+import { ConfirmDialogApproveseller2Component } from '../../../confirm-dialog-approveseller2/confirm-dialog-approveseller2.component';
+
 
 
 @Component({
   selector: 'app-sellers',
-  imports: [CommonModule, FormsModule , MatButtonToggleModule],
+  imports: [CommonModule, FormsModule , MatButtonToggleModule , MatDividerModule],
   templateUrl: './sellers.component.html',
   styleUrls: ['./sellers.component.css' , './sellers.component.scss']
 })
 
 export class SellersComponent implements OnInit, OnDestroy {
   constructor(private customerService: CustomersService, public dialog: MatDialog) { }
+
   dropdownStates: boolean[] = [];
+
   sub: Subscription = {} as Subscription;
   sub2: Subscription = {} as Subscription;
   sub3: Subscription = {} as Subscription;
   sub4: Subscription = {} as Subscription;
   sub5: Subscription = {} as Subscription;
   sub6: Subscription = {} as Subscription;
+  sub7: Subscription = {} as Subscription;
+  sub8: Subscription = {} as Subscription;
+  sub9: Subscription = {} as Subscription;
+  sub10: Subscription = {} as Subscription;
+  sub11: Subscription = {} as Subscription;
+  sub12: Subscription = {} as Subscription;
+  sub13: Subscription = {} as Subscription;
+  sub14: Subscription = {} as Subscription;
+  sub15: Subscription = {} as Subscription;
+  sub16: Subscription = {} as Subscription;
+  sub17: Subscription = {} as Subscription;
+  sub18: Subscription = {} as Subscription;
+  sub19: Subscription = {} as Subscription;
+
+
   users: User[] = [];
-  paginatedUsers: User[] = [];
+
   isDarkMode: boolean = false;
+
   currentPage: number = 1;
+
   itemsPerPage: number = 10;
   totalPages: number = 1;
   hasNextPage: boolean = false;
   hasPreviousPage: boolean = false;
+
   userCache: { [page: number]: User[] } = {};
   waitingUserCache: { [page: number]: User[] } = {};
-  total: number = 0;
+  rejectedUserCache: { [page: number]: User[] } = {};
+  approvedUserCache: { [page: number]: User[] } = {};
+
   selectedUser: User = {} as User;
-  backupUser: User = {} as User; // <-- new backup property
-  editing: boolean = false;  // for input fields
+  backupUser: User = {} as User; 
+
+  editing: boolean = false;
+  
+  activeSellersCount: any;
+  deActiveSellersCount: any;
+  waitingSellersCount: any;
+  rejectedSellersCount: any;
 
   ngOnInit(): void {
     this.fetchSellers();
+    this.getDeActiveSellersCount();
+    this.getActiveSellersCount();
+    this.getWaitingSellersCount();
+    this.getRejectedSellersCount();
   }
 
   fetchSellers(): void {
@@ -62,7 +99,6 @@ export class SellersComponent implements OnInit, OnDestroy {
           this.dropdownStates = new Array(this.users.length).fill(false);
           this.userCache[this.currentPage] = this.users; // caching
           this.updatePaginationState();
-          this.total = res.data.total - 1;
           console.log(this.users);
         },
         error: (error) => {
@@ -83,7 +119,7 @@ export class SellersComponent implements OnInit, OnDestroy {
       this.updatePaginationState();
     } else {
       // Fetch from server and cache in waitingUserCache
-      this.sub = this.customerService.getPaginatedWaitingSellers(this.currentPage, this.itemsPerPage).subscribe({
+      this.sub2 = this.customerService.getPaginatedWaitingSellers(this.currentPage, this.itemsPerPage).subscribe({
         next: (res) => {
           this.users = res.data.result;
           this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
@@ -92,7 +128,6 @@ export class SellersComponent implements OnInit, OnDestroy {
           this.dropdownStates = new Array(this.users.length).fill(false);
           this.waitingUserCache[this.currentPage] = this.users; // caching waiting sellers
           this.updatePaginationState();
-          this.total = res.data.total - 1;
           console.log(this.users);
         },
         error: (error) => {
@@ -104,6 +139,68 @@ export class SellersComponent implements OnInit, OnDestroy {
       });
     }
   }
+
+  fetchRejectedSellers(): void {
+    if (this.rejectedUserCache && this.rejectedUserCache[this.currentPage]) {
+      // Load cache
+      this.users = this.rejectedUserCache[this.currentPage];
+      this.updatePaginationState();
+    } else {
+      // Fetch from server and cache in rejectedUserCache
+      this.sub3 = this.customerService.getPaginatedRejectedSellers(this.currentPage, this.itemsPerPage).subscribe({
+        next: (res) => {
+          this.users = res.data.result;
+          this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
+          this.hasNextPage = !!res.data.next;
+          this.hasPreviousPage = !!res.data.previous;
+          this.dropdownStates = new Array(this.users.length).fill(false);
+          if (!this.rejectedUserCache) {
+            this.rejectedUserCache = {};
+          }
+          this.rejectedUserCache[this.currentPage] = this.users; // caching rejected sellers
+          this.updatePaginationState();
+          console.log(this.users);
+        },
+        error: (error) => {
+          console.log(error);
+        },
+        complete: () => {
+          console.log('complete');
+        }
+      });
+    }
+  }
+
+fetchApprovedSellers(): void {
+  if (this.approvedUserCache[this.currentPage]) {
+    // Load cache
+    this.users = this.approvedUserCache[this.currentPage];
+    this.updatePaginationState();
+  } else {
+    // Fetch from server
+    this.sub4 = this.customerService.getPaginatedApprovedSellers(this.currentPage, this.itemsPerPage).subscribe({
+      next: (res) => {
+        this.users = res.data.result;
+        this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
+        this.hasNextPage = !!res.data.next;
+        this.hasPreviousPage = !!res.data.previous;
+        this.dropdownStates = new Array(this.users.length).fill(false);
+        this.approvedUserCache[this.currentPage] = this.users; // caching approved sellers
+        this.updatePaginationState();
+        console.log(this.users);
+      },
+      error: (error) => {
+        console.log(error);
+      },
+      complete: () => {
+        console.log('complete');
+      }
+    });
+  }
+}
+
+  
+
   updatePaginationState(): void {
     this.hasNextPage = this.currentPage < this.totalPages;
     this.hasPreviousPage = this.currentPage > 1;
@@ -127,26 +224,6 @@ export class SellersComponent implements OnInit, OnDestroy {
     this.isDarkMode = !this.isDarkMode;
   }
 
-  openConfirmDialog(SSN: string): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent);
-
-    this.sub3 = dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.deActiveSeller(SSN);
-      }
-    });
-  }
-
-  openConfirmDialog2(SSN: string): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent2);
-
-    this.sub3 = dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.activateSeller(SSN);
-      }
-    });
-  }
-
   showSellerInfo(user: User): void {
     this.selectedUser = {
       ...user,
@@ -156,14 +233,17 @@ export class SellersComponent implements OnInit, OnDestroy {
       email: user.email || '',
       phoneNumber: user.phoneNumber || ''
     };
-    this.backupUser = { ...this.selectedUser }; // <-- backup the original data
+    this.backupUser = { ...this.selectedUser }; //+ <-- backup the original data
   }
 
-  deActiveSeller(SSN: string): void {
-    this.sub2 = this.customerService.deActiveSeller(SSN).subscribe({
+  //! ////////////////////////// Activate - Deactivate - Approve - Reject - Dialogs ////////////////////////////////////
+
+
+  deActiveSeller(_id: string): void {
+    this.sub5 = this.customerService.deActiveSeller(_id).subscribe({
         next: (res) => {
             console.log(res);
-            this.updateUserStatus(SSN, false);
+            this.updateUserAcitvity(_id, false);
             console.log(this.users);
         },
         error: (error) => {
@@ -175,11 +255,11 @@ export class SellersComponent implements OnInit, OnDestroy {
     });
 }
 
-  activateSeller(SSN: string): void {
-    this.sub4 = this.customerService.activateSeller(SSN).subscribe({
+  activateSeller(_id: string): void {
+    this.sub6 = this.customerService.activateSeller(_id).subscribe({
       next: (res) => {
         console.log(res);
-        this.updateUserStatus(SSN, true);
+        this.updateUserAcitvity(_id, true);
         console.log(this.users);
       },
       error: (error) => {
@@ -191,8 +271,105 @@ export class SellersComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateUserStatus(SSN: string, isActive: boolean): void {
-    const user = this.users.find(u => u.SSN === SSN);
+  approveSeller(_id: string, source: 'pending' | 'rejected' = 'pending'): void {
+    this.sub7 = this.customerService.approveSeller(_id).subscribe({
+      next: (res) => {
+        console.log(res);
+        this.users = this.users.filter((user: User) => user._id !== _id);
+
+        this.activeSellersCount++;
+        if (source === 'pending') {
+          this.waitingSellersCount--;
+          this.approvedUserCache[this.currentPage] = this.approvedUserCache[this.currentPage]?.filter((user: User) => user._id !== _id) || [];
+        } else if (source === 'rejected') {
+          this.rejectedSellersCount--;
+          this.rejectedUserCache[this.currentPage] = this.rejectedUserCache[this.currentPage]?.filter((user: User) => user._id !== _id) || [];
+        }
+        console.log(this.users);
+      },
+      error: (error) => {
+        console.log(error);
+      },
+      complete: () => {
+        console.log('complete');
+      }
+    });
+  }
+
+  rejectSeller(_id: string): void {
+    this.sub8 = this.customerService.rejectSeller(_id).subscribe({
+      next: (res) => {
+        console.log(res);
+        this.users = this.users.filter((user: User) => user._id !== _id);
+        this.rejectedUserCache[this.currentPage] = this.rejectedUserCache[this.currentPage]?.filter((user: User) => user._id !== _id) || [];
+        this.rejectedSellersCount++;
+        console.log(this.users);
+      },
+      error: (error) => {
+        console.log(error);
+      },
+      complete: () => {
+        console.log('complete');
+      }
+    });
+  }
+
+  openConfirmDialog(_id: string): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+
+    this.sub9 = dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deActiveSeller(_id);
+      }
+    });
+  }
+
+  openConfirmDialog2(_id: string): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent2);
+
+    this.sub10 = dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.activateSeller(_id);
+      }
+    });
+  }
+
+  openConfirmDialog3(_id: string): void {
+    const dialogRef = this.dialog.open(ConfirmDialogApprovesellerComponent);
+
+    this.sub11 = dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.approveSeller(_id, 'pending');
+      }
+    });
+  }
+
+  openConfirmDialog5(_id: string): void {
+    const dialogRef = this.dialog.open(ConfirmDialogApproveseller2Component);
+
+    this.sub19 = dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.approveSeller(_id, 'rejected');
+      }
+    });
+  }
+
+  openConfirmDialog4(_id: string): void {
+    const dialogRef = this.dialog.open(ConfirmDialogRejectsellerComponent);
+
+    this.sub12 = dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.rejectSeller(_id);
+      }
+    });
+  }
+
+
+//! ///////////////////////////////////////////////////////////////////
+
+
+  updateUserAcitvity(_id: string, isActive: boolean): void {
+    const user = this.users.find(u => u._id === _id);
     if (user) {
       user.isActive = isActive ; 
     }
@@ -205,7 +382,7 @@ export class SellersComponent implements OnInit, OnDestroy {
   toggleEdit(event?: any): void {
     if (this.editing) {
       const workingBackup = { ...this.backupUser }; // Existing backup of data when editing was activated
-      this.sub5 = this.customerService.updateSeller(this.selectedUser._id, this.selectedUser).subscribe({
+      this.sub13 = this.customerService.updateSeller(this.selectedUser._id, this.selectedUser).subscribe({
         next: (res: any) => {
           if (res.message === 'success') {
             const index = this.users.findIndex(u => u.SSN === this.selectedUser.SSN);
@@ -256,7 +433,7 @@ export class SellersComponent implements OnInit, OnDestroy {
         const tempUrl = e.target.result;
         //+  confirm dialog  then update image if confirmed
         const dialogRef = this.dialog.open(ConfirmDialogImgchangeComponent);
-        this.sub6 =dialogRef.afterClosed().subscribe(async result => {
+        this.sub14 =dialogRef.afterClosed().subscribe(async result => {
           if (result) {
             try {
               const response: any = await this.customerService.changeImage(this.selectedUser!._id, file).toPromise();
@@ -280,6 +457,55 @@ export class SellersComponent implements OnInit, OnDestroy {
     }
   }
 
+  //! Getting Totals:
+
+  getActiveSellersCount(): void {
+    this.sub15 = this.customerService.getActiveSellersCount().subscribe({
+      next: (res) => {
+        this.activeSellersCount = res.data;
+      },
+      error: (error) => {
+        console.error('Error getting active sellers count', error);
+      }
+    });
+  }
+
+  getDeActiveSellersCount(): void {
+    this.sub16 = this.customerService.getDeActiveSellersCount().subscribe({
+      next: (res) => {
+        this.deActiveSellersCount = res.data;
+      },
+      error: (error) => {
+        console.error('Error getting deactive sellers count', error);
+      }
+    });
+  }
+
+  getWaitingSellersCount(): void {
+    this.sub17 = this.customerService.getWaitingSellersCount().subscribe({
+      next: (res) => {
+        this.waitingSellersCount = res.data;
+      },
+      error: (error) => {
+        console.error('Error getting waiting sellers count', error);
+      }
+    });
+  }
+
+  getRejectedSellersCount(): void {
+    this.sub18 = this.customerService.getRejectedSellersCount().subscribe({
+      next: (res) => {
+        this.rejectedSellersCount = res.data;
+      },
+      error: (error) => {
+        console.error('Error getting rejected sellers count', error);
+      }
+    });
+  }
+
+
+  //+ ////////////////////////////////////////////////////////////////////////////////////////////
+
   ngOnDestroy(): void {
     if (this.sub) {
       this.sub.unsubscribe();
@@ -302,6 +528,58 @@ export class SellersComponent implements OnInit, OnDestroy {
     }
 
     if (this.sub6) {
+      this.sub.unsubscribe();
+    }
+
+    if (this.sub7) {
+      this.sub.unsubscribe();
+    }
+
+    if (this.sub8) {
+      this.sub.unsubscribe();
+    }
+
+    if (this.sub9) {
+      this.sub.unsubscribe();
+    }
+
+    if (this.sub10) {
+      this.sub.unsubscribe();
+    }
+
+    if (this.sub11) {
+      this.sub.unsubscribe();
+    }
+
+    if (this.sub12) {
+      this.sub.unsubscribe();
+    }
+
+    if (this.sub13) {
+      this.sub.unsubscribe();
+    }
+
+    if (this.sub14) {
+      this.sub.unsubscribe();
+    }
+
+    if (this.sub15) {
+      this.sub.unsubscribe();
+    }
+
+    if (this.sub16) {
+      this.sub.unsubscribe();
+    }
+
+    if (this.sub17) {
+      this.sub.unsubscribe();
+    }
+
+    if (this.sub18) {
+      this.sub.unsubscribe();
+    }
+
+    if (this.sub19) {
       this.sub.unsubscribe();
     }
   }

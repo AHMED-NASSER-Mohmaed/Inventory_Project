@@ -23,10 +23,31 @@
             </div>
             <ul class="box-info">
                 <li>
-                    <i class='bx bx-money'></i>
+                    <i class='bx bxs-dollar-circle' ></i>
                     <span class="text">
-                        <h3>{{total}}</h3>
-                        <p>Sellers</p>
+                        <h3>{{activeSellersCount}}</h3>
+                        <p>Active Sellers</p>
+                    </span>
+                </li>
+                <li>
+                    <i class='bx bxs-wallet' ></i>
+                    <span class="text">
+                        <h3>{{deActiveSellersCount}}</h3>
+                        <p>Deactiveted Sellers</p>
+                    </span>
+                </li>
+                <li>
+                    <i class='bx bxs-help-circle' ></i>
+                    <span class="text">
+                        <h3>{{waitingSellersCount}}</h3>
+                        <p>Pending Sellers</p>
+                    </span>
+                </li>
+                <li>
+                    <i class='bx bx-x-circle'></i>
+                    <span class="text">
+                        <h3>{{rejectedSellersCount}}</h3>
+                        <p>Rejected Sellers</p>
                     </span>
                 </li>
             </ul>
@@ -41,9 +62,9 @@
                             </div>
                         </form>
                         <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
-                            <mat-button-toggle value="bold" checked>Approved</mat-button-toggle>
-                            <mat-button-toggle value="italic" (click)="fetchWaitingSellers()">Waiting</mat-button-toggle>
-                            <mat-button-toggle value="thin" (click)="fetchWaitingSellers()">Recjected</mat-button-toggle>
+                            <mat-button-toggle value="bold" (click)="fetchApprovedSellers()">Approved</mat-button-toggle>
+                            <mat-button-toggle value="italic" (click)="fetchWaitingSellers()">Pending</mat-button-toggle>
+                            <mat-button-toggle value="thin" (click)="fetchRejectedSellers()">Recjected</mat-button-toggle>
                         </mat-button-toggle-group>
                         <i class='bx bx-filter'></i>
                     </div>
@@ -79,9 +100,25 @@
                                         <div class="dropdown-menu dropdown-menu-lg" [ngClass]="{'show': dropdownStates[i]}" aria-labelledby="dropdownMenuLink" style="min-width: 200px;">
                                             <a class="dropdown-item p-3" (click)="showSellerInfo(user)" data-toggle="modal" data-target="#sellerInfoModal"><i class='bx bx-show'></i> Show</a>
                                             <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user._id) : openConfirmDialog2(user._id)" style="cursor:pointer;">
+                                            <a *ngIf="user.status.toString() === '1'" class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user._id) : openConfirmDialog2(user._id)" style="cursor:pointer;">
                                                 <i class='bx' [ngClass]="{'bx-check-circle': !user.isActive, 'bx-x-circle': user.isActive}"></i>
                                                 {{user.isActive ? 'Deactivate' : 'Activate'}}
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            <a *ngIf="user.status.toString() === '0'" class="dropdown-item p-3" (click)="openConfirmDialog3(user._id)" style="cursor:pointer;">
+                                                <i class='bx bx-check-circle'></i>
+                                               Approve
+                                            </a>
+
+                                            <a *ngIf="user.status.toString() === '-1'" class="dropdown-item p-3" (click)="openConfirmDialog5(user._id)" style="cursor:pointer;">
+                                                <i class='bx bx-check-circle'></i>
+                                               Approve
+                                            </a>
+
+                                            <div class="dropdown-divider"></div>
+                                            <a *ngIf="user.status.toString() === '0'" class="dropdown-item p-3" (click)="openConfirmDialog4(user._id)" style="cursor:pointer;">
+                                                <i class='bx bx-x-circle'></i>
+                                                Reject
                                             </a>
                                         </div>
                                     </div>
