@@ -143,7 +143,7 @@
           </div>
           <div class="modal-body">
             <div class="seller-image-container">
-                <img [src]="selectedUser.photo?.url" alt="{{selectedUser.firstName}}" class="seller-img">
+                <img [src]="selectedUser.photo ? selectedUser.photo.url : 'assets/default.png'" alt="{{selectedUser.firstName}}" class="seller-img">
                 <input type="file" id="imageUploadSeller" style="display: none;" (change)="onImageChangeSeller($event)">
                 <button class="btn change-btn" (click)="triggerImageUploadSeller()"><i class="fa fa-pencil"></i> Change</button>
             </div>
