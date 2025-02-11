@@ -1,6 +1,6 @@
 const User = require("../models/user.model");
 const AppError = require("../utils/appError");
-const {inboxResult,checkIfAttributeExists}=require("../utils/apiFeatures");
+const { inboxResult, checkIfAttributeExists } = require("../utils/apiFeatures");
 const { throttle } = require("lodash");
 
 class UserRepository {
@@ -21,11 +21,9 @@ class UserRepository {
   }
 
   //done ------------------
-  async createUser(userData) {
+  async createUser(userData){
     try {
-      
       return await User.create(userData);
-      
     } catch (error) {
       throw error;
     }
@@ -38,14 +36,15 @@ class UserRepository {
         { _id: userId },
         newData,
         {
-          new: true,
           runValidators: true,
         }
       );
 
-      if (!updatedUser) throw new AppError("No user found with this id", 400);
+      if (!updatedUser)
+        throw new AppError("No user found with this id", 400);
 
       return updatedUser;
+
     } catch (error) {
       throw error;
     }
@@ -77,6 +76,8 @@ class UserRepository {
       }
     }
   */
+
+  /*
   // the one who own the account
   async updateMe(userId, newData) {
     try {
@@ -95,7 +96,7 @@ class UserRepository {
     } catch (error) {
       throw error;
     }
-  }
+  }*/
 
   //done ------------------
   async deleteUser(userId) {
@@ -111,7 +112,7 @@ class UserRepository {
     try {
 
       //return ack.
-      return await user.updateOne({ _id: userId }, { isActive: true });
+      return await User.updateOne({ _id: userId }, { isActive: true });
 
     } catch (err) {
       throw err;
@@ -132,7 +133,7 @@ class UserRepository {
           .sort(sort)
           .skip((page - 1) * limit) // (starting index = page-1)*limit
           .limit(limit).select("-__v")
-          ,
+        ,
 
         await User.countDocuments(filters).exec()
 
@@ -148,29 +149,30 @@ class UserRepository {
   }
 
 
-  async updateUserImage(userId,imageInfo){
+  async updateUserImage(userId, imageInfo) {
 
-    try{
+    try {
 
-      console.log("image info : ",imageInfo,"from repo");
-       return await User.updateOne({_id:userId},{"photo":imageInfo});
-    }catch(err){
+      console.log("image info : ", imageInfo, "from repo");
+      return await User.updateOne({ _id: userId }, { "photo": imageInfo });
+    } catch (err) {
       throw err;
     }
 
   }
 
-  async isAttributeExists(userId,name,value){
-    return await checkIfAttributeExists(User,userId,name,value);
+
+  async isAttributeExists(userId, name, value) {
+    return await checkIfAttributeExists(User, userId, name, value);
   }
 
-  async getUserImageId(userId){
+  async getUserImageId(userId) {
 
-    try{
+    try {
 
-      return await User.findById({_id:userId},{"photo.fileId":1, "_id":0});
+      return await User.findById({ _id: userId }, { "photo.fileId": 1, "_id": 0 });
 
-    }catch(err){
+    } catch (err) {
       throw err;
     }
 
