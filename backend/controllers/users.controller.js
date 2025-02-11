@@ -5,7 +5,7 @@ const { APP_CONFIG } = require("../config/app.config");
 const { staffService } = require("../services/staff.service");
 const prot_rest = require("../utils/authMiddlewaresOptions");
 const userService = require("../services/user.service");
-const { validateParams, validateAdminRouteParmas, validatorForQueries } = require("../middlewares/validation.middlewares");
+const { validatorForQueries, validateSearchParams } = require("../middlewares/validation.middlewares");
 const { sendResponseToClint } = require("../utils/apiFeatures");
 const { deleteFiles, upload } = require("../services/media.service");
 const AppError = require("../utils/appError");
@@ -13,6 +13,16 @@ const AppError = require("../utils/appError");
 const route = express.Router();
 
 
+
+const genaricFilters = {
+    searchFiledName: ["firstName", "lastName", "SSN", "phoneNumber"],
+    searchValueAcoordingNaN: [true, true, false, false],
+
+    searchFiledNameForCustomer: ["firstName", "lastName", "phoneNumber"],
+    searchValueAcoordingNaNforCustomer: [true, true, false],
+
+    allowedSort: ['createdAt', "name"],
+}
 
 const sellerOp = {
 
@@ -23,14 +33,14 @@ const sellerOp = {
 
         sendResponseToClint(res, APP_CONFIG.HTTP_CREATED, APP_CONFIG.HTTP_OK, user);
     },
-
-    getSellerBy: async (req, res, next) => {
-
-        const user = await sellerService.getSeller(req.params.SSN);
-
-        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, user);
-
-    },
+    /*
+        getSellerBy: async (req, res, next) => {
+    
+            const user = await sellerService.getSeller(req.params.SSN);
+    
+            sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, user);
+    
+        },*/
 
     deleteSeller: async (req, res, next) => {
 
@@ -42,24 +52,24 @@ const sellerOp = {
 
     approveSeller: async (req, res, next) => {
 
-       
+
         const ack = await sellerService.approveSeller(req.params.id);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
 
     },
 
     activeSellerAcount: async (req, res, next) => {
-        
+
         const ack = await sellerService.activeSeller(req.params.id);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
 
     },
     //by id
-    rejectSeller: async (req,res,next)=>{
+    rejectSeller: async (req, res, next) => {
         // console.log(req.params.id);
-        const ack=await sellerService.rejectSeller(req.params.id);
-        
-        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,ack);
+        const ack = await sellerService.rejectSeller(req.params.id);
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
     },
 
     /*
@@ -92,31 +102,31 @@ const sellerOp = {
 
 
     getSellers: async (req, res, next) => {
-        
+
 
         // if(req.validatedParams.status === 1 ) // then is ative may be undefined or true false ... approve
-        
 
-        if( req.validatedParams.filters.status === "0" ) //then is active is no of use ... pending
+
+        if (req.validatedParams.filters.status === "0") //then is active is no of use ... pending
         {
-            if( req.validatedParams.filters.isActive === "false" ){
+            if (req.validatedParams.filters.isActive === "false") {
                 delete req.validatedParams.filters.isActive;
-            }   
+            }
         }
 
 
-        if(req.validatedParams.filters.status === "-1") // only rejected people  
-        {   
+        if (req.validatedParams.filters.status === "-1") // only rejected people  
+        {
             console.log("hello")
-            if(req.validatedParams.filters.isActive === "false"){
+            if (req.validatedParams.filters.isActive === "false") {
                 delete req.validatedParams.filters.isActive;
             }
         }
 
         console.log(req.validatedParams.filters);
-        
-        
-        
+
+
+
         const result = await sellerService.getSellers(req.validatedParams);
 
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
@@ -126,7 +136,7 @@ const sellerOp = {
 
     getPendingSellers: async (req, res, next) => {
         console.log(req.validatedParams);
-        req.validatedParams[ 'filters' ][ 'status' ]= true ;
+        req.validatedParams['filters']['status'] = true;
         const result = await sellerService.getSellers(req.validatedParams);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 
@@ -137,22 +147,22 @@ const sellerOp = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
-    getSellerCount: async (req,res,next)=>{
+    getSellerCount: async (req, res, next) => {
 
-        if( req.validatedParams.filters.status === "0" ) //then is active is no of use ... pending
+        if (req.validatedParams.filters.status === "0") //then is active is no of use ... pending
         {
-            if( req.validatedParams.filters.isActive === "false" ){
-                delete req.validatedParams.filters.isActive;
-            }   
-        }
-        if(req.validatedParams.filters.status === "-1") // only rejected people  
-        {   
-            console.log("hello")
-            if(req.validatedParams.filters.isActive === "false"){
+            if (req.validatedParams.filters.isActive === "false") {
                 delete req.validatedParams.filters.isActive;
             }
         }
-        
+        if (req.validatedParams.filters.status === "-1") // only rejected people  
+        {
+            console.log("hello")
+            if (req.validatedParams.filters.isActive === "false") {
+                delete req.validatedParams.filters.isActive;
+            }
+        }
+
         const result = await sellerService.getCountByFilter(req.validatedParams.filters);
 
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
@@ -160,16 +170,18 @@ const sellerOp = {
 
     },
 
+    //search by SSN , firstName , lastName , phonenumber  
+    getSellerBy: async (req, res, next) => {
+        const result = await sellerService.getSellers(req.validatedParams); // to be continued
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
 
-    FieldName: [ [ "isActive" , "undefined" ] , [ "status" , "undefined" ] ],
-    filedsValues : [ [ "true" , "false" , "undefined" ], [ "-1" , "0" , "1" , "undefined" ]] ,
-    allowedSort: ['createdAt', "name"],
-
-    // allowedSearchFields:["name","SNN","phoneNumber"],
-    
-    
+    FieldName: [["isActive", "undefined"], ["status", "undefined"]],
+    filedsValues: [["true", "false", "undefined"], ["-1", "0", "1", "undefined"]],
 
 }
+
+
 
 
 /********************************************************************/
@@ -182,48 +194,47 @@ const adminOp = {
         req.body.managerId = req.user._id;
 
         req.body.passwordConfirm = req.body.password
-
         const result = await staffService.createStaff(req.body);
-
-
         sendResponseToClint(res, APP_CONFIG.HTTP_CREATED, APP_CONFIG.SUCCESS_MESSAGE, result);
 
-
     },
+
+    //delete by id
     deleteAdmin: async (req, res, next) => {
-
-        const result = await staffService.deleteStaff({ SSN: req.params.SSN, role: APP_CONFIG.ADMIN });
-
+        const result = await staffService.deleteStaff({ _id: req.params.id, role: APP_CONFIG.ADMIN });
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
-
-
-    },
-    getAdmin: async (req, res, next) => {
-
-        const result = await staffService.getStaff({ SSN: req.params.SSN, role: APP_CONFIG.ADMIN });
-
-        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
-
     },
 
+      /*
+    getAdminBy: async (req, res, next) => {
+
+        req.validatedParams.filters['role'] = APP_CONFIG.ADMIN;
+
+        const result = await staffService.getStaffByFilter(req.validatedParams); // to be continued
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+
+    },*/
+
+    /*
     getAllAdmins: async (req, res, next) => {
 
         const result = await staffService.getAll(APP_CONFIG.ADMIN);
 
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 
-    },
+    },*/
 
+    //by id
     activeAdmin: async (req, res, next) => {
 
-        const result = await staffService.activeStaff({ SSN: req.params.SSN, role: APP_CONFIG.ADMIN });
+        const result = await staffService.activeStaff({ _id: req.params.id, role: APP_CONFIG.ADMIN });
 
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 
     },
 
-
     // //paggination -->filter --- sort
+    // also search by SSN , firstName , lastName , phoneNumber
     getAdmins: async (req, res, next) => {
         req.validatedParams.filters['role'] = APP_CONFIG.ADMIN;
         const result = await staffService.getStaffByFilter(req.validatedParams);
@@ -233,7 +244,7 @@ const adminOp = {
     ,
     allowedFilters: ["isActive", "undefined"],
     allowedFilterValues: ["true", "false", "undefined"],
-    allowedSort: ['createdAt', "name"],
+
 
 }
 
@@ -244,37 +255,36 @@ const clerkOp = {
 
         //attach role on data
         req.body.role = APP_CONFIG.CLERK;
-        console.log(req.user._id);
+
+
         req.body.managerId = req.user._id;
+
         req.body.passwordConfirm = req.body.password
+
         const clerk = await staffService.createStaff(req.body);
 
-        res.status(APP_CONFIG.HTTP_CREATED).json({
-            message: "success",
-            clerk,
-        })
+        sendResponseToClint(res, APP_CONFIG.HTTP_CREATED, APP_CONFIG.SUCCESS_MESSAGE, clerk);
+
     },
+
     deleteClerk: async (req, res, next) => {
-
         const ack = await staffService.deleteStaff({ SSN: req.params.SSN, role: APP_CONFIG.CLERK });
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message: "success",
-            ack,
-        })
-
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
     },
 
-    getClerk: async (req, res, next) => {
+    
+    /*getClerkBy: async (req, res, next) => {
 
-        const clerk = await staffService.getStaff({ SSN: req.params.SSN, role: APP_CONFIG.CLERK });
+        req.validatedParams.filters['role'] = APP_CONFIG.CLERK;
+
+        const clerk = await staffService.getStaffByFilter(req.validatedParams);
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, clerk);
 
 
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message: "success",
-            clerk,
-        })
+    },*/
 
-    },
+    /*
     getAllClerks: async (req, res, next) => {
         const allClerks = await staffService.getAll(APP_CONFIG.CLERK);
 
@@ -283,17 +293,20 @@ const clerkOp = {
             allClerks,
         })
 
-    },
+    },*/
 
+
+    //active clerk by id
     activeClerk: async (req, res, next) => {
 
-        const ack = await staffService.activeStaff({ SSN: req.params.SSN, role: APP_CONFIG.CLERK });
+        const ack = await staffService.activeStaff({ _id: req.params.id, role: APP_CONFIG.CLERK });
 
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message: "success",
-            ack,
-        })
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
+
     },
+
+    //pagination 
+    //search by  SSN , firtName , lastName , phoneNumber 
     getClerks: async (req, res, next) => {
 
         req.validatedParams.filters['role'] = APP_CONFIG.CLERK;
@@ -307,7 +320,8 @@ const clerkOp = {
 
     allowedFilters: ["isActive", "undefined"],
     allowedFilterValues: ["true", "false"],
-    allowedSort: ['createdAt', "name"],
+
+
 }
 
 /**********************************************************************************/
@@ -322,54 +336,59 @@ const cashierOp = {
         req.body.passwordConfirm = req.body.password
         const cashier = await staffService.createStaff(req.body);
 
-
-        res.status(APP_CONFIG.HTTP_CREATED).json({
-            message: "success",
-            cashier,
-        })
+        sendResponseToClint(res, APP_CONFIG.HTTP_CREATED, APP_CONFIG.SUCCESS_MESSAGE, cashier);
 
     },
+
+
+
+    //delete cashier by id 
     deleteCashier: async (req, res, next) => {
 
-        const ack = await staffService.deleteStaff({ SSN: req.params.SSN, role: APP_CONFIG.CASHIER });
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message: "success",
-            ack,
-        })
+        const ack = await staffService.deleteStaff({ _id: req.params.id, role: APP_CONFIG.CASHIER });
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
 
     },
-    getCashier: async (req, res, next) => {
 
-        const cashier = await staffService.getStaff({ SSN: req.params.SSN, role: APP_CONFIG.CASHIER });
+    
+    /*getCashierBy: async (req, res, next) => {
+
+        req.validatedParams.filters['role'] = APP_CONFIG.CASHIER
+
+        const cashier = await staffService.getStaffByFilter(req.validatedParams);
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, cashier);
+
+    },*/
+
+    /*
+        getAllCashiers: async (req, res, next) => {
+    
+            const allCashiers = await staffService.getAll(APP_CONFIG.CASHIER);
+    
+            res.status(APP_CONFIG.HTTP_OK).json({
+                message: "success",
+                allCashiers,
+            })
+    
+        },*/
 
 
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message: "success",
-            cashier,
-        })
-
-    },
-    getAllCashiers: async (req, res, next) => {
-
-        const allCashiers = await staffService.getAll(APP_CONFIG.CASHIER);
-
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message: "success",
-            allCashiers,
-        })
-
-    },
+    //active seller using id
     activeCashier: async (req, res, next) => {
 
-        const ack = await staffService.activeStaff({ SSN: req.params.SSN, role: APP_CONFIG.CASHIER });
+        const ack = await staffService.activeStaff({ _id: req.params.id, role: APP_CONFIG.CASHIER });
 
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message: "success",
-            ack,
-        })
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
+
     },
 
+
+    //get all cashiers filtered and paginated at the same time.
+     //search by SSN , firstName , lastName , phoneNumber
     getCashiers: async (req, res, next) => {
+
         req.validatedParams.filters['role'] = APP_CONFIG.CASHIER;
 
 
@@ -399,31 +418,38 @@ const customerOp = {
         sendResponseToClint(res, APP_CONFIG.HTTP_CREATED, APP_CONFIG.SUCCESS_MESSAGE, customer != null ? true : false);
     },
 
+    //delete customer using id  
     deleteCustomer: async (req, res, next) => {
         const ack = await userService.deleteUser(req.params.id);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
 
     },
 
+    //active customer using id
     activeCustomer: async (req, res, next) => {
+
         const ack = await userService.activeUser(req.params.id);
 
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
 
     },
 
+    /*
     getCustomer: async (req, res, next) => {
 
-        const customer = await userService.getUser(req.params.id);
+        const customer = await userService.getUser(req.validatedParams);
+
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, customer);
 
-    },
+    },*/
+
+
 
     getCustomers: async (req, res, next) => {
 
         req.validatedParams.filters["userType"] = APP_CONFIG.CUSTOMER;
 
-        // console.log(req.validatedParams);
+        
 
         const result = await userService.getUsers(req.validatedParams);
 
@@ -442,12 +468,12 @@ const customerOp = {
 
         const oldFileId = await userService.getUserImageId(req.params.id);
 
-        console.log(oldFileId);
+        // console.log(oldFileId);
 
         try {
             //delete image from imagekit  if user it's not the default image
             if (!(oldFileId['photo']['fileId'] === APP_CONFIG.UDIAMGE_ID_VALUE)) {
-                console.log("the one that is exist is not equal to the default one");
+                // console.log("the one that is exist is not equal to the default one");
                 await deleteFiles([oldFileId['photo']['fileId']]);
             }
 
@@ -484,102 +510,162 @@ const customerOp = {
 /**************************************************************************************/
 
 
-route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(sellerOp.addSeller))
-    
-    .get( "/getSeller/:SSN" , 
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),catchAsync(sellerOp.getSellerBySSN))
+route.post("/addSeller",
+    prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+    catchAsync(sellerOp.addSeller))
 
-    .delete("/deleteSeller/:id", 
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), 
+    //delete seller by id --> soft delete 
+    .delete("/deleteSeller/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         catchAsync(sellerOp.deleteSeller))
 
+    //approve seller by id 
     .patch("/approveSeller/:id",
-         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), 
-         catchAsync(sellerOp.approveSeller))
-
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        catchAsync(sellerOp.approveSeller))
+    //active seller by id 
     .patch("/activeSeller/:id",
-         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-          catchAsync(sellerOp.activeSellerAcount))
-    
-    .patch("/updateSeller/:sellerId",
-         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER),
-     catchAsync(sellerOp.updateSeller))
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        catchAsync(sellerOp.activeSellerAcount))
 
-    
+    //upadte seller by id 
+    .patch("/updateSeller/:sellerId",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER),
+        catchAsync(sellerOp.updateSeller))
+
+    //reject seller by id 
     .patch("/rejectSeller/:id",
-        prot_rest(APP_CONFIG.SUPPERADMIN,APP_CONFIG.ADMIN),
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         catchAsync(sellerOp.rejectSeller))
 
-
-    .get("/getSellers", 
+    //pagination for filtered seller 
+    .get("/getSellers",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-        validatorForQueries( sellerOp.FieldName , sellerOp.filedsValues, sellerOp.allowedSort),
+        validatorForQueries(sellerOp.FieldName, sellerOp.filedsValues, sellerOp.allowedSort),
         catchAsync(sellerOp.getSellers))
 
     .get("/sellerCount",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-        validatorForQueries( sellerOp.FieldName , sellerOp.filedsValues),
+        validatorForQueries(sellerOp.FieldName, sellerOp.filedsValues, genaricFilters.allowedSort),
         catchAsync(sellerOp.getSellerCount)
+    )
+    //by SSN , firstName , lastName , phoneNumber
+    .get("/getSeller",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN, genaricFilters.allowedSort),
+        catchAsync(sellerOp.getSellerBy)
     )
 
 
-/*
-    .get("/pendingSellers",
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-        validatorForQueries( ['undefined'] , ['undefined'] , sellerOp.allowedSort),
-        catchAsync(sellerOp.getPendingSellers),
-    )*/
+    /*************************************************************************************** */
 
 
+    .post("/addAdmin",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        catchAsync(adminOp.addAdmin))
 
+    //search by SSN , firstName , lastName , phoneNumber
+    .get("/getAdmin",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN, genaricFilters.allowedSort),
+        catchAsync(adminOp.getAdmins))
 
-    .post("/addAdmin", prot_rest("super_admin"), catchAsync(adminOp.addAdmin))
-    .get("/getAdmin/:SSN", prot_rest("super_admin"), catchAsync(adminOp.getAdmin))
-    .delete("/deleteAdmin/:SSN", prot_rest("super_admin"), catchAsync(adminOp.deleteAdmin))
-    .get("/getAllAdmins", prot_rest("super_admin"), catchAsync(adminOp.getAllAdmins))
-    .patch("/activeAdmin/:SSN", prot_rest("super_admin"), catchAsync(adminOp.activeAdmin))
-    .get("/getAdmins", prot_rest("super_admin"), validatorForQueries(adminOp.allowedFilters, adminOp.allowedFilterValues, adminOp.allowedSort),
+    //delete seller by id
+    .delete("/deleteAdmin/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        catchAsync(adminOp.deleteAdmin))
+
+    //active admin by id
+    .patch("/activeAdmin/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        catchAsync(adminOp.activeAdmin))
+
+    
+
+    //pagination for active and deavtive admins
+    .get("/getAdmins",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        validatorForQueries(adminOp.allowedFilters, adminOp.allowedFilterValues, genaricFilters.allowedSort),
         catchAsync(adminOp.getAdmins))
 
 
 
+    /*************************************************************************************** */
 
-    .post("/addClerk", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(clerkOp.addClerk))
-    .get("/getClerk/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(clerkOp.getClerk))
-    .delete("/deleteClerk/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(clerkOp.deleteClerk))
-    // .get("/getAllClerks",prot_rest(APP_CONFIG.SUPPERADMIN,APP_CONFIG.ADMIN ),catchAsync(clerkOp.getAllClerks))
-    .patch("/activeClerk/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(clerkOp.activeClerk))
 
+    //add clerk
+    .post("/addClerk",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        catchAsync(clerkOp.addClerk))
+
+    //search by SSN , firstName , lastName , phoneNumber
+    .get("/getClerk",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN, genaricFilters.allowedSort),
+        catchAsync(clerkOp.getClerks))
+
+    //delete clerk by id
+    .delete("/deleteClerk/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        catchAsync(clerkOp.deleteClerk))
+
+
+    //active clerk by id
+    .patch("/activeClerk/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        catchAsync(clerkOp.activeClerk))
+
+    //paginated clerks
     .get("/getClerks", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-        validatorForQueries(clerkOp.allowedFilters, clerkOp.allowedFilterValues, clerkOp.allowedSort),
+        validatorForQueries(clerkOp.allowedFilters, clerkOp.allowedFilterValues, genaricFilters.allowedSort),
         catchAsync(clerkOp.getClerks))
 
 
+    /****************************************************************************************/
 
-    .post("/addCashier", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(cashierOp.addCashier))
-    .get("/getCashier/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(cashierOp.getCashier))
-    .delete("/deleteCashier/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(cashierOp.deleteCashier))
-    .patch("/activeCashier/:SSN", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(cashierOp.activeCashier))
-    .get("/getCashiers", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+    //add cashier 
+    .post("/addCashier",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        catchAsync(cashierOp.addCashier))
+
+    //get cashier by SSN , firstName , lastName , phoneNumber
+    .get("/getCashier/",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN, genaricFilters.allowedSort),
+        catchAsync(cashierOp.getCashiers))
+
+    //delete cashier by id 
+    .delete("/deleteCashier/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        catchAsync(cashierOp.deleteCashier))
+
+    //active cashier by id
+    .patch("/activeCashier/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        catchAsync(cashierOp.activeCashier))
+
+    //get cashier paginated
+    .get("/getCashiers",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         validatorForQueries(cashierOp.allowedFilters, cashierOp.allowedFilterValues, cashierOp.allowedSort),
         catchAsync(cashierOp.getCashiers))
 
 
 
-    /*************************************************************************************************** */
+    /****************************************************************************************************/
     // customer section 
 
 
     .post("/addCustomer",
-
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
-
         catchAsync(customerOp.addCustomer)) //end of post 
 
 
-    .get("/getCustomer/:id",
+    //get customer by filter for serch by firstName , lastNAme 
+    .get("/getCustomer",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
-        catchAsync(customerOp.getCustomer)) //end of customer id
+        validateSearchParams(genaricFilters.searchFiledNameForCustomer,genaricFilters.searchValueAcoordingNaNforCustomer,genaricFilters.allowedSort),
+        catchAsync(customerOp.getCustomers)) //end of customer id
 
 
 
@@ -589,6 +675,7 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
 
 
     //why we send user id -->for admin super admin --- we will genarlize it through
+    //this one for all supper admin , admin , seller , customer , supplier
     .patch("/updateProfileImage/:id",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER, APP_CONFIG.CUSTOMER),
         catchAsync(customerOp.updateProfileImage)
@@ -602,6 +689,7 @@ route.post("/addSeller", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), ca
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
         validatorForQueries(customerOp.allowedFilters, customerOp.allowedFilterValues, customerOp.allowedSort),
         catchAsync(customerOp.getCustomers))//end of get [pagination].
+
 
 
 

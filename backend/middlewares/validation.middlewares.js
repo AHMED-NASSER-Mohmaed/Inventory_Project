@@ -1,136 +1,79 @@
 const { APP_CONFIG } = require("../config/app.config");
-const {sendResponseToClint}=require("../utils/apiFeatures");
+const { sendResponseToClint } = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
 
 
-// const validateParams = (req, res, next) => {
-//   const allowedSort = ['createdAt', 'name']; // Allowed fields for sorting
+const validateSearchParams = (searchFiledName, searchValueAcoordingNaN, allowedSort) => {
+  
+  return (req, res, next) => {
+    // Validate pagination params
+    const page = Math.max(1, parseInt(req.query.page) || 1); // Default page: 1
+    const limit = Math.min(25, Math.max(1, parseInt(req.query.limit) || 10)); // Default limit: 10, Max: 25
 
-//   // Validate pagination params
-//   const page = Math.max(1, parseInt(req.query.page) || 1); // Default page: 1
-//   const limit = Math.min(25, Math.max(1, parseInt(req.query.limit) || 10)); // Default limit: 10 , Max: 25
+    // Validate sort (optional)
+    let sort = { createdAt: -1 }; // Default sort
 
-//   // Validate sort (optional)
-//   let sort = { createdAt: -1 }; // Default sort
+    if (req.query.sort) {
+      try {
+        const [field, order] = req.query.sort.split(':'); // Split field and order
 
-//   if (req.query.sort) {
-//     try {
+        if (allowedSort.includes(field)) { // Check if field is allowed
+          sort = { [field]: order === 'asc' ? 1 : -1 }; // Set sort object
+        } else {
+          return res.status(400).json({ error: `Invalid sort field. Allowed fields: ${allowedSort.join(', ')}` });
+        }
+      } catch (e) {
+        return res.status(400).json({ error: 'Invalid sort parameter format. Use "field:order"' });
+      }
+    }
 
-//       const [field, order] = req.query.sort.split(':'); // Split field and order
-      
-//       console.log(field);
-      
-//       if (allowedSort.includes(field)) { // Check if field is allowed
-//         sort = { [field]: order === 'asc' ? 1 : -1 }; // Set sort object
-//       } else {
-//         return res.status(400).json({ error: `Invalid sort field. Allowed fields: ${allowedSort.join(', ')}` });
-//       }
-//     } catch (e) {
-//       return res.status(400).json({ error: 'Invalid sort parameter format. Use "field:order"' });
-//     }
-//   }
+    // Validate filters (optional)
+    let filters = {};
+    if (req.query.filters) {
+      try {
+        let filterObjects = req.query.filters.split(' ');
 
-//   // Attach validated params to request object
-//   req.validatedParams = {
-//     page,
-//     limit,
-//     sort
-//   };
+        filterObjects.forEach((element) => {
+          const [field, value] = element.split(':');
 
-//   next(); // Proceed to the next middleware/controller
-// };
+          // Find the index of the searchFiledName array that contains the field
+          const filterIndex = searchFiledName.findIndex((element) => element.trim() === field.trim());
 
-// const validatorForQueries = (allowedFilter, allowedFilterValues, allowedSort) => {
+          if (filterIndex === -1) {
+            throw new AppError(`Invalid filter field: ${field}`, APP_CONFIG.HTTP_BAD_REQUEST);
+          }
 
-//   return (req, res, next) => {
+          // Check if the value is valid based on searchValueAcoordingNaN
+          const isValueNaN = searchValueAcoordingNaN[filterIndex]; // true or false
+          const isValueValid = isValueNaN ? isNaN(value) : !isNaN(value);
 
-//     const page = Math.max(1, parseInt(req.query.page) || 1); // Default page: 1
-//     const limit = Math.min(25, Math.max(1, parseInt(req.query.limit) || 15)); // Default limit: 10 , Max: 25
+          if (!isValueValid) {
+            throw new AppError(`Invalid value: ${value} for field: ${field}. Expected ${isValueNaN ? 'non-numeric' : 'numeric'} value.`, APP_CONFIG.HTTP_BAD_REQUEST);
+          }
 
-//     // Validate sort (optional)
-//     let sort = { createdAt: -1 }; // Default sort
+          filters[field] = value; // Insert filter objects
+        });
 
-//     console.log("sort from req :",req.query.sort)
+        console.log("filters:", filters);
 
-//     if (req.query.sort) {
-//       try {
+      } catch (e) {
+        return res.status(400).json({ error: e.message || 'Invalid filter parameter format. Use "field:value"' });
+      }
+    }
 
-//         const [field, order] = req.query.sort.split(':'); // Split field and order
+    // Attach validated params to request object
+    req.validatedParams = {
+      page,
+      limit,
+      sort,
+      filters,
+    };
 
-//         console.log("from her ",field,order,allowedSort);
-
-
-
-//         if (allowedSort.includes(field)) { // Check if field is allowed
-          
-//           sort = { [field]: order === 'asc' ? 1 : -1 }; // Set sort object
-
-//           console.log("wellcome",sort)
-//         } else {
-//           throw new AppError("Invalid sort field", APP_CONFIG.HTTP_BAD_REQUEST )
-//         }
-
-//       } catch (e) {
-//         throw new AppError('Invalid sort parameter format. Use "field:order"',APP_CONFIG.HTTP_BAD_REQUEST)
-//       }
-
-//       console.log("helelo")
-
-//     }
-
-//     console.log("a7med:",req.query.filters);
-
-//     let filters = {}
-
-//     if (req.query.filters) {
-
-//       try {
-//         let filterObjects = [];
-        
-//         filterObjects = req.query.filters.split(' ');
-
-        
-//         console.log(filterObjects,"helllo");
-        
-//         filterObjects.forEach(element => {
-//           [field, value] = element.split(":");
-//           if ( !(allowedFilter.includes(field) && allowedFilterValues.includes(value)) ) {
-           
-//             throw new AppError( "Invalid filter fields",APP_CONFIG.HTTP_BAD_REQUEST)
-             
-//           }
-
-//           filters[field] = value; // insert filter objects
-//         });
-
-//       } catch (e) {
-
-//         throw new AppError(`"Invalid sort parameter format. Use "field:value"`,APP_CONFIG.HTTP_BAD_REQUEST)
-//       }
+    next(); // Proceed to the next middleware/controller
+  };
+};
 
 
-//     }
-
-//     // console.log(sort,filters);
-//     // Attach validated params to request object
-//     req.validatedParams = {
-//       page,
-//       limit,
-//       filters,
-//       sort,
-      
-//     };
-
-//     // console.log(req.validatedParams)
-
-
-//     next();
-
-//   }
-
-
-
-// }
 
 
 const validatorForQueries = (allowedFilters, allowedFilterValues, allowedSort) => {
@@ -168,7 +111,7 @@ const validatorForQueries = (allowedFilters, allowedFilterValues, allowedSort) =
           const [field, value] = element.split(":");
 
           // Find the index of the allowedFilters array that contains the field
-          const filterIndex = allowedFilters.findIndex( allowedFilter => allowedFilter.includes(field) );
+          const filterIndex = allowedFilters.findIndex(allowedFilter => allowedFilter.includes(field));
 
           if (filterIndex === -1 || !allowedFilterValues[filterIndex].includes(value)) {
             throw new AppError("Invalid filter fields", APP_CONFIG.HTTP_BAD_REQUEST)
@@ -195,7 +138,10 @@ const validatorForQueries = (allowedFilters, allowedFilterValues, allowedSort) =
 }
 
 
+
 // module.exports.validateParams = validateParams; 
 
 
 module.exports.validatorForQueries = validatorForQueries;
+
+module.exports.validateSearchParams = validateSearchParams;

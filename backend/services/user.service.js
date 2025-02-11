@@ -5,6 +5,7 @@ const userRepo = require("../repos/user.repo");
 class UserService {
   
   //done ----------------
+  //canceled
   async getUser(userId) {
 
     try {

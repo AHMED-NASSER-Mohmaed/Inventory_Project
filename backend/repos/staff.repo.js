@@ -27,13 +27,17 @@ module.exports.staffRepo={
         }
     },
 
+/*
     getStaffOfType:async (data)=>{
+
         try{
             return await Staff.findOne({SSN:data.SSN,role:data.role});
         }catch(err){
             throw err;
         }
     },
+*/
+
 
     activeStaffOfType:async (data)=>{
         try{
@@ -42,7 +46,7 @@ module.exports.staffRepo={
             throw err;
         }
     },
-
+/*
     getALLStaffOfType:async (role_)=>{
         try{
             return Staff.find({role:role_});
@@ -50,7 +54,9 @@ module.exports.staffRepo={
             throw err;
         }
     },
-    
+    */
+
+
     
     getStaffOfTypeByFilter:async (filters,sort,page,limit)=>{
 
@@ -71,10 +77,7 @@ module.exports.staffRepo={
     
             return inboxResult(results, total, page, limit);
 
-           
-
-
-
+  
         }catch(err){
             throw err;
         }
