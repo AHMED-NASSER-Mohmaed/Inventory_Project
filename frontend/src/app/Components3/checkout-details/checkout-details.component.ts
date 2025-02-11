@@ -1,16 +1,24 @@
-import { Component } from '@angular/core';
+import * as L from 'leaflet';
+import { Component, OnInit } from '@angular/core';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { concatWith } from 'rxjs';
+
 @Component({
   selector: 'app-checkout-details',
   imports: [ FormsModule, CommonModule ],
   templateUrl: './checkout-details.component.html',
   styleUrl: './checkout-details.component.css'
 })
-export class CheckoutDetailsComponent {
+export class CheckoutDetailsComponent implements OnInit {
+  ngOnInit(): void {
+    this.fetchLocationData();
+
+  }
+  apiUrl = 'http://ip-api.com/json/';
 
   shippingFees = 50;
 
@@ -48,7 +56,7 @@ export class CheckoutDetailsComponent {
     email: '',
     firstName: '',
     lastName: '',
-    country: '',
+    region: '',
     postcode: '',
     address: '',
     phone1: '',
@@ -66,6 +74,41 @@ export class CheckoutDetailsComponent {
     return this.getSubtotal() + this.shippingFees;
   }
 
+
+// fetching data from IP-API and display it on a map
+ fetchLocationData() {
+  fetch(this.apiUrl)
+      .then(response => response.json())
+      .then(data => {
+          console.log('IP-API Data:', data);
+          const { lat, lon, city, regionName } = data;
+         
+          const map = L.map('map').setView([lat, lon], 13);
+
+          
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          }).addTo(map);
+
+          
+          const marker = L.marker([lat, lon]).addTo(map)
+              .bindPopup('قفشتك يا معلم و هجيبك')
+              .openPopup();
+
+          // getting values from object from response to input fields
+          map.on('click', () => { // Use an arrow function
+            this.checkoutData.region = city; // Correctly updates the Angular component property
+            this.checkoutData.postcode = '123413';
+            console.log(this.checkoutData.region)
+          });
+      })
+      .catch(error => {
+          console.error('Erroorrrr !!!');
+      });
+}
+
+// fetchLocationData();
+
   onSubmit() {
     if (this.checkoutData.email && this.checkoutData.firstName && this.checkoutData.lastName && this.checkoutData.paymentMethod) {
       alert('Order placed successfully!');
@@ -74,7 +117,7 @@ export class CheckoutDetailsComponent {
         email: '',
         firstName: '',
         lastName: '',
-        country: '',
+        region: '',
         postcode: '',
         address: '',
         phone1: '',

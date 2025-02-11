@@ -26,7 +26,7 @@ export class CartMainComponent implements OnInit {
   ngOnInit(): void {
     this.subscription = this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        this.currentRoute = event.url; // Get the new route after navigation
+        this.currentRoute = event.url; 
         if(this.currentRoute.includes('checkout')){
           this.currentTitle = "Checkout";
         }else if(this.currentRoute.includes('order')){
@@ -43,7 +43,7 @@ export class CartMainComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe(); // Unsubscribe to avoid memory leaks
+    this.subscription.unsubscribe(); 
   }
 
 

@@ -1,7 +1,8 @@
 <div class="container my-5">
-    <div class="row ">
+    <div class="row position-relative">
+
         <!-- Checkout Form -->
-        <form class="col-12 col-lg-7 checkout-form mb-5 mb-md-0" #checkoutForm="ngForm" (ngSubmit)="onSubmit()">
+        <form class="col-12 col-lg-7 checkout-form mb-5 mb-md-0 order-lg-1 order-2" #checkoutForm="ngForm" (ngSubmit)="onSubmit()">
             <h2>Customer Information</h2>
             <input type="email" name="email" [(ngModel)]="checkoutData.email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" required placeholder="Email Address *" #email="ngModel">
             @if(email.invalid && email.touched){
@@ -38,10 +39,34 @@
                 }
             }
             <div class="form-group d-flex">
-                <select name="country" #region="ngModel" [(ngModel)]="checkoutData.country" required>
-                    <option value="">Region *</option>
+                <select name="city"  #region="ngModel" [(ngModel)]="checkoutData.region" required>
+                    <option value="">Select City *</option>
+                    <option value="Cairo">Cairo</option>
                     <option value="Alexandria">Alexandria</option>
+                    <option value="Giza">Giza</option>
+                    <option value="Port Said">Port Said</option>
+                    <option value="Suez">Suez</option>
+                    <option value="Luxor">Luxor</option>
+                    <option value="Aswan">Aswan</option>
+                    <option value="Sharm El-Sheikh">Sharm El-Sheikh</option>
+                    <option value="Hurghada">Hurghada</option>
+                    <option value="Mansoura">Mansoura</option>
+                    <option value="Tanta">Tanta</option>
+                    <option value="Faiyum">Faiyum</option>
+                    <option value="Zagazig">Zagazig</option>
+                    <option value="Ismailia">Ismailia</option>
+                    <option value="Asyut">Asyut</option>
+                    <option value="Minya">Minya</option>
+                    <option value="Beni Suef">Beni Suef</option>
+                    <option value="Qena">Qena</option>
+                    <option value="Sohag">Sohag</option>
+                    <option value="Damanhur">Damanhur</option>
+                    <option value="Damietta">Damietta</option>
+                    <option value="Arish">Arish</option>
+                    <option value="Marsa Matruh">Marsa Matruh</option>
+                    <option value="New Valley">New Valley</option>
                 </select>
+                
                 <input type="text" name="postcode" #postcode="ngModel" pattern="^\d{6}$" required [(ngModel)]="checkoutData.postcode" placeholder="Postcode / ZIP">
             </div>
             @if(region.invalid && region.touched){
@@ -108,8 +133,9 @@
             <button type="submit" class="btn btn-dark w-100 checkout-button" [disabled]="checkoutForm.invalid">Place ORDER {{getTotalAmount() | currency}}</button>
         </form>
 
+
         <!-- Order Summary -->
-        <div class="order-summary col-12 col-lg-5 ">
+        <div class="order-summary col-12 col-lg-5 mb-5 sticky-lg-top order-lg-2 order-1">
             <h2>Your Order</h2>
             <div class="summary-content">
                 <table class="table">
@@ -137,5 +163,12 @@
                 </table>
             </div>
         </div>
+        
+        
+        
+    </div>
+    <!-- map -->
+    <div>
+        <div id="map" (click)="fetchLocationData()"  class="mt-4" style="height: 400px;"></div>
     </div>
 </div>
