@@ -191,7 +191,7 @@ module.exports.sellerRepo = {
                     .limit(limit)
                     .lean(),
 
-                await seller.countDocuments(filters).exec()
+                await seller.countDocuments(filters).collation({ locale: 'en', strength: 1 }).exec()
             ]);
 
             // console.log("from repo" , results , total);
