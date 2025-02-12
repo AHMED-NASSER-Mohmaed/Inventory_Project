@@ -541,7 +541,7 @@ route.post("/addSeller",
     //pagination for filtered seller 
     .get("/getSellers",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-        validatorForQueries(sellerOp.FieldName, sellerOp.filedsValues, sellerOp.allowedSort),
+        validatorForQueries(sellerOp.FieldName, sellerOp.filedsValues, genaricFilters.allowedSort),
         catchAsync(sellerOp.getSellers))
 
     .get("/sellerCount",
@@ -687,7 +687,7 @@ route.post("/addSeller",
 
     .get("/getCustomers",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
-        validatorForQueries(customerOp.allowedFilters, customerOp.allowedFilterValues, customerOp.allowedSort),
+        validatorForQueries(customerOp.allowedFilters, customerOp.allowedFilterValues, genaricFilters.allowedSort),
         catchAsync(customerOp.getCustomers))//end of get [pagination].
 
 

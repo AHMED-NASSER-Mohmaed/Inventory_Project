@@ -22,6 +22,13 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN, allowedS
         } else {
           return res.status(400).json({ error: `Invalid sort field. Allowed fields: ${allowedSort.join(', ')}` });
         }
+
+        if(sort['name']){
+          let s=sort;
+          sort={ firstName:s['name'] , lastName:s['name'] }
+        }
+
+        
       } catch (e) {
         return res.status(400).json({ error: 'Invalid sort parameter format. Use "field:order"' });
       }
@@ -90,16 +97,26 @@ const validatorForQueries = (allowedFilters, allowedFilterValues, allowedSort) =
       try {
         const [field, order] = req.query.sort.split(':'); // Split field and order
 
+        console.log(allowedSort,field,order);
+
         if (allowedSort.includes(field)) { // Check if field is allowed
           sort = { [field]: order === 'asc' ? 1 : -1 }; // Set sort object
         } else {
           throw new AppError("Invalid sort field", APP_CONFIG.HTTP_BAD_REQUEST)
         }
 
+
+        if(sort['name']){
+          let s=sort;
+          sort={ firstName:s['name'] , lastName:s['name'] }
+        }
+
       } catch (e) {
         throw new AppError('Invalid sort parameter format. Use "field:order"', APP_CONFIG.HTTP_BAD_REQUEST)
       }
     }
+
+    console.log("sort : ",sort);
 
     let filters = {}
     if (req.query.filters) {
