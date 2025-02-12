@@ -13,39 +13,88 @@
                         </div>
                     </div>
                     <ul class="breadcrumb">
-                        <li><a href="#">Dashboard</a></li>
+                        <li><a >Dashboard</a></li>
                         <li><i class='bx bx-chevron-right'></i></li>
-                        <li><a href="#">Users</a></li>
+                        <li><a >Users</a></li>
                         <li><i class='bx bx-chevron-right'></i></li>
-                        <li><a class="active" href="#">Sellers</a></li>
+                        <li><a class="active" >Sellers</a></li>
                     </ul>
                 </div>
             </div>
             <ul class="box-info">
-                <li>
-                    <i class='bx bxs-dollar-circle' ></i>
-                    <span class="text">
+
+                <li>    
+                    <ngx-skeleton-loader *ngIf="activeSellersCount === null || activeSellersCount === undefined" appearance="custom-content">
+                        <div class="skeleton-container">
+                          <div class="skeleton-box">
+                            <div class="skeleton-circle"></div>
+                          </div>
+                          <div class="skeleton-text">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line"></div>
+                          </div>
+                        </div>
+                      </ngx-skeleton-loader>                      
+                      
+                    <i *ngIf="activeSellersCount !== null && activeSellersCount !== undefined" class='bx bxs-contact'></i>
+                    <span *ngIf="activeSellersCount !== null && activeSellersCount !== undefined" class="text">
                         <h3>{{activeSellersCount}}</h3>
                         <p>Active Sellers</p>
                     </span>
                 </li>
                 <li>
-                    <i class='bx bxs-wallet' ></i>
-                    <span class="text">
+                    <ngx-skeleton-loader *ngIf="deActiveSellersCount === null || deActiveSellersCount === undefined" appearance="custom-content">
+                        <div class="skeleton-container">
+                          <div class="skeleton-box">
+                            <div class="skeleton-circle"></div>
+                          </div>
+                          <div class="skeleton-text">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line"></div>
+                          </div>
+                        </div>
+                      </ngx-skeleton-loader>
+
+                    <i  *ngIf="deActiveSellersCount !== null && deActiveSellersCount !== undefined" class='bx bxs-archive-in' id="lol"></i>
+                    <span *ngIf="deActiveSellersCount !== null && deActiveSellersCount !== undefined" class="text">
                         <h3>{{deActiveSellersCount}}</h3>
                         <p>Deactiveted Sellers</p>
                     </span>
                 </li>
                 <li>
-                    <i class='bx bxs-help-circle' ></i>
-                    <span class="text">
+                    <ngx-skeleton-loader *ngIf="waitingSellersCount === null || waitingSellersCount === undefined" appearance="custom-content">
+                        <div class="skeleton-container">
+                          <div class="skeleton-box">
+                            <div class="skeleton-circle"></div>
+                          </div>
+                          <div class="skeleton-text">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line"></div>
+                          </div>
+                        </div>
+                      </ngx-skeleton-loader>
+
+                    <i *ngIf="waitingSellersCount !== null && waitingSellersCount !== undefined" class='bx bxs-file-find' ></i>
+                    <span *ngIf="waitingSellersCount !== null && waitingSellersCount !== undefined" class="text">
                         <h3>{{waitingSellersCount}}</h3>
                         <p>Pending Sellers</p>
                     </span>
                 </li>
                 <li>
-                    <i class='bx bx-x-circle'></i>
-                    <span class="text">
+                    <ngx-skeleton-loader *ngIf="!activeSellersCount" appearance="custom-content">
+                        <div class="skeleton-container">
+                          <div class="skeleton-box">
+                            <div class="skeleton-circle"></div>
+                          </div>
+                          <div class="skeleton-text">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line"></div>
+                          </div>
+                        </div>
+                      </ngx-skeleton-loader>
+
+                    <i *ngIf="deActiveSellersCount"class='bx bxs-error-alt'></i>
+                    <span *ngIf="deActiveSellersCount" class="text">
                         <h3>{{rejectedSellersCount}}</h3>
                         <p>Rejected Sellers</p>
                     </span>
@@ -55,18 +104,37 @@
                 <div class="order">
                     <div class="head">
                         <h3>Sellers</h3>
-                        <form action="#">
+                        <form (ngSubmit)="onSearch($event)">
                             <div class="form-input">
-                                <input type="search" placeholder="Search...">
-                                <button type="submit" class="search-btn"><i class='bx bx-search' ></i></button>
+                                <input type="search" 
+                                       [(ngModel)]="searchQuery" 
+                                       name="searchQuery" 
+                                       [placeholder]="'Search by ' + selectedFilter + '...'"
+                                       (keypress)="validateSearchInput($event)"
+                                       (paste)="handlePaste($event)">
+                                <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                                <button mat-icon-button type="button" [matMenuTriggerFor]="menu" style="border: none; background-color: var(--light);">
+                                    <i class='bx bx-filter' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
+                                </button>
+                                <mat-menu #menu="matMenu" class="matMenu">
+                                    <button mat-menu-item class="mat-menu-item">
+                                        <mat-button-toggle-group vertical name="favoriteColor" aria-label="Favorite Color"
+                                            [hideSingleSelectionIndicator]="hideSingleSelectionIndicator()" 
+                                            class="matbuttongroupfilter"
+                                            (change)="onFilterChange($event)">
+                                            <mat-button-toggle value="name">Name</mat-button-toggle>
+                                            <mat-button-toggle value="SSN">SSN</mat-button-toggle>
+                                            <mat-button-toggle value="phoneNumber">Phone#</mat-button-toggle>
+                                        </mat-button-toggle-group>
+                                    </button>
+                                </mat-menu>
                             </div>
                         </form>
-                        <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
-                            <mat-button-toggle value="bold" (click)="fetchApprovedSellers()">Approved</mat-button-toggle>
-                            <mat-button-toggle value="italic" (click)="fetchWaitingSellers()">Pending</mat-button-toggle>
-                            <mat-button-toggle value="thin" (click)="fetchRejectedSellers()">Recjected</mat-button-toggle>
+                        <mat-button-toggle-group name="fontStyle" aria-label="Font Style" class="matbuttontogglegroup2">
+                            <mat-button-toggle value="approved" (click)="setFilter('approved')">Approved</mat-button-toggle>
+                            <mat-button-toggle value="waiting" (click)="setFilter('waiting')">Pending</mat-button-toggle>
+                            <mat-button-toggle value="rejected" (click)="setFilter('rejected')">Rejected</mat-button-toggle>
                         </mat-button-toggle-group>
-                        <i class='bx bx-filter'></i>
                     </div>
 
                     <table style="border-spacing: 15px; border-collapse: separate;">
@@ -80,6 +148,23 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <tr *ngIf="showNoResults" class="no-results-row">
+                                <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
+                                    No Sellers Found with this {{lastSearchFilter === 'name' ? 'Name' : lastSearchFilter === 'SSN' ? 'SSN' : 'Phone Number'}}
+                                </td>
+                            </tr>
+                            <tr *ngIf="!isLoading && !showNoResults && users.length === 0" class="no-results-row">
+                                <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
+                                    No {{currentFilter === 'approved' ? 'Approved' : currentFilter === 'waiting' ? 'Pending' : 'Rejected'}} Sellers Yet
+                                </td>
+                            </tr>
+                            <tr *ngIf="isLoading" class="no-results-row">
+                                <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
+                                    <div style="display: flex; justify-content: center; align-items: center; height: 100%;" id="spinner">
+                                        <mat-spinner style="color: white;" class="mat-spinner"></mat-spinner>
+                                    </div>
+                                </td>
+                            </tr>
                             <tr *ngFor="let user of users; let i = index">
                                 <td>
                                     <img [src]="user.photo.url">
@@ -94,7 +179,7 @@
                                 </td>
                                 <td>
                                     <div class="dropdown" [ngClass]="{'show': dropdownStates[i]}" (click)="toggleDropdown(i)">
-                                        <a class="btn btn-secondary dropdown-toggle btn-lg" role="button" id="dropdownMenuLink" aria-haspopup="true" aria-expanded="false" style="padding: 0px 5px; padding-left: 8px;">
+                                        <a class="btn btn-secondary dropdown-toggle btn-lg" role="button" id="dropdownMenuLink" aria-haspopup="true" aria-expanded="false" style="padding: 0px 5px; padding-left: 8px; display: flex; align-items: center;">
                                             ...
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-lg" [ngClass]="{'show': dropdownStates[i]}" aria-labelledby="dropdownMenuLink" style="min-width: 200px;">
@@ -127,8 +212,8 @@
                         </tbody>
                     </table>
                     <div class="pagination-controls">
-                        <button (click)="previousPage()" [disabled]="currentPage === 1"><i class='bx bx-chevron-left' style="font-size: 1.7em;"></i></button>
-                        <button (click)="nextPage()" [disabled]="currentPage === totalPages"><i class='bx bx-chevron-right' style="font-size: 1.7em;"></i></button>
+                        <button (click)="previousPage()" [disabled]="!hasPreviousPage"><i class='bx bx-chevron-left' style="font-size: 1.7em;"></i></button>
+                        <button (click)="nextPage()" [disabled]="!hasNextPage"><i class='bx bx-chevron-right' style="font-size: 1.7em;"></i></button>
                     </div>
                 </div>
             </div>

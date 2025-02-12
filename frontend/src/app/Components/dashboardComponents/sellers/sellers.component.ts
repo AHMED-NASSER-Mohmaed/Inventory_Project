@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
@@ -9,197 +9,121 @@ import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.c
 import { ConfirmDialogComponent2 } from '../../../confirm-dialog2/confirm-dialog2.component';
 import { ConfirmDialogImgchangeComponent } from '../../../confirm-dialog-imgchange/confirm-dialog-imgchange.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import {MatDividerModule} from '@angular/material/divider';
+import { MatDividerModule } from '@angular/material/divider';
 import { ConfirmDialogApprovesellerComponent } from '../../../confirm-dialog-approveseller/confirm-dialog-approveseller.component';
 import { ConfirmDialogRejectsellerComponent } from '../../../confirm-dialog-rejectseller/confirm-dialog-rejectseller.component';
 import { ConfirmDialogApproveseller2Component } from '../../../confirm-dialog-approveseller2/confirm-dialog-approveseller2.component';
-
-
+import {MatMenuModule} from '@angular/material/menu';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 @Component({
   selector: 'app-sellers',
-  imports: [CommonModule, FormsModule , MatButtonToggleModule , MatDividerModule],
+  imports: [CommonModule, FormsModule, MatButtonToggleModule, MatDividerModule , MatMenuModule , MatProgressSpinnerModule , NgxSkeletonLoaderModule],
   templateUrl: './sellers.component.html',
-  styleUrls: ['./sellers.component.css' , './sellers.component.scss']
+  styleUrls: ['./sellers.component.css', './sellers.component.scss']
 })
-
 export class SellersComponent implements OnInit, OnDestroy {
-  constructor(private customerService: CustomersService, public dialog: MatDialog) { }
 
-  dropdownStates: boolean[] = [];
-
-  sub: Subscription = {} as Subscription;
-  sub2: Subscription = {} as Subscription;
-  sub3: Subscription = {} as Subscription;
-  sub4: Subscription = {} as Subscription;
-  sub5: Subscription = {} as Subscription;
-  sub6: Subscription = {} as Subscription;
-  sub7: Subscription = {} as Subscription;
-  sub8: Subscription = {} as Subscription;
-  sub9: Subscription = {} as Subscription;
-  sub10: Subscription = {} as Subscription;
-  sub11: Subscription = {} as Subscription;
-  sub12: Subscription = {} as Subscription;
-  sub13: Subscription = {} as Subscription;
-  sub14: Subscription = {} as Subscription;
-  sub15: Subscription = {} as Subscription;
-  sub16: Subscription = {} as Subscription;
-  sub17: Subscription = {} as Subscription;
-  sub18: Subscription = {} as Subscription;
-  sub19: Subscription = {} as Subscription;
-
-
-  users: User[] = [];
-
-  isDarkMode: boolean = false;
-
+  @Input('myclass')
+  panelClass!: string;
+  // Filter state and pagination
+  currentFilter: 'active' | 'waiting' | 'rejected' | 'approved' = 'active';
   currentPage: number = 1;
-
   itemsPerPage: number = 10;
   totalPages: number = 1;
   hasNextPage: boolean = false;
   hasPreviousPage: boolean = false;
 
-  userCache: { [page: number]: User[] } = {};
-  waitingUserCache: { [page: number]: User[] } = {};
-  rejectedUserCache: { [page: number]: User[] } = {};
-  approvedUserCache: { [page: number]: User[] } = {};
-
+  users: User[] = [];
+  isDarkMode: boolean = false;
+  dropdownStates: boolean[] = [];
   selectedUser: User = {} as User;
-  backupUser: User = {} as User; 
-
+  backupUser: User = {} as User;
   editing: boolean = false;
-  
+
+  // Totals
   activeSellersCount: any;
   deActiveSellersCount: any;
   waitingSellersCount: any;
   rejectedSellersCount: any;
 
+  subscriptions: Subscription[] = [];
+
+  // New cache for storing seller pages: keys are "<filter>_<page>"
+  pageCache: { [key: string]: { result: User[]; total: number } } = {};
+
+  selectedFilter: string = 'name'; // Default filter
+  searchQuery: string = '';
+
+  // Add this property
+  showNoResults: boolean = false;
+
+  // Add this new property
+  lastSearchFilter: string = 'name';
+
+  // Add this new property
+  isLoading: boolean = true;
+
+  constructor(private customerService: CustomersService, public dialog: MatDialog) {}
+
   ngOnInit(): void {
-    this.fetchSellers();
+    this.loadSellers();
     this.getDeActiveSellersCount();
     this.getActiveSellersCount();
     this.getWaitingSellersCount();
     this.getRejectedSellersCount();
   }
 
-  fetchSellers(): void {
-    if (this.userCache[this.currentPage]) {
-      // Load  cache
-      this.users = this.userCache[this.currentPage];
+  hideSingleSelectionIndicator = signal(true);
+
+
+  // Consolidated seller loading method with caching
+  loadSellers(): void {
+    const cacheKey = `${this.currentFilter}_${this.currentPage}`;
+    if (this.pageCache[cacheKey]) {
+      const cached = this.pageCache[cacheKey];
+      this.users = cached.result;
+      this.totalPages = Math.ceil(cached.total / this.itemsPerPage);
+      this.dropdownStates = new Array(this.users.length).fill(false);
       this.updatePaginationState();
-    } else {
-      // Fetch  server
-      this.sub = this.customerService.getPaginatedSellers(this.currentPage, this.itemsPerPage).subscribe({
-        next: (res) => {
-          this.users = res.data.result;
-          this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
-          this.hasNextPage = !!res.data.next;
-          this.hasPreviousPage = !!res.data.previous;
-          this.dropdownStates = new Array(this.users.length).fill(false);
-          this.userCache[this.currentPage] = this.users; // caching
-          this.updatePaginationState();
-          console.log(this.users);
-        },
-        error: (error) => {
-          console.log(error);
-        },
-        complete: () => {
-          console.log('complete');
-        }
-      });
+      this.showNoResults = false;
+      return;
     }
-  }
 
-
-  fetchWaitingSellers(): void {
-    if (this.waitingUserCache[this.currentPage]) {
-      // Load waiting cache
-      this.users = this.waitingUserCache[this.currentPage];
-      this.updatePaginationState();
-    } else {
-      // Fetch from server and cache in waitingUserCache
-      this.sub2 = this.customerService.getPaginatedWaitingSellers(this.currentPage, this.itemsPerPage).subscribe({
-        next: (res) => {
-          this.users = res.data.result;
-          this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
-          this.hasNextPage = !!res.data.next;
-          this.hasPreviousPage = !!res.data.previous;
-          this.dropdownStates = new Array(this.users.length).fill(false);
-          this.waitingUserCache[this.currentPage] = this.users; // caching waiting sellers
-          this.updatePaginationState();
-          console.log(this.users);
-        },
-        error: (error) => {
-          console.log(error);
-        },
-        complete: () => {
-          console.log('complete');
-        }
-      });
+    // Only set loading when making a server request
+    this.isLoading = true;
+    this.users = []; // Clear the users array when loading from server
+  
+    let status: number | undefined;
+    if (this.currentFilter === 'waiting') {
+      status = 0;
+    } else if (this.currentFilter === 'rejected') {
+      status = -1;
+    } else if (this.currentFilter === 'approved') {
+      status = 1;
     }
-  }
-
-  fetchRejectedSellers(): void {
-    if (this.rejectedUserCache && this.rejectedUserCache[this.currentPage]) {
-      // Load cache
-      this.users = this.rejectedUserCache[this.currentPage];
-      this.updatePaginationState();
-    } else {
-      // Fetch from server and cache in rejectedUserCache
-      this.sub3 = this.customerService.getPaginatedRejectedSellers(this.currentPage, this.itemsPerPage).subscribe({
-        next: (res) => {
-          this.users = res.data.result;
-          this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
-          this.hasNextPage = !!res.data.next;
-          this.hasPreviousPage = !!res.data.previous;
-          this.dropdownStates = new Array(this.users.length).fill(false);
-          if (!this.rejectedUserCache) {
-            this.rejectedUserCache = {};
-          }
-          this.rejectedUserCache[this.currentPage] = this.users; // caching rejected sellers
-          this.updatePaginationState();
-          console.log(this.users);
-        },
-        error: (error) => {
-          console.log(error);
-        },
-        complete: () => {
-          console.log('complete');
-        }
-      });
-    }
-  }
-
-fetchApprovedSellers(): void {
-  if (this.approvedUserCache[this.currentPage]) {
-    // Load cache
-    this.users = this.approvedUserCache[this.currentPage];
-    this.updatePaginationState();
-  } else {
-    // Fetch from server
-    this.sub4 = this.customerService.getPaginatedApprovedSellers(this.currentPage, this.itemsPerPage).subscribe({
+    
+    const obs = this.customerService.getPaginatedSellersByStatus(this.currentPage, this.itemsPerPage, status);
+    
+    const sub = obs.subscribe({
       next: (res) => {
         this.users = res.data.result;
-        this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
-        this.hasNextPage = !!res.data.next;
-        this.hasPreviousPage = !!res.data.previous;
+        this.showNoResults = false;
+        const total = res.data.total;
+        this.totalPages = Math.ceil(total / this.itemsPerPage);
         this.dropdownStates = new Array(this.users.length).fill(false);
-        this.approvedUserCache[this.currentPage] = this.users; // caching approved sellers
+        this.pageCache[cacheKey] = { result: this.users, total: total };
         this.updatePaginationState();
-        console.log(this.users);
+        this.isLoading = false;
       },
       error: (error) => {
         console.log(error);
-      },
-      complete: () => {
-        console.log('complete');
+        this.isLoading = false;
       }
     });
+    this.subscriptions.push(sub);
   }
-}
-
-  
 
   updatePaginationState(): void {
     this.hasNextPage = this.currentPage < this.totalPages;
@@ -209,15 +133,32 @@ fetchApprovedSellers(): void {
   nextPage(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
-      this.fetchSellers();
+      if (this.isSearchMode) {
+        this.loadSearchResults();
+      } else {
+        this.loadSellers();
+      }
     }
   }
 
   previousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
-      this.fetchSellers();
+      if (this.isSearchMode) {
+        this.loadSearchResults();
+      } else {
+        this.loadSellers();
+      }
     }
+  }
+
+  setFilter(filter: 'active' | 'waiting' | 'rejected' | 'approved'): void {
+    this.currentFilter = filter;
+    this.currentPage = 1;
+    this.isSearchMode = false;
+    this.searchQuery = '';
+    this.showNoResults = false; // Reset the no results flag when changing filters
+    this.loadSellers();
   }
 
   toggleDarkMode(): void {
@@ -225,7 +166,7 @@ fetchApprovedSellers(): void {
   }
 
   showSellerInfo(user: User): void {
-    this.selectedUser = {
+    this.selectedUser = { 
       ...user,
       firstName: user.firstName || '',
       lastName: user.lastName || '',
@@ -233,145 +174,109 @@ fetchApprovedSellers(): void {
       email: user.email || '',
       phoneNumber: user.phoneNumber || ''
     };
-    this.backupUser = { ...this.selectedUser }; //+ <-- backup the original data
+    this.backupUser = { ...this.selectedUser };
   }
 
-  //! ////////////////////////// Activate - Deactivate - Approve - Reject - Dialogs ////////////////////////////////////
-
-
+  // Seller actions
   deActiveSeller(_id: string): void {
-    this.sub5 = this.customerService.deActiveSeller(_id).subscribe({
-        next: (res) => {
-            console.log(res);
-            this.updateUserAcitvity(_id, false);
-            console.log(this.users);
-        },
-        error: (error) => {
-            console.log(error);
-        },
-        complete: () => {
-            console.log('complete');
-        }
-    });
-}
-
-  activateSeller(_id: string): void {
-    this.sub6 = this.customerService.activateSeller(_id).subscribe({
+    const sub = this.customerService.deActiveSeller(_id).subscribe({
       next: (res) => {
         console.log(res);
-        this.updateUserAcitvity(_id, true);
-        console.log(this.users);
+        this.updateUserActivity(_id, false);
       },
-      error: (error) => {
-        console.log(error);
-      },
-      complete: () => {
-        console.log('complete');
-      }
+      error: (error) => console.log(error)
     });
+    this.subscriptions.push(sub);
+  }
+
+  activateSeller(_id: string): void {
+    const sub = this.customerService.activateSeller(_id).subscribe({
+      next: (res) => {
+        console.log(res);
+        this.updateUserActivity(_id, true);
+      },
+      error: (error) => console.log(error)
+    });
+    this.subscriptions.push(sub);
   }
 
   approveSeller(_id: string, source: 'pending' | 'rejected' = 'pending'): void {
-    this.sub7 = this.customerService.approveSeller(_id).subscribe({
+    const sub = this.customerService.approveSeller(_id).subscribe({
       next: (res) => {
         console.log(res);
-        this.users = this.users.filter((user: User) => user._id !== _id);
-
-        this.activeSellersCount++;
-        if (source === 'pending') {
-          this.waitingSellersCount--;
-          this.approvedUserCache[this.currentPage] = this.approvedUserCache[this.currentPage]?.filter((user: User) => user._id !== _id) || [];
-        } else if (source === 'rejected') {
-          this.rejectedSellersCount--;
-          this.rejectedUserCache[this.currentPage] = this.rejectedUserCache[this.currentPage]?.filter((user: User) => user._id !== _id) || [];
-        }
-        console.log(this.users);
+        // Remove approved seller from current list
+        this.users = this.users.filter(user => user._id !== _id);
       },
-      error: (error) => {
-        console.log(error);
-      },
-      complete: () => {
-        console.log('complete');
-      }
+      error: (error) => console.log(error)
     });
+    this.subscriptions.push(sub);
   }
 
   rejectSeller(_id: string): void {
-    this.sub8 = this.customerService.rejectSeller(_id).subscribe({
+    const sub = this.customerService.rejectSeller(_id).subscribe({
       next: (res) => {
         console.log(res);
-        this.users = this.users.filter((user: User) => user._id !== _id);
-        this.rejectedUserCache[this.currentPage] = this.rejectedUserCache[this.currentPage]?.filter((user: User) => user._id !== _id) || [];
-        this.rejectedSellersCount++;
-        console.log(this.users);
+        this.users = this.users.filter(user => user._id !== _id);
       },
-      error: (error) => {
-        console.log(error);
-      },
-      complete: () => {
-        console.log('complete');
-      }
+      error: (error) => console.log(error)
     });
+    this.subscriptions.push(sub);
   }
 
   openConfirmDialog(_id: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
-
-    this.sub9 = dialogRef.afterClosed().subscribe(result => {
+    const sub = dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.deActiveSeller(_id);
       }
     });
+    this.subscriptions.push(sub);
   }
 
   openConfirmDialog2(_id: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent2);
-
-    this.sub10 = dialogRef.afterClosed().subscribe(result => {
+    const sub = dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.activateSeller(_id);
       }
     });
+    this.subscriptions.push(sub);
   }
 
   openConfirmDialog3(_id: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogApprovesellerComponent);
-
-    this.sub11 = dialogRef.afterClosed().subscribe(result => {
+    const sub = dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.approveSeller(_id, 'pending');
       }
     });
+    this.subscriptions.push(sub);
   }
 
   openConfirmDialog5(_id: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogApproveseller2Component);
-
-    this.sub19 = dialogRef.afterClosed().subscribe(result => {
+    const sub = dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.approveSeller(_id, 'rejected');
       }
     });
+    this.subscriptions.push(sub);
   }
 
   openConfirmDialog4(_id: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogRejectsellerComponent);
-
-    this.sub12 = dialogRef.afterClosed().subscribe(result => {
+    const sub = dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.rejectSeller(_id);
       }
     });
+    this.subscriptions.push(sub);
   }
 
-
-//! ///////////////////////////////////////////////////////////////////
-
-
-  updateUserAcitvity(_id: string, isActive: boolean): void {
+  updateUserActivity(_id: string, isActive: boolean): void {
     const user = this.users.find(u => u._id === _id);
     if (user) {
-      user.isActive = isActive ; 
+      user.isActive = isActive;
     }
   }
 
@@ -381,15 +286,13 @@ fetchApprovedSellers(): void {
 
   toggleEdit(event?: any): void {
     if (this.editing) {
-      const workingBackup = { ...this.backupUser }; // Existing backup of data when editing was activated
-      this.sub13 = this.customerService.updateSeller(this.selectedUser._id, this.selectedUser).subscribe({
+      const workingBackup = { ...this.backupUser };
+      const sub = this.customerService.updateSeller(this.selectedUser._id, this.selectedUser).subscribe({
         next: (res: any) => {
           if (res.message === 'success') {
             const index = this.users.findIndex(u => u.SSN === this.selectedUser.SSN);
             if (index !== -1) {
-              //! update the user in the users array
               this.users[index] = { ...this.selectedUser };
-              //! Update backup user
               this.backupUser = { ...this.selectedUser };
             }
           } else {
@@ -411,8 +314,8 @@ fetchApprovedSellers(): void {
           this.editing = false;
         }
       });
+      this.subscriptions.push(sub);
     } else {
-      // Entering edit mode: create a new backup of the selectedUser for reversion if needed
       this.backupUser = { ...this.selectedUser };
       this.editing = true;
     }
@@ -431,156 +334,157 @@ fetchApprovedSellers(): void {
       const reader = new FileReader();
       reader.onload = (e: any) => {
         const tempUrl = e.target.result;
-        //+  confirm dialog  then update image if confirmed
         const dialogRef = this.dialog.open(ConfirmDialogImgchangeComponent);
-        this.sub14 =dialogRef.afterClosed().subscribe(async result => {
+        const sub = dialogRef.afterClosed().subscribe(async result => {
           if (result) {
             try {
-              const response: any = await this.customerService.changeImage(this.selectedUser!._id, file).toPromise();
+              const response: any = await this.customerService.changeImage(this.selectedUser._id, file).toPromise();
               if (response.data.acknowledged) {
-                this.selectedUser!.photo.url = tempUrl;
+                this.selectedUser.photo.url = tempUrl;
               } else {
-                this.selectedUser!.photo.url = backupUrl;
+                this.selectedUser.photo.url = backupUrl;
               }
             } catch (error) {
               console.error('Error updating image', error);
-              this.selectedUser!.photo.url = backupUrl;
+              this.selectedUser.photo.url = backupUrl;
             }
           } else {
-            this.selectedUser!.photo.url = backupUrl;
+            this.selectedUser.photo.url = backupUrl;
           }
-          //! Reset the file input
           fileInput.value = '';
         });
+        this.subscriptions.push(sub);
       };
       reader.readAsDataURL(file);
     }
   }
 
-  //! Getting Totals:
-
+  // Totals fetching
   getActiveSellersCount(): void {
-    this.sub15 = this.customerService.getActiveSellersCount().subscribe({
-      next: (res) => {
-        this.activeSellersCount = res.data;
-      },
-      error: (error) => {
-        console.error('Error getting active sellers count', error);
-      }
+    const sub = this.customerService.getActiveSellersCount().subscribe({
+      next: (res) => { this.activeSellersCount = res.data; },
+      error: (error) => console.error('Error getting active sellers count', error)
     });
+    this.subscriptions.push(sub);
   }
 
   getDeActiveSellersCount(): void {
-    this.sub16 = this.customerService.getDeActiveSellersCount().subscribe({
-      next: (res) => {
-        this.deActiveSellersCount = res.data;
-      },
-      error: (error) => {
-        console.error('Error getting deactive sellers count', error);
-      }
+    const sub = this.customerService.getDeActiveSellersCount().subscribe({
+      next: (res) => { this.deActiveSellersCount = res.data; },
+      error: (error) => console.error('Error getting deactive sellers count', error)
     });
+    this.subscriptions.push(sub);
   }
 
   getWaitingSellersCount(): void {
-    this.sub17 = this.customerService.getWaitingSellersCount().subscribe({
-      next: (res) => {
-        this.waitingSellersCount = res.data;
-      },
-      error: (error) => {
-        console.error('Error getting waiting sellers count', error);
-      }
+    const sub = this.customerService.getWaitingSellersCount().subscribe({
+      next: (res) => { this.waitingSellersCount = res.data; },
+      error: (error) => console.error('Error getting waiting sellers count', error)
     });
+    this.subscriptions.push(sub);
   }
 
   getRejectedSellersCount(): void {
-    this.sub18 = this.customerService.getRejectedSellersCount().subscribe({
-      next: (res) => {
-        this.rejectedSellersCount = res.data;
-      },
-      error: (error) => {
-        console.error('Error getting rejected sellers count', error);
-      }
+    const sub = this.customerService.getRejectedSellersCount().subscribe({
+      next: (res) => { this.rejectedSellersCount = res.data; },
+      error: (error) => console.error('Error getting rejected sellers count', error)
     });
+    this.subscriptions.push(sub);
   }
 
+  isSearchMode: boolean = false;
+  
+  onSearch(event: Event) {
+    event.preventDefault();
+    if (!this.searchQuery.trim()) {
+      this.isSearchMode = false;
+      this.loadSellers();
+      return;
+    }
 
-  //+ ////////////////////////////////////////////////////////////////////////////////////////////
+    this.isSearchMode = true;
+    this.currentPage = 1;
+    this.loadSearchResults();
+  }
+
+  validateSearchInput(event: KeyboardEvent): boolean {
+    const pattern = this.selectedFilter === 'name' 
+      ? /^[a-zA-Z\s]$/  // Only letters and spaces for names
+      : /^[0-9]$/;      // Only numbers for SSN and phone
+
+    if (!pattern.test(event.key)) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
+  }
+
+  handlePaste(event: ClipboardEvent): void {
+    event.preventDefault();
+    const pastedText = event.clipboardData?.getData('text') || '';
+    
+    const pattern = this.selectedFilter === 'name'
+      ? /^[a-zA-Z\s]*$/  // Only letters and spaces for names
+      : /^[0-9]*$/;      // Only numbers for SSN and phone
+
+    if (pattern.test(pastedText)) {
+      this.searchQuery = pastedText;
+    }
+  }
+
+  onFilterChange(event: any): void {
+    this.selectedFilter = event.value;
+    this.searchQuery = ''; // Clear search input when filter changes
+  }
+
+  loadSearchResults() {
+    let filters: string;
+    // Store the current filter as the last used search filter
+    this.lastSearchFilter = this.selectedFilter;
+    
+    if (this.selectedFilter === 'name') {
+      const nameParts = this.searchQuery.trim().split(/\s+/);
+      
+      if (nameParts.length === 1 || (nameParts.length > 1 && !nameParts[1])) {
+        // Single name or name with trailing spaces
+        filters = `firstName:${nameParts[0]}`;
+      } else if (nameParts.length >= 2) {
+        // First name and last name (ignore additional parts)
+        filters = `firstName:${nameParts[0]}+lastName:${nameParts[1]}`;
+      } else {
+        filters = 'firstName:';  // Empty search
+      }
+    } else {
+      // For other filters (SSN, phoneNumber)
+      filters = `${this.selectedFilter}:${this.searchQuery}`;
+    }
+  
+    const sub = this.customerService.searchSellers(
+      filters,
+      this.currentPage,
+      this.itemsPerPage
+    ).subscribe({
+      next: (res) => {
+        if (res.data) {
+          this.users = Array.isArray(res.data.result) ? res.data.result : [res.data.result];
+          this.showNoResults = this.users.length === 0;
+          this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
+          this.dropdownStates = new Array(this.users.length).fill(false);
+          this.updatePaginationState();
+        }
+      },
+      error: (error) => {
+        console.error('Error searching sellers:', error);
+        this.users = [];
+        this.showNoResults = true;
+        this.updatePaginationState();
+      }
+    });
+    
+    this.subscriptions.push(sub);
+  }
 
   ngOnDestroy(): void {
-    if (this.sub) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub2) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub3) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub4) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub5) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub6) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub7) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub8) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub9) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub10) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub11) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub12) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub13) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub14) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub15) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub16) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub17) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub18) {
-      this.sub.unsubscribe();
-    }
-
-    if (this.sub19) {
-      this.sub.unsubscribe();
-    }
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

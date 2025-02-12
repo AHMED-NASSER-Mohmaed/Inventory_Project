@@ -41,7 +41,9 @@
   --light: #0C0C1E;
   --grey: #060714;
   --dark: #FBFBFB;
-  --custom:rgb(194, 198, 240);
+  --custom:rgb(31, 38, 116);
+  --orange: #b07f6a;
+  --dark-dark: rgb(86, 176, 151);
   transition: 0.5s;
 }
 
@@ -243,7 +245,7 @@ input:checked + .slider:before {
     opacity: 0.6;
   }
 }
-:host #content main form .form-input button {
+:host #content main form .form-input .search-btn {
 	width: 36px;
 	height: 100%;
 	display: flex;
@@ -275,6 +277,21 @@ mat-button-toggle{
   font-family: var(--lato);
 }
 
+.mat-menu-item{
+  height: 8em;
+  padding: 0;
+}
+
+.matbuttongroupfilter{
+  height: 9em;
+  border-radius: 0;
+  margin-left: 0;
+}
+
+.matbuttongroupfilter mat-button-toggle{
+  height: 3em;
+  font-size: 0.9em;
+}
 
 /* //!!!!!!!!!!!!!!!!!! */
 :host #content main .table-data {
@@ -359,6 +376,89 @@ mat-button-toggle{
   background: var(--dark);
 }
 
+.no-results-row td {
+    color: var(--dark);
+    font-size: 1.1em;
+    font-weight: 500;
+    font-family: var(--poppins);
+    width: 100%;
+    display: table-cell;
+    text-align: center;
+    padding: 20px;
+}
+
+.no-results-row {
+    width: 100%;
+    display: table-row;
+}
+
+.mat-spinner::ng-deep circle {
+  stroke: var(--dark);
+}
+
+.skeleton-container {
+  display: flex; /* Ensures row alignment */
+  align-items: center; /* Aligns items vertically */
+  gap: 15px; /* Space between box and text */
+  width: 100%;
+}
+
+.skeleton-box {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  flex-shrink: 0; /* Prevents shrinking */
+}
+
+.skeleton-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #f3e9e9 25%, #d1d0d0 50%, #cfcfcf 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-text {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Ensures it takes available space */
+  min-width: 100px; /* Ensures visibility */
+}
+
+.skeleton-line {
+  width: 100%;
+  height: 15px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+
+
+
+
 :host #content main .table-data .todo {
   flex-grow: 1;
   flex-basis: 300px;
@@ -423,10 +523,13 @@ mat-button-toggle{
 #sellerInfoModal .modal-dialog {
     max-width: 500px;
     margin: 30px auto;
+
 }
 
 #sellerInfoModal .modal-content {
     border-radius: 0; 
+    border-radius: 15px;
+
 }
 
 #sellerInfoModal .modal-header {
@@ -434,8 +537,7 @@ mat-button-toggle{
     padding: 20px;
     border-bottom: none;
     font-family: var(--poppins);
-    border-radius: 0;
-}
+  }
 
 #sellerInfoModal .modal-header .modal-title {
     color: #fff;
@@ -678,7 +780,7 @@ input[type="number"] {
 }
 
 @media screen and (max-width: 1215px) {
-  mat-button-toggle-group{
+  .matbuttontogglegroup2 {
     flex-wrap: wrap;
     height: auto;
     width: 10%;
@@ -686,13 +788,13 @@ input[type="number"] {
     max-width: 27%;
     border-radius: 20px;
   }
-  mat-button-toggle{
+  .matbuttontogglegroup2 mat-button-toggle{
     font-size: 0.9em;
   }
 }
 
 @media screen and (max-width: 986px) {
-  mat-button-toggle-group{
+  .matbuttontogglegroup2{
     width: 12%;
     min-width: 20%;
     max-width: 27%;
@@ -701,7 +803,7 @@ input[type="number"] {
 }
 
 @media screen and (max-width: 930px) {
-  mat-button-toggle-group{
+  .matbuttontogglegroup2 mat-button-toggle-group{
 
     width: 12%;
     min-width: 27%;
@@ -709,6 +811,16 @@ input[type="number"] {
   }
 }
 
+@media screen and (min-width: 900px) and (max-width: 1175px) {
+  /* Override grid with flex layout so that two li items share a row */
+  :host #content main .box-info {
+    display: flex !important;
+    flex-wrap: wrap !important;
+  }
+  :host #content main .box-info li {
+    flex: 0 0 48% !important;
+  }
+}
 
 @media screen and (max-width: 785px) {
   :host #sidebar {
@@ -733,7 +845,7 @@ input[type="number"] {
     max-width: 45%;
   }
 
-  mat-button-toggle-group{
+  .matbuttontogglegroup2{
     width: 25%;
     min-width: 29%;
   }
@@ -761,12 +873,12 @@ input[type="number"] {
     max-width: 250px;
   }
 
-  mat-button-toggle-group{
+  .matbuttontogglegroup2 {
     width: 20%;
     min-width: 25%;
   }
   
-  mat-button-toggle{
+  .matbuttontogglegroup2 mat-button-toggle{
     font-size: 0.9em;
   }
 
