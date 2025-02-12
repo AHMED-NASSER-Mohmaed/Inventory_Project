@@ -122,7 +122,7 @@
                                 <input type="search" 
                                        [(ngModel)]="searchQuery" 
                                        name="searchQuery" 
-                                       [placeholder]="'Search by ' + selectedFilter + '...'"
+                                       [placeholder]="'Search By ' + (selectedFilter === 'phoneNumber' ? 'Phone Number' : selectedFilter === 'SSN' ? 'SSN' : 'Name') + '...'"
                                        (keypress)="validateSearchInput($event)"
                                        (paste)="handlePaste($event)">
                                 <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
@@ -153,8 +153,22 @@
                     <table style="border-spacing: 15px; border-collapse: separate;">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Created At</th>
+                                <th (click)="toggleSort('name')" style="cursor: pointer">
+                                    Name
+                                    <i class="bx" [ngClass]="{
+                                        'bx-up-arrow-alt': sortField === 'name' && sortDirection === 'asc',
+                                        'bx-down-arrow-alt': sortField === 'name' && sortDirection === 'desc',
+                                        'bx-sort': sortField !== 'name'
+                                    }"></i>
+                                </th>
+                                <th (click)="toggleSort('createdAt')" style="cursor: pointer">
+                                    Created At
+                                    <i class="bx" [ngClass]="{
+                                        'bx-up-arrow-alt': sortField === 'createdAt' && sortDirection === 'asc',
+                                        'bx-down-arrow-alt': sortField === 'createdAt' && sortDirection === 'desc',
+                                        'bx-sort': sortField !== 'createdAt'
+                                    }"></i>
+                                </th>
                                 <th>Company Name</th>
                                 <th>Status</th>
                                 <th>Details</th>

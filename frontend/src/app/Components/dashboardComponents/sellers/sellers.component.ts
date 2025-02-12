@@ -65,6 +65,10 @@ export class SellersComponent implements OnInit, OnDestroy {
   // Add this new property
   isLoading: boolean = true;
 
+  // Add these properties after other properties
+  sortField: 'name' | 'createdAt' | null = null;
+  sortDirection: 'asc' | 'desc' | null = null;
+
   constructor(private customerService: CustomersService, public dialog: MatDialog) {}
 
   ngOnInit(): void {
@@ -80,7 +84,7 @@ export class SellersComponent implements OnInit, OnDestroy {
 
   // Consolidated seller loading method with caching
   loadSellers(): void {
-    const cacheKey = `${this.currentFilter}_${this.currentPage}`;
+    const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
     if (this.pageCache[cacheKey]) {
       const cached = this.pageCache[cacheKey];
       this.users = cached.result;
@@ -104,7 +108,22 @@ export class SellersComponent implements OnInit, OnDestroy {
       status = 1;
     }
     
-    const obs = this.customerService.getPaginatedSellersByStatus(this.currentPage, this.itemsPerPage, status);
+    // Add sort parameters if present
+    let sortParam = '';
+    if (this.sortField && this.sortDirection) {
+      if (this.sortField === 'name') {
+        sortParam = `&sort=firstName:${this.sortDirection}`; // Changed from name to firstName
+      } else {
+        sortParam = `&sort=${this.sortField}:${this.sortDirection}`;
+      }
+    }
+    
+    const obs = this.customerService.getPaginatedSellersByStatus(
+      this.currentPage, 
+      this.itemsPerPage, 
+      status,
+      sortParam
+    );
     
     const sub = obs.subscribe({
       next: (res) => {
@@ -183,6 +202,9 @@ export class SellersComponent implements OnInit, OnDestroy {
       next: (res) => {
         console.log(res);
         this.updateUserActivity(_id, false);
+        // Refresh counts after deactivation
+        this.getActiveSellersCount();
+        this.getDeActiveSellersCount();
       },
       error: (error) => console.log(error)
     });
@@ -194,6 +216,9 @@ export class SellersComponent implements OnInit, OnDestroy {
       next: (res) => {
         console.log(res);
         this.updateUserActivity(_id, true);
+        // Refresh counts after activation
+        this.getActiveSellersCount();
+        this.getDeActiveSellersCount();
       },
       error: (error) => console.log(error)
     });
@@ -204,8 +229,45 @@ export class SellersComponent implements OnInit, OnDestroy {
     const sub = this.customerService.approveSeller(_id).subscribe({
       next: (res) => {
         console.log(res);
-        // Remove approved seller from current list
-        this.users = this.users.filter(user => user._id !== _id);
+        const sourceStatus = source === 'pending' ? 'waiting' : 'rejected';
+        const approvedSeller = this.users.find(user => user._id === _id);
+        
+        if (approvedSeller) {
+          // Remove from current list
+          this.users = this.users.filter(user => user._id !== _id);
+          
+          // Update seller status
+          approvedSeller.status = '1';
+
+          // Update source cache pages
+          Object.keys(this.pageCache).forEach(key => {
+            if (key.startsWith(`${sourceStatus}_`)) {
+              const cache = this.pageCache[key];
+              cache.result = cache.result.filter(user => user._id !== _id);
+              cache.total--;
+            }
+          });
+
+          // Add to first page of approved cache
+          const approvedFirstPageKey = `approved_1_${this.sortField}_${this.sortDirection}`;
+          if (this.pageCache[approvedFirstPageKey]) {
+            const firstPageCache = this.pageCache[approvedFirstPageKey];
+            // Insert at beginning, remove last item if page is full
+            firstPageCache.result.unshift(approvedSeller);
+            if (firstPageCache.result.length > this.itemsPerPage) {
+              firstPageCache.result.pop();
+            }
+            firstPageCache.total++;
+          }
+
+          // Refresh counts
+          this.getActiveSellersCount();
+          if (source === 'pending') {
+            this.getWaitingSellersCount();
+          } else {
+            this.getRejectedSellersCount();
+          }
+        }
       },
       error: (error) => console.log(error)
     });
@@ -216,7 +278,40 @@ export class SellersComponent implements OnInit, OnDestroy {
     const sub = this.customerService.rejectSeller(_id).subscribe({
       next: (res) => {
         console.log(res);
-        this.users = this.users.filter(user => user._id !== _id);
+        const rejectedSeller = this.users.find(user => user._id === _id);
+        
+        if (rejectedSeller) {
+          // Remove from current list
+          this.users = this.users.filter(user => user._id !== _id);
+          
+          // Update seller status
+          rejectedSeller.status = '-1';
+
+          // Update waiting cache pages
+          Object.keys(this.pageCache).forEach(key => {
+            if (key.startsWith('waiting_')) {
+              const cache = this.pageCache[key];
+              cache.result = cache.result.filter(user => user._id !== _id);
+              cache.total--;
+            }
+          });
+
+          // Add to first page of rejected cache
+          const rejectedFirstPageKey = `rejected_1_${this.sortField}_${this.sortDirection}`;
+          if (this.pageCache[rejectedFirstPageKey]) {
+            const firstPageCache = this.pageCache[rejectedFirstPageKey];
+            // Insert at beginning, remove last item if page is full
+            firstPageCache.result.unshift(rejectedSeller);
+            if (firstPageCache.result.length > this.itemsPerPage) {
+              firstPageCache.result.pop();
+            }
+            firstPageCache.total++;
+          }
+
+          // Refresh counts
+          this.getWaitingSellersCount();
+          this.getRejectedSellersCount();
+        }
       },
       error: (error) => console.log(error)
     });
@@ -459,10 +554,21 @@ export class SellersComponent implements OnInit, OnDestroy {
       filters = `${this.selectedFilter}:${this.searchQuery}`;
     }
   
+    // Add sort parameters if present
+    let sortParam = '';
+    if (this.sortField && this.sortDirection) {
+      if (this.sortField === 'name') {
+        sortParam = `&sort=firstName:${this.sortDirection}`;  // Changed from name to firstName
+      } else {
+        sortParam = `&sort=${this.sortField}:${this.sortDirection}`;
+      }
+    }
+  
     const sub = this.customerService.searchSellers(
       filters,
       this.currentPage,
-      this.itemsPerPage
+      this.itemsPerPage,
+      sortParam
     ).subscribe({
       next: (res) => {
         if (res.data) {
@@ -488,6 +594,27 @@ export class SellersComponent implements OnInit, OnDestroy {
     this.currentPage = 1; // Reset to first page when changing items per page
     // Clear the cache when changing items per page
     this.pageCache = {};
+    if (this.isSearchMode) {
+      this.loadSearchResults();
+    } else {
+      this.loadSellers();
+    }
+  }
+
+  // Add sorting method
+  toggleSort(field: 'name' | 'createdAt'): void {
+    if (this.sortField === field) {
+      // Toggle direction if same field
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      // New field, start with ascending
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+
+    // Reset to first page when sorting
+    this.currentPage = 1;
+    
     if (this.isSearchMode) {
       this.loadSearchResults();
     } else {

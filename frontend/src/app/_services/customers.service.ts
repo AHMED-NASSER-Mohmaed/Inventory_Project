@@ -24,9 +24,10 @@ export class CustomersService {
   
   // SELLERS
 
-  getPaginatedSellersByStatus(page: number, limit: number, status?: number): Observable<any> {
-    const filterParam = status !== undefined ? `filters=status:${status}&` : '';
-    return this.http.get(`${this.baseUrl}/getSellers?${filterParam}page=${page}&limit=${limit}`, { headers: this.getHeaders() });
+  getPaginatedSellersByStatus(page: number, limit: number, status?: number, sort?: string): Observable<any> {
+    const filterParam = status !== undefined ? `filters=status:${status}` : '';
+    const url = `${this.baseUrl}/getSellers?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
+    return this.http.get(url, { headers: this.getHeaders() });
   }
 
   deActiveSeller(id: string): Observable<any> {
@@ -73,9 +74,8 @@ export class CustomersService {
     return this.http.patch(`${this.baseUrl}/updateSeller/${id}`, data, { headers: this.getHeaders() });
   }
 
-  searchSellers(filters: string, page: number, limit: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/getSeller?page=${page}&limit=${limit}&filters=${filters}`, 
-      { headers: this.getHeaders() }
-    );
+  searchSellers(filters: string, page: number, limit: number, sort?: string): Observable<any> {
+    const url = `${this.baseUrl}/getSeller?page=${page}&limit=${limit}&filters=${filters}${sort || ''}`;
+    return this.http.get(url, { headers: this.getHeaders() });
   }
 }

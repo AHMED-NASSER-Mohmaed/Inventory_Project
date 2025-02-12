@@ -351,6 +351,15 @@ mat-button-toggle{
   font-size: 12px;
   text-align: left;
   border-bottom: 1px solid var(--grey);
+  transition: color 0.3s ease;
+}
+:host #content main .table-data .order table th i {
+  margin-left: 5px;
+  font-size: 1.1em;
+  vertical-align: middle;
+}
+:host #content main .table-data .order table th:hover {
+  color: var(--blue);
 }
 :host #content main .table-data .order table td {
   padding: 16px 0;
