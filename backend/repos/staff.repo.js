@@ -65,12 +65,13 @@ module.exports.staffRepo={
             const [results, total] = await Promise.all([
 
                 await Staff.find(filters)
+                    .collation({ locale: 'en', strength: 1 })
                     .sort(sort)
                     .skip((page - 1) * limit) // (starting index = page-1)*limit
                     .limit(limit)
                     .lean(),
     
-                await Staff.countDocuments(filters).exec()
+                await Staff.countDocuments(filters).collation({ locale: 'en', strength: 1 }).exec()
             ]);
     
             // console.log("from repo" , results);

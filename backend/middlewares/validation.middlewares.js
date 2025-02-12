@@ -1,3 +1,4 @@
+const { filter, forEach } = require("lodash");
 const { APP_CONFIG } = require("../config/app.config");
 const { sendResponseToClint } = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
@@ -6,6 +7,8 @@ const AppError = require("../utils/appError");
 const validateSearchParams = (searchFiledName, searchValueAcoordingNaN, allowedSort) => {
   
   return (req, res, next) => {
+
+    /*
     // Validate pagination params
     const page = Math.max(1, parseInt(req.query.page) || 1); // Default page: 1
     const limit = Math.min(25, Math.max(1, parseInt(req.query.limit) || 10)); // Default limit: 10, Max: 25
@@ -33,12 +36,16 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN, allowedS
         return res.status(400).json({ error: 'Invalid sort parameter format. Use "field:order"' });
       }
     }
-
+*/
     // Validate filters (optional)
-    let filters = {};
+    // let filters = {};
+    
     if (req.query.filters) {
       try {
-        let filterObjects = req.query.filters.split(' ');
+
+        let filterObjects = req.query.filters;
+
+         
 
         filterObjects.forEach((element) => {
           const [field, value] = element.split(':');
@@ -58,23 +65,28 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN, allowedS
             throw new AppError(`Invalid value: ${value} for field: ${field}. Expected ${isValueNaN ? 'non-numeric' : 'numeric'} value.`, APP_CONFIG.HTTP_BAD_REQUEST);
           }
 
-          filters[field] = value; // Insert filter objects
+          
+          req.validatedParams.filters[field] = value; // Insert filter objects
         });
 
-        console.log("filters:", filters);
 
       } catch (e) {
         return res.status(400).json({ error: e.message || 'Invalid filter parameter format. Use "field:value"' });
       }
     }
+    
+    
 
+   
+    
+/*
     // Attach validated params to request object
     req.validatedParams = {
       page,
       limit,
       sort,
       filters,
-    };
+    };*/
 
     next(); // Proceed to the next middleware/controller
   };
@@ -116,25 +128,39 @@ const validatorForQueries = (allowedFilters, allowedFilterValues, allowedSort) =
       }
     }
 
-    console.log("sort : ",sort);
+    console.log("sort : ",req.query.filters);
 
     let filters = {}
+
     if (req.query.filters) {
       try {
 
         let filterObjects = req.query.filters.split(' ');
+        req.query.filters=Array.from(filterObjects);
 
-        filterObjects.forEach(element => {
+    
+
+        let deletedOne=0;
+
+       
+
+        filterObjects.forEach((element) => {
           const [field, value] = element.split(":");
 
           // Find the index of the allowedFilters array that contains the field
           const filterIndex = allowedFilters.findIndex(allowedFilter => allowedFilter.includes(field));
 
-          if (filterIndex === -1 || !allowedFilterValues[filterIndex].includes(value)) {
-            throw new AppError("Invalid filter fields", APP_CONFIG.HTTP_BAD_REQUEST)
+          if (filterIndex === -1 ) {
+             
+            deletedOne+=1;
+            return;
+            // throw new AppError("Invalid filter fields", APP_CONFIG.HTTP_BAD_REQUEST)
           }
 
+ 
           filters[field] = value; // insert filter objects
+          req.query.filters.splice(deletedOne,1);
+
         });
 
       } catch (e) {
@@ -142,6 +168,8 @@ const validatorForQueries = (allowedFilters, allowedFilterValues, allowedSort) =
       }
     }
 
+    
+    
     // Attach validated params to request object
     req.validatedParams = {
       page,

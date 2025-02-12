@@ -51,6 +51,7 @@ class UserService {
       if (!ack.acknowledged) {
         throw new AppError("No user found with this id", APP_CONFIG.HTTP_BAD_REQUEST);
       }
+      return ack;
     } catch (err) {
       throw err;
     }

@@ -205,6 +205,125 @@
           "companyName": "mimi Inc.",
           "companyRegistrationNumber": "5378"
         }
-     
-     
-  ]
+  ,  
+    {  
+        "firstName": "Alice",  
+        "lastName": "Johnson",  
+        "email": "alicejohnson123@gmail.com",  
+        "phoneNumber": "01123456789",  
+        "password": "securePass1",  
+        "passwordConfirm": "securePass1",  
+        "userType": "buyer",  
+        "SSN": "1234567890123",  
+        "companyName": "Tech Innovations",  
+        "companyRegistrationNumber": "8919"  
+    },  
+    {  
+        "firstName": "Bob",  
+        "lastName": "Williams",  
+        "email": "bobwilliams456@gmail.com",  
+        "phoneNumber": "01234567890",  
+        "password": "adminpass",  
+        "passwordConfirm": "adminpass",  
+        "userType": "seller",  
+        "SSN": "2345678901234",  
+        "companyName": "Buy&Sell Co.",  
+        "companyRegistrationNumber": "56780"  
+    },  
+    {  
+        "firstName": "Catherine",  
+        "lastName": "Davis",  
+        "email": "catherinedavis789@gmail.com",  
+        "phoneNumber": "01045678011",  
+        "password": "mypassword",  
+        "passwordConfirm": "mypassword",  
+        "userType": "buyer",  
+        "SSN": "3456789012345",  
+        "companyName": "Cathy's Crafts",  
+        "companyRegistrationNumber": "23045"  
+    },  
+    {  
+      "firstName": "David",  
+      "lastName": "Garcia",  
+      "email": "davidgarcia123@gmail.com",  
+      "phoneNumber": "01056089012",  
+      "password": "password123",  
+      "passwordConfirm": "password123",  
+      "userType": "seller",  
+      "SSN": "4567890123456",  
+      "companyName": "Gadget World",  
+      "companyRegistrationNumber": "60789"  
+  },  
+    {  
+        "firstName": "Emma",  
+        "lastName": "Rodriguez",  
+        "email": "emmarodriguez456@gmail.com",  
+        "phoneNumber": "01056790123",  
+        "password": "letmein2025",  
+        "passwordConfirm": "letmein2025",  
+        "userType": "buyer",  
+        "SSN": "5678901234567",  
+        "companyName": "Emma's Essentials",  
+        "companyRegistrationNumber": "34056"  
+    },  
+    {  
+        "firstName": "Frank",  
+        "lastName": "Martinez",  
+        "email": "frankmartinez789@gmail.com",  
+        "phoneNumber": "01067890134",  
+        "password": "frankPassword!",  
+        "passwordConfirm": "frankPassword!",  
+        "userType": "seller",  
+        "SSN": "6789012345678",  
+        "companyName": "Frank's Furniture",  
+        "companyRegistrationNumber": "12304"  
+    },  
+    {  
+      "firstName": "Grace",  
+      "lastName": "Hernandez",  
+      "email": "gracehernandez1231@gmail.com",  
+      "phoneNumber": "01078902345",  
+      "password": "grace2025!",  
+      "passwordConfirm": "grace2025!",  
+      "userType": "buyer",  
+      "SSN": "7890123456789",  
+      "companyName": "elegance Goods",  
+      "companyRegistrationNumber": "89001"  
+  },  
+    {  
+        "firstName": "Henry",  
+        "lastName": "Young",  
+        "email": "henryyoung1456@gmail.com",  
+        "phoneNumber": "01890123456",  
+        "password": "henryPassword",  
+        "passwordConfirm": "henryPassword",  
+        "userType": "seller",  
+        "SSN": "8901234567890",  
+        "companyName": "Henry's Hardware",  
+        "companyRegistrationNumber": "4321"  
+    },  
+    {  
+        "firstName": "Isabella",  
+        "lastName": "King",  
+        "email": "isabellaking789@gmail.com",  
+        "phoneNumber": "01901234567",  
+        "password": "isabellaPass5",  
+        "passwordConfirm": "isabellaPass5",  
+        "userType": "buyer",  
+        "SSN": "9012345678901",  
+        "companyName": "Isabella's Inn",  
+        "companyRegistrationNumber": "5672"  
+    },  
+    {  
+        "firstName": "Jack",  
+        "lastName": "Wright",  
+        "email": "jackwright123@gmail.com",  
+        "phoneNumber": "02012345678",  
+        "password": "jackPass2025!",  
+        "passwordConfirm": "jackPass2025!",  
+        "userType": "seller",  
+        "SSN": "0123456789012",  
+        "companyName": "Jack's Jewelers",  
+        "companyRegistrationNumber": "8765"  
+    }  
+]

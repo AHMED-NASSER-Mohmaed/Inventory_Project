@@ -92,36 +92,39 @@ const sellerOp = {
 
     },
     */
-
+/*
     getAllSellers: async (req, res, next) => {
 
         const sellers = await sellerService.getAllSellers();
 
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, sellers);
     },
-
+*/
 
     getSellers: async (req, res, next) => {
 
-
         // if(req.validatedParams.status === 1 ) // then is ative may be undefined or true false ... approve
 
+        if(req.validatedParams.filters.status ){
 
-        if (req.validatedParams.filters.status === "0") //then is active is no of use ... pending
-        {
-            if (req.validatedParams.filters.isActive === "false") {
-                delete req.validatedParams.filters.isActive;
+            if ( req.validatedParams.filters.status === "0") //then is active is no of use ... pending
+            {
+                if (req.validatedParams.filters.isActive === "false") {
+                    delete req.validatedParams.filters.isActive;
+                }
             }
-        }
-
-
-        if (req.validatedParams.filters.status === "-1") // only rejected people  
-        {
-            console.log("hello")
-            if (req.validatedParams.filters.isActive === "false") {
-                delete req.validatedParams.filters.isActive;
+    
+    
+            if (req.validatedParams.filters.status === "-1") // only rejected people  
+            {
+                console.log("hello")
+                if (req.validatedParams.filters.isActive === "false") {
+                    delete req.validatedParams.filters.isActive;
+                }
             }
+
         }
+        
 
         console.log(req.validatedParams.filters);
 
@@ -133,7 +136,7 @@ const sellerOp = {
 
     },
 
-
+/*
     getPendingSellers: async (req, res, next) => {
         console.log(req.validatedParams);
         req.validatedParams['filters']['status'] = true;
@@ -141,7 +144,7 @@ const sellerOp = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 
     },
-
+*/
     updateSeller: async (req, res, next) => {
         const result = await sellerService.updateSellerById(req.params.sellerId, req.body, req.user.userType); // to be continued
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
@@ -170,11 +173,12 @@ const sellerOp = {
 
     },
 
+    /*
     //search by SSN , firstName , lastName , phonenumber  
     getSellerBy: async (req, res, next) => {
         const result = await sellerService.getSellers(req.validatedParams); // to be continued
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
-    },
+    },*/
 
     FieldName: [["isActive", "undefined"], ["status", "undefined"]],
     filedsValues: [["true", "false", "undefined"], ["-1", "0", "1", "undefined"]],
@@ -538,22 +542,24 @@ route.post("/addSeller",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         catchAsync(sellerOp.rejectSeller))
 
-    //pagination for filtered seller 
+  /*  //pagination for filtered seller 
     .get("/getSellers",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         validatorForQueries(sellerOp.FieldName, sellerOp.filedsValues, genaricFilters.allowedSort),
         catchAsync(sellerOp.getSellers))
-
+*/
     .get("/sellerCount",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         validatorForQueries(sellerOp.FieldName, sellerOp.filedsValues, genaricFilters.allowedSort),
         catchAsync(sellerOp.getSellerCount)
     )
+
     //by SSN , firstName , lastName , phoneNumber
-    .get("/getSeller",
+    .get("/getSellers",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-        validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN, genaricFilters.allowedSort),
-        catchAsync(sellerOp.getSellerBy)
+        validatorForQueries(sellerOp.FieldName,sellerOp.filedsValues,genaricFilters.allowedSort),
+        validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN),
+        catchAsync(sellerOp.getSellers)
     )
 
 
@@ -664,7 +670,8 @@ route.post("/addSeller",
     //get customer by filter for serch by firstName , lastNAme 
     .get("/getCustomer",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
-        validateSearchParams(genaricFilters.searchFiledNameForCustomer,genaricFilters.searchValueAcoordingNaNforCustomer,genaricFilters.allowedSort),
+        validatorForQueries(customerOp.FieldName,customerOp.allowedFilterValues,genaricFilters.allowedSort)
+        ,validateSearchParams(genaricFilters.searchFiledNameForCustomer,genaricFilters.searchValueAcoordingNaNforCustomer),
         catchAsync(customerOp.getCustomers)) //end of customer id
 
 
