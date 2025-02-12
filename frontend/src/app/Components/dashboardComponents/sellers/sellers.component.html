@@ -103,7 +103,20 @@
             <div class="table-data">
                 <div class="order">
                     <div class="head">
+                        <div class="headhead">
                         <h3>Sellers</h3>
+                        <div class="items-per-page">
+                            <label> 
+                                <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" name="itemsPerPage">
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </label>
+                        </div>
+                        </div>
                         <form (ngSubmit)="onSearch($event)">
                             <div class="form-input">
                                 <input type="search" 
@@ -168,7 +181,7 @@
                             <tr *ngFor="let user of users; let i = index">
                                 <td>
                                     <img [src]="user.photo.url">
-                                    <p>{{ user.firstName }}</p>
+                                    <p>{{ user.firstName + " "+ user.lastName }}</p>
                                 </td>
                                 <td>{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
                                 <td><p>{{ user.companyName }}</p></td>
@@ -182,7 +195,7 @@
                                         <a class="btn btn-secondary dropdown-toggle btn-lg" role="button" id="dropdownMenuLink" aria-haspopup="true" aria-expanded="false" style="padding: 0px 5px; padding-left: 8px; display: flex; align-items: center;">
                                             ...
                                         </a>
-                                        <div class="dropdown-menu dropdown-menu-lg" [ngClass]="{'show': dropdownStates[i]}" aria-labelledby="dropdownMenuLink" style="min-width: 200px;">
+                                        <div class="dropdown-menu dropdown-menu-lg" [ngClass]="{'show': dropdownStates[i]}" aria-labelledby="dropdownMenuLink" style="min-width: 200px; cursor: pointer;">
                                             <a class="dropdown-item p-3" (click)="showSellerInfo(user)" data-toggle="modal" data-target="#sellerInfoModal"><i class='bx bx-show'></i> Show</a>
                                             <div class="dropdown-divider"></div>
                                             <a *ngIf="user.status.toString() === '1'" class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user._id) : openConfirmDialog2(user._id)" style="cursor:pointer;">

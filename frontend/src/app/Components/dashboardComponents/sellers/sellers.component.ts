@@ -484,6 +484,17 @@ export class SellersComponent implements OnInit, OnDestroy {
     this.subscriptions.push(sub);
   }
 
+  onItemsPerPageChange(): void {
+    this.currentPage = 1; // Reset to first page when changing items per page
+    // Clear the cache when changing items per page
+    this.pageCache = {};
+    if (this.isSearchMode) {
+      this.loadSearchResults();
+    } else {
+      this.loadSellers();
+    }
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
