@@ -180,9 +180,12 @@ module.exports.sellerRepo = {
 
         try {
 
+            console.log("sort.... ",sort);
+
             const [results, total] = await Promise.all([
 
                 await seller.find(filters)
+                    .collation({ locale: 'en', strength: 1 })
                     .sort(sort)
                     .skip((page - 1) * limit) // (starting index = page-1)*limit
                     .limit(limit)
