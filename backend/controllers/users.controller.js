@@ -124,11 +124,8 @@ const sellerOp = {
             }
 
         }
-        
 
-        console.log(req.validatedParams.filters);
-
-
+        // console.log(req.validatedParams.filters);
 
         const result = await sellerService.getSellers(req.validatedParams);
 
@@ -554,7 +551,7 @@ route.post("/addSeller",
         catchAsync(sellerOp.getSellerCount)
     )
 
-    //by SSN , firstName , lastName , phoneNumber
+    //for filteration and and search by SSN , firstName , lastName , phoneNumber
     .get("/getSellers",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         validatorForQueries(sellerOp.FieldName,sellerOp.filedsValues,genaricFilters.allowedSort),
