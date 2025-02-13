@@ -5,10 +5,11 @@ const { APP_CONFIG } = require("../config/app.config");
 const { staffService } = require("../services/staff.service");
 const prot_rest = require("../utils/authMiddlewaresOptions");
 const userService = require("../services/user.service");
-const { validatorForQueries, validateSearchParams } = require("../middlewares/validation.middlewares");
+const { validateSearchParams, validatorFilterParams,validateSortPaginationParams } = require("../middlewares/validation.middlewares");
 const { sendResponseToClint } = require("../utils/apiFeatures");
 const { deleteFiles, upload } = require("../services/media.service");
 const AppError = require("../utils/appError");
+const { protect } = require("../middlewares/auth.middleware");
 
 const route = express.Router();
 
@@ -22,6 +23,84 @@ const genaricFilters = {
     searchValueAcoordingNaNforCustomer: [true, true, false],
 
     allowedSort: ['createdAt', "name"],
+}
+
+const genaraicFunctions={
+
+    //to upload a picture for a person you have to pass id in arguments.
+
+    updateImage: async function (id,files) {
+  
+        try {
+            const oldFileId = await userService.getUserImageId(id);
+            console.log("hey man " ,"oldFileId['photo']['fileId']");
+            //delete image from imagekit  if user it's not the default image
+            if (!(oldFileId['photo']['fileId'] === APP_CONFIG.UDIAMGE_ID_VALUE)) {
+                await deleteFiles([oldFileId['photo']['fileId']]);
+            }
+
+            let imageInfo = await upload( files , APP_CONFIG.PROFILE_IMAGE_FOLDER);
+            
+            await userService.updateUserImage(id, imageInfo['files'][0]);
+
+            return imageInfo;
+
+        } catch (err) {
+            await userService.updateUserImage(id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
+            throw err;
+        }  
+        //this line may be throw an exception from database.
+
+
+    },
+
+    updateImageProfile:async(req,res,next)=>{
+        if(!req.files)
+            throw new AppError("invalid image file!",APP_CONFIG.HTTP_BAD_REQUEST);
+
+
+
+        const result=await genaraicFunctions.updateImage(req.user._id,req.files)
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+ 
+
+updateImageProfileFor: async (req, res, next) => {
+
+    try {
+
+        // Check if the ID and image file are provided
+        if (!req.params.id || !req.files || !req.files.image) {
+            throw new AppError("Invalid request: ID or image file is missing!", APP_CONFIG.HTTP_BAD_REQUEST);
+        }
+
+        
+        if(req.files['image'].length>1)
+            throw new AppError("you can not upload more than only one image!",APP_CONFIG.HTTP_BAD_REQUEST);
+       
+        // Get the uploaded file
+        const imageFile = req.files.image;
+
+        // Validate the file type (ensure it's an image)
+        const allowedMimeTypes = ['image/jpeg', 'image/png'];
+        if (!allowedMimeTypes.includes(imageFile.mimetype)) {
+            throw new AppError("Invalid file type: Only JPEG and PNG images are allowed!", APP_CONFIG.HTTP_BAD_REQUEST);
+        }
+
+       
+        // Update the image in image kit 
+        const result = await genaraicFunctions.updateImage(req.user._id, req.files);
+
+        // Send success response
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    } catch (error) {
+       
+        await userService.updateUserImage(req.params.id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG); 
+        throw error;
+
+    }
+},
 }
 
 const sellerOp = {
@@ -92,40 +171,43 @@ const sellerOp = {
 
     },
     */
-
+/*
     getAllSellers: async (req, res, next) => {
 
         const sellers = await sellerService.getAllSellers();
 
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, sellers);
     },
-
+*/
 
     getSellers: async (req, res, next) => {
 
 
+        // console.log(req.validatedParams);
+
         // if(req.validatedParams.status === 1 ) // then is ative may be undefined or true false ... approve
 
+        if(req.validatedParams.filters.status ){
 
-        if (req.validatedParams.filters.status === "0") //then is active is no of use ... pending
-        {
-            if (req.validatedParams.filters.isActive === "false") {
-                delete req.validatedParams.filters.isActive;
+            if ( req.validatedParams.filters.status === "0") //then is active is no of use ... pending
+            {
+                if (req.validatedParams.filters.isActive === "false") {
+                    delete req.validatedParams.filters.isActive;
+                }
             }
+    
+    
+            if (req.validatedParams.filters.status === "-1") // only rejected people  
+            {
+                console.log("hello")
+                if (req.validatedParams.filters.isActive === "false") {
+                    delete req.validatedParams.filters.isActive;
+                }
+            }
+
         }
 
-
-        if (req.validatedParams.filters.status === "-1") // only rejected people  
-        {
-            console.log("hello")
-            if (req.validatedParams.filters.isActive === "false") {
-                delete req.validatedParams.filters.isActive;
-            }
-        }
-
-        console.log(req.validatedParams.filters);
-
-
+        // console.log(req.validatedParams.filters);
 
         const result = await sellerService.getSellers(req.validatedParams);
 
@@ -133,7 +215,7 @@ const sellerOp = {
 
     },
 
-
+/*
     getPendingSellers: async (req, res, next) => {
         console.log(req.validatedParams);
         req.validatedParams['filters']['status'] = true;
@@ -141,7 +223,7 @@ const sellerOp = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 
     },
-
+*/
     updateSeller: async (req, res, next) => {
         const result = await sellerService.updateSellerById(req.params.sellerId, req.body, req.user.userType); // to be continued
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
@@ -170,11 +252,15 @@ const sellerOp = {
 
     },
 
+    /*
     //search by SSN , firstName , lastName , phonenumber  
     getSellerBy: async (req, res, next) => {
         const result = await sellerService.getSellers(req.validatedParams); // to be continued
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
-    },
+    },*/
+
+
+    
 
     FieldName: [["isActive", "undefined"], ["status", "undefined"]],
     filedsValues: [["true", "false", "undefined"], ["-1", "0", "1", "undefined"]],
@@ -449,7 +535,7 @@ const customerOp = {
 
         req.validatedParams.filters["userType"] = APP_CONFIG.CUSTOMER;
 
-        
+        console.log("from customer object controller :",req.validatedParams);
 
         const result = await userService.getUsers(req.validatedParams);
 
@@ -457,49 +543,11 @@ const customerOp = {
     },
 
 
-    updateProfileImage: async function (req, res, next) {
+   
 
 
-        let isFaildToUpload = false, imageInfo = null;
-        let error = null;
-
-        if (!req.params.id)
-            throw new AppError("invalid parameter", APP_CONFIG.HTTP_BAD_REQUEST);
-
-        const oldFileId = await userService.getUserImageId(req.params.id);
-
-        // console.log(oldFileId);
-
-        try {
-            //delete image from imagekit  if user it's not the default image
-            if (!(oldFileId['photo']['fileId'] === APP_CONFIG.UDIAMGE_ID_VALUE)) {
-                // console.log("the one that is exist is not equal to the default one");
-                await deleteFiles([oldFileId['photo']['fileId']]);
-            }
-
-            imageInfo = await upload(req.files, APP_CONFIG.PROFILE_IMAGE_FOLDER);
-            const result = await userService.updateUserImage(req.params.id, imageInfo['files'][0]);
-            sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
-
-        } catch (err) {
-            error = err;
-        } finally {
-
-            if (!imageInfo) {
-                await userService.updateUserImage(req.params.id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
-                throw new AppError(error.message, APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
-            }
-
-        }
-        // console.log("===>",imageInfo['files'][0]);
-        //this line may be throw an exception from database.
-
-
-    },
-
-
-    allowedFilters: ["isActive", "undefined"],
-    allowedFilterValues: ["true", "false"],
+    allowedFilters: [["isActive", "undefined"]],
+    allowedFilterValues: [["true", "false"]],
     allowedSort: ['createdAt', "name"],
 
 
@@ -538,28 +586,31 @@ route.post("/addSeller",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         catchAsync(sellerOp.rejectSeller))
 
-    //pagination for filtered seller 
+  /*  //pagination for filtered seller 
     .get("/getSellers",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         validatorForQueries(sellerOp.FieldName, sellerOp.filedsValues, genaricFilters.allowedSort),
         catchAsync(sellerOp.getSellers))
-
+*//*
     .get("/sellerCount",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         validatorForQueries(sellerOp.FieldName, sellerOp.filedsValues, genaricFilters.allowedSort),
         catchAsync(sellerOp.getSellerCount)
     )
-    //by SSN , firstName , lastName , phoneNumber
-    .get("/getSeller",
+*/
+    //for filteration and and search by SSN , firstName , lastName , phoneNumber
+    .get("/getSellers",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-        validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN, genaricFilters.allowedSort),
-        catchAsync(sellerOp.getSellerBy)
+        validateSortPaginationParams(genaricFilters.allowedSort),
+        validatorFilterParams(sellerOp.FieldName,sellerOp.filedsValues),
+        validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN),
+        catchAsync(sellerOp.getSellers)
     )
 
 
     /*************************************************************************************** */
 
-
+/*
     .post("/addAdmin",
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(adminOp.addAdmin))
@@ -588,10 +639,10 @@ route.post("/addSeller",
         validatorForQueries(adminOp.allowedFilters, adminOp.allowedFilterValues, genaricFilters.allowedSort),
         catchAsync(adminOp.getAdmins))
 
-
+*/
 
     /*************************************************************************************** */
-
+/*
 
     //add clerk
     .post("/addClerk",
@@ -620,9 +671,9 @@ route.post("/addSeller",
         validatorForQueries(clerkOp.allowedFilters, clerkOp.allowedFilterValues, genaricFilters.allowedSort),
         catchAsync(clerkOp.getClerks))
 
-
+*/
     /****************************************************************************************/
-
+/*
     //add cashier 
     .post("/addCashier",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
@@ -650,7 +701,7 @@ route.post("/addSeller",
         validatorForQueries(cashierOp.allowedFilters, cashierOp.allowedFilterValues, cashierOp.allowedSort),
         catchAsync(cashierOp.getCashiers))
 
-
+*/
 
     /****************************************************************************************************/
     // customer section 
@@ -661,37 +712,53 @@ route.post("/addSeller",
         catchAsync(customerOp.addCustomer)) //end of post 
 
 
-    //get customer by filter for serch by firstName , lastNAme 
-    .get("/getCustomer",
+    //get customer by filter for serch by firstName , lastNAme  and also active and deactive
+    .get("/getCustomers",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
-        validateSearchParams(genaricFilters.searchFiledNameForCustomer,genaricFilters.searchValueAcoordingNaNforCustomer,genaricFilters.allowedSort),
+        validateSortPaginationParams(genaricFilters.allowedSort)
+        ,validatorFilterParams(customerOp.allowedFilters,customerOp.allowedFilterValues)
+        ,validateSearchParams(genaricFilters.searchFiledNameForCustomer,genaricFilters.searchValueAcoordingNaNforCustomer),
         catchAsync(customerOp.getCustomers)) //end of customer id
 
 
 
+    //only who can do this super admin.
     .delete("/deleteCustomer/:id",
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
+        prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(customerOp.deleteCustomer)) //end of delete 
 
-
+/*
     //why we send user id -->for admin super admin --- we will genarlize it through
     //this one for all supper admin , admin , seller , customer , supplier
     .patch("/updateProfileImage/:id",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER, APP_CONFIG.CUSTOMER),
         catchAsync(customerOp.updateProfileImage)
     )
-
+*/
     .patch("/activeCustomer/:id",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
         catchAsync(customerOp.activeCustomer))//end of patch
 
+        /*
     .get("/getCustomers",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
         validatorForQueries(customerOp.allowedFilters, customerOp.allowedFilterValues, genaricFilters.allowedSort),
         catchAsync(customerOp.getCustomers))//end of get [pagination].
 
 
+*/
+    
+    //update personal image profile for users
+    .patch("/updateImageProfile",
+        protect,
+        genaraicFunctions.updateImageProfile
+    )
 
+    //update image profile for othe with intvention from super admin.
+    .patch("/updateImageProfileFor/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        catchAsync(genaraicFunctions.updateImageProfileFor)
+    )
 
 //end of customer routes section
 
