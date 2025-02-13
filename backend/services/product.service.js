@@ -41,11 +41,11 @@ class ProductService {
             }
 
             //upload images to kit 
-            let imagesURLS=[]
+            // let imagesURLS=[]
 
 
             //throw exception from databse
-            const new_one =await product.create({ name:productData.name , code:productData.code ,  images:imagesURLS,
+            const new_one =await product.create({ name:productData.name , code:productData.code ,  images:productData.images,
                             description:productData.description , category:productData.category
                             ,sellerId:user._id , sellerName: user.companyName, status: user._id==APP_CONFIG.COMPANY_ID?true : false});
 

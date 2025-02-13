@@ -46,7 +46,7 @@ module.exports.APP_CONFIG = {
   CUSTOMER: "customer",
   SELLER: "seller",
 
-  COMPANY_ID: "67aa420d4ced3e0ed9615ca5",
+  COMPANY_ID: "67aa438c2823142f438539c4",
   COMPANY_NAME: "inventory system",
 
 
