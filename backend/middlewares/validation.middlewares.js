@@ -1,54 +1,69 @@
-const { filter, forEach } = require("lodash");
+const { filter } = require("lodash");
 const { APP_CONFIG } = require("../config/app.config");
-const { sendResponseToClint } = require("../utils/apiFeatures");
+
 const AppError = require("../utils/appError");
 
-
-const validateSearchParams = (searchFiledName, searchValueAcoordingNaN, allowedSort) => {
-  
+const validateSortPaginationParams = (allowedSort) => {
   return (req, res, next) => {
 
-    /*
-    // Validate pagination params
     const page = Math.max(1, parseInt(req.query.page) || 1); // Default page: 1
-    const limit = Math.min(25, Math.max(1, parseInt(req.query.limit) || 10)); // Default limit: 10, Max: 25
+    const limit = Math.min(25, Math.max(1, parseInt(req.query.limit) || 15)); // Default limit: 10 , Max: 25
 
-    // Validate sort (optional)
     let sort = { createdAt: -1 }; // Default sort
+
+    console.log("from sort and pagination ", req.query.filters);
 
     if (req.query.sort) {
       try {
         const [field, order] = req.query.sort.split(':'); // Split field and order
 
+
+
         if (allowedSort.includes(field)) { // Check if field is allowed
           sort = { [field]: order === 'asc' ? 1 : -1 }; // Set sort object
         } else {
-          return res.status(400).json({ error: `Invalid sort field. Allowed fields: ${allowedSort.join(', ')}` });
+          throw new AppError("Invalid sort field", APP_CONFIG.HTTP_BAD_REQUEST)
         }
 
-        if(sort['name']){
-          let s=sort;
-          sort={ firstName:s['name'] , lastName:s['name'] }
-        }
+        if (sort['name'])
+          sort = { firstName: sort['name'], lastName: sort['name'] }
 
-        
+
       } catch (e) {
-        return res.status(400).json({ error: 'Invalid sort parameter format. Use "field:order"' });
+        throw new AppError('Invalid sort parameter format. Use "field:order"', APP_CONFIG.HTTP_BAD_REQUEST)
       }
     }
-*/
-    // Validate filters (optional)
-    // let filters = {};
-    
+
+    req.validatedParams = {
+      sort,
+      page,
+      limit,
+    }
+    next();
+
+  }
+}
+
+
+const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
+
+  return (req, res, next) => {
+
+    let filters = {}
+
+    console.log("from search ", req.query.filters);
+
     if (req.query.filters) {
       try {
 
+        //beacause it's splited from validator fields
         let filterObjects = req.query.filters;
 
-         
 
         filterObjects.forEach((element) => {
-          const [field, value] = element.split(':');
+          let [field, value] = element.split(':');
+
+          console.log(field, value, "   ");
 
           // Find the index of the searchFiledName array that contains the field
           const filterIndex = searchFiledName.findIndex((element) => element.trim() === field.trim());
@@ -66,7 +81,12 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN, allowedS
           }
 
           
-          req.validatedParams.filters[field] = value; // Insert filter objects
+          
+          //value=new RegExp(`^${value}`, 'i');
+          
+          value= new RegExp(`^${value}|${value}$`, 'i');
+
+          filters[field] = value; // Insert filter objects
         });
 
 
@@ -74,75 +94,36 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN, allowedS
         return res.status(400).json({ error: e.message || 'Invalid filter parameter format. Use "field:value"' });
       }
     }
-    
-    
 
-   
-    
-/*
-    // Attach validated params to request object
-    req.validatedParams = {
-      page,
-      limit,
-      sort,
-      filters,
-    };*/
+
+    //to be genaric fucntion
+
+
+    Object.keys(filters).forEach(key => {
+      req.validatedParams['filters'][key] = filters[key];
+    });
+
 
     next(); // Proceed to the next middleware/controller
   };
 };
 
 
-
-
-const validatorForQueries = (allowedFilters, allowedFilterValues, allowedSort) => {
+const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
 
   return (req, res, next) => {
 
-    const page = Math.max(1, parseInt(req.query.page) || 1); // Default page: 1
-    const limit = Math.min(25, Math.max(1, parseInt(req.query.limit) || 15)); // Default limit: 10 , Max: 25
-
-    // Validate sort (optional)
-    let sort = { createdAt: -1 }; // Default sort
-
-    if (req.query.sort) {
-      try {
-        const [field, order] = req.query.sort.split(':'); // Split field and order
-
-        console.log(allowedSort,field,order);
-
-        if (allowedSort.includes(field)) { // Check if field is allowed
-          sort = { [field]: order === 'asc' ? 1 : -1 }; // Set sort object
-        } else {
-          throw new AppError("Invalid sort field", APP_CONFIG.HTTP_BAD_REQUEST)
-        }
-
-
-        if(sort['name']){
-          let s=sort;
-          sort={ firstName:s['name'] , lastName:s['name'] }
-        }
-
-      } catch (e) {
-        throw new AppError('Invalid sort parameter format. Use "field:order"', APP_CONFIG.HTTP_BAD_REQUEST)
-      }
-    }
-
-    console.log("sort : ",req.query.filters);
-
     let filters = {}
+
+    console.log("from filter:", req.query.filters);
 
     if (req.query.filters) {
       try {
 
         let filterObjects = req.query.filters.split(' ');
-        req.query.filters=Array.from(filterObjects);
+        req.query.filters = Array.from(filterObjects);
 
-    
-
-        let deletedOne=0;
-
-       
+        let deletedOne = 0;
 
         filterObjects.forEach((element) => {
           const [field, value] = element.split(":");
@@ -150,16 +131,18 @@ const validatorForQueries = (allowedFilters, allowedFilterValues, allowedSort) =
           // Find the index of the allowedFilters array that contains the field
           const filterIndex = allowedFilters.findIndex(allowedFilter => allowedFilter.includes(field));
 
-          if (filterIndex === -1 ) {
-             
-            deletedOne+=1;
+          if (filterIndex === -1) {
+            deletedOne += 1;
             return;
-            // throw new AppError("Invalid filter fields", APP_CONFIG.HTTP_BAD_REQUEST)
           }
 
- 
+          if (!allowedFilterValues[filterIndex].includes(value)) {
+            throw new AppError("Invalid filter fields", APP_CONFIG.HTTP_BAD_REQUEST)
+          }
+
+
           filters[field] = value; // insert filter objects
-          req.query.filters.splice(deletedOne,1);
+          req.query.filters.splice(deletedOne, 1);
 
         });
 
@@ -168,25 +151,20 @@ const validatorForQueries = (allowedFilters, allowedFilterValues, allowedSort) =
       }
     }
 
-    
-    
     // Attach validated params to request object
-    req.validatedParams = {
-      page,
-      limit,
-      filters,
-      sort,
-    };
+
+
+    req.validatedParams.filters = filters
 
     next();
   }
+
 }
 
 
 
-// module.exports.validateParams = validateParams; 
+module.exports.validateSortPaginationParams = validateSortPaginationParams;
 
-
-module.exports.validatorForQueries = validatorForQueries;
+module.exports.validatorFilterParams = validatorFilterParams;
 
 module.exports.validateSearchParams = validateSearchParams;

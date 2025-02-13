@@ -2,6 +2,7 @@ const User = require("../models/user.model");
 const AppError = require("../utils/appError");
 const { inboxResult, checkIfAttributeExists } = require("../utils/apiFeatures");
 const { throttle } = require("lodash");
+const { locales } = require("validator/lib/isIBAN");
 
 class UserRepository {
 
@@ -130,12 +131,13 @@ class UserRepository {
 
       const [results, total] = await Promise.all([
         await User.find(filters)
+          .collation({ locale: 'en', strength: 1 })
           .sort(sort)
           .skip((page - 1) * limit) // (starting index = page-1)*limit
           .limit(limit).select("-__v")
         ,
 
-        await User.countDocuments(filters).exec()
+        await User.countDocuments(filters).collation({ locale: 'en', strength: 1 }).exec()
 
       ]);
 
