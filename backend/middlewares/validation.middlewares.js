@@ -97,12 +97,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
         return res.status(400).json({ error: e.message || 'Invalid filter parameter format. Use "field:value"' });
       }
     }
-
-
-    //to
-    //  be genaric fucntion
-
-
+ 
     //  be genaric fucntion
     console.log(req.validatedParams, "after");
 
@@ -165,12 +160,14 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
 
     // Attach validated params to request object
 
-    // if (!req.validatedParams)
-    //   req.validatedParams = {};
+    if(!req.validatedParams)
+      req.validatedParams = {};
 
 
     // if(!req.validatedParams.filters)
-    req.validatedParams.filters = filters
+
+    req.validatedParams['filters'] = filters
+
     // else
     //   Object.keys(filters).forEach(key => {
     //     req.validatedParams.filters[key] = filters[key];
