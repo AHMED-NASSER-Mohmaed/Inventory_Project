@@ -231,6 +231,9 @@ const sellerOp = {
 
     getSellerCount: async (req, res, next) => {
 
+        // console.log("from contoroller : ",req.validatedParams);
+
+
         if (req.validatedParams.filters.status === "0") //then is active is no of use ... pending
         {
             if (req.validatedParams.filters.isActive === "false") {
@@ -591,13 +594,15 @@ route.post("/addSeller",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         validatorForQueries(sellerOp.FieldName, sellerOp.filedsValues, genaricFilters.allowedSort),
         catchAsync(sellerOp.getSellers))
-*//*
+*/
+    //get seller count by filtes
     .get("/sellerCount",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-        validatorForQueries(sellerOp.FieldName, sellerOp.filedsValues, genaricFilters.allowedSort),
+        validatorFilterParams(sellerOp.FieldName,sellerOp.filedsValues),
+        validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN),
         catchAsync(sellerOp.getSellerCount)
     )
-*/
+
     //for filteration and and search by SSN , firstName , lastName , phoneNumber
     .get("/getSellers",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
@@ -641,7 +646,7 @@ route.post("/addSeller",
 
 */
 
-    /*************************************************************************************** */
+    /****************************************************************************************/
 /*
 
     //add clerk
