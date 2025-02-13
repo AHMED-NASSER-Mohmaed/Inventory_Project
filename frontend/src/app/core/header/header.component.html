@@ -1,5 +1,5 @@
 <div>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top mb-3">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top ">
         <div class="container-fluid">
             <a class="navbar-brand fs-3 brandname" href="#" style="font-family: 'Baskerville Serial', serif; color: #85411c;">Watchly</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -12,7 +12,7 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Him
+                            Male
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             <a class="dropdown-item" href="#">Rolex</a>
@@ -23,13 +23,10 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Her
+                            female
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="#">Rolex</a>
-                            <a class="dropdown-item" href="#">Casio</a>
-                            <a class="dropdown-item" href="#">Tissot</a>
-                            <a class="dropdown-item" href="#">Omega</a>
+                           
                         </div>
                     </li>
                     <li class="nav-item">
@@ -37,17 +34,18 @@
                     </li>
                   
                     <li class="nav-item">
-                        <a class="nav-link" [routerLink]="['/footer']">About us</a>         
+                        <a class="nav-link" [routerLink]="['/contacts']">About us</a>         
                     </li>
                 </ul>
-
-
-                <div class="navbar-nav">
-                    <a class="nav-item nav-link nav-icon " href="#"><i class="fas fa-user"></i></a>
-                    <a class="nav-item nav-link nav-icon " href="#"><i class="fas fa-shopping-cart"></i></a>
-                </div>
             </div>
-          
+            <div class="navbar-nav">
+                <a class="nav-item nav-link nav-icon " href="#"><i class="fas fa-user"></i></a>
+                <a class="nav-item nav-link nav-icon " href="#"><i class="fas fa-shopping-cart"></i></a>
+                <a  *ngIf="!token" class="nav-item nav-link nav-icon " href="#"><i class='bx bx-log-in  loginIcon'></i></a>
+                <a  *ngIf="token" class="nav-item nav-link nav-icon " href="#"><i class='bx bx-log-out  logoutIcon'></i></a>
+
+
+            </div>
         </div>
     </nav>
     </div>
@@ -62,5 +60,5 @@
                 navbarNav.classList.toggle('collapse');
             });
         });
-     </script>
+        </script>
         

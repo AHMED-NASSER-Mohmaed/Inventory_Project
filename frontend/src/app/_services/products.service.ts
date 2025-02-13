@@ -35,7 +35,7 @@ export class ProductsService {
         page: page,
         limit: itemsPerPage,
         sort: sort,
-        catId: categoryId ,
+        catid: categoryId ,
         
     };
     return this.http.get(`${this.baseUrl}/getProducts`, { params });

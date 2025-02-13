@@ -16,6 +16,8 @@ import { FooterComponent } from './core/footer/footer.component';
 import { ProductsComponent } from './Components/dashboardComponents/products/products.component';
 import { ProductsListComponent } from './Components2/products-list/products-list.component';
 import { LandingPageComponent } from './Components2/HomePage/landing-page/landing-page.component';
+import { Component } from '@angular/core';
+import { ContactsComponent } from './Components2/contacts/contacts.component';
 
 export const routes: Routes = [
 
@@ -69,12 +71,14 @@ export const routes: Routes = [
    }
    ,
 
-
+  { path:'contacts',
+   component:ContactsComponent,
+},
 
     {
         // default route
         path: '',
-        redirectTo:'LandingPage',
+        redirectTo:'login',
         pathMatch:'full'
     },
 

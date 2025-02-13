@@ -85,3 +85,14 @@
         box-shadow: none;
     }
 }
+
+
+
+.nav-icon {
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.nav-icon:hover {
+    color: #85411c;
+}
