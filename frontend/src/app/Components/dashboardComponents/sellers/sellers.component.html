@@ -120,12 +120,15 @@
                                 <input type="search" 
                                        [(ngModel)]="searchQuery" 
                                        name="searchQuery" 
-                                       [placeholder]="'Search By ' + (selectedFilter === 'phoneNumber' ? 'Phone Number' : selectedFilter === 'SSN' ? 'SSN' : 'Name') + '...'"
+                                       [placeholder]="searchPlaceholder"
                                        (keypress)="validateSearchInput($event)"
                                        (paste)="handlePaste($event)">
                                 <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
                                 <button mat-icon-button type="button" [matMenuTriggerFor]="menu" style="border: none; background-color: var(--light);">
                                     <i class='bx bx-filter' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
+                                </button>
+                                <button mat-icon-button type="button" (click)="resetSearch()" style="border: none; background-color: var(--light);" title="Reset Search">
+                                    <i class='bx bx-reset' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
                                 </button>
                                 <mat-menu #menu="matMenu" class="matMenu">
                                     <button mat-menu-item class="mat-menu-item">

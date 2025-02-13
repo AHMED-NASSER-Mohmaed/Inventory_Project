@@ -73,9 +73,13 @@ export class SellersComponent implements OnInit, OnDestroy {
   showingActive: boolean | null = null;
   activityFilter: boolean | null = null;
 
+  // Add new property for search placeholder
+  searchPlaceholder: string = ' Search By Name...';
+
   constructor(private customerService: CustomersService, public dialog: MatDialog) {}
 
   ngOnInit(): void {
+    this.updateSearchPlaceholder();
     this.loadSellers();
     this.getDeActiveSellersCount();
     this.getActiveSellersCount();
@@ -187,8 +191,8 @@ export class SellersComponent implements OnInit, OnDestroy {
       this.activityFilter = null;
       this.showingActive = null;
     }
-  
-    // Let loadSellers handle the loading state
+    
+    this.updateSearchPlaceholder();
     this.loadSellers();
   }
 
@@ -198,8 +202,8 @@ export class SellersComponent implements OnInit, OnDestroy {
     this.showingActive = isActive;
     this.activityFilter = isActive;
     this.currentPage = 1;
-  
-    // Let loadSellers handle the loading state
+    
+    this.updateSearchPlaceholder();
     this.loadSellers();
   }
 
@@ -574,13 +578,24 @@ export class SellersComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Reset filters when searching
-    this.currentFilter = 'active';
-    this.showingActive = null;
-    this.activityFilter = null;
+    // Don't reset filters anymore
     this.isSearchMode = true;
     this.currentPage = 1;
     this.loadSearchResults();
+  }
+
+  // Add new resetSearch method
+  resetSearch(): void {
+    this.searchQuery = '';
+    this.isSearchMode = false;
+    this.currentFilter = 'active';
+    this.showingActive = null;
+    this.activityFilter = null;
+    this.currentPage = 1;
+    this.sortField = null;
+    this.sortDirection = null;
+    this.loadSellers();
+    this.updateSearchPlaceholder();
   }
 
   validateSearchInput(event: KeyboardEvent): boolean {
@@ -610,46 +625,50 @@ export class SellersComponent implements OnInit, OnDestroy {
 
   onFilterChange(event: any): void {
     this.selectedFilter = event.value;
-    this.searchQuery = ''; // Clear search input when filter changes
+    this.searchQuery = '';
+    this.updateSearchPlaceholder();
   }
 
   loadSearchResults() {
-    // Always show loading for search since it's not cached
     this.isLoading = true;
     this.users = [];
     
     let filters: string;
-    // Store the current filter as the last used search filter
     this.lastSearchFilter = this.selectedFilter;
     
+    // Build the search filter based on current filter state
+    let searchFilter = '';
     if (this.selectedFilter === 'name') {
       const nameParts = this.searchQuery.trim().split(/\s+/);
-      
       if (nameParts.length === 1 || (nameParts.length > 1 && !nameParts[1])) {
-        // Single name or name with trailing spaces
-        filters = `firstName:${nameParts[0]}`;
+        searchFilter = `firstName:${nameParts[0]}`;
       } else if (nameParts.length >= 2) {
-        // First name and last name (ignore additional parts)
-        filters = `firstName:${nameParts[0]}+lastName:${nameParts[1]}`;
-      } else {
-        filters = 'firstName:';  // Empty search
+        searchFilter = `firstName:${nameParts[0]}+lastName:${nameParts[1]}`;
       }
     } else {
-      // For other filters (SSN, phoneNumber)
-      filters = `${this.selectedFilter}:${this.searchQuery}`;
+      searchFilter = `${this.selectedFilter}:${this.searchQuery}`;
     }
-  
-    // Add sort parameters if present
+
+    // Add status filter based on current filter state
+    let statusFilter = '';
+    if (this.currentFilter === 'approved') {
+      statusFilter = '+status:1';
+      if (this.activityFilter !== null) {
+        statusFilter += `+isActive:${this.activityFilter}`;
+      }
+    } else if (this.currentFilter === 'waiting') {
+      statusFilter = '+status:0';
+    } else if (this.currentFilter === 'rejected') {
+      statusFilter = '+status:-1';
+    }
+
+    filters = searchFilter + statusFilter;
+
     let sortParam = '';
     if (this.sortField && this.sortDirection) {
-      if (this.sortField === 'name') {
-        // Keep it as 'name' for the API
-        sortParam = `&sort=name:${this.sortDirection}`;
-      } else {
-        sortParam = `&sort=${this.sortField}:${this.sortDirection}`;
-      }
+      sortParam = `&sort=${this.sortField === 'name' ? 'name' : this.sortField}:${this.sortDirection}`;
     }
-  
+
     const sub = this.customerService.searchSellers(
       filters,
       this.currentPage,
@@ -676,6 +695,23 @@ export class SellersComponent implements OnInit, OnDestroy {
     });
     
     this.subscriptions.push(sub);
+  }
+
+  updateSearchPlaceholder() {
+    const filterType = this.selectedFilter === 'phoneNumber' ? 'Phone Number' : 
+                      this.selectedFilter === 'SSN' ? 'SSN' : 'Name';
+    
+    let status = '';
+    if (this.currentFilter === 'approved') {
+      status = this.showingActive === true ? ' Active' : 
+               this.showingActive === false ? ' Inactive' : ' Approved';
+    } else if (this.currentFilter === 'waiting') {
+      status = ' Pending';
+    } else if (this.currentFilter === 'rejected') {
+      status = ' Rejected';
+    }
+
+    this.searchPlaceholder = `Search${status} Sellers By ${filterType}...`;
   }
 
   onItemsPerPageChange(): void {
