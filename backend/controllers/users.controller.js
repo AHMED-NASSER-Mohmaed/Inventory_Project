@@ -41,6 +41,8 @@ const genaraicFunctions={
 
             let imageInfo = await upload( files , APP_CONFIG.PROFILE_IMAGE_FOLDER);
             
+            console.log("from update : ",imageInfo);
+
             await userService.updateUserImage(id, imageInfo['files'][0]);
 
             return imageInfo;
@@ -92,7 +94,7 @@ updateImageProfileFor: async (req, res, next) => {
 
        
         // Update the image in image kit 
-        const result = await genaraicFunctions.updateImage(req.user._id, req.files);
+        const result = await genaraicFunctions.updateImage(req.params.id, req.files);
 
         // Send success response
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);

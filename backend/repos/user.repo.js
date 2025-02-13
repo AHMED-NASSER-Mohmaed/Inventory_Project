@@ -156,7 +156,7 @@ class UserRepository {
     try {
 
       console.log("image info : ", imageInfo, "from repo");
-      return await User.updateOne({ _id: userId }, { "photo": imageInfo });
+      return await User.updateOne({ _id: userId }, { $set:{"photo": imageInfo} } , { new: true });
     } catch (err) {
       throw err;
     }
