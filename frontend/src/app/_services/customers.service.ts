@@ -75,7 +75,7 @@ export class CustomersService {
   }
 
   searchSellers(filters: string, page: number, limit: number, sort?: string): Observable<any> {
-    const url = `${this.baseUrl}/getSeller?page=${page}&limit=${limit}&filters=${filters}${sort || ''}`;
+    const url = `${this.baseUrl}/getSellers?page=${page}&limit=${limit}&filters=${filters}${sort || ''}`;
     return this.http.get(url, { headers: this.getHeaders() });
   }
 }
