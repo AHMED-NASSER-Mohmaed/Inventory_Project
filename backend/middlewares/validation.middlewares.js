@@ -11,7 +11,7 @@ const validateSortPaginationParams = (allowedSort) => {
 
     let sort = { createdAt: -1 }; // Default sort
 
-    console.log("from sort and pagination ", req.validatedParams.filters);
+    // console.log("from sort and pagination ", req.validatedParams.filters);
 
     if (req.query.sort) {
       try {
@@ -35,11 +35,14 @@ const validateSortPaginationParams = (allowedSort) => {
     }
 
     req.validatedParams = {
-      sort:sort,
-      page:page,
-      limit:limit,
+      sort,
+      page,
+      limit,
     }
+
+    // console.log("from pagination : ", req.validatedParams);
     next();
+
 
   }
 }
@@ -80,10 +83,10 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
             throw new AppError(`Invalid value: ${value} for field: ${field}. Expected ${isValueNaN ? 'non-numeric' : 'numeric'} value.`, APP_CONFIG.HTTP_BAD_REQUEST);
           }
 
-          
-          
-          value=new RegExp(`^${value}`, 'i');
-          
+
+
+          value = new RegExp(`^${value}`, 'i');
+
           // value= new RegExp(`^${value}|${value}$`, 'i');
 
           filters[field] = value; // Insert filter objects
@@ -101,16 +104,17 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
 
 
     //  be genaric fucntion
-    console.log(req.validatedParams,"after");
+    console.log(req.validatedParams, "after");
 
-    if(!req.validatedParams)
-      req.validatedParams={};
+    if (!req.validatedParams)
+      req.validatedParams = {};
 
 
     Object.keys(filters).forEach(key => {
-      req.validatedParams['filters']['key'] = filters[key];
+      req.validatedParams.filters[key] = filters[key];
     });
 
+    // console.log("from search : ", req.validatedParams);
 
     next(); // Proceed to the next middleware/controller
   };
@@ -123,7 +127,7 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
 
     let filters = {}
 
-    console.log("from filter:", req.query.filters);
+    // console.log("from filter:", req.query.filters);
 
     if (req.query.filters) {
       try {
@@ -161,14 +165,19 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
 
     // Attach validated params to request object
 
-
-    if(!req.validatedParams)
-      req.validatedParams={"filters":filters}
-    else
-      req.validatedParams['filters']=filters;
+    // if (!req.validatedParams)
+    //   req.validatedParams = {};
 
 
-    console.log(req.validatedParams,"from filter..");  
+    // if(!req.validatedParams.filters)
+    req.validatedParams.filters = filters
+    // else
+    //   Object.keys(filters).forEach(key => {
+    //     req.validatedParams.filters[key] = filters[key];
+    //   });
+
+
+    // console.log("from filter..", req.validatedParams);
 
     next();
   }
