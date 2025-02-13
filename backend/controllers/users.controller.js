@@ -55,6 +55,8 @@ const genaraicFunctions={
     },
 
     updateImageProfile:async(req,res,next)=>{
+
+
         if(!req.files)
             throw new AppError("invalid image file!",APP_CONFIG.HTTP_BAD_REQUEST);
 
@@ -613,7 +615,7 @@ route.post("/addSeller",
     )
 
 
-    /*************************************************************************************** */
+    /****************************************************************************************/
 
 /*
     .post("/addAdmin",

@@ -1,4 +1,3 @@
-const { filter } = require("lodash");
 const { APP_CONFIG } = require("../config/app.config");
 
 const AppError = require("../utils/appError");
