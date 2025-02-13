@@ -41,6 +41,8 @@ const genaraicFunctions={
 
             let imageInfo = await upload( files , APP_CONFIG.PROFILE_IMAGE_FOLDER);
             
+            console.log("from update : ",imageInfo);
+
             await userService.updateUserImage(id, imageInfo['files'][0]);
 
             return imageInfo;
@@ -55,6 +57,8 @@ const genaraicFunctions={
     },
 
     updateImageProfile:async(req,res,next)=>{
+
+
         if(!req.files)
             throw new AppError("invalid image file!",APP_CONFIG.HTTP_BAD_REQUEST);
 
@@ -90,7 +94,7 @@ updateImageProfileFor: async (req, res, next) => {
 
        
         // Update the image in image kit 
-        const result = await genaraicFunctions.updateImage(req.user._id, req.files);
+        const result = await genaraicFunctions.updateImage(req.params.id, req.files);
 
         // Send success response
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
@@ -613,7 +617,7 @@ route.post("/addSeller",
     )
 
 
-    /*************************************************************************************** */
+    /****************************************************************************************/
 
 /*
     .post("/addAdmin",
