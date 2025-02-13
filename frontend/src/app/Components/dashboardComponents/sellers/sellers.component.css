@@ -393,6 +393,41 @@ mat-button-toggle{
   background: var(--dark);
 }
 
+.status-dots {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  gap: 4px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+  opacity: 0.5; /* Set default opacity to 0.5 */
+}
+
+.dot:hover {
+  transform: scale(1.2);
+  opacity: 0.8; /* Slightly more visible on hover */
+}
+
+.dot.selected {
+  opacity: 1;
+  transform: scale(1.1);
+  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+.green-dot {
+  background-color: #2ed134;
+}
+
+.red-dot {
+  background-color: #e6382f;
+}
+
 .no-results-row td {
     color: var(--dark);
     font-size: 1.1em;
@@ -510,6 +545,13 @@ mat-button-toggle{
     background-color: var(--dark);
     color: var(--light);
     width: 50px;
+}
+
+.dropdown-menu{
+  max-width: 20%;
+  min-width: 8.3em;
+  width: 20%;
+  cursor: pointer;
 }
 
 .pagination-controls {

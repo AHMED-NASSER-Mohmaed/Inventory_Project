@@ -24,8 +24,8 @@ export class CustomersService {
   
   // SELLERS
 
-  getPaginatedSellersByStatus(page: number, limit: number, status?: number, sort?: string): Observable<any> {
-    const filterParam = status !== undefined ? `filters=status:${status}` : '';
+  getPaginatedSellersByStatus(page: number, limit: number, filters?: string, sort?: string): Observable<any> {
+    const filterParam = filters ? `filters=${filters}` : '';
     const url = `${this.baseUrl}/getSellers?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
     return this.http.get(url, { headers: this.getHeaders() });
   }

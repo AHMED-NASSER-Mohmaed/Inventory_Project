@@ -69,6 +69,10 @@ export class SellersComponent implements OnInit, OnDestroy {
   sortField: 'name' | 'createdAt' | null = null;
   sortDirection: 'asc' | 'desc' | null = null;
 
+  // Add these properties
+  showingActive: boolean | null = null;
+  activityFilter: boolean | null = null;
+
   constructor(private customerService: CustomersService, public dialog: MatDialog) {}
 
   ngOnInit(): void {
@@ -84,7 +88,10 @@ export class SellersComponent implements OnInit, OnDestroy {
 
   // Consolidated seller loading method with caching
   loadSellers(): void {
-    const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
+    // Check cache before setting loading state
+    const activityFilterKey = this.activityFilter !== null ? `_active:${this.activityFilter}` : '';
+    const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}${activityFilterKey}`;
+  
     if (this.pageCache[cacheKey]) {
       const cached = this.pageCache[cacheKey];
       this.users = cached.result;
@@ -92,36 +99,34 @@ export class SellersComponent implements OnInit, OnDestroy {
       this.dropdownStates = new Array(this.users.length).fill(false);
       this.updatePaginationState();
       this.showNoResults = false;
+      this.isLoading = false;
       return;
     }
-
-    // Only set loading when making a server request
-    this.isLoading = true;
-    this.users = []; // Clear the users array when loading from server
   
-    let status: number | undefined;
+    // Only show loading spinner when fetching from server
+    this.isLoading = true;
+    this.users = [];
+  
+    let filterParam = '';
     if (this.currentFilter === 'waiting') {
-      status = 0;
+      filterParam = 'status:0';
     } else if (this.currentFilter === 'rejected') {
-      status = -1;
+      filterParam = 'status:-1';
     } else if (this.currentFilter === 'approved') {
-      status = 1;
+      // Always include both status and activity for approved sellers
+      filterParam = `status:1${this.activityFilter !== null ? '+isActive:' + this.activityFilter : ''}`;
     }
-    
-    // Add sort parameters if present
+  
+    // Add sort parameters
     let sortParam = '';
     if (this.sortField && this.sortDirection) {
-      if (this.sortField === 'name') {
-        sortParam = `&sort=firstName:${this.sortDirection}`; // Changed from name to firstName
-      } else {
-        sortParam = `&sort=${this.sortField}:${this.sortDirection}`;
-      }
+      sortParam = `&sort=${this.sortField === 'name' ? 'name' : this.sortField}:${this.sortDirection}`;
     }
-    
+  
     const obs = this.customerService.getPaginatedSellersByStatus(
       this.currentPage, 
       this.itemsPerPage, 
-      status,
+      filterParam,
       sortParam
     );
     
@@ -176,7 +181,25 @@ export class SellersComponent implements OnInit, OnDestroy {
     this.currentPage = 1;
     this.isSearchMode = false;
     this.searchQuery = '';
-    this.showNoResults = false; // Reset the no results flag when changing filters
+    this.showNoResults = false;
+    
+    if (filter === 'approved') {
+      this.activityFilter = null;
+      this.showingActive = null;
+    }
+  
+    // Let loadSellers handle the loading state
+    this.loadSellers();
+  }
+
+  filterByActivity(isActive: boolean): void {
+    if (this.showingActive === isActive) return;
+    
+    this.showingActive = isActive;
+    this.activityFilter = isActive;
+    this.currentPage = 1;
+  
+    // Let loadSellers handle the loading state
     this.loadSellers();
   }
 
@@ -201,10 +224,37 @@ export class SellersComponent implements OnInit, OnDestroy {
     const sub = this.customerService.deActiveSeller(_id).subscribe({
       next: (res) => {
         console.log(res);
-        this.updateUserActivity(_id, false);
-        // Refresh counts after deactivation
-        this.getActiveSellersCount();
-        this.getDeActiveSellersCount();
+        const deactivatedSeller = this.users.find(u => u._id === _id);
+        
+        if (deactivatedSeller) {
+          // Remove from current list
+          this.users = this.users.filter(user => user._id !== _id);
+          
+          // Update seller's active status
+          deactivatedSeller.isActive = false;
+
+          // Update cache for active sellers (remove from active cache)
+          const activeKey = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:true`;
+          if (this.pageCache[activeKey]) {
+            this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter(user => user._id !== _id);
+            this.pageCache[activeKey].total--;
+          }
+
+          // Add to first page of inactive cache
+          const inactiveKey = `approved_1_${this.sortField}_${this.sortDirection}_active:false`;
+          if (this.pageCache[inactiveKey]) {
+            const inactiveCache = this.pageCache[inactiveKey];
+            inactiveCache.result.unshift(deactivatedSeller);
+            if (inactiveCache.result.length > this.itemsPerPage) {
+              inactiveCache.result.pop();
+            }
+            inactiveCache.total++;
+          }
+
+          // Refresh counts
+          this.getActiveSellersCount();
+          this.getDeActiveSellersCount();
+        }
       },
       error: (error) => console.log(error)
     });
@@ -215,10 +265,37 @@ export class SellersComponent implements OnInit, OnDestroy {
     const sub = this.customerService.activateSeller(_id).subscribe({
       next: (res) => {
         console.log(res);
-        this.updateUserActivity(_id, true);
-        // Refresh counts after activation
-        this.getActiveSellersCount();
-        this.getDeActiveSellersCount();
+        const activatedSeller = this.users.find(u => u._id === _id);
+        
+        if (activatedSeller) {
+          // Remove from current list
+          this.users = this.users.filter(user => user._id !== _id);
+          
+          // Update seller's active status
+          activatedSeller.isActive = true;
+
+          // Update cache for inactive sellers (remove from inactive cache)
+          const inactiveKey = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:false`;
+          if (this.pageCache[inactiveKey]) {
+            this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter(user => user._id !== _id);
+            this.pageCache[inactiveKey].total--;
+          }
+
+          // Add to first page of active cache
+          const activeKey = `approved_1_${this.sortField}_${this.sortDirection}_active:true`;
+          if (this.pageCache[activeKey]) {
+            const activeCache = this.pageCache[activeKey];
+            activeCache.result.unshift(activatedSeller);
+            if (activeCache.result.length > this.itemsPerPage) {
+              activeCache.result.pop();
+            }
+            activeCache.total++;
+          }
+
+          // Refresh counts
+          this.getActiveSellersCount();
+          this.getDeActiveSellersCount();
+        }
       },
       error: (error) => console.log(error)
     });
@@ -497,6 +574,10 @@ export class SellersComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Reset filters when searching
+    this.currentFilter = 'active';
+    this.showingActive = null;
+    this.activityFilter = null;
     this.isSearchMode = true;
     this.currentPage = 1;
     this.loadSearchResults();
@@ -533,6 +614,10 @@ export class SellersComponent implements OnInit, OnDestroy {
   }
 
   loadSearchResults() {
+    // Always show loading for search since it's not cached
+    this.isLoading = true;
+    this.users = [];
+    
     let filters: string;
     // Store the current filter as the last used search filter
     this.lastSearchFilter = this.selectedFilter;
@@ -558,7 +643,8 @@ export class SellersComponent implements OnInit, OnDestroy {
     let sortParam = '';
     if (this.sortField && this.sortDirection) {
       if (this.sortField === 'name') {
-        sortParam = `&sort=firstName:${this.sortDirection}`;  // Changed from name to firstName
+        // Keep it as 'name' for the API
+        sortParam = `&sort=name:${this.sortDirection}`;
       } else {
         sortParam = `&sort=${this.sortField}:${this.sortDirection}`;
       }
@@ -578,12 +664,14 @@ export class SellersComponent implements OnInit, OnDestroy {
           this.dropdownStates = new Array(this.users.length).fill(false);
           this.updatePaginationState();
         }
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error searching sellers:', error);
         this.users = [];
         this.showNoResults = true;
         this.updatePaginationState();
+        this.isLoading = false;
       }
     });
     
