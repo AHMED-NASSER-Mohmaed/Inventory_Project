@@ -11,7 +11,7 @@ const validateSortPaginationParams = (allowedSort) => {
 
     let sort = { createdAt: -1 }; // Default sort
 
-    console.log("from sort and pagination ", req.query.filters);
+    console.log("from sort and pagination ", req.validatedParams.filters);
 
     if (req.query.sort) {
       try {
@@ -35,9 +35,9 @@ const validateSortPaginationParams = (allowedSort) => {
     }
 
     req.validatedParams = {
-      sort,
-      page,
-      limit,
+      sort:sort,
+      page:page,
+      limit:limit,
     }
     next();
 
@@ -51,7 +51,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
 
     let filters = {}
 
-    console.log("from search ", req.query.filters);
+    // console.log("from search ", req.validatedParams);
 
     if (req.query.filters) {
       try {
@@ -82,9 +82,9 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
 
           
           
-          //value=new RegExp(`^${value}`, 'i');
+          value=new RegExp(`^${value}`, 'i');
           
-          value= new RegExp(`^${value}|${value}$`, 'i');
+          // value= new RegExp(`^${value}|${value}$`, 'i');
 
           filters[field] = value; // Insert filter objects
         });
@@ -96,11 +96,19 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
     }
 
 
-    //to be genaric fucntion
+    //to
+    //  be genaric fucntion
+
+
+    //  be genaric fucntion
+    console.log(req.validatedParams,"after");
+
+    if(!req.validatedParams)
+      req.validatedParams={};
 
 
     Object.keys(filters).forEach(key => {
-      req.validatedParams['filters'][key] = filters[key];
+      req.validatedParams['filters']['key'] = filters[key];
     });
 
 
@@ -154,7 +162,13 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
     // Attach validated params to request object
 
 
-    req.validatedParams.filters = filters
+    if(!req.validatedParams)
+      req.validatedParams={"filters":filters}
+    else
+      req.validatedParams['filters']=filters;
+
+
+    console.log(req.validatedParams,"from filter..");  
 
     next();
   }
