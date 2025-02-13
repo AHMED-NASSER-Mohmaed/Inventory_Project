@@ -82,8 +82,13 @@ const verifyEmail = catchAsync(async (req, res, next) => {
   }
 });
 const createSendToken = (user, statusCode, res) => {
-  const token = JWT_Manager.signToken(user.id, user.userType);
   user.password = undefined;
+  user.isActive= undefined ;
+  user.kind=undefined;
+  user.createdAt=undefined;
+  user.updatedAt=undefined;
+  user.__v=undefined;
+  const token = JWT_Manager.signToken(user);
 
   res.status(statusCode).json({
     status: "success",
