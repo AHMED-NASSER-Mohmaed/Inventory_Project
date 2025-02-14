@@ -147,7 +147,7 @@ async function deleteFiles(fileIds) {
     await Promise.all(
       fileIds.map(async (fileId) => {
         const result = await imagekit.deleteFile(fileId);
-        console.log(`Deleted file ${fileId}:`, result);
+         
       })
     );
     return true; // Return true only if all deletions succeed

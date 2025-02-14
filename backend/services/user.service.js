@@ -5,6 +5,7 @@ const userRepo = require("../repos/user.repo");
 class UserService {
   
   //done ----------------
+  //canceled
   async getUser(userId) {
 
     try {
@@ -50,6 +51,7 @@ class UserService {
       if (!ack.acknowledged) {
         throw new AppError("No user found with this id", APP_CONFIG.HTTP_BAD_REQUEST);
       }
+      return ack;
     } catch (err) {
       throw err;
     }

@@ -74,24 +74,21 @@ class ProductController {
         catchAsync(this.deleteProduct)
       );
 
+    /*
     //site products
     this.router.get(
       "/getProducts",
-      validatorForQueries(
-        this.allowedFilterFileds,
-        this.allowedFileterFildesValues,
-        this.allowedSortFileds,
-        this.allowedSortFiledsValues
-      ),
-      catchAsync(this.getProducts)
-    );
-
+      validatorForQueries(this.allowedFilterFileds, this.allowedFileterFildesValues, this.allowedSortFileds, this.allowedSortFiledsValues),
+      catchAsync(this.getProducts),
+    )
+*/
     this.router.patch(
       "/updateProductMedia/:id",
       pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER),
       catchAsync(this.updateProductMedia)
     );
 
+    /*
     this.router.get(
       "/CProducts",
       pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
@@ -102,7 +99,9 @@ class ProductController {
         this.allowedSortFiledsValues
       ),
       catchAsync(this.CProducts)
-    );
+    )
+
+*/
   }
 
   allowedFilterFileds = ["isActive", "undefined"];

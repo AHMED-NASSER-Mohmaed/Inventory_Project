@@ -1,5 +1,5 @@
 const seller = require("../models/seller.model");
-const {inboxResult} = require("../utils/apiFeatures");
+const { inboxResult } = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
 // const { activeUser } = require("./user.repo");
 
@@ -69,19 +69,19 @@ module.exports.sellerRepo = {
         }
 
     },
-    getSellerById: async (sellerId)=>{
-        try{
+    getSellerById: async (sellerId) => {
+        try {
             return await seller.findById(sellerId);
-        }catch(err){
+        } catch (err) {
             throw err;
         }
     },
 
     //retun acknowlage , or throw exception
-    deleteSeller: async (SSN_) => {
+    deleteSeller: async (id) => {
 
         try {
-            return await seller.updateOne({ SSN: SSN_ }, {
+            return await seller.updateOne({ _id: id }, {
                 $set: { isActive: false }
             })
 
@@ -92,11 +92,11 @@ module.exports.sellerRepo = {
     },
 
     //retun acknowlage , or throw exception
-    approveSeller: async (SSN_) => {
+    approveSeller: async (id) => {
         try {
-            console.log("ssn",SSN_);
-            return await seller.updateOne({ SSN : SSN_ }, {
-                $set: { status: true }
+
+            return await seller.updateOne({ _id: id }, {
+                $set: { status: 1 }
             });
 
         } catch (err) {
@@ -104,32 +104,42 @@ module.exports.sellerRepo = {
         }
     },
 
-    updateSellerById: async(sellerId, updateData)=>{
-        try{
+    updateSellerById: async (sellerId, updateData) => {
+        try {
             const updatedSeller = await seller.findByIdAndUpdate(
                 sellerId,
                 updateData,
                 { new: true, runValidators: true }
             );
-            return updatedSeller; 
-        }catch(err){
-            throw err;
-        }
-    },
-
-    getSeller: async (SSN_) => {
-        try {
-            return await seller.findOne({ SSN: SSN_ });
+            return updatedSeller;
         } catch (err) {
             throw err;
         }
     },
 
-    activeSeller: async (SSN_) => {
+    getSeller: async (id) => {
+        try {
+            return await seller.findOne({ _id: id });
+        } catch (err) {
+            throw err;
+        }
+    },
+
+    activeSeller: async (id) => {
+        try {
+            //return acknowlage
+
+            return await seller.updateOne({ _id: id}, { isActive: true })
+        } catch (err) {
+            throw err;
+        }
+    },
+
+    rejectSeller: async (id) => {
         try {
             //return acknolage
-            
-            return await seller.updateOne({ SSN: SSN_ }, { isActive: true })
+
+            return await seller.updateOne({ _id: id }, { status: -1 })
         } catch (err) {
             throw err;
         }
@@ -138,15 +148,15 @@ module.exports.sellerRepo = {
 
 
 
-/*
-* 
-* filter for pending {isActive:true,status:false}
-* 
-*filter for active {isActive:true,status:true}
-*
-* filter for deactive {isActive:false,status:true}
-*  
-*/
+    /*
+    * 
+    * filter for pending {isActive:true,status:false}
+    * 
+    *filter for active {isActive:true,status:true}
+    *
+    * filter for deactive {isActive:false,status:true}
+    *  
+    */
 
 
     getActiveSellers: async (page, limit, sort) => {
@@ -159,36 +169,54 @@ module.exports.sellerRepo = {
 
     getPendingSellers: async (page, limit, sort) => {
 
-        console.log(page,limit,sort);
+        console.log(page, limit, sort);
 
         return await getSellerByFilter(page, limit, sort, pendingFilter)
     },
 
     /****************************************************** */
 
-    getSellers:async (filters,sort,page,limit)=>{
-    
-            try{
-                
-                const [results, total] = await Promise.all([
-    
-                    await seller.find(filters)
-                        .sort(sort)
-                        .skip((page - 1) * limit) // (starting index = page-1)*limit
-                        .limit(limit)
-                        .lean(),
-        
-                    await seller.countDocuments(filters).exec()
-                ]);
-        
-                // console.log("from repo" , results , total);
-        
-                return inboxResult(results, total, page, limit);
-    
-    
-            }catch(err){
-                throw err;
-            }
+    getSellers: async (filters, sort, page, limit) => {
+
+        try {
+
+            console.log("sort.... ",sort);
+
+            const [results, total] = await Promise.all([
+
+                await seller.find(filters)
+                    .collation({ locale: 'en', strength: 1 })
+                    .sort(sort)
+                    .skip((page - 1) * limit) // (starting index = page-1)*limit
+                    .limit(limit)
+                    .lean(),
+
+                await seller.countDocuments(filters).collation({ locale: 'en', strength: 1 }).exec()
+            ]);
+
+            // console.log("from repo" , results , total);
+
+            return inboxResult(results, total, page, limit);
+
+
+        } catch (err) {
+            throw err;
         }
+    },
+
+
+    getCountByFilter: async (filter)=>{
+        try {
+
+            return  await seller.countDocuments(filter);
+
+        } catch (err) {
+
+            throw err;
+
+        }
+
+    }
+
 
 }

@@ -22,13 +22,13 @@ module.exports.staffService={
             throw err;
         }
     },
-
+/*
     getStaff:async (data)=>{
         try{
             const staff=await staffRepo.getStaffOfType(data);
 
             if(!staff){
-                throw new AppError("user not found",APP_CONFIG.HTTP_BAD_REQUEST);
+                throw new AppError("clerk not found",APP_CONFIG.HTTP_BAD_REQUEST);
             }
 
             return staff;
@@ -37,7 +37,7 @@ module.exports.staffService={
             throw err;
         }
     },
-
+*/
     //ack -->false -- throw
     activeStaff:async (data)=>{
         try{
@@ -55,7 +55,7 @@ module.exports.staffService={
 
     // role is my filteration rule
 
-    getAll:async (role)=>{
+    getAll:async(role)=>{
         try{
             return await staffRepo.getALLStaffOfType(role);
         }catch(err){
