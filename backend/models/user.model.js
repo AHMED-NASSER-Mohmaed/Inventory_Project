@@ -74,6 +74,10 @@ const userSchema = new mongoose.Schema(
       default: true
     },
 
+
+    branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", default: undefined },
+
+
     changedPasswordAt: Date,
     passwordResetCode: Number,
     passwordResetCodeExpires: Date,
