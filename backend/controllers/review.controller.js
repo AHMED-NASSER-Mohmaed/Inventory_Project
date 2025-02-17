@@ -10,8 +10,10 @@ class ReviewController {
   }
 
   initializeRoutes() {
+    
     this.router
-      .route("/")
+     
+      .route("/") 
       .get(catchAsync(this.getProductReviews))
       .post(prot_rest("customer"), catchAsync(this.createReview));
 

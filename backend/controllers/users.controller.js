@@ -187,7 +187,7 @@ const sellerOp = {
     getSellers: async (req, res, next) => {
 
 
-        // console.log(req.validatedParams);
+        console.log(req.validatedParams,"from controller ..");
 
         // if(req.validatedParams.status === 1 ) // then is ative may be undefined or true false ... approve
 
@@ -266,7 +266,11 @@ const sellerOp = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },*/
 
+    allowedSort:["createdAt","undefined"],
+    allowedSortValues:['asc','desc',"undefined"],
 
+    messageesFilterField:["seen","undefined"],
+    messageesFiltervalue:['true','false',"undefined"],
     
 
     FieldName: [["isActive", "undefined"], ["status", "undefined"]],
@@ -610,9 +614,12 @@ route.post("/addSeller",
     //for filteration and and search by SSN , firstName , lastName , phoneNumber
     .get("/getSellers",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+
         validateSortPaginationParams(genaricFilters.allowedSort),
         validatorFilterParams(sellerOp.FieldName,sellerOp.filedsValues),
+        
         validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN),
+
         catchAsync(sellerOp.getSellers)
     )
 

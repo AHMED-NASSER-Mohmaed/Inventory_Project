@@ -10,7 +10,7 @@ const validateSortPaginationParams = (allowedSort) => {
 
     let sort = { createdAt: -1 }; // Default sort
 
-    // console.log("from sort and pagination ", req.validatedParams.filters);
+    console.log("from sort and pagination ", req.validatedParams.filters);
 
     if (req.query.sort) {
       try {
@@ -173,7 +173,7 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
     //   });
 
 
-    // console.log("from filter..", req.validatedParams);
+    console.log("from filter..", req.validatedParams);
 
     next();
   }

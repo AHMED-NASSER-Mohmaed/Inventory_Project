@@ -1,8 +1,9 @@
 const catchAsync = require("../utils/catchAsync");
 const ContactService = require("../services/contact.service");
 const prot_rest = require("../utils/authMiddlewaresOptions");
-
+/*
 class ContactController {
+
   constructor() {
     this.router = require("express").Router();
     this.initializeRoutes();
@@ -12,13 +13,19 @@ class ContactController {
     this.router
       .route("/contact")
       .post(catchAsync(this.createContact))
+
+      //paginated one 
       .get(prot_rest("admin", "super_admin"), catchAsync(this.getAllContacts));
 
     this.router
       .route("/contact/:id")
+      //no of use 
       .get(prot_rest("admin", "super_admin"), catchAsync(this.getContactById))
+
       .delete(
         prot_rest("admin", "super_admin"),
+
+        //soft delete 
         catchAsync(this.deleteContact)
       );
 
@@ -33,6 +40,15 @@ class ContactController {
       prot_rest("admin", "super_admin"),
       catchAsync(this.bulkMarkAsSeen)
     );
+
+    //notify  forward use a mail 
+
+
+    //replay customer 
+    // id --> review  -- mail + content :[massage:[different message] ]  
+
+
+    
   }
 
   async createContact(req, res) {
@@ -92,5 +108,7 @@ class ContactController {
     });
   }
 }
+*/
 
-module.exports = new ContactController().router;
+const router=require("express").Router();
+module.exports = router;
