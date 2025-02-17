@@ -109,12 +109,12 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-top: 10px; /* Add spacing above the button */
+    margin-top: 10px; 
 }
 
 
 .add-to-cart-btn:hover {
-    background-color: #6a3416; /* Darker color on hover */
+    background-color: #6a3416; 
 }
 
 .image-container{
@@ -142,7 +142,7 @@
 }
 
 .image-container:hover .overlay-icons {
-    opacity: 1; /* Show icons on hover */
+    opacity: 1;
 }
 
 .product-icon {
@@ -214,4 +214,37 @@
         padding: 6px 12px;
         font-size: 14px;
     }
+}
+
+
+
+
+/* Style for the search bar container */
+.SInputs {
+    margin-top: 10px;
+}
+
+/* Style for the search input */
+.searchBar ,.custom-select {
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    height: 40px;
+    font-size: 14px;
+    color: #626262;
+    padding-right: 40px; 
+}
+
+/* Style for the search icon */
+.search-icon {
+    position: absolute;
+    right: 20px; 
+    top: 50%;
+    transform: translateY(-50%);
+    color: #626262; 
+    font-size: 16px; 
+    pointer-events: none; /* Ensure the icon doesn't interfere with input */
+}
+
+.form-control:hover {
+    border-color: #85411c;
 }

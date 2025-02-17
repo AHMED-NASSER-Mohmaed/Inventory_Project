@@ -46,7 +46,27 @@
 </div>
 
         <!-- Page Content  -->
-        <div class="col-md-8 col-lg-9">
+
+            <div class="col-md-8 col-lg-9 ">
+                <!-- Search Bar and Sort Dropdown -->
+                <div class="row mb-4 SInputs">
+                    <div class="col-md-6 position-relative">
+                        <input type="text" class="form-control searchBar" placeholder="Search products...">
+                        <i class="fas fa-search search-icon"></i> 
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-control custom-select" (change)="onSortChange($event)">
+                            <option value="" disabled selected hidden  >Sort</option>
+                            <option value="price_asc">Price: Low to High</option>
+                            <option value="price_desc">Price: High to Low</option>
+                        </select>
+                        
+                        
+                    </div>
+                </div>
+
+
+
             <div class="row">
                 @if(products.length==0){
                     <p class="text-danger">Sorry ! No products available</p>

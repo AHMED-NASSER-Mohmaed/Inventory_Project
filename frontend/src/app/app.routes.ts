@@ -18,6 +18,7 @@ import { ProductsListComponent } from './Components2/products-list/products-list
 import { LandingPageComponent } from './Components2/HomePage/landing-page/landing-page.component';
 import { Component } from '@angular/core';
 import { ContactsComponent } from './Components2/contacts/contacts.component';
+import { AboutComponent } from './Components2/about/about.component';
 
 export const routes: Routes = [
 
@@ -73,8 +74,14 @@ export const routes: Routes = [
 
   { path:'contacts',
    component:ContactsComponent,
-},
+  },
 
+
+ { path:'about',
+    component:AboutComponent,
+ },
+
+ 
     {
         // default route
         path: '',

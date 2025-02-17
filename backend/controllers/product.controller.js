@@ -4,11 +4,26 @@ const AuthMiddleware = require("../middlewares/auth.middleware");
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
 const pro_res = require("../utils/authMiddlewaresOptions")
-const { validatorForQueries } = require("../middlewares/validation.middlewares");
+// const { validatorForQueries } = require("../middlewares/validation.middlewares");
 const categoryService = require("../services/category.service");
 const AppError = require("../utils/appError");
 const { deleteFiles, upload } = require("../services/media.service");
 const { filter } = require("lodash");
+
+const { validateSearchParams, validatorFilterParams,validateSortPaginationParams } = require("../middlewares/validation.middlewares");
+
+
+
+const genaricFilters = {
+  // searchFiledName: ["firstName", "lastName", "SSN", "phoneNumber"],
+  // searchValueAcoordingNaN: [true, true, false, false],
+
+  // searchFiledNameForCustomer: ["firstName", "lastName", "phoneNumber"],
+  // searchValueAcoordingNaNforCustomer: [true, true, false],
+
+  allowedSort: ['createdAt', "name" , "price"],
+}
+
 
 class ProductController {
   constructor() {
@@ -73,14 +88,18 @@ class ProductController {
         catchAsync(this.deleteProduct)
       );
 
-/*
+
     //site products
     this.router.get(
+
       "/getProducts",
-      validatorForQueries(this.allowedFilterFileds, this.allowedFileterFildesValues, this.allowedSortFileds, this.allowedSortFiledsValues),
+     
+      
+      validateSortPaginationParams(this.allowedSortFileds),
+      
       catchAsync(this.getProducts),
     )
-*/
+
     this.router.patch(
       "/updateProductMedia/:id",
       pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER),
@@ -136,8 +155,13 @@ class ProductController {
 
   async getProducts(req, res, next) {
     
+    if(!req.validatedParams['filters'])
+      req.validatedParams['filters']={};
+
     req.validatedParams['filters']['isActive'] = true;
     req.validatedParams['filters']['status'] = true;
+  
+    
     
     if(req.query.catId){
 
@@ -146,6 +170,8 @@ class ProductController {
       let arrOfChlidCat = await categoryService.getCategoies(filters);
 
       req.validatedParams['filters']['category'] = arrOfChlidCat;
+
+      console.log(arrOfChlidCat);
       
     }
 

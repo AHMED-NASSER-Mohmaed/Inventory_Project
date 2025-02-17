@@ -72,41 +72,103 @@ export class ProductsListComponent implements OnInit {
   }
 
 
-  getProducts(pageNumber: number = 1): void {
-    console.log('Fetching products with filters:', {
-        category: this.selectedCategoryId,
-        brand: this.selectedBrandId,
-        page: pageNumber
-    }); 
+  onSortChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement; // Cast to HTMLSelectElement
+    const sortValue = selectElement.value; // Get the selected value
 
-    // if (this.productCache[this.currentPage]) {
-    //     this.products = this.productCache[this.currentPage];
-    //     this.updatePaginationState();
-    // } else {
-        this.sub = this.productsService.getPaginatedProducts(
-          this.currentPage, this.itemsPerPage, this.sort, this.selectedBrandId)
-          .subscribe({
-            next: (res: any) => {
-                console.log('API Response:', res);
-                this.products = res.result.result;
-                this.totalPages = Math.ceil(res.result.total / this.itemsPerPage);
-                this.pagesArray = Array(this.totalPages).fill(0).map((x, i) => i + 1);
+    // Convert the sort value to the format expected by the API
+    switch (sortValue) {
+        case 'price_asc':
+            this.sort = 'price:asc';
+            break;
+        case 'price_desc':
+            this.sort = 'price:desc';
+            break;
+        default:
+            this.sort = ''; // No sorting
+            break;
+    }
 
-                this.hasNextPage = !!res.result.next;
-                this.hasPreviousPage = !!res.result.previous;
-                this.productCache[this.currentPage] = this.products;
-                this.updatePaginationState();
-                this.total = res.result.total - 1;
-            },
-            error: (error) => {
-                console.log('API Error:', error);
-            },
-            complete: () => {
-                console.log('API Call Complete'); 
-            }
-        });
-     //}
+    this.getProducts(1); // Reset to the first page when sorting changes
 }
+
+
+
+
+
+//   getProducts(pageNumber: number = 1): void {
+//     console.log('Fetching products with filters:', {
+//         category: this.selectedCategoryId,
+//         brand: this.selectedBrandId,
+//         page: pageNumber
+//     }); 
+
+//     // if (this.productCache[this.currentPage]) {
+//     //     this.products = this.productCache[this.currentPage];
+//     //     this.updatePaginationState();
+//     // } else {
+//         this.sub = this.productsService.getPaginatedProducts(
+//           this.currentPage, this.itemsPerPage, this.sort, this.selectedBrandId)
+//           .subscribe({
+//             next: (res: any) => {
+//                 console.log('API Response:', res);
+//                 this.products = res.result.result;
+//                 this.totalPages = Math.ceil(res.result.total / this.itemsPerPage);
+//                 this.pagesArray = Array(this.totalPages).fill(0).map((x, i) => i + 1);
+
+//                 this.hasNextPage = !!res.result.next;
+//                 this.hasPreviousPage = !!res.result.previous;
+//                 this.productCache[this.currentPage] = this.products;
+//                 this.updatePaginationState();
+//                 this.total = res.result.total - 1;
+//             },
+//             error: (error) => {
+//                 console.log('API Error:', error);
+//             },
+//             complete: () => {
+//                 console.log('API Call Complete'); 
+//             }
+//         });
+//      //}
+// }
+
+
+
+getProducts(pageNumber: number = 1): void {
+  console.log('Fetching products with filters:', {
+      category: this.selectedCategoryId,
+      brand: this.selectedBrandId,
+      page: pageNumber,
+      sort: this.sort 
+  }); 
+
+  this.sub = this.productsService.getPaginatedProducts(
+      this.currentPage, this.itemsPerPage, this.sort, this.selectedBrandId)
+      .subscribe({
+          next: (res: any) => {
+              console.log('API Response:', res);
+              this.products = res.result.result;
+              this.totalPages = Math.ceil(res.result.total / this.itemsPerPage);
+              this.pagesArray = Array(this.totalPages).fill(0).map((x, i) => i + 1);
+
+              this.hasNextPage = !!res.result.next;
+              this.hasPreviousPage = !!res.result.previous;
+              this.productCache[this.currentPage] = this.products;
+              this.updatePaginationState();
+              this.total = res.result.total - 1;
+          },
+          error: (error) => {
+              console.log('API Error:', error);
+          },
+          complete: () => {
+              console.log('API Call Complete'); 
+          }
+      });
+}
+
+
+
+
 
   updatePaginationState(): void {
     this.hasNextPage = this.currentPage < this.totalPages;
@@ -168,16 +230,13 @@ closeQuickView(): void {
 
 
 resetFilters(): void {
-  // Reset all filter variables
   this.selectedCategoryId = ""; // Reset category filter
   this.selectedBrandId = "";   // Reset brand filter
   this.sort = "";              // Reset sorting (if applicable)
 
-  // Reset the UI (uncheck radio buttons)
   this.uncheckRadioButtons();
 
-  // Reload the products list without filters
-  this.getProducts(1); // Load the first page of products
+  this.getProducts(1); 
 }
 
 // Helper method to uncheck all radio buttons
@@ -188,6 +247,14 @@ uncheckRadioButtons(): void {
   genderRadioButtons.forEach((radio: any) => (radio.checked = false));
   brandRadioButtons.forEach((radio: any) => (radio.checked = false));
 }
+
+
+
+
+
+
+
+
 
 
 }

@@ -4,9 +4,9 @@ import { Product } from '../../../_models/products';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { QuickviewComponent } from '../quickview/quickview.component';
-
 @Component({
   selector: 'app-featured-products',
+  standalone: true,
   imports: [CommonModule, FormsModule, QuickviewComponent],
   templateUrl: './featured-products.component.html',
   styleUrl: './featured-products.component.css'

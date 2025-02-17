@@ -30,13 +30,12 @@ export class ProductsService {
     ;
   }
  
-  getPaginatedProducts(page: number, itemsPerPage: number, sort: string, categoryId: string,) {
+getPaginatedProducts(page: number, itemsPerPage: number, sort: string, categoryId: string) {
     const params = {
         page: page,
         limit: itemsPerPage,
         sort: sort,
-        catid: categoryId ,
-        
+        catId: categoryId,
     };
     return this.http.get(`${this.baseUrl}/getProducts`, { params });
 }

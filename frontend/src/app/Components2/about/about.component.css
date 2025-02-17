@@ -1,0 +1,286 @@
+.banner {
+    background-image: url('/assets/contactheader.jpg'); 
+    background-size: cover;
+    background-repeat: no-repeat; 
+    background-position: center; 
+    position: relative;
+    height: 150px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; 
+    padding: 20px 0; 
+}
+
+.banner-text {
+    font-family: 'Baskerville Serial', serif;
+    color: rgb(255, 253, 253);
+    text-align: center;
+    margin-bottom: 10px; 
+}
+
+.banner-text p {
+    font-size: 40px;
+    line-height: 1.2;
+   
+}
+
+.banner-nav {
+    font-family: 'Arial', sans-serif; 
+    text-align: center; 
+}
+
+.banner-nav a {
+    text-decoration: none;
+    color: #ffffff; 
+    margin: 0 10px; 
+}
+.banner-nav a:hover{
+    color: yellow;
+    
+}
+
+.banner-nav span {
+    color: #ffffff; 
+}
+
+
+/*/////////////////////*/
+
+
+.container {
+    margin-top: 70px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 20px;
+}
+.text {
+    flex: 1 1 50%;
+    padding: 20px;
+
+}
+
+.spring{
+
+    font-family: 'Baskerville Serial', serif;
+    font-size:40px;
+    margin-bottom:30px ;
+}
+.image {
+    flex: 1 1 50%;
+    padding: 20px;
+}
+.image img {
+    max-width: 100%;
+    height: auto;
+}
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    .text, .image {
+        flex: 1 1 100%;
+    }
+}
+
+
+
+
+
+
+button {
+    margin-top: 20px;
+    padding: 20px 40px; 
+    font-size: 20px; 
+    color: #ffffff;
+    background-color: #000000;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease; 
+}
+
+button:hover {
+    background-color: #85411c;
+    color: #ddd; 
+}
+.sec2{
+
+    background-color: #f5f3f2;
+}
+
+.quote-section {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.quote-section blockquote {
+    font-family: 'Baskerville Serial', serif;
+    font-size: 28px;
+    line-height: 30px;
+    max-width: 800px;
+    margin: 0 auto;
+    color: #555;
+}
+
+/* Logos Section */
+.logos-section {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap; 
+    gap: 20px;
+    padding: 20px;
+}
+
+.logo-item {
+    max-width: 150px; 
+    height: auto;
+}
+
+.logo-item img {
+    width: 100%;
+    height: auto;
+    display: block; 
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .quote-section blockquote {
+        font-size: 20px;
+    }
+
+    .logos-section {
+        gap: 15px; 
+    }
+
+    .logo-item {
+        max-width: 120px; 
+    }
+}
+
+@media (max-width: 480px) {
+    .quote-section blockquote {
+        font-size: 18px; 
+    }
+
+    .logos-section {
+        gap: 10px; 
+    }
+
+    .logo-item {
+        max-width: 100px; 
+    }
+}
+
+
+
+
+/* Team Section */
+.team {
+    padding: 20px;
+    background-color: #fff;
+    text-align: center; /* Center-align all text in the team section */
+}
+
+.team .fs-1 {
+    font-size: 48px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 40px;
+}
+
+/* Cards Styling */
+.card {
+    border: none;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 20px;
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Add a slight lift effect on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-img-top {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 20px;
+    text-align: center;
+}
+
+.card-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.card-text {
+    font-size: 18px;
+    color: #555;
+}
+
+/* Align cards with space around */
+.team .imgCards {
+    display: flex;
+    justify-content: center; /* Center the cards horizontally */
+    flex-wrap: wrap;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .team .fs-1 {
+        font-size: 36px;
+        line-height: 40px;
+    }
+
+    .card-img-top {
+        height: 250px;
+    }
+
+    .card-title {
+        font-size: 20px;
+    }
+
+    .card-text {
+        font-size: 16px;
+    }
+
+    .team .imgCards {
+        gap: 15px; /* Reduce gap for smaller screens */
+    }
+}
+
+@media (max-width: 576px) {
+    .team .fs-1 {
+        font-size: 28px;
+        line-height: 32px;
+    }
+
+    .card-img-top {
+        height: 200px;
+    }
+
+    .card-title {
+        font-size: 18px;
+    }
+
+    .card-text {
+        font-size: 14px;
+    }
+
+    .team .imgCards {
+        gap: 10px; /* Further reduce gap for mobile screens */
+    }
+}

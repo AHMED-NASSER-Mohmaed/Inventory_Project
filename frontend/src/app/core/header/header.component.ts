@@ -12,7 +12,12 @@ import { CommonModule } from '@angular/common';
 })
 export class HeaderComponent  implements OnInit {
   tokenData: any=null;
-   token= localStorage.getItem("token");
+  token: string | null;
+
+
+  constructor() {
+    this.token = localStorage.getItem('token'); // or however you're storing your token
+  }
   ngOnInit(): void {
  
     if(this.token){
@@ -23,7 +28,9 @@ export class HeaderComponent  implements OnInit {
 
   }
 
-
+ logout(){
+  localStorage.removeItem("token");
+ }
 
 
 }

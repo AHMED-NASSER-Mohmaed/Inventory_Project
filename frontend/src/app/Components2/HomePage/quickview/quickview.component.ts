@@ -5,6 +5,7 @@ import { Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-quickview',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './quickview.component.html',
   styleUrls: ['./quickview.component.css']
