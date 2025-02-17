@@ -82,7 +82,7 @@ class AuthService {
   async verifyEmail(paramToken) {
     const token = crypto.createHash("sha256").update(paramToken).digest("hex");
     const user = await AuthRepository.findByVerificationToken(token);
-    
+
     console.log(user);
 
     if (!user) {
@@ -111,18 +111,22 @@ class AuthService {
       email,
       "+password +isActive +status"
     );
-    
-    if (!user || !user.isActive || !(await user.correctPassword(password))) {
+
+    if (!user || !(await user.correctPassword(password))) {
       throw new AppError("Incorrect email or password", 401);
     }
-    
-    if ( user.userType == "seller" ) {
-      if(user.status==0)
+
+    if (!user.isActive) {
+      throw new AppError("Incorrect email or password", 401);
+    }
+
+    if (user.userType == "seller") {
+      if (user.status == 0)
         throw new AppError("sorry, you credentials is not revised yet.", 401);
-      else if(user.status==-1)
+      else if (user.status == -1)
         throw new AppError("sorry, your credentials is rejected");
     } // ahmed updates
-    
+
     // uncomment later
     // if (!user.isEmailVerified) {
     //   throw new AppError(

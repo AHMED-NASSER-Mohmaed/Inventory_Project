@@ -17,6 +17,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-fileupload": "^1.5.1",
+    "express-rate-limit": "^7.5.0",
     "html-to-text": "^9.0.5",
     "imagekit": "^6.0.0",
     "inventory": "file:",
