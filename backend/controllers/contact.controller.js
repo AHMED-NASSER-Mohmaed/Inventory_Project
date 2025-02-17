@@ -16,7 +16,7 @@ class ContactController {
 
       //paginated one 
       .get(prot_rest("admin", "super_admin"), catchAsync(this.getAllContacts));
-/*
+
     this.router
       .route("/contact/:id")
       //no of use 
@@ -40,7 +40,7 @@ class ContactController {
       prot_rest("admin", "super_admin"),
       catchAsync(this.bulkMarkAsSeen)
     );
-*/
+
     //notify  forward use a mail 
 
 
