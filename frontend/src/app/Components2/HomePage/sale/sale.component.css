@@ -1,0 +1,75 @@
+.banner {
+    margin: 30px 0;
+    position: relative;
+    width: 100%;
+    display: block;
+}
+
+.banner img {
+    width: 100%;
+    height: auto;
+}
+
+.banner-text {
+    font-family: 'Baskerville Serial', serif;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-align: center;
+}
+
+.banner-text p {
+    font-size: 40px; 
+    line-height: 1.2;
+    margin: 10px;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+button {
+    margin-top: 20px;
+    padding: 20px 40px; 
+    font-size: 20px; 
+    color: #000000;
+    background-color: #f6f6f6;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease; 
+}
+
+button:hover {
+    background-color: #85411c;
+    color: #ddd; 
+}
+
+@media (max-width: 1024px) {
+    .banner-text p {
+        font-size: 35px;
+        line-height: 1.1;
+    }
+}
+
+@media (max-width: 768px) {
+    .banner-text p {
+        font-size: 25px; 
+        line-height: 1;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .banner-text p {
+        font-size: 15px; 
+        line-height: 0.7;
+    }
+
+    button {
+        font-size: 7px;
+    }
+}

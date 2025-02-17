@@ -4,6 +4,13 @@ const AuthMiddleware = require("../middlewares/auth.middleware");
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
 const pro_res = require("../utils/authMiddlewaresOptions");
+const {
+  validatorForQueries,
+} = require("../middlewares/validation.middlewares");
+const categoryService = require("../services/category.service");
+const AppError = require("../utils/appError");
+const { deleteFiles, upload } = require("../services/media.service");
+const { filter } = require("lodash");
 const reviewRouter = require("./review.controller");
 
 class ProductController {
@@ -66,6 +73,89 @@ class ProductController {
         pro_res(APP_CONFIG.SELLER, APP_CONFIG.ADMIN, APP_CONFIG.SUPPERADMIN), // this will be commented temporarily to test the crud operations first without constraints but it has to be uncommented later
         catchAsync(this.deleteProduct)
       );
+
+    /*
+    //site products
+    this.router.get(
+      "/getProducts",
+      validatorForQueries(this.allowedFilterFileds, this.allowedFileterFildesValues, this.allowedSortFileds, this.allowedSortFiledsValues),
+      catchAsync(this.getProducts),
+    )
+*/
+    this.router.patch(
+      "/updateProductMedia/:id",
+      pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER),
+      catchAsync(this.updateProductMedia)
+    );
+
+    /*
+    this.router.get(
+      "/CProducts",
+      pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+      validatorForQueries(
+        this.allowedFilterFileds,
+        this.allowedFileterFildesValues,
+        this.allowedSortFileds,
+        this.allowedSortFiledsValues
+      ),
+      catchAsync(this.CProducts)
+    )
+
+*/
+  }
+
+  allowedFilterFileds = ["isActive", "undefined"];
+  allowedFileterFildesValues = ["true", "false", "undefined"];
+
+  allowedSortFileds = ["price", "createdAt"];
+  allowedSortFiledsValues = ["asc", "desc"];
+
+  //status must be true
+
+  async CProducts(req, res, next) {
+    req.validatedParams["filters"]["sellerId"] = APP_CONFIG.COMPANY_ID;
+    req.validatedParams["filters"]["status"] = true;
+
+    if (req.query.catId) {
+      let arrOfChlidCat = await categoryService.getCategoies(filters);
+      req.validatedParams["filters"]["category"] = arrOfChlidCat;
+      // console.log("from here");
+    }
+
+    let result = await productService.getProducts(req.validatedParams);
+
+    res.status(200).json({
+      message: "success",
+      result,
+    });
+  }
+
+  async getProducts(req, res, next) {
+    req.validatedParams["filters"]["isActive"] = true;
+    req.validatedParams["filters"]["status"] = true;
+
+    if (req.query.catId) {
+      let filters = { isActive: true, _id: req.query.catId };
+
+      let arrOfChlidCat = await categoryService.getCategoies(filters);
+
+      req.validatedParams["filters"]["category"] = arrOfChlidCat;
+    }
+
+    req.validatedParams["projection"] = {
+      isActive: 0,
+      status: 0,
+      createdAt: 0,
+      updatedAt: 0,
+      sellerId: 0,
+    };
+
+    let result = await productService.getProducts(req.validatedParams);
+
+    res.status(200).json({
+      message: "success",
+      result,
+    });
   }
 
   async addProductForSeller(req, res, next) {
@@ -73,7 +163,6 @@ class ProductController {
       req.user,
       req.body
     );
-
     res.status(APP_CONFIG.HTTP_CREATED).json({
       message: "success",
       product,
@@ -91,6 +180,7 @@ class ProductController {
 
   async getAllProducts(req, res, next) {
     const products = await productService.getAllProducts();
+
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       results: products.length,
@@ -143,13 +233,29 @@ class ProductController {
       req.params.productId,
       req.body
     );
+
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       updatedProduct,
     });
   }
 
+  async verifySeller(productId) {
+    let product = await product.getProductById({ _id: productId });
+
+    if (product.sellerId !== user._id) {
+      throw new AppError(
+        "you are not autorized.",
+        APP_CONFIG.HTTP_UNAUTHORIZED
+      );
+    }
+  }
+
   async deleteProduct(req, res, next) {
+    if (user.userType == APP_CONFIG.SELLER) {
+      await this.verifySeller(req.params.productId);
+    }
+
     await productService.deleteProductById(req.params.productId);
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
@@ -175,6 +281,72 @@ class ProductController {
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       product,
+    });
+  }
+
+  async updateProductMedia(req, res, next) {
+    if (!req.params.id) {
+      throw new AppError("Invalid parameter", APP_CONFIG.HTTP_BAD_REQUEST);
+    }
+
+    const product = await productService.getProductById(req.params.id);
+
+    if (req.user.userType == APP_CONFIG.SELLER && product._id != req.user._id)
+      throw new AppError(
+        "you are not authorized",
+        APP_CONFIG.HTTP_UNAUTHORIZED
+      );
+
+    const incommigImages = req.files.keepedImages || [];
+    const uploadedImages = req.files["image"] || [];
+
+    if (
+      incommigImages.length + uploadedImages.length >
+      APP_CONFIG.MAX_IMAGE_COUNT
+    ) {
+      console.log("freeeking that");
+      throw new AppError(
+        "Can't upload more than four images!",
+        APP_CONFIG.HTTP_BAD_REQUEST
+      );
+    }
+
+    let deletedMedia = [];
+
+    let originalImages = product.images;
+
+    if (originalImages.length > incommigImages.length) {
+      for (let i = originalImages.length - 1; i >= 0; i--) {
+        if (!incommigImages.includes(originalImages[i])) {
+          deletedMedia.push(originalImages[i]["fileId"]);
+          originalImages.splice(i, 1);
+        }
+      }
+
+      if (!(await deleteFiles(deletedMedia))) {
+        console.log("Deleted media successfully.");
+        if (originalImages.length === 0) {
+          await productService.updateProductMedia([
+            APP_CONFIG.DP_IMAGE_DEFALUT_OBG,
+          ]);
+        }
+        throw new AppError(
+          "Something went wrong while deleting files",
+          APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR
+        );
+      }
+    }
+
+    const newImages = await upload(req.files, APP_CONFIG.PRODUCT_IMAGE_FOLDER);
+
+    console.log("done");
+    // Update the product with the new images
+    const updatedImages = [...originalImages, ...newImages.files];
+    await productService.updateProductMedia(req.params.id, updatedImages);
+
+    res.status(APP_CONFIG.HTTP_OK).json({
+      message: "Product media updated successfully",
+      data: updatedImages,
     });
   }
 }

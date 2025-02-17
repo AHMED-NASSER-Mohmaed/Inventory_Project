@@ -27,13 +27,17 @@ module.exports.staffRepo={
         }
     },
 
+/*
     getStaffOfType:async (data)=>{
+
         try{
             return await Staff.findOne({SSN:data.SSN,role:data.role});
         }catch(err){
             throw err;
         }
     },
+*/
+
 
     activeStaffOfType:async (data)=>{
         try{
@@ -42,7 +46,7 @@ module.exports.staffRepo={
             throw err;
         }
     },
-
+/*
     getALLStaffOfType:async (role_)=>{
         try{
             return Staff.find({role:role_});
@@ -50,7 +54,9 @@ module.exports.staffRepo={
             throw err;
         }
     },
-    
+    */
+
+
     
     getStaffOfTypeByFilter:async (filters,sort,page,limit)=>{
 
@@ -59,22 +65,20 @@ module.exports.staffRepo={
             const [results, total] = await Promise.all([
 
                 await Staff.find(filters)
+                    .collation({ locale: 'en', strength: 1 })
                     .sort(sort)
                     .skip((page - 1) * limit) // (starting index = page-1)*limit
                     .limit(limit)
                     .lean(),
     
-                await Staff.countDocuments(filters).exec()
+                await Staff.countDocuments(filters).collation({ locale: 'en', strength: 1 }).exec()
             ]);
     
             // console.log("from repo" , results);
     
             return inboxResult(results, total, page, limit);
 
-           
-
-
-
+  
         }catch(err){
             throw err;
         }

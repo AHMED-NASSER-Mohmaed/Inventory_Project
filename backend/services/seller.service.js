@@ -2,6 +2,9 @@ const { sellerRepo } = require("../repos/sellers.repo");
 const AppError = require("../utils/appError");
 const APP_CONFIG = require("../config/app.config")
 
+const sellerInventoryRepo = require("../repos/sinventory.repo");
+const productRepo = require("../repos/product.repo");
+
 //refactored
 async function  getSellersWithCallBack(validatedParams, callBack)  {
 
@@ -14,7 +17,7 @@ async function  getSellersWithCallBack(validatedParams, callBack)  {
     }
 
     try {
-        return await callBack(validatedParams.page, validatedParams.limit, sort)
+        return await callBack(validatedParams.page, validatedParams.limit, validatedParams.sort)
     } catch (err) {
         throw err;
     }
@@ -33,10 +36,17 @@ module.exports.sellerService = {
     },
     //return acknowlage  , or throw an exception.
     //done
-    deleteSeller: async (SSN) => {
+    deleteSeller: async (id) => {
         try {
 
-            const ack = await sellerRepo.deleteSeller(SSN);
+            const seller=await sellerRepo.getSeller(id);
+
+            // console.log(seller);
+
+            if(!seller['status'])
+                throw new AppError("you cannot de-active pending seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
+
+            const ack = await sellerRepo.deleteSeller(id);
 
             if (!ack.acknowledged) {
                 throw new AppError("user not found", APP_CONFIG.HTTP_BAD_REQUEST);
@@ -50,12 +60,18 @@ module.exports.sellerService = {
     },
 
     //done
-    activeSeller: async (SSN) => {
+    activeSeller: async (id) => {
         try {
 
-            const ack = await sellerRepo.activeSeller(SSN);
+            const seller=await sellerRepo.getSeller(id);
 
-
+            if(!seller['status'])
+                throw new AppError("you cannot active pending seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
+            else if(seller['status']==-1)
+                throw new AppError("you cannot active rejected seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
+                
+                
+            const ack= await sellerRepo.activeSeller(id);
 
             if (!ack.acknowledged) {
                 throw new AppError("user not found", APP_CONFIG.HTTP_BAD_REQUEST);
@@ -69,9 +85,10 @@ module.exports.sellerService = {
     },
 
     //done
-    approveSeller: async (SSN) => {
+    approveSeller: async (id) => {
         try {
-            const ack = await sellerRepo.approveSeller(SSN);
+
+            const ack = await sellerRepo.approveSeller(id);
 
             if (!ack.acknowledged) {
                 throw new AppError("user not found", APP_CONFIG.HTTP_BAD_REQUEST);
@@ -86,13 +103,36 @@ module.exports.sellerService = {
         }
     },
 
+    rejectSeller: async (id) =>{
+
+        try{
+            const seller=await sellerRepo.getSeller(id);
+            if(seller.status!=0)
+                throw new AppError("you can't reject approved seller.",APP_CONFIG.HTTP_BAD_REQUEST);
+
+            return await sellerRepo.rejectSeller(id);
+             
+        }catch(err){
+
+        }
+
+    },
+
     getAllSellers:async function (params) {
         try{
 
-            return await sellerRepo.getAllSellers();
+            return await sellerRepo.getSellers();
 
         }catch(err){
             throw err;
+        }
+    },
+
+    getCountByFilter:async function (filter){
+        try{
+            return sellerRepo.getCountByFilter(filter);
+        }catch(err){
+            return err;
         }
     },
 
@@ -132,6 +172,46 @@ module.exports.sellerService = {
             throw err;
         }
 
+   },
+
+   updateSellerById: async(sellerId, updateData, userType)=>{
+
+        try{
+
+            const { firstName, lastName,  phoneNumber,  SSN, companyName, companyRegistrationNumber, ...rest} = updateData;
+
+            
+            
+            if(userType == 'seller'){
+                return await sellerRepo.updateSellerById(sellerId, {
+                    ...(firstName !== undefined && { firstName }),
+                    ...(lastName !== undefined && { lastName }),
+                    ...(phoneNumber !== undefined && { phoneNumber })
+                });
+            }else if(userType == 'staff'){
+
+                if(companyName){
+                   const isUpdatedInventories = await sellerInventoryRepo.updateInventoryByProviderId(sellerId, {companyName});
+                    const isUpdatedProducts = await productRepo.updateProductBysellerId(sellerId, {companyName});
+                    if(!isUpdatedInventories || !isUpdatedProducts){
+                        throw new AppError("Failed to update related schemes!!");
+                    }
+                }
+
+                return await sellerRepo.updateSellerById(sellerId, {
+                    ...(firstName !== undefined && { firstName }),
+                    ...(lastName !== undefined && { lastName }),
+                    ...(phoneNumber !== undefined && { phoneNumber }),
+                    ...(SSN !== undefined && {SSN}),
+                    ...(companyName !== undefined && { companyName }),
+                    ...(companyRegistrationNumber !== undefined && { companyRegistrationNumber }),
+                  });
+
+            }
+            
+        }catch(err){
+
+        }
    }
 
 }

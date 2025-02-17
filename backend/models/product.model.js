@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const { APP_CONFIG } = require("../config/app.config");
 
 const ProductSchema = new mongoose.Schema(
   {
@@ -15,20 +16,28 @@ const ProductSchema = new mongoose.Schema(
     price: {
       type: Number,
       min: [0, "Price cannot be negative"],
+      default: 100,
     },
     images: [
       {
-        type: String,
-        validate: {
-          validator: function (url) {
-            return validator.isURL(url);
+        fileId: { type: String, default: APP_CONFIG.UDIAMGE_ID_VALUE },
+
+        url: {
+          type: String,
+          default: APP_CONFIG.PDIAMGE_URL_VALUE,
+
+          validate: {
+            validator: function (url) {
+              return validator.isURL(url);
+            },
+            message: "Please provide valid URLs for images",
           },
-          message: "Please provide valid URLs for images",
         },
       },
     ],
     description: {
       type: String,
+      default: "this is a good product.",
     },
     quantity: {
       type: Number,
@@ -38,7 +47,7 @@ const ProductSchema = new mongoose.Schema(
     category: {
       type: mongoose.Schema.ObjectId,
       required: [true, "Please provide the product category"],
-      // ref:"Category" // it should be uncommented but till we make the category CRUD operations it will stay commented
+      ref: "Category", // it should be uncommented but till we make the category CRUD operations it will stay commented
     },
     sellerId: {
       // there will be an object in the seller model in order to be used here when we wanna create a product without external seller
@@ -51,7 +60,7 @@ const ProductSchema = new mongoose.Schema(
     },
     isActive: {
       type: Boolean,
-      default: false,
+      default: true,
     },
 
     status: {

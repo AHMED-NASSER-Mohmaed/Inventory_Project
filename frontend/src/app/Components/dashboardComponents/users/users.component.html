@@ -1,0 +1,98 @@
+<!-- CONTENT -->
+<div class="parent3" [ngClass]="{'dark': isDarkMode}">
+<section id="content">
+
+    <!-- MAIN -->
+    <main>
+        <div class="head-title">
+            <div class="left">
+                <div class="head-flex">
+                    <h1>Hi, Admin!</h1>
+                    <div class="switch-container">
+                        <label class="switch-mode">
+                            <input type="checkbox" id="switch-mode" (change)="toggleDarkMode()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                
+                <ul class="breadcrumb">
+                    <li>
+                        <a href="#">Dashboard</a>
+                    </li>
+                    <li><i class='bx bx-chevron-right' ></i></li>
+                    <li>
+                        <a href="#">Users</a>
+                    </li>
+                    <li><i class='bx bx-chevron-right' ></i></li>
+                    <li>
+                        <a class="active" href="#">Customers</a>
+                    </li>
+                </ul>
+            </div>
+            
+        </div>
+
+        <ul class="box-info">
+            <li>
+                <i class='bx bxs-group' ></i>
+                <span class="text">
+                    <h3>{{users.length}}</h3>
+                    <p>Users</p>
+                </span>
+            </li>
+    
+        </ul>
+
+
+        <div class="table-data">
+            <div class="order">
+                <div class="head">
+                    <h3>Customers</h3>
+                    <i class='bx bx-search' ></i>
+                    <i class='bx bx-filter' ></i>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Created At</th>
+                            <th>Status</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let user of users; let i = index">
+                            <td>
+                                <img src="unnamed.jpg">
+                                <p>{{ user.firstName }}</p>
+                            </td>
+                            <td>{{ user.createdAt }}</td>
+                            <td>
+                                <span class="status process">{{user.createdAt}}</span>
+                            </td>
+                            <td>
+                                <div class="dropdown" [ngClass]="{'show': dropdownStates[i]}" (click)="toggleDropdown(i)">
+                                    <a class="btn btn-secondary dropdown-toggle btn-lg" role="button" id="dropdownMenuLink" aria-haspopup="true" aria-expanded="false" style=" padding: 0px 5px; padding-left: 8px;">
+                                        ...
+                                    </a>
+                                    
+                                    <div class="dropdown-menu dropdown-menu-lg" [ngClass]="{'show': dropdownStates[i]}" aria-labelledby="dropdownMenuLink" style="min-width: 200px;">
+                                        <a class="dropdown-item p-3" href="#"><i class='bx bx-show'></i> Show</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item p-3" href="#"><i class='bx bx-edit'></i> Update</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item p-3" (click)="openConfirmDialog(user._id)" style="cursor:pointer;"><i class='bx bx-trash'></i> Delete</a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    <!-- MAIN -->
+</section>
+</div>

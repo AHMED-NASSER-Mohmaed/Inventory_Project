@@ -1,2 +1,0 @@
-put you frontend project here directily.
-inside frontend folder.

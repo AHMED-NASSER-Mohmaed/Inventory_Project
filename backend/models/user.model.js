@@ -62,12 +62,16 @@ const userSchema = new mongoose.Schema(
       enum: ["staff", "customer", "seller"],
       required: true,
       default: "customer",
-      // select:false,
+      // select:false, // no one here should have the authority to type select here --> that command is directed to both of you (Ahmad Nasser && Fairouz)
     },
     isActive: {
       type: Boolean,
       default: true,
     },
+
+
+    branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", default: undefined },
+
 
     changedPasswordAt: Date,
     passwordResetCode: Number,
