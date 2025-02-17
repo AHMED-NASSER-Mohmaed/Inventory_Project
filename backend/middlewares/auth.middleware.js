@@ -57,23 +57,22 @@ module.exports.restrictTo = (...userTypes) => {
   return (req, res, next) => {
     //userType , role
     userTypes = userTypes.flat();
-    console.log(userTypes);
-    if (
-      !userTypes.includes(req.user.userType) &&
-      !userTypes.includes(req.user.role)
-    ) {
+    // console.log(userTypes,"from restirct to t");
+
+   
       // to be reviewed
       console.log(`request user type from post: ${req.user.userType}`);
       if (
         !userTypes.includes(req.user.userType) &&
         !userTypes.includes(req.user.role)
       ) {
-        // to be reviewed
-        return next(
-          new AppError("You do not have permission to perform this action", 403)
-        );
+         
+        
+        throw  new AppError("You do not have permission to perform this action", 403)
+        
       }
+
       next();
-    }
+    
   };
 };
