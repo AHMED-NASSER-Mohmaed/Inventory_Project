@@ -23,7 +23,7 @@ const SellerSchema = new mongoose.Schema(
 
 
     //online branch
-    branch: { type: mongoose.Schema.Type.ObjectId, ref: "Bracnh", }
+    branch: { type: mongoose.Schema.ObjectId, ref: "Bracnh", }
   },
   {
     timestamps: true,
