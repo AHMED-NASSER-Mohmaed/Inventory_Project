@@ -3,7 +3,6 @@ const ContactService = require("../services/contact.service");
 const prot_rest = require("../utils/authMiddlewaresOptions");
 
 class ContactController {
-
   constructor() {
     this.router = require("express").Router();
     this.initializeRoutes();
@@ -14,20 +13,14 @@ class ContactController {
       .route("/contact")
       .post(catchAsync(this.createContact))
 
-      //paginated one 
-      .get(prot_rest("admin", "super_admin"), catchAsync(this.getAllContacts));
+      //paginated one
+      .get(catchAsync(this.getAllContacts));
 
     this.router
       .route("/contact/:id")
-      //no of use 
+      //no of use
       .get(prot_rest("admin", "super_admin"), catchAsync(this.getContactById))
-
-      .delete(
-        prot_rest("admin", "super_admin"),
-
-        //soft delete 
-        catchAsync(this.deleteContact)
-      );
+      .patch(prot_rest("admin", "super_admin"), catchAsync(this.deleteContact));
 
     this.router.patch(
       "/contact/:id/mark-seen",
@@ -41,14 +34,20 @@ class ContactController {
       catchAsync(this.bulkMarkAsSeen)
     );
 
-    //notify  forward use a mail 
+    //notify  forward use a mail
+    this.router.get(
+      "/contact/:id/auto-reply",
+      prot_rest("admin", "super_admin"),
+      catchAsync(this.sendAcknowledgementEmail)
+    );
 
-
-    //admin replay to customer 
-    // id --> review -- mail + content :[ massage:[different message] ]  
-
-
-    
+    //admin replay to customer
+    this.router.post(
+      "/contact/:id/reply",
+      prot_rest("admin", "super_admin"),
+      catchAsync(this.sendReplyToContact)
+    );
+    // id --> review -- mail + content :[ massage:[different message] ]
   }
 
   async createContact(req, res) {
@@ -101,10 +100,26 @@ class ContactController {
   }
 
   async deleteContact(req, res) {
-    await ContactService.deleteContact(req.params.id);
-    res.status(204).json({
+    const contact = await ContactService.deleteContact(req.params.id);
+    res.status(200).json({
       status: "success",
-      data: null,
+      data: contact,
+    });
+  }
+
+  async sendAcknowledgementEmail(req, res) {
+    await ContactService.sendAcknowledgementEmail(req.params.id);
+    res.status(200).json({
+      status: "success",
+      message: "Acknowledgement email sent successfully",
+    });
+  }
+
+  async sendReplyToContact(req, res) {
+    await ContactService.sendReplyToContact(req.params.id, req.body.content);
+    res.status(200).json({
+      status: "success",
+      message: "Reply sent successfully",
     });
   }
 }

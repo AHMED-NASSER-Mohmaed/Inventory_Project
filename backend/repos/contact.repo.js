@@ -50,7 +50,11 @@ class ContactRepository {
 
   async deleteContact(id) {
     try {
-      return await Contact.findByIdAndDelete(id);
+      return await Contact.findByIdAndUpdate(
+        id,
+        { isActive: false },
+        { new: true, runValidators: true }
+      );
     } catch (err) {
       throw err;
     }

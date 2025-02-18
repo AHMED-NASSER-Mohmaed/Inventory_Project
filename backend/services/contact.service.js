@@ -1,6 +1,7 @@
 const Contact = require("../models/contact.model");
 const ContactRepository = require("../repos/contact.repo");
 const AppError = require("../utils/appError");
+const Email = require("../utils/email");
 
 class ContactService {
   async createContact(contactData) {
@@ -64,6 +65,31 @@ class ContactService {
       throw new AppError("No contact found with this id", 400);
     }
     return contact;
+  }
+
+  async sendAcknowledgementEmail(id) {
+    const contact = await ContactRepository.getContactById(id);
+    const user = { firstName: contact.name, email: contact.email };
+
+    try {
+      await new Email(user).sendContactAcknowledgement();
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async sendReplyToContact(id, content) {
+    if (!content) {
+      throw new AppError("Content must be provided", 400);
+    }
+    const contact = await ContactRepository.getContactById(id);
+    const user = { firstName: contact.name, email: contact.email };
+
+    try {
+      await new Email(user).sendContactReply(content);
+    } catch (e) {
+      throw e;
+    }
   }
 }
 
