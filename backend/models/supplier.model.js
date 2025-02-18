@@ -27,23 +27,16 @@ const SupplierSchema = new mongoose.Schema({
   //driven attribute ....
   commissionAmount:Number,
 
-  products: [
-    {
-      product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
-
-      originalCost: Number,
-
-      stock: { type: Number, default: 0 },
-
-    }
-  ],
-
+  
 
 
 });
 
+
+
 module.exports = mongoose.model("Supplier", SupplierSchema);
 
+/*
 function uniquenessVal(field) {
 
   return async function (value) {
@@ -56,7 +49,6 @@ function uniquenessVal(field) {
   }
 
 }
-
-
+*/
 
 

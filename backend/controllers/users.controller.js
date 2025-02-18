@@ -187,7 +187,7 @@ const sellerOp = {
     getSellers: async (req, res, next) => {
 
 
-        console.log(req.validatedParams,"from controller ..");
+        // console.log(req.validatedParams,"from controller ..");
 
         // if(req.validatedParams.status === 1 ) // then is ative may be undefined or true false ... approve
 

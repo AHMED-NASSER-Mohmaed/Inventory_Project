@@ -37,7 +37,7 @@ process.on("uncaughtException", (err) => {
       databaseName: APP_CONFIG.MONGO_DATABASE_NAME,
     },
     callback: async () => {
-
+/*
         let superAdmin={
           firstName:"ahmed",
           lastName:"nasser",
@@ -132,7 +132,7 @@ process.on("uncaughtException", (err) => {
         }
 
         // console.log(await Seller.updateMany({ photo: APP_CONFIG.DU_IMAGE_DEFALUT_OBG }));
-      
+   */   
       console.log("App database has connected successfully");
       app.listen(APP_CONFIG.HTTP_PORT, "0.0.0.0", () => {
         console.log(`App is up and running on port ${APP_CONFIG.HTTP_PORT}`);
