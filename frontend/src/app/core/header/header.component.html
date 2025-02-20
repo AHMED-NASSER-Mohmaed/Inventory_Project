@@ -42,7 +42,7 @@
                     </li>
 
                    <li class="nav-item"  *ngIf="token">
-                     <p class="nav-link mb-0 text-dark">Hi, {{tokenData.id.firstName}}</p>
+                     <p  *ngIf="token" class="nav-link mb-0 text-dark">Hi, {{tokenData.id.firstName}}</p>
                    </li>
 
                 </ul>

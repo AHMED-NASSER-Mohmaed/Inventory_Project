@@ -7,6 +7,7 @@ import { QuickviewComponent } from '../quickview/quickview.component';
 
 @Component({
   selector: 'app-new-arrival',
+  standalone: true,
   imports: [CommonModule, FormsModule, QuickviewComponent],
   templateUrl: './new-arrival.component.html',
   styleUrl: './new-arrival.component.css'

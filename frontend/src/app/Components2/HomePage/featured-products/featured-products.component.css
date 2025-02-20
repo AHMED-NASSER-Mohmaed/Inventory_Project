@@ -30,20 +30,23 @@
 .image-container {
     position: relative;
     overflow: hidden;
+    width: 100%;
 }
 
 .image-container img {
     width: 100%;
+
     display: block;
     transition: transform 0.3s ease;
+
 }
 
 .img-body{
-    text-align: center;
+    text-align: center;  
 }
 
 .add-to-cart-btn {
-    width: 380px;
+    width: 340px;
     border-radius: 0;
     background-color: rgb(255, 255, 255);
     border:#85411c solid 1px ;
@@ -68,7 +71,7 @@
     transform: scale(1.05);
 }
 
-.overlay-icons {
+.overlay-icons{
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -133,4 +136,27 @@
     .add-to-cart-btn {
         width: 80%; 
     }
+}
+
+.button-container {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+}
+
+.Collectionbtn {
+    margin-top: 20px;
+    padding: 20px 40px; 
+    font-size: 20px; 
+    color: #ddd; 
+    background-color: #85411c;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease; 
+   
+}
+
+.Collectionbtn:hover {
+    background-color: #ddd;
+    color: #85411c; 
 }

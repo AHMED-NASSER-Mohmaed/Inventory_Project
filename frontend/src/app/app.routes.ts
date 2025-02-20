@@ -19,6 +19,7 @@ import { LandingPageComponent } from './Components2/HomePage/landing-page/landin
 import { Component } from '@angular/core';
 import { ContactsComponent } from './Components2/contacts/contacts.component';
 import { AboutComponent } from './Components2/about/about.component';
+import { SpringCollectionComponent } from './Components2/HomePage/spring-collection/spring-collection.component';
 
 export const routes: Routes = [
 
@@ -44,6 +45,11 @@ export const routes: Routes = [
         path: 'featured-products',
         component: FeaturedProductsComponent
     }    
+,
+{
+    path: 'springCollection',
+    component: SpringCollectionComponent
+} 
 ,
     {
         path: 'category',

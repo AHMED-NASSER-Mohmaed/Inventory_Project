@@ -2,7 +2,7 @@
 
 <div class="mt-5 container text-center">
     <p style="font-family: 'Baskerville Serial', serif;" class="fs-1 fw-medium">Featured products</p>
-    <p class="featuredProducts">
+    <p class="featuredProducts" style="margin-bottom: 50px;" >
         We are happy to introduce the new Lawson Collection. These are three quartz models <br>
         designed with simplicity and elegance kept in mind.
     </p>
@@ -10,9 +10,9 @@
 
 <div class="container">
     <div class="row">
-        <!-- Loop through featured products -->
-        <div *ngFor="let product of products" class="col">
-            <div class="image-container position-relative">
+
+      <div *ngFor="let product of products" class="col">
+            <div class="image-container ">
               <img [src]="product.images[0].url" class="card-img-top product-img" alt="{{ product.name }}">
               <div class="overlay-icons">
                 <a class="product-item product-link product-icon" href="#"><i class="fas fa-heart"></i></a>
@@ -27,6 +27,11 @@
             </div>
           </div>
     </div>
+</div>
+
+
+<div class="button-container">
+  <button class="Collectionbtn" [routerLink]="['/products']">Shop New Collection</button>
 </div>
 
 <!-- Quick View Modal -->

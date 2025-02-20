@@ -24,7 +24,7 @@ export class ProductsListComponent implements OnInit {
   activeCategory: any;
   selectedCategoryId: string = ""; 
   brandsByCategory:any;
-  selectedBrandId: string = ""; // New property for selected brand
+  selectedBrandId: string = ""; 
 
   showQuickView: boolean = false;
   selectedProduct: Product | null = null;
@@ -43,14 +43,17 @@ export class ProductsListComponent implements OnInit {
   total: number = 0;
   sort:string="";
 
+
+  
+
   constructor(
     private productsService: ProductsService,
-    private route: ActivatedRoute // Inject ActivatedRoute
+    private route: ActivatedRoute 
   ) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      this.selectedCategoryId = params['catId'] || ""; // Get the catId from query params
+      this.selectedCategoryId = params['catId'] || ""; 
       this.selectedBrandId= this.selectedCategoryId;
       this.getProducts();
     });
@@ -73,10 +76,9 @@ export class ProductsListComponent implements OnInit {
 
 
   onSortChange(event: Event): void {
-    const selectElement = event.target as HTMLSelectElement; // Cast to HTMLSelectElement
-    const sortValue = selectElement.value; // Get the selected value
+    const selectElement = event.target as HTMLSelectElement; 
+    const sortValue = selectElement.value; 
 
-    // Convert the sort value to the format expected by the API
     switch (sortValue) {
         case 'price_asc':
             this.sort = 'price:asc';
@@ -89,48 +91,9 @@ export class ProductsListComponent implements OnInit {
             break;
     }
 
-    this.getProducts(1); // Reset to the first page when sorting changes
+    this.getProducts(1);
 }
 
-
-
-
-
-//   getProducts(pageNumber: number = 1): void {
-//     console.log('Fetching products with filters:', {
-//         category: this.selectedCategoryId,
-//         brand: this.selectedBrandId,
-//         page: pageNumber
-//     }); 
-
-//     // if (this.productCache[this.currentPage]) {
-//     //     this.products = this.productCache[this.currentPage];
-//     //     this.updatePaginationState();
-//     // } else {
-//         this.sub = this.productsService.getPaginatedProducts(
-//           this.currentPage, this.itemsPerPage, this.sort, this.selectedBrandId)
-//           .subscribe({
-//             next: (res: any) => {
-//                 console.log('API Response:', res);
-//                 this.products = res.result.result;
-//                 this.totalPages = Math.ceil(res.result.total / this.itemsPerPage);
-//                 this.pagesArray = Array(this.totalPages).fill(0).map((x, i) => i + 1);
-
-//                 this.hasNextPage = !!res.result.next;
-//                 this.hasPreviousPage = !!res.result.previous;
-//                 this.productCache[this.currentPage] = this.products;
-//                 this.updatePaginationState();
-//                 this.total = res.result.total - 1;
-//             },
-//             error: (error) => {
-//                 console.log('API Error:', error);
-//             },
-//             complete: () => {
-//                 console.log('API Call Complete'); 
-//             }
-//         });
-//      //}
-// }
 
 
 
@@ -165,8 +128,6 @@ getProducts(pageNumber: number = 1): void {
           }
       });
 }
-
-
 
 
 
@@ -213,14 +174,12 @@ getProducts(pageNumber: number = 1): void {
 }
 
 
-
-
   openQuickView(product: any): void {
     this.selectedProduct = product;
     this.showQuickView = true;
 }
 
-closeQuickView(): void {
+  closeQuickView(): void {
     this.showQuickView = false;
 }
 
