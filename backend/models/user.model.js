@@ -4,10 +4,7 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const { APP_CONFIG } = require("../config/app.config");
 
-
-
 const userSchema = new mongoose.Schema(
-
   {
     firstName: {
       type: "string",
@@ -35,11 +32,9 @@ const userSchema = new mongoose.Schema(
         message: "Please provide a valid phone number",
       },
     },
-    photo: { 
-      
-        fileId:{ type:String , default :  APP_CONFIG.UDIAMGE_ID_VALUE} , 
-        url:{type:String , default: APP_CONFIG.UDIMAGE_URL_VALUE   },
-      
+    photo: {
+      fileId: { type: String, default: APP_CONFIG.UDIAMGE_ID_VALUE },
+      url: { type: String, default: APP_CONFIG.UDIMAGE_URL_VALUE },
     },
     password: {
       type: String,
@@ -71,34 +66,36 @@ const userSchema = new mongoose.Schema(
     },
     isActive: {
       type: Boolean,
-      default: true
+      default: true,
     },
+
+
+    branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", default: undefined },
+
 
     changedPasswordAt: Date,
     passwordResetCode: Number,
     passwordResetCodeExpires: Date,
 
-    passwordResetToken: {type:String , select:false},
+    passwordResetToken: { type: String, select: false },
 
-    passwordResetTokenExpires: {type:Date , select:false},
+    passwordResetTokenExpires: { type: Date, select: false },
 
-    emailVerificationToken: {type:String , select:false},
+    emailVerificationToken: { type: String, select: false },
 
-    emailVerificationTokenExpires: {type:Date , select:false},
+    emailVerificationTokenExpires: { type: Date, select: false },
 
     isEmailVerified: {
       type: Boolean,
       default: false,
-      select:false,
+      select: false,
     },
-
-     
   },
   { discriminatorKey: "kind", timestamps: true }, // 'kind' acts as a discriminator field
   {
     timestamps: true,
-  },
-   );
+  }
+);
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
