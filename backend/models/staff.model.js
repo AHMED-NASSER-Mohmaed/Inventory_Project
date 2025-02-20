@@ -7,6 +7,10 @@ const StaffSchema = new mongoose.Schema({
   SSN:{ type:String , required:true , unique:true },
   role: { type: String, enum: ["super_admin", "clerk", "cashier" , "admin"] , required: true , select:true },
     
+
+  branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", default: undefined },
+
+  
 },{
     timestamps: true,
   }

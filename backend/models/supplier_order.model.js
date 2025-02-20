@@ -6,29 +6,19 @@ const SupplierOrderSchema = new mongoose.Schema({
       {
         product: { type : mongoose.Schema.ObjectId , required: true , ref:"Product" },
 
-        reqQty: { type: Number, required: true },
+        qty: { type: Number, required: true },
 
-        originalPrice: { type: Number, required: true },
+        //dose not change over the time....
+        cost: { type: Number, required: true },
         
+        //driven attribute = cost * qty
         totalAmount: { type: Number, required: true },
 
       },
     ],
 
-    /*
-    status: {
-
-      type: String,
-
-      enum: ["Pending", "Delivered", "Cancelled"],
-
-      default: "Pending",
-
-    },
-
-    */
-    orderedDate: { type: Date, default: Date.now },
-    arrivalDate: { type: Date },
+    orderedDate: { type: Date,},
+    arrivalDate: { type: Date ,  default: Date.now },
 
     supplier: { type: mongoose.Schema.ObjectId , required: true , ref:'Supplier'},
 

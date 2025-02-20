@@ -98,7 +98,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
     }
  
     //  be genaric fucntion
-    console.log(req.validatedParams, "after");
+    // console.log(req.validatedParams, "after");
 
     if (!req.validatedParams)
       req.validatedParams = {};
@@ -173,7 +173,7 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
     //   });
 
 
-    console.log("from filter..", req.validatedParams);
+    // console.log("from filter..", req.validatedParams);
 
     next();
   }
