@@ -1,13 +1,22 @@
-const mongoose=require("../mongoose");
+const mongoose = require("mongoose");
 
-//make realtion 
+const userProductSchema = new mongoose.Schema({
+  customerId: {
+    type: mongoose.Schema.ObjectId,
+  },
+  productIds: [
+    {
+      type: mongoose.Schema.ObjectId,
+    },
+  ],
+  purchaseDate: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
-const userProductSchema=mongoose.Schema({
-	customerId: {type:mongoose.Schema.ObjectId},
-	productId:[ {type : mongoose.Schema.ObjectId}] ,
-})
+userProductSchema.index({ customerId: 1, productIds: 1 }); // for faster lookups
 
+const userProduct = mongoose.model("UserProduct", userProductSchema);
 
-const userProduct=  mongoose.model("UserProduct",userProductSchema);
-
-exports.userProduct=userProduct;
+module.exports = userProduct;

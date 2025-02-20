@@ -10,7 +10,7 @@ const validateSortPaginationParams = (allowedSort) => {
 
     let sort = { createdAt: -1 }; // Default sort
 
-    // console.log("from sort and pagination ", req.validatedParams.filters);
+    
 
     if (req.query.sort) {
       try {
@@ -98,7 +98,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
     }
  
     //  be genaric fucntion
-    console.log(req.validatedParams, "after");
+    // console.log(req.validatedParams, "after");
 
     if (!req.validatedParams)
       req.validatedParams = {};
