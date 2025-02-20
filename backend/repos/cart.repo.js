@@ -6,11 +6,11 @@ const cartModel = require("../models/cart.model");
 module.exports.CartRepo = {
   //we assum total qty here is valid
   //we have to check if user has a cart or not
-  addToCart: async (UserId, productId, qty, isGust_ = flase) => {
+  addToCart: async (UserId, productId, qty, isGuest = false) => {
     try {
-      let expirydate;
+      let expiryDate;
       if (isGuest) {
-        expirydate = new Date() + 7;
+        expiryDate = new Date() + 7;
       }
 
       const cart = await Cart.findOneAndUpdate(
@@ -18,8 +18,8 @@ module.exports.CartRepo = {
         {
           $set: {
             "products.$.qty": qty,
-            expireAt: expirydate,
-            isGuest: isGust_,
+            expireAt: expiryDate,
+            isGuest: isGuest,
           },
         },
         { new: true }
@@ -29,7 +29,7 @@ module.exports.CartRepo = {
         const updatedCart = await Cart.findOneAndUpdate(
           { _id: customerId },
           { $push: { products: { productId, qty } } },
-          { $set: { expireAt: expirydate, isGuest: isGust_ } },
+          { $set: { expireAt: expiryDate, isGuest: isGuest } },
           { new: true }
         );
 
@@ -44,15 +44,15 @@ module.exports.CartRepo = {
 
   //this function is assume all args is valid
   deleteFromCart: async (userId, productId, isGuest_) => {
-    let expirydate;
+    let expiryDate;
     if (isGuest_) {
-      expirydate = new Date() + 7;
+      expiryDate = new Date() + 7;
     }
     try {
       await Cart.UpdateOne(
         { customerId: userId },
         { $pull: { products: { productId } } },
-        { $set: { expireAt: expirydate } },
+        { $set: { expireAt: expiryDate } },
         { new: true }
       );
     } catch (error) {
@@ -81,7 +81,7 @@ module.exports.CartRepo = {
   getCart: async (userId) => {
     try {
       return await Cart.findOne({ _id: userId });
-    } catch (err) {
+    } catch (error) {
       throw error;
     }
   },
