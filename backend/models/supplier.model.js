@@ -14,7 +14,7 @@ const SupplierSchema = new mongoose.Schema({
   ,
 
   phoneNumber: {
-    type: String, required: [true, "please provide a company name"], unique: true,
+    type: String, required: [true, "please provide a phone number"], unique: true,
   },
 
   companyRegistrationNumber: { type: String, required: true, unique: true },

@@ -1,7 +1,7 @@
 const Staff=require("../models/staff.model");
-const APP_CONST=require("../config/app.config");
-
-const {inboxResult}=require("../utils/apiFeatures")
+ 
+const {inboxResult}=require("../utils/apiFeatures");
+ 
 
 
 module.exports.staffRepo={
@@ -12,50 +12,34 @@ module.exports.staffRepo={
         try{
             data.userType="staff";
 
-            return await Staff.create(data);
+            if(await Staff.create(data))
+                return true
+            return false; 
 
         }catch(err){
             throw err;
         }
     },
 
-    deleteStaffOfType:async (data)=>{
+    deleteStaffOfType:async (filters)=>{
         try{
-            return await Staff.updateOne({ SSN:data.SSN , role:data.role },{isActive:false});
+            return await Staff.updateOne(filters,{$set:{"isActive":false}});
         }catch(err){
             throw err;
         }
     },
 
-/*
-    getStaffOfType:async (data)=>{
+ 
 
+
+    activeStaffOfType:async (filters)=>{
         try{
-            return await Staff.findOne({SSN:data.SSN,role:data.role});
+            return await Staff.updateOne(filters,{$set:{"isActive":true}});
         }catch(err){
             throw err;
         }
     },
-*/
-
-
-    activeStaffOfType:async (data)=>{
-        try{
-            return await Staff.updateOne({SSN:data.SSN,role:data.role},{$set:{isActive:true}});
-        }catch(err){
-            throw err;
-        }
-    },
-/*
-    getALLStaffOfType:async (role_)=>{
-        try{
-            return Staff.find({role:role_});
-        }catch(err){
-            throw err;
-        }
-    },
-    */
-
+ 
 
     
     getStaffOfTypeByFilter:async (filters,sort,page,limit)=>{
@@ -69,6 +53,7 @@ module.exports.staffRepo={
                     .sort(sort)
                     .skip((page - 1) * limit) // (starting index = page-1)*limit
                     .limit(limit)
+                    .select("-__v -kind")
                     .lean(),
     
                 await Staff.countDocuments(filters).collation({ locale: 'en', strength: 1 }).exec()
@@ -79,6 +64,17 @@ module.exports.staffRepo={
             return inboxResult(results, total, page, limit);
 
   
+        }catch(err){
+            throw err;
+        }
+    },
+
+    updateStaffOfType:async (filters,data)=>{
+        
+        try{
+
+            return await Staff.updateOne(filters,data);
+
         }catch(err){
             throw err;
         }

@@ -1,4 +1,5 @@
 const Contact = require("../models/contact.model");
+const {inboxResult}=require("../utils/apiFeatures")
 
 class ContactRepository {
   async createContact(data) {
@@ -9,14 +10,33 @@ class ContactRepository {
     }
   }
 
-  async getAllContacts() {
+  async getContacts(filters, sort, page, limit) {
+
     try {
-      const contacts = await Contact.find();
-      const unseenCount = await Contact.countDocuments({ isSeen: false });
-      return { contacts, unseenCount };
+
+      const [results, total] = await Promise.all([
+
+        await Contact.find(filters)
+          .sort(sort)
+          .skip((page - 1) * limit) // (starting index = page-1)*limit
+          .limit(limit)
+          .select("-__v")
+          .lean(),
+
+        await Contact.countDocuments(filters).collation({ locale: 'en', strength: 1 }).exec()
+      ]);
+
+      // console.log("from repo" , results);
+
+      return inboxResult(results, total, page, limit);
+
+
     } catch (err) {
       throw err;
     }
+
+
+
   }
 
   async getContactById(id) {

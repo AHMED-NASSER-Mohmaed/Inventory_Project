@@ -1,6 +1,7 @@
 const catchAsync = require("../utils/catchAsync");
 const ContactService = require("../services/contact.service");
 const prot_rest = require("../utils/authMiddlewaresOptions");
+const { validateSearchParams, validatorFilterParams, validateSortPaginationParams } = require("../middlewares/validation.middlewares");
 
 class ContactController {
   constructor() {
@@ -14,7 +15,10 @@ class ContactController {
       .post(catchAsync(this.createContact))
 
       //paginated one
-      .get(catchAsync(this.getAllContacts));
+      .get(prot_rest("admin", "super_admin"),
+        validateSortPaginationParams(this.allowedSort),
+        validatorFilterParams(this.allowedFilters, this.allowedValues),
+        catchAsync(this.getContacts));
 
     this.router
       .route("/contact/:id")
@@ -58,15 +62,21 @@ class ContactController {
     });
   }
 
-  async getAllContacts(req, res) {
-    const { contacts, unseenCount } = await ContactService.getAllContacts();
+  //filters
+  allowedFilters = [['isSeen', 'isActive', 'undefined']]
+  allowedValues = [['true', 'false', 'undefined']]
+  allowedSort = ['createdAt', 'undefined']
+
+  //pagination
+  async getContacts(req, res) {
+
+    let result = await ContactService.getContacts(req.validatedParams);
 
     res.status(200).json({
       status: "success",
-      results: contacts.length,
-      unseenCount,
-      data: contacts,
+      result
     });
+
   }
 
   async getContactById(req, res) {
