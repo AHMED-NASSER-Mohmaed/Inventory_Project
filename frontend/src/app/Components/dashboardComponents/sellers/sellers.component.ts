@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { User } from '../../../_models/user';
-import { CustomersService } from '../../../_services/customers.service';
 import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.component';
 import { ConfirmDialogComponent2 } from '../../../confirm-dialog2/confirm-dialog2.component';
 import { ConfirmDialogImgchangeComponent } from '../../../confirm-dialog-imgchange/confirm-dialog-imgchange.component';
@@ -16,6 +15,7 @@ import { ConfirmDialogApproveseller2Component } from '../../../confirm-dialog-ap
 import {MatMenuModule} from '@angular/material/menu';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { SellerService } from '../../../_services/seller.service';
 
 @Component({
   selector: 'app-sellers',
@@ -76,7 +76,7 @@ export class SellersComponent implements OnInit, OnDestroy {
   // Add new property for search placeholder
   searchPlaceholder: string = ' Search By Name...';
 
-  constructor(private customerService: CustomersService, public dialog: MatDialog) {}
+  constructor(private sellerService: SellerService, public dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.updateSearchPlaceholder();
@@ -127,7 +127,7 @@ export class SellersComponent implements OnInit, OnDestroy {
       sortParam = `&sort=${this.sortField === 'name' ? 'name' : this.sortField}:${this.sortDirection}`;
     }
   
-    const obs = this.customerService.getPaginatedSellersByStatus(
+    const obs = this.sellerService.getPaginatedSellersByStatus(
       this.currentPage, 
       this.itemsPerPage, 
       filterParam,
@@ -225,7 +225,7 @@ export class SellersComponent implements OnInit, OnDestroy {
 
   // Seller actions
   deActiveSeller(_id: string): void {
-    const sub = this.customerService.deActiveSeller(_id).subscribe({
+    const sub = this.sellerService.deActiveSeller(_id).subscribe({
       next: (res) => {
         console.log(res);
         const deactivatedSeller = this.users.find(u => u._id === _id);
@@ -266,7 +266,7 @@ export class SellersComponent implements OnInit, OnDestroy {
   }
 
   activateSeller(_id: string): void {
-    const sub = this.customerService.activateSeller(_id).subscribe({
+    const sub = this.sellerService.activateSeller(_id).subscribe({
       next: (res) => {
         console.log(res);
         const activatedSeller = this.users.find(u => u._id === _id);
@@ -307,7 +307,7 @@ export class SellersComponent implements OnInit, OnDestroy {
   }
 
   approveSeller(_id: string, source: 'pending' | 'rejected' = 'pending'): void {
-    const sub = this.customerService.approveSeller(_id).subscribe({
+    const sub = this.sellerService.approveSeller(_id).subscribe({
       next: (res) => {
         console.log(res);
         const sourceStatus = source === 'pending' ? 'waiting' : 'rejected';
@@ -356,7 +356,7 @@ export class SellersComponent implements OnInit, OnDestroy {
   }
 
   rejectSeller(_id: string): void {
-    const sub = this.customerService.rejectSeller(_id).subscribe({
+    const sub = this.sellerService.rejectSeller(_id).subscribe({
       next: (res) => {
         console.log(res);
         const rejectedSeller = this.users.find(user => user._id === _id);
@@ -463,7 +463,7 @@ export class SellersComponent implements OnInit, OnDestroy {
   toggleEdit(event?: any): void {
     if (this.editing) {
       const workingBackup = { ...this.backupUser };
-      const sub = this.customerService.updateSeller(this.selectedUser._id, this.selectedUser).subscribe({
+      const sub = this.sellerService.updateSeller(this.selectedUser._id, this.selectedUser).subscribe({
         next: (res: any) => {
           if (res.message === 'success') {
             const index = this.users.findIndex(u => u.SSN === this.selectedUser.SSN);
@@ -514,7 +514,7 @@ export class SellersComponent implements OnInit, OnDestroy {
         const sub = dialogRef.afterClosed().subscribe(async result => {
           if (result) {
             try {
-              const response: any = await this.customerService.changeImage(this.selectedUser._id, file).toPromise();
+              const response: any = await this.sellerService.changeImage(this.selectedUser._id, file).toPromise();
               if (response.data.acknowledged) {
                 this.selectedUser.photo.url = tempUrl;
               } else {
@@ -537,7 +537,7 @@ export class SellersComponent implements OnInit, OnDestroy {
 
   // Totals fetching
   getActiveSellersCount(): void {
-    const sub = this.customerService.getActiveSellersCount().subscribe({
+    const sub = this.sellerService.getActiveSellersCount().subscribe({
       next: (res) => { this.activeSellersCount = res.data; },
       error: (error) => console.error('Error getting active sellers count', error)
     });
@@ -545,7 +545,7 @@ export class SellersComponent implements OnInit, OnDestroy {
   }
 
   getDeActiveSellersCount(): void {
-    const sub = this.customerService.getDeActiveSellersCount().subscribe({
+    const sub = this.sellerService.getDeActiveSellersCount().subscribe({
       next: (res) => { this.deActiveSellersCount = res.data; },
       error: (error) => console.error('Error getting deactive sellers count', error)
     });
@@ -553,7 +553,7 @@ export class SellersComponent implements OnInit, OnDestroy {
   }
 
   getWaitingSellersCount(): void {
-    const sub = this.customerService.getWaitingSellersCount().subscribe({
+    const sub = this.sellerService.getWaitingSellersCount().subscribe({
       next: (res) => { this.waitingSellersCount = res.data; },
       error: (error) => console.error('Error getting waiting sellers count', error)
     });
@@ -561,7 +561,7 @@ export class SellersComponent implements OnInit, OnDestroy {
   }
 
   getRejectedSellersCount(): void {
-    const sub = this.customerService.getRejectedSellersCount().subscribe({
+    const sub = this.sellerService.getRejectedSellersCount().subscribe({
       next: (res) => { this.rejectedSellersCount = res.data; },
       error: (error) => console.error('Error getting rejected sellers count', error)
     });
@@ -669,7 +669,7 @@ export class SellersComponent implements OnInit, OnDestroy {
       sortParam = `&sort=${this.sortField === 'name' ? 'name' : this.sortField}:${this.sortDirection}`;
     }
 
-    const sub = this.customerService.searchSellers(
+    const sub = this.sellerService.searchSellers(
       filters,
       this.currentPage,
       this.itemsPerPage,

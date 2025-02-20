@@ -5,7 +5,9 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class CustomersService {
+
+export class SellerService {
+
   constructor(public http: HttpClient) { }
   private baseUrl = 'http://localhost:3000';
 
@@ -13,6 +15,8 @@ export class CustomersService {
     const token = localStorage.getItem('token');
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
+  
+  // SELLERS
 
   getPaginatedSellersByStatus(page: number, limit: number, filters?: string, sort?: string): Observable<any> {
     const filterParam = filters ? `filters=${filters}` : '';
@@ -28,8 +32,28 @@ export class CustomersService {
     return this.http.patch(`${this.baseUrl}/activeSeller/${id}`, {}, { headers: this.getHeaders() });
   }
 
+  approveSeller(id: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/approveSeller/${id}`, {}, { headers: this.getHeaders() });
+  }
+
+  rejectSeller(id: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/rejectSeller/${id}`, {}, { headers: this.getHeaders() });
+  }
+
   getActiveSellersCount(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/sellerCount?filters=isActive:true`, { headers: this.getHeaders() });
+    return this.http.get(`${this.baseUrl}/sellerCount?filters=isActive:true+status:1`, { headers: this.getHeaders() });
+  }
+
+  getDeActiveSellersCount(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/sellerCount?filters=isActive:false+status:1`, { headers: this.getHeaders() });
+  }
+
+  getWaitingSellersCount(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/sellerCount?filters=isActive:true+status:0`, { headers: this.getHeaders() });
+  }
+
+  getRejectedSellersCount(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/sellerCount?filters=isActive:true+status:-1`, { headers: this.getHeaders() });
   }
 
   changeImage(id: string, file: File): Observable<any> {

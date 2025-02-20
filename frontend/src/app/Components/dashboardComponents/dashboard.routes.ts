@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { UsersComponent } from './users/users.component';
 import { SellersComponent } from './sellers/sellers.component';
+import { CustomersComponent } from './customers/customers.component';
 
 export const dashRoutes: Routes = [
   {
@@ -11,12 +11,12 @@ export const dashRoutes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'users',
+        redirectTo: 'customers',
         pathMatch: 'full'
       },
       { 
-        path: 'users',
-        component: UsersComponent,
+        path: 'customers',
+        component: CustomersComponent,
         title: 'Customers'
       },
       { 
