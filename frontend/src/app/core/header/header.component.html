@@ -1,18 +1,18 @@
 <div>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top mb-3">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top ">
         <div class="container-fluid">
             <a class="navbar-brand fs-3 brandname" href="#" style="font-family: 'Baskerville Serial', serif; color: #85411c;">Watchly</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse m-3 p-3 fs-5" id="navbarNav">
+            <div class="collapse navbar-collapse m-2 p-3 fs-5" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                        <a class="nav-link"  [routerLink]="['/LandingPage']">Home <span class="sr-only">(current)</span></a>
                     </li>
-                    <li class="nav-item dropdown">
+                    <!-- <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Him
+                            Male
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             <a class="dropdown-item" href="#">Rolex</a>
@@ -23,28 +23,41 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Her
+                            Female
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="#">Rolex</a>
-                            <a class="dropdown-item" href="#">Casio</a>
-                            <a class="dropdown-item" href="#">Tissot</a>
-                            <a class="dropdown-item" href="#">Omega</a>
+                           
                         </div>
+                    </li> -->
+                    <li class="nav-item">
+                        <a class="nav-link" [routerLink]="['/about']">About</a>         
                     </li>
+                  
                     <li class="nav-item">
                         <a class="nav-link" [routerLink]="['/products']">Shop</a>         
                     </li>
                   
                     <li class="nav-item">
-                        <a class="nav-link" [routerLink]="['/footer']">About us</a>         
+                        <a class="nav-link" [routerLink]="['/contacts']">Contacts</a>         
                     </li>
+
+                   <li class="nav-item"  *ngIf="token">
+                     <p  *ngIf="token" class="nav-link mb-0 text-dark">Hi, {{tokenData.id.firstName}}</p>
+                   </li>
+
                 </ul>
+
+
+                <div class="navbar-nav">
+
+                    <a class="nav-item nav-link nav-icon " href="#"><i class='bx bx-user'></i></a>
+                    <a class="nav-item nav-link nav-icon " href="#"><i class='bx bx-cart'></i></a>
+                    <a *ngIf="!token" class="nav-item nav-link nav-icon" [routerLink]="['/login']"><i class='bx bx-log-in loginIcon'></i></a>
+                    <a *ngIf="token" class="nav-item nav-link nav-icon" (click)="logout()"  href="#"><i class='bx bx-log-out logoutIcon'></i></a>
+    
+                </div>
             </div>
-            <div class="navbar-nav">
-                <a class="nav-item nav-link nav-icon " href="#"><i class="fas fa-user"></i></a>
-                <a class="nav-item nav-link nav-icon " href="#"><i class="fas fa-shopping-cart"></i></a>
-            </div>
+            
         </div>
     </nav>
     </div>

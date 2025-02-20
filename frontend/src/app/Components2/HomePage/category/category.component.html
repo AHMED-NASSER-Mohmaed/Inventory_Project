@@ -3,21 +3,21 @@
     <div class="row g-3 h-100"> 
         <div class="col-lg-6 d-flex align-items-stretch">
             <div class="image-container w-100 position-relative">
-                <a href="#linkForHer" class="d-block h-100">
+                <a [routerLink]="['/products']" [queryParams]="{ catId: '67a92f7992df3a4b6957625d' }" class="d-block h-100">
                     <img src="/assets/herwebp.webp" class="card-img-top" alt="Image of Her">
                 </a>
                 <div class="categoryCaption">
-                    <a href="#linkForHer" class="categoryBtn">Female watches</a>
+                    <a  class="categoryBtn"   [routerLink]="['/products']"  [queryParams]="{ catId: '67a92f7992df3a4b6957625d' }">Female watches</a>
                 </div>
             </div>
         </div>
         <div class="col-lg-6 d-flex align-items-stretch">
             <div class="image-container w-100 position-relative">
-                <a href="#linkForHim" class="d-block h-100">
+                <a  class="d-block h-100"  [routerLink]="['/products']"[queryParams]="{ catId: '67a92037523f30d9de2d71e7' }" >
                     <img src="/assets/him.jpeg" class="card-img-top" alt="Image of Him">
                 </a>
                 <div class="categoryCaption">
-                    <a href="#linkForHim" class="categoryBtn">Male watches</a>
+                    <a  class="categoryBtn" [routerLink]="['/products']" [queryParams]="{ catId: '67a92037523f30d9de2d71e7' }">Male watches</a>
                 </div>
             </div>
         </div>
