@@ -29,8 +29,24 @@ class UserService {
     }
   }
 
+  //done
   async updateUser(userId, newData) {
-    return await userRepo.updateUser(userId, newData);
+
+    let fields = ['firstName', 'lastName', 'phoneNumber'];
+
+    Object.keys(newData).forEach(Element=>{
+      if(!fields.includes(Element))
+        return false;
+    })
+
+    let updatedUser= await userRepo.updateUser(userId, newData);
+    
+
+    if (!updatedUser)
+      throw new AppError("No user found with this id", 400);
+
+    return updatedUser;
+
   }
 
   async updateUserImage(userId, imageInfo){

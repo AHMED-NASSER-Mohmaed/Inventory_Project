@@ -37,14 +37,22 @@ module.exports.sellerService = {
     //return acknowlage  , or throw an exception.
     //done
     deleteSeller: async (id) => {
+
         try {
 
+           
             const seller=await sellerRepo.getSeller(id);
 
             // console.log(seller);
 
-            if(!seller['status'])
+            if(!seller['status'] )
                 throw new AppError("you cannot de-active pending seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
+            else if (seller['status']==-1)
+                throw new AppError("you cannot de-active rejected seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
+
+            if(!seller['isActive'])
+                throw new AppError("seller dose not exist!!", APP_CONFIG.HTTP_NOT_FOUND);
+
 
             const ack = await sellerRepo.deleteSeller(id);
 
@@ -65,12 +73,13 @@ module.exports.sellerService = {
 
             const seller=await sellerRepo.getSeller(id);
 
-            if(!seller['status'])
+            if(!seller['status']) // 0 -- pending 
                 throw new AppError("you cannot active pending seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
-            else if(seller['status']==-1)
+            else if(seller['status']==-1) // -1 for rejected 
                 throw new AppError("you cannot active rejected seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
                 
-                
+            
+
             const ack= await sellerRepo.activeSeller(id);
 
             if (!ack.acknowledged) {

@@ -94,7 +94,7 @@ const userSchema = new mongoose.Schema(
   { discriminatorKey: "kind", timestamps: true }, // 'kind' acts as a discriminator field
   {
     timestamps: true,
-  }
+  },{ strict: true }
 );
 
 userSchema.pre("save", async function (next) {
