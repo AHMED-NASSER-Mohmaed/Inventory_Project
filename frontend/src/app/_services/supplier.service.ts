@@ -5,7 +5,8 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class CustomersService {
+export class SupplierService {
+
   constructor(public http: HttpClient) { }
   private baseUrl = 'http://localhost:3000';
 
@@ -16,24 +17,24 @@ export class CustomersService {
 
   getPaginatedCustomersByStatus(page: number, limit: number, filters?: string, sort?: string): Observable<any> {
     const filterParam = filters ? `filters=${filters}` : '';
-    const url = `${this.baseUrl}/getCustomers?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
+    const url = `${this.baseUrl}/suppliers?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
     return this.http.get(url, { headers: this.getHeaders() });
   }
 
   deActiveCustomer(id: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/deleteCustomer/${id}`, { headers: this.getHeaders() });
+    return this.http.delete(`${this.baseUrl}/suppliers/${id}`, { headers: this.getHeaders() });
   }
 
   activateCustomer(id: string): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/activeCustomer/${id}`, {}, { headers: this.getHeaders() });
+    return this.http.patch(`${this.baseUrl}/suppliers/active/${id}`, {}, { headers: this.getHeaders() });
   }
 
   getActiveCustomersCount(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/customerCount?filters=isActive:true`, { headers: this.getHeaders() });
+    return this.http.get(`${this.baseUrl}/suppliers/count?filters=isActive:true`, { headers: this.getHeaders() });
   }
 
   getInActiveCustomersCount(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/customerCount?filters=isActive:false`, { headers: this.getHeaders() });
+    return this.http.get(`${this.baseUrl}/suppliers/count?filters=isActive:false`, { headers: this.getHeaders() });
   }
 
   changeImage(id: string, file: File): Observable<any> {
@@ -49,7 +50,7 @@ export class CustomersService {
   }
 
   searchCustomers(filters: string, page: number, limit: number, sort?: string): Observable<any> {
-    const url = `${this.baseUrl}/getCustomers?page=${page}&limit=${limit}&filters=${filters}${sort || ''}`;
+    const url = `${this.baseUrl}/suppliers?page=${page}&limit=${limit}&filters=${filters}${sort || ''}`;
     return this.http.get(url, { headers: this.getHeaders() });
   }
 }

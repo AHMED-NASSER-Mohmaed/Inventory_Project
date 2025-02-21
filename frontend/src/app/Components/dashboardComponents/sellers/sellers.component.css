@@ -585,6 +585,10 @@ mat-button-toggle{
   background: var(--dark);
 }
 
+:host #search-btns{
+  margin-right: 100px;
+}
+
 .status-dots {
   display: inline-flex;
   align-items: center;

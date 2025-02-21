@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SellersComponent } from './sellers/sellers.component';
 import { CustomersComponent } from './customers/customers.component';
+import { SuppliersComponent } from './suppliers/suppliers.component';
 
 export const dashRoutes: Routes = [
   {
@@ -24,6 +25,11 @@ export const dashRoutes: Routes = [
         component: SellersComponent,
         title: 'Sellers'
       },
+      {
+        path: 'suppliers',
+        component: SuppliersComponent,
+        title: 'Suppliers'
+      }
     ]
   }
 ];

@@ -17,7 +17,7 @@
                         <li><i class='bx bx-chevron-right'></i></li>
                         <li><a >Users</a></li>
                         <li><i class='bx bx-chevron-right'></i></li>
-                        <li><a class="active" >Customers</a></li>
+                        <li><a class="active" >Suppliers</a></li>
                     </ul>
                 </div>
             </div>
@@ -40,7 +40,7 @@
                     <i *ngIf="activeCustomersCount !== null && activeCustomersCount !== undefined" class='bx bxs-contact'></i>
                     <span *ngIf="activeCustomersCount !== null && activeCustomersCount !== undefined" class="text">
                         <h3>{{activeCustomersCount}}</h3>
-                        <p>Active Customers</p>
+                        <p>Active Suppliers</p>
                     </span>
                 </li>
                 <li>
@@ -59,7 +59,7 @@
                     <i  *ngIf="inactiveCustomersCount !== null && inactiveCustomersCount !== undefined" class='bx bxs-archive-in' id="lol"></i>
                     <span *ngIf="inactiveCustomersCount !== null && inactiveCustomersCount !== undefined" class="text">
                         <h3>{{inactiveCustomersCount}}</h3>
-                        <p>Inactive Customers</p>
+                        <p>Inactive Suppliers</p>
                     </span>
                 </li>
             </ul>
@@ -115,21 +115,11 @@
                     <table style="border-spacing: 15px; border-collapse: separate;">
                         <thead>
                             <tr>
-                                <th (click)="toggleSort('name')" style="cursor: pointer">
-                                    Name
-                                    <i class="bx" [ngClass]="{
-                                        'bx-up-arrow-alt': sortField === 'name' && sortDirection === 'asc',
-                                        'bx-down-arrow-alt': sortField === 'name' && sortDirection === 'desc',
-                                        'bx-sort': sortField !== 'name'
-                                    }"></i>
+                                <th>
+                                    Company Name
                                 </th>
-                                <th (click)="toggleSort('createdAt')" style="cursor: pointer">
-                                    Created At
-                                    <i class="bx" [ngClass]="{
-                                        'bx-up-arrow-alt': sortField === 'createdAt' && sortDirection === 'asc',
-                                        'bx-down-arrow-alt': sortField === 'createdAt' && sortDirection === 'desc',
-                                        'bx-sort': sortField !== 'createdAt'
-                                    }"></i>
+                                <th>
+                                    Company Registration Number
                                 </th>
                                 <th>
                                     Status
@@ -144,12 +134,12 @@
                         <tbody>
                             <tr *ngIf="showNoResults" class="no-results-row">
                                 <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
-                                    No Customers Found with this {{lastSearchFilter === 'name' ? 'Name' : lastSearchFilter === 'SSN' ? 'SSN' : 'Phone Number'}}
+                                    No Suppliers Found with this {{lastSearchFilter === 'name' ? 'Name' : lastSearchFilter === 'SSN' ? 'SSN' : 'Phone Number'}}
                                 </td>
                             </tr>
                             <tr *ngIf="!isLoading && !showNoResults && users.length === 0" class="no-results-row">
                                 <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
-                                    No {{ currentFilter === 'active' ? 'Active' : 'Inactive' }} Customers Yet
+                                    No {{ currentFilter === 'active' ? 'Active' : 'Inactive' }} Suppliers Yet
                                 </td>
                             </tr>
                             <tr *ngIf="isLoading" class="no-results-row">
@@ -161,10 +151,9 @@
                             </tr>
                             <tr *ngFor="let user of users; let i = index">
                                 <td>
-                                    <img [src]="user.photo.url">
-                                    <p>{{ user.firstName + " "+ user.lastName }}</p>
+                                    <p>{{ user.companyName }}</p>
                                 </td>
-                                <td>{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
+                                <td>{{ user.companyRegistrationNumber}}</td>
                                 <td>
                                     <span class="status process" [class.active]="user.isActive" [class.deactivated]="!user.isActive" [style]="{'min-width': '100px', 'display': 'inline-block', 'text-align': 'center', 'color': user.isActive ? '#2ed134' : '#e6382f'}">
                                         {{user.isActive ? 'Active' : 'Inactive'}}
@@ -201,28 +190,23 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="sellerInfoModalLabel">Customers Details</h5>
+            <h5 class="modal-title" id="sellerInfoModalLabel">Supplier Details</h5>
           </div>
           <div class="modal-body">
-            <div class="seller-image-container">
-                <img [src]="selectedUser.photo ? selectedUser.photo.url : 'assets/default.png'" alt="{{selectedUser.firstName}}" class="seller-img">
-                <input type="file" id="imageUploadSeller" style="display: none;" (change)="onImageChangeSeller($event)">
-                <button class="btn change-btn" (click)="triggerImageUploadSeller()"><i class="fa fa-pencil"></i> Change</button>
-            </div>
             <form #editForm="ngForm">
               <div class="info-grid" *ngIf="selectedUser">
-              <div class="info-item">
-                <strong class="label">First Name:</strong>
-                <div class="input-wrapper" [ngClass]="{'valid': firstNameInput.touched && firstNameInput.valid, 'invalid': firstNameInput.touched && firstNameInput.invalid}">
-                <input type="text" required minlength="3" maxlength="10" [(ngModel)]="selectedUser.firstName" name="firstName" #firstNameInput="ngModel" [disabled]="!editing" class="value">
-                </div>
-              </div>
-              <div class="info-item">
-                <strong class="label">Last Name:</strong>
-                <div class="input-wrapper" [ngClass]="{'valid': lastNameInput.touched && lastNameInput.valid, 'invalid': lastNameInput.touched && lastNameInput.invalid}">
-                  <input type="text" required minlength="3" maxlength="10" [(ngModel)]="selectedUser.lastName" name="lastName" #lastNameInput="ngModel" [disabled]="!editing" class="value">
-                </div>
-                </div>
+                <div class="info-item">
+                    <strong class="label">Company Name:</strong>
+                      <div class="input-wrapper" [ngClass]="{'valid': companyNameInput.touched && companyNameInput.valid, 'invalid': companyNameInput.touched && companyNameInput.invalid}">
+                      <input type="text" required minlength="3" maxlength="15" pattern="^[a-zA-Z0-9]+(?: [a-zA-Z0-9]+){0,3}$" [(ngModel)]="selectedUser.companyName" name="companyName" #companyNameInput="ngModel" [disabled]="!editing" class="value">
+                      </div>
+                  </div>
+                  <div class="info-item">
+                    <strong class="label">Company Reg#:</strong>
+                      <div class="input-wrapper" [ngClass]="{'valid': regNumberInput.touched && regNumberInput.valid, 'invalid': regNumberInput.touched && regNumberInput.invalid}">
+                    <input required pattern="^(?!-)(?!.*-$)(?!.*--)(?=(?:.*[0-9]){4,10}$)[1-9]+(?:-[1-9]+)*$" [(ngModel)]="selectedUser.companyRegistrationNumber" name="companyRegistrationNumber" #regNumberInput="ngModel" [disabled]="!editing" class="value">
+                      </div>
+                  </div>
                 <div class="info-item">
                   <strong class="label">Email:</strong>
                     <div class="input-wrapper" [ngClass]="{'valid': emailInput.touched && emailInput.valid, 'invalid': emailInput.touched && emailInput.invalid}">

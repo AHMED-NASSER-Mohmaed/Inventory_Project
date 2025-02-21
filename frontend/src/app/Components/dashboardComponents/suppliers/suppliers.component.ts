@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { User } from '../../../_models/user';
-import { CustomersService } from '../../../_services/customers.service';
 import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.component';
 import { ConfirmDialogComponent2 } from '../../../confirm-dialog2/confirm-dialog2.component';
 import { ConfirmDialogImgchangeComponent } from '../../../confirm-dialog-imgchange/confirm-dialog-imgchange.component';
@@ -15,10 +14,10 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { decodeToken } from '../../../_helpers/jwt-helper';
 import { ToastrService } from 'ngx-toastr';
-
+import { SupplierService } from '../../../_services/supplier.service';
 
 @Component({
-  selector: 'app-customers',
+  selector: 'app-suppliers',
   imports: [
     CommonModule,
     FormsModule,
@@ -28,11 +27,11 @@ import { ToastrService } from 'ngx-toastr';
     MatProgressSpinnerModule,
     NgxSkeletonLoaderModule,
   ],
-  templateUrl: './customers.component.html',
-  styleUrls: ['./customers.component.css'],
+  templateUrl: './suppliers.component.html',
+  styleUrl: './suppliers.component.css'
 })
+export class SuppliersComponent implements OnInit, OnDestroy {
 
-export class CustomersComponent implements OnInit, OnDestroy {
   // Filter state and pagination
   currentFilter: string = '';
   currentPage: number = 1;
@@ -74,7 +73,7 @@ export class CustomersComponent implements OnInit, OnDestroy {
 
 
   constructor(
-    private customerService: CustomersService,
+    private supplierService: SupplierService,
     public dialog: MatDialog,
     public toaster: ToastrService
   ) {}
@@ -127,7 +126,7 @@ export class CustomersComponent implements OnInit, OnDestroy {
       }:${this.sortDirection}`;
     }
 
-    const obs = this.customerService.getPaginatedCustomersByStatus(
+    const obs = this.supplierService.getPaginatedCustomersByStatus(
       this.currentPage,
       this.itemsPerPage,
       filterParam,
@@ -189,7 +188,6 @@ export class CustomersComponent implements OnInit, OnDestroy {
   }
 
   setFilter(filter: string): void {
-    // Toggle filter: if already selected, remove the filter.
     this.currentFilter = this.currentFilter === filter ? '' : filter;
     this.currentPage = 1;
     this.isSearchMode = false;
@@ -212,13 +210,15 @@ export class CustomersComponent implements OnInit, OnDestroy {
       companyName: user.companyName || '',
       email: user.email || '',
       phoneNumber: user.phoneNumber || '',
+      companyRegistrationNumber: user.companyRegistrationNumber || '',
     };
     this.backupUser = { ...this.selectedUser };
+    console.log(this.selectedUser);
   }
 
   // Customer actions
   deActiveCustomer(_id: string): void {
-    const sub = this.customerService.deActiveCustomer(_id).subscribe({
+    const sub = this.supplierService.deActiveCustomer(_id).subscribe({
       next: (res) => {
         console.log(res);
         const deactivatedCustomer = this.users.find((u) => u._id === _id);
@@ -264,7 +264,7 @@ export class CustomersComponent implements OnInit, OnDestroy {
   }
 
   activateCustomer(_id: string): void {
-    const sub = this.customerService.activateCustomer(_id).subscribe({
+    const sub = this.supplierService.activateCustomer(_id).subscribe({
       next: (res) => {
         console.log(res);
         const activatedCustomer = this.users.find((u) => u._id === _id);
@@ -336,7 +336,7 @@ export class CustomersComponent implements OnInit, OnDestroy {
   }
 
   getActiveCustomersCount(): void {
-    const sub = this.customerService.getActiveCustomersCount().subscribe({
+    const sub = this.supplierService.getActiveCustomersCount().subscribe({
       next: (res) => { this.activeCustomersCount = res.data; },
       error: (error) => {
         this.toaster.clear();
@@ -353,7 +353,7 @@ export class CustomersComponent implements OnInit, OnDestroy {
   }
 
   getInActiveCustomersCount(): void {
-    const sub = this.customerService.getInActiveCustomersCount().subscribe({
+    const sub = this.supplierService.getInActiveCustomersCount().subscribe({
       next: (res) => { this.inactiveCustomersCount = res.data; },
       error: (error) => {
         this.toaster.clear();
@@ -378,7 +378,7 @@ export class CustomersComponent implements OnInit, OnDestroy {
   toggleEdit(event?: any): void {
     if (this.editing) {
       const workingBackup = { ...this.backupUser };
-      const sub = this.customerService
+      const sub = this.supplierService
         .updateCustomer(this.selectedUser._id, this.selectedUser)
         .subscribe({
           next: (res: any) => {
@@ -444,7 +444,7 @@ export class CustomersComponent implements OnInit, OnDestroy {
         const sub = dialogRef.afterClosed().subscribe(async (result) => {
           if (result) {
             try {
-              const response: any = await this.customerService
+              const response: any = await this.supplierService
                 .changeImage(this.selectedUser._id, file)
                 .toPromise();
               if (response.message === 'success') {
@@ -573,7 +573,7 @@ export class CustomersComponent implements OnInit, OnDestroy {
       }:${this.sortDirection}`;
     }
 
-    const sub = this.customerService
+    const sub = this.supplierService
       .searchCustomers(filters, this.currentPage, this.itemsPerPage, sortParam)
       .subscribe({
         next: (res) => {
@@ -613,7 +613,7 @@ export class CustomersComponent implements OnInit, OnDestroy {
         : this.currentFilter === 'inactive'
         ? 'Inactive'
         : 'All';
-    this.searchPlaceholder = `Search ${status} Customers By ${filterType}...`;
+    this.searchPlaceholder = `Search ${status} Supplier By ${filterType}...`;
   }
 
   onItemsPerPageChange(): void {
@@ -651,4 +651,5 @@ export class CustomersComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
+
 }

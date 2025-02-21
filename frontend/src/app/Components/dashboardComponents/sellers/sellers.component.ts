@@ -86,7 +86,6 @@ export class SellersComponent implements OnInit, OnDestroy {
     const token = localStorage.getItem('token');
     if (token) {
       this.tokenData = decodeToken(token);
-      console.log('Decoded token:', this.tokenData);
     }
   }
 
@@ -635,6 +634,7 @@ export class SellersComponent implements OnInit, OnDestroy {
 
   loadSearchResults() {
     this.isLoading = true;
+    this.showNoResults = false;
     this.users = [];
     
     let filters: string;

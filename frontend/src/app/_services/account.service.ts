@@ -25,6 +25,6 @@ export class AccountService {
 
 
   logout() {
-    
+    localStorage.removeItem('token');
   }
 }

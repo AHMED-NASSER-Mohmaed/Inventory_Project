@@ -20,7 +20,7 @@ export const auth2Guard: CanActivateFn = (route, state) => {
       router.navigateByUrl('/LandingPage');
       return false;
     }
-    if (tokenData.userType === 'staff' || tokenData.userType === 'staff') {
+    if (tokenData.id.role === 'super_admin') {
       router.navigateByUrl('/dashboard');
       return false;
     }
