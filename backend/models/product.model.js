@@ -39,7 +39,6 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       default: "this is a good product.",
     },
-
     //mandatory
     category: {
       type: mongoose.Schema.ObjectId,

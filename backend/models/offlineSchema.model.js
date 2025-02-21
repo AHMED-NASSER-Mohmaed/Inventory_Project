@@ -16,5 +16,5 @@ const OfflineProductsSchema = new mongoose.Schema({
 
 
   
-module.exports= mongoose.model("OfflineProducts", BranchInventorySchema);
+module.exports= mongoose.model("OfflineProducts", OfflineProductsSchema);
   
