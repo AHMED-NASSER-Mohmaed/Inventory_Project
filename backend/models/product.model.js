@@ -39,16 +39,16 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       default: "this is a good product.",
     },
+    //mandatory
     category: {
       type: mongoose.Schema.ObjectId,
       required: [true, "Please provide the product category"],
       ref: "Category", // it should be uncommented but till we make the category CRUD operations it will stay commented
     },
 
-
     isActive: {
       type: Boolean,
-      default: true,
+      default: false,
     },
 
 

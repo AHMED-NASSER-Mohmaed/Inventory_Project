@@ -35,11 +35,11 @@ const genaraicFunctions = {
         try {
 
             //files validation
-            if (req.files['image'].length > 1)
+            if (files['image'].length > 1)
                 throw new AppError("you can not upload more than only one image!", APP_CONFIG.HTTP_BAD_REQUEST);
 
             // Get the uploaded file
-            const imageFile = req.files.image;
+            const imageFile =files.image;
 
             // Validate the file type (ensure it's an image)
             const allowedMimeTypes = ['image/jpeg', 'image/png'];
@@ -75,25 +75,28 @@ const genaraicFunctions = {
 
     updateImageProfile: async (req, res, next) => {
 
+        console.log("from here ...");
+
+        let result=null;
         try{
             if (!req.files)
                 throw new AppError("invalid image file!", APP_CONFIG.HTTP_BAD_REQUEST);
     
-            const result = await genaraicFunctions.updateImage(req.user._id, req.files)
+            result = await genaraicFunctions.updateImage(req.user._id, req.files)
+            sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 
         } catch (error) {
-            
-            await userService.updateUserImage(req.user._id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
+            if(!result)
+                await userService.updateUserImage(req.user._id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
             throw error;
             
         }
-        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 
     },
 
 
     updateImageProfileFor: async (req, res, next) => {
-
+        let result=null;
         try {
 
             // Check if the ID and image file are provided
@@ -116,17 +119,17 @@ const genaraicFunctions = {
 
 
             // Update the image in image kit 
-            const result = await genaraicFunctions.updateImage(req.params.id, req.files);
+            result = await genaraicFunctions.updateImage(req.params.id, req.files);
+            sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 
             // Send success response
         } catch (error) {
-            
-            await userService.updateUserImage(req.params.id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
+            if(!result)
+                await userService.updateUserImage(req.params.id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
             throw error;
             
         }
 
-        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 }
 
@@ -246,9 +249,6 @@ const sellerOp = {
     filedsValues: [["true", "false", "undefined"], ["-1", "0", "1", "undefined"]],
 
 }
-
-
-
 
 /********************************************************************/
 
@@ -494,13 +494,16 @@ const customerOp = {
     //done
     updateCustomer: async (req, res, next) => {
 
-        if (req.user.userType == APP_CONFIG.CUSTOMER)
-            req.params.id = req.user._id
-        else
-            throw new AppError("sorry, you are not authorized.",APP_CONFIG.HTTP_UNAUTHORIZED);
+        if(req.user.userType!=APP_CONFIG.SUPPERADMIN){
 
+            if (req.user.userType == APP_CONFIG.CUSTOMER)
+                req.params.id = req.user._id
+            else
+                throw new AppError("sorry, you are not authorized.",APP_CONFIG.HTTP_UNAUTHORIZED);
+
+        }
+        
         let result = await userService.updateUser(req.params.id, req.body)
-
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
@@ -764,7 +767,7 @@ route.post("/addSeller",
 
     //update personal image profile for users
     .patch("/updateImageProfile",
-        protect,
+        prot_rest("supper_admin","customer"),
         genaraicFunctions.updateImageProfile
     )
 

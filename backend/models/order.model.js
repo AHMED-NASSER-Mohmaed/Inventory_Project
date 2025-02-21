@@ -14,11 +14,13 @@ const OrderSchema = new mongoose.Schema({
       "partially shipped",
       "shipped",
       "delivered",
-      "Completed",
+      "completed",
       "canceled"
     ],
-    default: "Pending",
+    default: "pending",
   },
+
+
 
   products: [
     {

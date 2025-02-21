@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
-const SellerProductSchema = new mongoose.Schema({
+//onlineProducts 
+const OnlineProductsSchema = new mongoose.Schema({
 
     //refernce to seller 
     seller: { type: mongoose.Schema.Types.ObjectId, ref: "Seller", required: true },
@@ -35,9 +36,13 @@ const SellerProductSchema = new mongoose.Schema({
     },
 
 
+    branch: { type: mongoose.Schema.ObjectId, ref: "Branch", required: true },//online branches only 
+
 }, { timestamps: true });
 
 
 
 //very important one...
-await SellerProduct.createIndex({ isActive: 1 , satus:"approved" });
+await OnlineProductsSchema.createIndex({ isActive: 1 , satus:"approved" });
+
+model.exports= mongoose.model("OnlineProducts",SellerProductSchema);
