@@ -31,7 +31,7 @@ class OrderService {
                     let fulfilledQty = fulfilledQuantities[prod.product];
     
                     // Ensure fulfilledQuantity does not exceed ordered quantity
-                    fulfilledQty = Math.min(fulfilledQty, prod.quantity);
+                    fulfilledQty = Math.min(fulfilledQty, prod.quantity); // note prod.qunatity here is the quantity requested by the customer
     
                     prod.fulfilledQuantity = fulfilledQty;
                     prod.canceledQuantity = prod.quantity - fulfilledQty; // Set canceled quantity
@@ -48,7 +48,7 @@ class OrderService {
         await orderRepository.updateOrder(orderId, order);
     
         // Now update the OrderContainer's status
-        await this.updateOrderContainerStatus(order.containerId);
+        await this.updateOrderContainerStatus(order.orderContainer);
     }
 
 

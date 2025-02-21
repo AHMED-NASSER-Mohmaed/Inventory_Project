@@ -6,37 +6,41 @@ const AppError = require("../utils/appError");
 
 class OrderContainerService {
   async createOrderContainerFromCart(cart) {
+    // Validate cart data
     if (!cart || !cart.products || cart.products.length === 0) {
       throw new Error("Invalid cart data");
     }
 
+    // Object to group products by seller
     const sellerOrders = {};
 
+    // Loop through each product in the cart
     for (const item of cart.products) {
+      // Fetch the seller product details
       const sellerProduct = await sellerProductRepository.getSellerProductById(item.sellerProduct);
 
-      // if (!sellerProduct || sellerProduct.satus !== "approved" || !sellerProduct.isActive) {
-      //   throw new Error(`Seller product ${item.sellerProduct} is not available for ordering.`);
-      // }
-      // if (!sellerProduct ) {
-      //   throw new Error(`Seller product ${item.sellerProduct} is not available for ordering.`);
-      // }
+      // Get the seller ID as a string (after populating, seller is an object)
+      const sellerId = sellerProduct.seller._id.toString();
 
-      const sellerId = sellerProduct.seller._id.toString(); // after populating, seller is an object and i want the id as string
+      // Validate seller for offline orders
+      if (cart.cartType == "offline" && !sellerId.equals(APP_CONFIG.COMPANY_ID)) {
+        throw new AppError("Invalid seller Id: we cannot sell products of external sellers offline", APP_CONFIG.HTTP_BAD_REQUEST);
+      } // we only deal with the external seller in case of online 
 
-      if(cart.cartType == "offline" && !sellerId.equals(APP_CONFIG.COMPANY_ID))
-        throw new AppError("Invalid seller Id we cannot sell products of external sellers offline", APP_CONFIG.HTTP_BAD_REQUEST);
-      if(cart.cartType == "offline" && !cart.clerk) 
+      // Validate clerk and cashier for offline orders
+      if (cart.cartType == "offline" && !cart.clerk) {
         throw new AppError("Clerk is required for offline orders", APP_CONFIG.HTTP_BAD_REQUEST);
-      
-      if(cart.cartType == "offline" && !cart.cashier) 
+      }
+      if (cart.cartType == "offline" && !cart.cashier) {
         throw new AppError("Cashier is required for offline orders", APP_CONFIG.HTTP_BAD_REQUEST);
-
-
-      if (!sellerOrders[sellerId]) {
-        sellerOrders[sellerId] = { seller: sellerProduct.seller._id, products: [] };
       }
 
+      // Group products by seller
+      if (!sellerOrders[sellerId]) {
+        sellerOrders[sellerId] = { seller: sellerProduct.seller._id, products: [] }; // why is that bc it's going to be populated with the seller id
+      }
+
+      // Add product details to the seller's order
       sellerOrders[sellerId].products.push({
         product: sellerProduct._id, // Reference to SellerProduct
         quantity: item.requiredQty,
@@ -44,68 +48,59 @@ class OrderContainerService {
         totalPrice: item.requiredQty * sellerProduct.price,
       });
     }
-    
 
-    // Create orders for each seller
+    // Create the orderContainer first
+    const orderContainerData = {
+      customer: cart.customerId, // Customer ID from the cart
+      orderType: cart.cartType, // Order type (online/offline)
+      gov: cart.gov, // Government region (for online orders)
+      address: cart.address, // Address (for online orders)
+      phone1: cart.phone1, // Primary phone number
+      phone2: cart.phone2, // Secondary phone number
+      branch: cart.branch, // Branch (for offline orders)
+      status: cart.cartType === "offline" ? "completed" : "pending", // Set status based on cart type
+    };// if it's offline, there's no need to use any other status than "Completed" as the order is already completed and delivered dircetly to the customer
+
+    // Save the orderContainer to the database
+    const orderContainer = await orderContainerRepository.createOrderContainer(orderContainerData);
+
+    // Create orders for each seller and link them to the orderContainer
     const orderPromises = Object.values(sellerOrders).map(async ({ seller, products }) => {
-      const totalQty = products.reduce((sum, p) => sum + p.quantity, 0); // sum of all quantities in the order products
-      const totalPrice = products.reduce((sum, p) => sum + p.totalPrice, 0); // sum of all total prices in the order products
-      // note those are just initial calculations, they will be updated when the order status is updated
-      if(cart.cartType == "online" ){
-        return await orderRepository.createOrder({
-          seller: seller,
-          products,
-          totalQty,
-          totalPrice,
-          clerk: null, // first one who handle the order status will be responsible for it and its id will be saved here
-          cashier: null, // same as the above
-        }); // i want to set the clerk equal to seller in case if the order was from an exteranl seller so i wanna set it manually (hard coded)
-      }// but in the cacheir i want the first one who handle the order status will be responsible for it
-      
-      return await orderRepository.createOrder({ // if it was offline and th e seller is our system
-        seller: seller._id,
-        products,
-        totalQty,
-        totalPrice,
-        clerk: cart.clerk,
-        cashier: cart.cashier,
-        status: "Completed" // it will be compeleted directly as it is offline the order will be delivered directly
-      });
+      // Calculate total quantity and total price for the order
+      const totalQty = products.reduce((sum, p) => sum + p.quantity, 0); // Sum of all quantities in the order products
+      const totalPrice = products.reduce((sum, p) => sum + p.totalPrice, 0); // Sum of all total prices in the order products
+
+      let tempClerk = null;
+      if(cart.cartType == 'online' && !seller.equals(APP_CONFIG.COMPANY_ID)) {
+        tempClerk = seller; // seller would be the clerk in case of external seller (in order to process his own orders )
+      }
+
+      // Prepare order data
+      const orderData = {
+        seller: seller, // Seller ID
+        products, // List of products in the order
+        totalQty, // Total quantity of products
+        totalPrice, // Total price of the order
+        clerk: cart.cartType === "offline" ? cart.clerk : tempClerk, // Clerk ID (for offline orders)
+        cashier: cart.cartType === "offline" ? cart.cashier : null, // Cashier ID (for offline orders)
+        orderContainer: orderContainer._id, // Link the order to the orderContainer
+        status: cart.cartType === "offline" ? "completed" : "pending", // Set status based on cart type
+      };
+
+      // Save the order to the database
+      return await orderRepository.createOrder(orderData);
     });
 
+    // Wait for all orders to be created
     const orders = await Promise.all(orderPromises);
 
-    // Create OrderContainer
-    if(cart.cartType == "online" ){
-      return await orderContainerRepository.createOrderContainer({
-        customer: cart.customerId,
-        orderType: cart.cartType,
-        gov: cart.gov,
-        address: cart.address,
-        phone1: cart.phone1,
-        phone2: cart.phone2,
-        sellersOrders: orders.map(order => ({ order: order._id })),
-        branch: cart.branch,
-        
-      });
-    }
-    return await orderContainerRepository.createOrderContainer({ // in case of offline all the orders will be completed and will be for the seller of our system
-      customer: cart.customerId,
-      orderType: cart.cartType,
-      // gov: cart.gov,
-      // address: cart.address, no need they're offline
-      phone1: cart.phone1,
-      phone2: cart.phone2,
-      sellersOrders: orders.map(order => ({ order: order._id })),
-      branch: cart.branch,
-      status: "Completed"
-    });
+    // Update the orderContainer with references to the created orders
+    orderContainer.sellersOrders = orders.map(order => ({ order: order._id }));
+    await orderContainer.save();
+
+    // Return the created orderContainer
+    return orderContainer;
   }
-
-  
-  
-
 }
-  
 
 module.exports = new OrderContainerService();

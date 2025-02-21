@@ -63,7 +63,7 @@ const ProductSchema = new mongoose.Schema(
      sellers: [{ type: mongoose.Schema.Types.ObjectId, ref: "SellerProduct" }],
 
      // Array of supplier product references
-     supplier: { type: mongoose.Schema.Types.ObjectId, ref: "SupplierProduct" },
+     supplier: { type: mongoose.Schema.Types.ObjectId, ref: "SupplierProduct" }, // tells wether we sell some product or not
 
     rating: {
       type: Number,

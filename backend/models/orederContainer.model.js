@@ -14,14 +14,14 @@ const OrderContainerSchema = new mongoose.Schema({
 
     gov: { type: String, validate: requiredFieldsValidator("gov") }, // Pass the field name as a string
     address: { type: String, validate: requiredFieldsValidator("address") }, // Pass the field name as a string
-    phone1: { type: String, validate: requiredFieldsValidator("phone1") }, // Pass the field name as a string
-    phone2: { type: String },
+    phone1: { type: String, }, // Pass the field name as a string
+    phone2: { type: String, validate: requiredFieldsValidator("phone1")  },
 
     sellersOrders: [
         { 
             order: { 
                 type: mongoose.Schema.Types.ObjectId, // Fixed ObjectId
-                required: true, // Fixed typo in "required"
+                // required: true, // Fixed typo in "required"
                 ref: "Order" 
             } 
         }
@@ -31,7 +31,7 @@ const OrderContainerSchema = new mongoose.Schema({
         type: String,
         enum: ["pending", "processing", "shipped", "partially shipped",
             "partially delivered", "delivered",
-            "Completed", "canceled"],
+            "completed", "canceled"],
         default: "pending"
     },
 

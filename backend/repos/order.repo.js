@@ -21,8 +21,8 @@ class OrderRepository {
         return await Order.findByIdAndUpdate(orderId, updatedOrderData, { new: true });
     }
     
-    async  getOrdersByContainerId(containerId) {
-        return await Order.find({ containerId });
+    async  getOrdersByContainerId(orderContainer) {
+        return await Order.find({ orderContainer });
     }
     
   }
