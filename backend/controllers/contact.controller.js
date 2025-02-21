@@ -96,6 +96,7 @@ class ContactController {
     });
   }
 
+  //body contains the ids of massage that we need to update it's status to be in a seen state 
   async bulkMarkAsSeen(req, res) {
     const { ids } = req.body;
 

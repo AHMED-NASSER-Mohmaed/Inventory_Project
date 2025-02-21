@@ -1,51 +1,51 @@
-const Staff=require("../models/staff.model");
- 
-const {inboxResult}=require("../utils/apiFeatures");
- 
+const Staff = require("../models/staff.model");
+
+const { inboxResult } = require("../utils/apiFeatures");
 
 
-module.exports.staffRepo={
 
-     
-    createStaffOfType:async (data)=>{
+module.exports.staffRepo = {
 
-        try{
-            data.userType="staff";
 
-            if(await Staff.create(data))
+    createStaffOfType: async (data) => {
+
+        try {
+            data.userType = "staff";
+
+            if (await Staff.create(data))
                 return true
-            return false; 
+            return false;
 
-        }catch(err){
+        } catch (err) {
             throw err;
         }
     },
 
-    deleteStaffOfType:async (filters)=>{
-        try{
-            return await Staff.updateOne(filters,{$set:{"isActive":false}});
-        }catch(err){
+    deleteStaffOfType: async (filters) => {
+        try {
+            return await Staff.updateOne(filters, { $set: { "isActive": false } });
+        } catch (err) {
             throw err;
         }
     },
 
- 
 
 
-    activeStaffOfType:async (filters)=>{
-        try{
-            return await Staff.updateOne(filters,{$set:{"isActive":true}});
-        }catch(err){
+
+    activeStaffOfType: async (filters) => {
+        try {
+            return await Staff.updateOne(filters, { $set: { "isActive": true } });
+        } catch (err) {
             throw err;
         }
     },
- 
 
-    
-    getStaffOfTypeByFilter:async (filters,sort,page,limit)=>{
 
-        try{
-            
+
+    getStaffOfTypeByFilter: async (filters, sort, page, limit) => {
+
+        try {
+
             const [results, total] = await Promise.all([
 
                 await Staff.find(filters)
@@ -55,29 +55,52 @@ module.exports.staffRepo={
                     .limit(limit)
                     .select("-__v -kind")
                     .lean(),
-    
+
                 await Staff.countDocuments(filters).collation({ locale: 'en', strength: 1 }).exec()
             ]);
-    
+
             // console.log("from repo" , results);
-    
+
             return inboxResult(results, total, page, limit);
 
-  
-        }catch(err){
+
+        } catch (err) {
             throw err;
         }
     },
 
-    updateStaffOfType:async (filters,data)=>{
-        
+    updateStaffOfType: async (filters, data) => {
+        try {
+            
+            return await Staff.updateOne(filters, {$set:data});
+
+        } catch (err) {
+            throw err;
+        }
+    },
+
+
+    getCountByFilter: async (filters) => {
+        try {
+
+            return await Staff.countDocuments(filters);
+
+        } catch (err) {
+
+            throw err;
+
+        }
+
+    },
+
+    getById:async(id)=>{
+
         try{
-
-            return await Staff.updateOne(filters,data);
-
+            return await Staff.findById(id);
         }catch(err){
             throw err;
         }
+
     }
 
 

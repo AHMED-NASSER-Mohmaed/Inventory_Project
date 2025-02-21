@@ -10,7 +10,7 @@ const { sendResponseToClint } = require("../utils/apiFeatures");
 const { deleteFiles, upload } = require("../services/media.service");
 const AppError = require("../utils/appError");
 const { protect } = require("../middlewares/auth.middleware");
-const { update } = require("lodash");
+
 
 const route = express.Router();
 
@@ -33,8 +33,24 @@ const genaraicFunctions = {
     updateImage: async function (id, files) {
 
         try {
+
+            //files validation
+            if (req.files['image'].length > 1)
+                throw new AppError("you can not upload more than only one image!", APP_CONFIG.HTTP_BAD_REQUEST);
+
+            // Get the uploaded file
+            const imageFile = req.files.image;
+
+            // Validate the file type (ensure it's an image)
+            const allowedMimeTypes = ['image/jpeg', 'image/png'];
+            if (!allowedMimeTypes.includes(imageFile.mimetype)) {
+                throw new AppError("Invalid file type: Only JPEG and PNG images are allowed!", APP_CONFIG.HTTP_BAD_REQUEST);
+            }
+
+            /****************************************************** */
+
             const oldFileId = await userService.getUserImageId(id);
-            console.log("hey man ", "oldFileId['photo']['fileId']");
+            // console.log("hey man ", "oldFileId['photo']['fileId']");
             //delete image from imagekit  if user it's not the default image
             if (!(oldFileId['photo']['fileId'] === APP_CONFIG.UDIAMGE_ID_VALUE)) {
                 await deleteFiles([oldFileId['photo']['fileId']]);
@@ -59,15 +75,20 @@ const genaraicFunctions = {
 
     updateImageProfile: async (req, res, next) => {
 
+        try{
+            if (!req.files)
+                throw new AppError("invalid image file!", APP_CONFIG.HTTP_BAD_REQUEST);
+    
+            const result = await genaraicFunctions.updateImage(req.user._id, req.files)
 
-        if (!req.files)
-            throw new AppError("invalid image file!", APP_CONFIG.HTTP_BAD_REQUEST);
-
-
-
-        const result = await genaraicFunctions.updateImage(req.user._id, req.files)
-
+        } catch (error) {
+            
+            await userService.updateUserImage(req.user._id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
+            throw error;
+            
+        }
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+
     },
 
 
@@ -80,7 +101,7 @@ const genaraicFunctions = {
                 throw new AppError("Invalid request: ID or image file is missing!", APP_CONFIG.HTTP_BAD_REQUEST);
             }
 
-
+            /*
             if (req.files['image'].length > 1)
                 throw new AppError("you can not upload more than only one image!", APP_CONFIG.HTTP_BAD_REQUEST);
 
@@ -91,20 +112,21 @@ const genaraicFunctions = {
             const allowedMimeTypes = ['image/jpeg', 'image/png'];
             if (!allowedMimeTypes.includes(imageFile.mimetype)) {
                 throw new AppError("Invalid file type: Only JPEG and PNG images are allowed!", APP_CONFIG.HTTP_BAD_REQUEST);
-            }
+            }*/
 
 
             // Update the image in image kit 
             const result = await genaraicFunctions.updateImage(req.params.id, req.files);
 
             // Send success response
-            sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
         } catch (error) {
-
+            
             await userService.updateUserImage(req.params.id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
             throw error;
-
+            
         }
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 }
 
@@ -281,6 +303,14 @@ const adminOp = {
     }
 
     ,
+
+
+    getAdminCount: async (req, res, next) => {
+        req.validatedParams.filters['role'] = APP_CONFIG.ADMIN;
+        const result = await staffService.getStaffCount(req.validatedParams.filters);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
     allowedFilters: [["isActive", "undefined"]],
     allowedFilterValues: [["true", "false", "undefined"]],
 
@@ -306,8 +336,9 @@ const clerkOp = {
 
     },
 
+    //by id 
     deleteClerk: async (req, res, next) => {
-        const ack = await staffService.deleteStaff({ SSN: req.params.SSN, role: APP_CONFIG.CLERK });
+        const ack = await staffService.deleteStaff({ _id: req.params.id, role: APP_CONFIG.CLERK });
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, ack);
     },
 
@@ -345,6 +376,13 @@ const clerkOp = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
+    getClerkCount: async (req, res, next) => {
+        req.validatedParams.filters['role'] = APP_CONFIG.CLERK;
+        const result = await staffService.getStaffCount(req.validatedParams.filters);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
+
     allowedFilters: [["isActive", "undefined"]],
     allowedFilterValues: [["true", "false"]],
 
@@ -355,6 +393,7 @@ const clerkOp = {
 
 const cashierOp = {
 
+    //done
     addCashier: async (req, res, next) => {
 
         //attach role on data
@@ -367,9 +406,8 @@ const cashierOp = {
 
     },
 
-
-
     //delete cashier by id 
+    // //done
     deleteCashier: async (req, res, next) => {
 
         const ack = await staffService.deleteStaff({ _id: req.params.id, role: APP_CONFIG.CASHIER });
@@ -378,11 +416,7 @@ const cashierOp = {
 
     },
 
-
-
-
-
-    //active seller using id
+    //active seller using id // done 
     activeCashier: async (req, res, next) => {
 
         const ack = await staffService.activeStaff({ _id: req.params.id, role: APP_CONFIG.CASHIER });
@@ -404,9 +438,24 @@ const cashierOp = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
-    allowedFilters: ["isActive", "undefined"],
-    allowedFilterValues: ["true", "false"],
-    allowedSort: ['createdAt', "name"],
+    updateCashier: async (req, res, next) => {
+
+        let filters = { _id: req.params.id, 'role': APP_CONFIG.CASHIER }
+
+        const result = await staffService.updateStaff(filters, req.body);
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
+    getCashierCount: async (req, res, next) => {
+
+        req.validatedParams.filters['role'] = APP_CONFIG.CASHIER;
+        const result = await staffService.getStaffCount(req.validatedParams.filters);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
+    allowedFilters: [["isActive", "undefined"]],
+    allowedFilterValues: [["true", "false", "undefined"]],
 
 }
 
@@ -441,14 +490,19 @@ const customerOp = {
 
     },
 
-    /*
-    getCustomer: async (req, res, next) => {
 
-        const customer = await userService.getUser(req.validatedParams);
+    //done
+    updateCustomer: async (req, res, next) => {
 
-        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, customer);
+        if (req.user.userType == APP_CONFIG.CUSTOMER)
+            req.params.id = req.user._id
+        else
+            throw new AppError("sorry, you are not authorized.",APP_CONFIG.HTTP_UNAUTHORIZED);
 
-    },*/
+        let result = await userService.updateUser(req.params.id, req.body)
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
 
 
 
@@ -456,7 +510,6 @@ const customerOp = {
 
         req.validatedParams.filters["userType"] = APP_CONFIG.CUSTOMER;
 
-        console.log("from customer object controller :", req.validatedParams);
 
         const result = await userService.getUsers(req.validatedParams);
 
@@ -464,6 +517,15 @@ const customerOp = {
     },
 
 
+    getCustomerCount:async (req,res,next) =>{
+        
+        req.validatedParams.filters['userType']=APP_CONFIG.CUSTOMER;
+
+        let result = await userService.getCountByFilter(req.validatedParams.filters);
+
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+
+    },
 
 
 
@@ -527,10 +589,7 @@ route.post("/addSeller",
         catchAsync(sellerOp.getSellers)
     )
 
-
-
     /****************************************************************************************/
-
 
     .post("/addAdmin",
         prot_rest(APP_CONFIG.SUPPERADMIN),
@@ -546,8 +605,6 @@ route.post("/addSeller",
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(adminOp.activeAdmin))
 
-
-
     //pagination for active and deavtive admins
     //search by SSN , name , 
     .get("/getAdmins",
@@ -557,42 +614,47 @@ route.post("/addSeller",
         validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN),
         catchAsync(adminOp.getAdmins))
 
+    //get seller count by filtes
+    .get("/adminCount",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        validatorFilterParams(adminOp.allowedFilters, adminOp.allowedFilterValues),
+        catchAsync(adminOp.getAdminCount)
+    )
+
     .patch("/updateAdmin/:id",
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(adminOp.updateAdmin),
     )
 
-
-
     /****************************************************************************************/
-
 
     //add clerk
     .post("/addClerk",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         catchAsync(clerkOp.addClerk))
 
-    //search by SSN , firstName , lastName , phoneNumber
+    //count
     .get("/getClerk",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN, genaricFilters.allowedSort),
         catchAsync(clerkOp.getClerks))
 
-    //delete clerk by id
+
+    //delete clerk by id --- done 
     .delete("/deleteClerk/:id",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         catchAsync(clerkOp.deleteClerk))
 
 
-    //active clerk by id
+    //active clerk by id  -- done 
     .patch("/activeClerk/:id",
         prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         catchAsync(clerkOp.activeClerk))
 
-    //paginated clerks + search
+    //paginated clerks + search  -- done
     .get("/getClerks", prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
         validateSortPaginationParams(genaricFilters.allowedSort),
-        validatorFilterParams(clerkOp.allowedFilters, adminOp.allowedFilterValues),
+        validatorFilterParams(clerkOp.allowedFilters, clerkOp.allowedFilterValues),
         validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN),
         catchAsync(clerkOp.getClerks))
 
@@ -601,49 +663,66 @@ route.post("/addSeller",
         catchAsync(clerkOp.updateClerk),
     )
 
+
+    //get seller count by filtes
+    .get("/clerkCount",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        validatorFilterParams(clerkOp.allowedFilters, clerkOp.allowedFilterValues),
+        catchAsync(clerkOp.getClerkCount)
+    )
+
+
     /****************************************************************************************/
-    /*
-        //add cashier 
-        .post("/addCashier",
-            prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-            catchAsync(cashierOp.addCashier))
-    
-        //get cashier by SSN , firstName , lastName , phoneNumber
-        .get("/getCashier/",
-            prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-            validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN, genaricFilters.allowedSort),
-            catchAsync(cashierOp.getCashiers))
-    
-        //delete cashier by id 
-        .delete("/deleteCashier/:id",
-            prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-            catchAsync(cashierOp.deleteCashier))
-    
-        //active cashier by id
-        .patch("/activeCashier/:id",
-            prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-            catchAsync(cashierOp.activeCashier))
-    
-        //get cashier paginated
-        .get("/getCashiers",
-            prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-            validatorForQueries(cashierOp.allowedFilters, cashierOp.allowedFilterValues, cashierOp.allowedSort),
-            catchAsync(cashierOp.getCashiers))
-    
-    */
+
+    //add cashier 
+    .post("/addCashier",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        catchAsync(cashierOp.addCashier))
+
+    //pagination + search 
+    .get("/getCashier/",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        validateSortPaginationParams(genaricFilters.allowedSort),
+        validatorFilterParams(cashierOp.allowedFilters, cashierOp.allowedFilterValues),
+        validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN),
+        catchAsync(cashierOp.getCashiers))
+
+    //delete cashier by id 
+    .delete("/deleteCashier/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        catchAsync(cashierOp.deleteCashier))
+
+    //active cashier by id
+    .patch("/activeCashier/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        catchAsync(cashierOp.activeCashier))
+
+    //active cashier by id
+    .patch("/updateCashier/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        catchAsync(cashierOp.updateCashier))
+
+
+    //get cashier paginated
+    .get("/cashiersCount",
+        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+        validatorFilterParams(cashierOp.allowedFilters, cashierOp.allowedFilterValues),
+        catchAsync(cashierOp.getCashierCount))
+
+
 
     /****************************************************************************************************/
     // customer section 
 
 
     .post("/addCustomer",
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
+        prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(customerOp.addCustomer)) //end of post 
 
 
     //get customer by filter for serch by firstName , lastNAme  and also active and deactive
     .get("/getCustomers",
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
+        prot_rest(APP_CONFIG.SUPPERADMIN),
         validateSortPaginationParams(genaricFilters.allowedSort)
         , validatorFilterParams(customerOp.allowedFilters, customerOp.allowedFilterValues)
         , validateSearchParams(genaricFilters.searchFiledNameForCustomer, genaricFilters.searchValueAcoordingNaNforCustomer),
@@ -656,26 +735,32 @@ route.post("/addSeller",
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(customerOp.deleteCustomer)) //end of delete 
 
-    /*
-        //why we send user id -->for admin super admin --- we will genarlize it through
-        //this one for all supper admin , admin , seller , customer , supplier
-        .patch("/updateProfileImage/:id",
-            prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER, APP_CONFIG.CUSTOMER),
-            catchAsync(customerOp.updateProfileImage)
-        )
-    */
+
     .patch("/activeCustomer/:id",
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
+        prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(customerOp.activeCustomer))//end of patch
 
-    /*
-.get("/getCustomers",
-    prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
-    validatorForQueries(customerOp.allowedFilters, customerOp.allowedFilterValues, genaricFilters.allowedSort),
-    catchAsync(customerOp.getCustomers))//end of get [pagination].
+
+    .patch("/updateCustomer/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        catchAsync(customerOp.updateCustomer)
+    )
+
+    .get("/customerCount",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        validatorFilterParams(customerOp.allowedFilters,customerOp.allowedFilterValues),
+        catchAsync(customerOp.getCustomerCount)
+    )
+
+    //not reviwed yet
+    //update me 
+    .patch("/updateCustomer",
+        prot_rest(APP_CONFIG.CUSTOMER),
+        catchAsync(customerOp.updateCustomer)
+    )
 
 
-*/
+    /************************************************************************/
 
     //update personal image profile for users
     .patch("/updateImageProfile",
