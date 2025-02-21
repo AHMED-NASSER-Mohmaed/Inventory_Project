@@ -47,7 +47,8 @@ class SupplierService {
 
             if (!supplier) {
                 throw new AppError('Supplier not found', 404);
-            }
+            }else if(!supplier.acknowledged)
+                throw new AppError('invalid fields',APP_CONFIG.HTTP_BAD_REQUEST)
 
             return supplier;
         } catch (err) {
