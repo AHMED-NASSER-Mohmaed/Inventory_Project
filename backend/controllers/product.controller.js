@@ -6,6 +6,7 @@ const { validateSearchParams, validatorFilterParams,validateSortPaginationParams
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
 const pro_res = require("../utils/authMiddlewaresOptions");
+const { validateSearchParams, validatorFilterParams,validateSortPaginationParams } = require("../middlewares/validation.middlewares");
 
 const categoryService = require("../services/category.service");
 const AppError = require("../utils/appError");
@@ -134,9 +135,8 @@ class ProductController {
   }
 
   async getProducts(req, res, next) {
-    
-    if(!req.validatedParams.filters)
-      req.validatedParams['filters']={};
+
+    req.validatedParams["filters"]={};
 
     req.validatedParams["filters"]["isActive"] = true;
     req.validatedParams["filters"]["status"] = true;
