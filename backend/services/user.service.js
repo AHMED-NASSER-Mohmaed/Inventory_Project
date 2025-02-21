@@ -95,6 +95,14 @@ class UserService {
     }
   }
 
+  //get coung by filters
+  async getCountByFilter(filters){
+    try{
+      return await userRepo.getCountByFilter(filters);
+    }catch{
+      throw err;
+    }
+  }
 
   async isAttributeExist(userId,name,value){
     try{

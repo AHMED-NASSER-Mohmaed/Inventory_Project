@@ -145,6 +145,17 @@ class UserRepository {
   }
 
 
+  //get count
+  async getCountByFilter(filters) {
+    try {
+
+      return await User.countDocuments(filters);
+
+    } catch (err) {
+      throw err;
+    }
+  }
+
   async updateUserImage(userId, imageInfo) {
 
     try {

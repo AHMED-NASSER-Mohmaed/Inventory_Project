@@ -10,7 +10,7 @@ const { sendResponseToClint } = require("../utils/apiFeatures");
 const { deleteFiles, upload } = require("../services/media.service");
 const AppError = require("../utils/appError");
 const { protect } = require("../middlewares/auth.middleware");
-const { update } = require("lodash");
+
 
 const route = express.Router();
 
@@ -33,8 +33,24 @@ const genaraicFunctions = {
     updateImage: async function (id, files) {
 
         try {
+
+            //files validation
+            if (req.files['image'].length > 1)
+                throw new AppError("you can not upload more than only one image!", APP_CONFIG.HTTP_BAD_REQUEST);
+
+            // Get the uploaded file
+            const imageFile = req.files.image;
+
+            // Validate the file type (ensure it's an image)
+            const allowedMimeTypes = ['image/jpeg', 'image/png'];
+            if (!allowedMimeTypes.includes(imageFile.mimetype)) {
+                throw new AppError("Invalid file type: Only JPEG and PNG images are allowed!", APP_CONFIG.HTTP_BAD_REQUEST);
+            }
+
+            /****************************************************** */
+
             const oldFileId = await userService.getUserImageId(id);
-            console.log("hey man ", "oldFileId['photo']['fileId']");
+            // console.log("hey man ", "oldFileId['photo']['fileId']");
             //delete image from imagekit  if user it's not the default image
             if (!(oldFileId['photo']['fileId'] === APP_CONFIG.UDIAMGE_ID_VALUE)) {
                 await deleteFiles([oldFileId['photo']['fileId']]);
@@ -59,15 +75,20 @@ const genaraicFunctions = {
 
     updateImageProfile: async (req, res, next) => {
 
+        try{
+            if (!req.files)
+                throw new AppError("invalid image file!", APP_CONFIG.HTTP_BAD_REQUEST);
+    
+            const result = await genaraicFunctions.updateImage(req.user._id, req.files)
 
-        if (!req.files)
-            throw new AppError("invalid image file!", APP_CONFIG.HTTP_BAD_REQUEST);
-
-
-
-        const result = await genaraicFunctions.updateImage(req.user._id, req.files)
-
+        } catch (error) {
+            
+            await userService.updateUserImage(req.user._id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
+            throw error;
+            
+        }
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+
     },
 
 
@@ -80,7 +101,7 @@ const genaraicFunctions = {
                 throw new AppError("Invalid request: ID or image file is missing!", APP_CONFIG.HTTP_BAD_REQUEST);
             }
 
-
+            /*
             if (req.files['image'].length > 1)
                 throw new AppError("you can not upload more than only one image!", APP_CONFIG.HTTP_BAD_REQUEST);
 
@@ -91,20 +112,21 @@ const genaraicFunctions = {
             const allowedMimeTypes = ['image/jpeg', 'image/png'];
             if (!allowedMimeTypes.includes(imageFile.mimetype)) {
                 throw new AppError("Invalid file type: Only JPEG and PNG images are allowed!", APP_CONFIG.HTTP_BAD_REQUEST);
-            }
+            }*/
 
 
             // Update the image in image kit 
             const result = await genaraicFunctions.updateImage(req.params.id, req.files);
 
             // Send success response
-            sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
         } catch (error) {
-
+            
             await userService.updateUserImage(req.params.id, APP_CONFIG.DU_IMAGE_DEFALUT_OBG);
             throw error;
-
+            
         }
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 }
 
@@ -470,14 +492,14 @@ const customerOp = {
 
 
     //done
-    updateCustomer:async(req,res,next) =>{
-        
-        if(req.user.userType==APP_CONFIG.CUSTOMER)
-            req.params.id=req.user._id
+    updateCustomer: async (req, res, next) => {
 
-        let result = await userService.updateUser(req.params.id,req.body)
+        if (req.user.userType == APP_CONFIG.CUSTOMER)
+            req.params.id = req.user._id
 
-        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+        let result = await userService.updateUser(req.params.id, req.body)
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
 
@@ -486,7 +508,6 @@ const customerOp = {
 
         req.validatedParams.filters["userType"] = APP_CONFIG.CUSTOMER;
 
-        console.log("from customer object controller :", req.validatedParams);
 
         const result = await userService.getUsers(req.validatedParams);
 
@@ -494,6 +515,15 @@ const customerOp = {
     },
 
 
+    getCustomerCount:async (req,res,next) =>{
+        
+        req.validatedParams.filters['userType']=APP_CONFIG.CUSTOMER;
+
+        let result = await userService.getCountByFilter(req.validatedParams.filters);
+
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+
+    },
 
 
 
@@ -684,13 +714,13 @@ route.post("/addSeller",
 
 
     .post("/addCustomer",
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
+        prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(customerOp.addCustomer)) //end of post 
 
 
     //get customer by filter for serch by firstName , lastNAme  and also active and deactive
     .get("/getCustomers",
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
+        prot_rest(APP_CONFIG.SUPPERADMIN),
         validateSortPaginationParams(genaricFilters.allowedSort)
         , validatorFilterParams(customerOp.allowedFilters, customerOp.allowedFilterValues)
         , validateSearchParams(genaricFilters.searchFiledNameForCustomer, genaricFilters.searchValueAcoordingNaNforCustomer),
@@ -703,25 +733,32 @@ route.post("/addSeller",
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(customerOp.deleteCustomer)) //end of delete 
 
-    
+
     .patch("/activeCustomer/:id",
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
+        prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(customerOp.activeCustomer))//end of patch
 
 
-
-      
     .patch("/updateCustomer/:id",
-        prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.CUSTOMER),
+        prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(customerOp.updateCustomer)
     )
-   
-      //not reviweed yot 
+
+    .get("/customerCount",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        validatorFilterParams(customerOp.allowedFilters,customerOp.allowedFilterValues),
+        catchAsync(customerOp.getCustomerCount)
+    )
+
+    //not reviwed yet
+    //update me 
     .patch("/updateCustomer",
         prot_rest(APP_CONFIG.CUSTOMER),
         catchAsync(customerOp.updateCustomer)
     )
- 
+
+
+    /************************************************************************/
 
     //update personal image profile for users
     .patch("/updateImageProfile",
