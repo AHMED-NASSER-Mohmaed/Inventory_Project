@@ -29,7 +29,7 @@ const SupplierSchema = new mongoose.Schema({
   
 
 
-});
+},{ strict: true });
 
 
 module.exports = mongoose.model("Supplier", SupplierSchema);

@@ -494,7 +494,7 @@ const customerOp = {
     //done
     updateCustomer: async (req, res, next) => {
 
-        if(req.user.userType!=APP_CONFIG.SUPPERADMIN){
+        if(req.user.role!=APP_CONFIG.SUPPERADMIN){
 
             if (req.user.userType == APP_CONFIG.CUSTOMER)
                 req.params.id = req.user._id
