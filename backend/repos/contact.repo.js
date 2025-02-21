@@ -10,6 +10,7 @@ class ContactRepository {
     }
   }
 
+  //for pagination purpose 
   async getContacts(filters, sort, page, limit) {
 
     try {
@@ -47,10 +48,10 @@ class ContactRepository {
     }
   }
 
+
   async updateContact(id, updateData) {
     try {
-      return Contact.findByIdAndUpdate(id, updateData, {
-        new: true,
+      return Contact.updateOne( {_id:id}, {$set:updateData}, {
         runValidators: true,
       });
     } catch (err) {
@@ -58,22 +59,27 @@ class ContactRepository {
     }
   }
 
+  // {$set} inserted
   async bulkMarkAsSeen(ids) {
-    return Contact.updateMany(
-      { _id: { $in: ids } },
-      {
-        isSeen: true,
-        seenAt: Date.now(),
-      }
-    );
+    try{
+      
+      return Contact.updateMany({ _id: { $in: ids } },
+        {$set:{isSeen: true,
+          seenAt: Date.now(),}
+        }
+      );
+
+    }catch(err){
+      throw err;
+    }
   }
 
   async deleteContact(id) {
     try {
-      return await Contact.findByIdAndUpdate(
-        id,
+      return await Contact.updateOne(
+        {_id:id},
         { isActive: false },
-        { new: true, runValidators: true }
+        { runValidators: true }
       );
     } catch (err) {
       throw err;

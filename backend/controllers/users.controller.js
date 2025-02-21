@@ -496,6 +496,8 @@ const customerOp = {
 
         if (req.user.userType == APP_CONFIG.CUSTOMER)
             req.params.id = req.user._id
+        else
+            throw new AppError("sorry, you are not authorized.",APP_CONFIG.HTTP_UNAUTHORIZED);
 
         let result = await userService.updateUser(req.params.id, req.body)
 

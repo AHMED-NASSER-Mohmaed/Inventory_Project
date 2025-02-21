@@ -174,6 +174,7 @@ module.exports.sellerService = {
     ,
 
 
+   //for pagination + search process 
    getSellers:async(data)=>{
         try{
             return await sellerRepo.getSellers(data.filters,data.sort,data.page,data.limit);
