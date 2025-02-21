@@ -120,6 +120,14 @@ class CategoryService {
 
     }
 
+    async getdeActiveCategories(){
+        try {
+            const categories = await CategoryRepository.getdeActiveCategories();
+            return categories;
+        } catch (err) {
+            throw err;
+        }
+    }
 
 
 }

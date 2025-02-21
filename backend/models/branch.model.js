@@ -1,43 +1,33 @@
 const mongoose = require("mongoose");
 
-const { APP_CONFIG } = require("../config/app.config");
+const Counter = require("./counter.model"); // Import Counter model
 
-const validator = require('validator');
 
 const BranchSchema = new mongoose.Schema({
 
-    name: { type: String, default: APP_CONFIG.COMPANYNAME, trim: true },
-
+    _id: { type: Number, unique: true },
+    
     // we Added a type field to distinguish main stock from sub-branches.
     //be aware -- for separation perpose 
 
     //the only one who can create main stock and online the supper admin 
     type: {
         type: String,
-        enum: [ "main" , "sub" , "online"],
+        enum: [ "main" , "sub" , "online" ],
         default: "sub",
         trim: true
     },
 
-    registrationNumber:{ type :Number , required:true  },
+    registrationNumber:{ type :String , required:true  },
 
     // in online is going to be [[url]]
 
-    governate: { type: Number, min: 1, max: 27 },
+    governate: { type: Number, min: 1, max: 27, require:true , unique:true }, 
 
     //only one online site
     location: {
         type: String,
         required: true,
-        validate: {
-            validator: function (field) {
-                if (this.type === 'online') {
-                    return validator.isURL(field); // Properly call isURL function
-                }
-                return true; // Allow other types of locations
-            },
-            message: "Invalid location"
-        },
         trim: true
     },
 
@@ -46,8 +36,7 @@ const BranchSchema = new mongoose.Schema({
     //only the active one 
     admins: {
         adminWorksOnRel: { type: mongoose.Schema.ObjectId, ref: "WorksOn", default: null, },
-    }
-    ,
+    },
 
     //we have employees for our online site ...
     //only the active ones 
@@ -73,5 +62,19 @@ BranchSchema.pre('save',function(next){
 
     next();
 })
+
+// Auto-increment ID before saving
+BranchSchema.pre("save", async function (next) {
+    
+    if (!this._id) {
+        const counter = await Counter.findByIdAndUpdate(
+            { _id: "branch" }, // Identify this counter
+            { $inc: { seq: 1 } }, // Increment by 1
+            { new: true, upsert: true } // Create if not exist
+        );
+        this._id = counter.seq; // Assign new number
+    }
+    next();
+});
 
 BranchSchema.index({ governate: 1, registrationNumber: 1 }, { unique: true });

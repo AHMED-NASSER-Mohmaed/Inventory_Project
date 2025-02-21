@@ -108,6 +108,15 @@ class CategoryRepository {
     }
   }
 
+  async getdeActiveCategories(){
+    try {
+      const categories = await Category.find({ isActive: false }).select('-createdAt -updatedAt -__v');
+      return categories;
+    } catch (err) {
+      throw err;
+    }
+  }
+
 
   //this function will return array of child category or empty array
   //if the passed one is parent category 

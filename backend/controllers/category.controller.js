@@ -27,6 +27,11 @@ class CategoryController {
             catchAsync(this.getActiveCategories)
         );
 
+        this.router.get( // get active categories only
+            "/categories/deActive",
+            catchAsync(this.getdeActiveCategories)
+        );
+
         this.router.patch( // get active categories only
             "/categories/active/:categoryId",
             catchAsync(this.activateCategoryById)
@@ -58,7 +63,16 @@ class CategoryController {
     }
 
   
+    async getdeActiveCategories(req,res,next){
 
+        const categories = await categoryService.getdeActiveCategories();
+
+        res.status(APP_CONFIG.HTTP_OK).json({
+            message: "success",
+            results: categories.length,
+            categories,
+        });
+    }
 
 
     async getClidCat(req,res,next){

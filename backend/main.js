@@ -14,6 +14,8 @@ const Category = require("./models/category.model");
 const Supplier = require("./models/supplier.model");
 const User = require("./models/user.model");
 const Product = require("./models/product.model");
+const branch = require("./models/branch.model");
+const counter = require("./models/counter.model");
 const { compareSync } = require("bcryptjs");
 const port = APP_CONFIG.HTTP_PORT || 5000;
 
@@ -49,6 +51,28 @@ process.on("uncaughtException", (err) => {
           SSN:"30101101206161",
           role:"super_admin",
         }
+
+        let mainBranch={
+          _id:'1',
+          type:"main",
+          governate:6,
+          registrationNumber:"123-69",
+          location:"Elmasoura - Ahmed Maher Street"
+        }
+
+        let onlineBranch={
+          _id:'2',
+          type:"online",
+          governate:1,
+          registrationNumber:"123-692",
+          location:"Cairo bab-elmoneeb"
+        }
+
+        //counter.create({ _id: "branch", seq: 3 })
+
+          // await branch.create(mainBranch);
+          // await branch.create(onlineBranch);
+
 
         /*      
         // console.log("delete all",await User.find({userType:"customer"}));
