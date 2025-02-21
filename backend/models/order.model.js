@@ -1,10 +1,9 @@
-const { type } = require('jquery');
 const mongoose = require('mongoose');
-const { validate } = require('./branch.model');
 
 const OrderSchema = new mongoose.Schema({
 
-  sellier: { type: mongoose.Schema.ObjectID, required: true, },
+  orderContainer: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "OrderContainer" }, 
+  seller: { type: mongoose.Schema.Types.ObjectId, required: true, },
 
   status: {
     type: String,
@@ -15,7 +14,8 @@ const OrderSchema = new mongoose.Schema({
       "shipped",
       "delivered",
       "Completed",
-      "canceled"
+      "canceled",
+      "Pending" // Added "Pending" to the enum array
     ],
     default: "Pending",
   },
@@ -23,7 +23,7 @@ const OrderSchema = new mongoose.Schema({
   products: [
     {
       product: {
-        type: mongoose.Schema.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
         required: true
       },
@@ -45,31 +45,27 @@ const OrderSchema = new mongoose.Schema({
         default: 0
       },
 
-
       price: { type: Number }, //must be exsit for old price ...
 
       //driven attribute 
-      totalPrice: { type: String }, // calculated from price*fullfiledQty
-
+      totalPrice: { type: Number }, // changed from String to Number
 
     },
 
   ],
 
-  totalPrice: { type: number, },
+  totalPrice: { type: Number, required: true, default: 0},
 
-  totalQty: { type: number, },
+  totalQty: { type: Number, required: true, default: 0 },
 
-  clerck: { type: mongoose.Schema.ObjectId, },
+  clerk: { type: mongoose.Schema.Types.ObjectId, default: null, },
 
-
-
-  cashier: { type: String, required: true, default: null, },
+  cashier: { type: mongoose.Schema.Types.ObjectId, default: null, }, // Changed from String to ObjectId
 
 }, {
   timestamps: true,
 })
 
-const order = mongoose.module("Order", OrderSchema);
+const Order = mongoose.model("Order", OrderSchema); // Corrected mongoose.module to mongoose.model
 
-module.exports = order;
+module.exports = Order; // Corrected module. Exports to module.exports
