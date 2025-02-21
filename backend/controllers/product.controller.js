@@ -11,7 +11,7 @@ const {validateSortPaginationParams } = require("../middlewares/validation.middl
 const categoryService = require("../services/category.service");
 const AppError = require("../utils/appError");
 const { deleteFiles, upload } = require("../services/media.service");
-const { filter } = require("lodash");
+ 
 const reviewRouter = require("./review.controller");
 
 class ProductController {
@@ -165,6 +165,7 @@ class ProductController {
       message: "success",
       result,
     });
+
   }
 
   async addProductForSeller(req, res, next) {
