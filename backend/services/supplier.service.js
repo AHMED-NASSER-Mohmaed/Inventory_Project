@@ -1,7 +1,5 @@
 const SupplierRepository = require("../repos/supplier.repo");
-const CInventoryRepository = require("../repos/cinventory.repo")
 const AppError = require("../utils/appError");
-const CInventory = require("../models/cinventory.model");
 const { APP_CONFIG } = require("../config/app.config");
 
 class SupplierService {
@@ -49,7 +47,8 @@ class SupplierService {
 
             if (!supplier) {
                 throw new AppError('Supplier not found', 404);
-            }
+            }else if(!supplier.acknowledged)
+                throw new AppError('invalid fields',APP_CONFIG.HTTP_BAD_REQUEST)
 
             return supplier;
         } catch (err) {
@@ -108,9 +107,7 @@ class SupplierService {
         }
     }
 
-   
 
-   
 }
 
 module.exports = new SupplierService();

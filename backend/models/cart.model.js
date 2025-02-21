@@ -6,9 +6,9 @@ const CartSchema = new mongoose.Schema(
   {
     products: [
       {
-        product: {
+        onlineProduct: {
           type: [mongoose.Schema.ObjectId, "invalid product id"],
-          ref: "Product",
+          ref: "OnlineProducts",
           required: true,
         },
         requiredQty: {
@@ -22,36 +22,35 @@ const CartSchema = new mongoose.Schema(
 
     customerId: {
       type: [mongoose.Schema.ObjectId, "not valid user id"],
-      required: true,
-      // required: function () {
-      //   return this.cartType === "online" && !this.isGuest;
-      // },
+      required: function () {
+        return !this.isGuest;
+      },
     },
     // session id
     sessionId: {
       type: String,
       required: function () {
-        return this.cartType === "online" && this.isGuest;
+        return this.isGuest;
       },
     },
 
-    cartType: { type: String, enum: ["online", "offline"], required: true },
+    // cartType: { type: String, enum: ["online", "offline"], required: true },
 
     isGuest: { type: Boolean, default: false },
 
-    clerk: { type: mongoose.Schema.ObjectId, required: true },
+    //clerk: { type: mongoose.Schema.ObjectId, required: true },
 
-    cashier: {
-      type: String,
+    // cashier: {
+    //   type: String,
 
-      validate: function () {
-        if (this.cartType == "online" && !cashier) return true;
+    //   validate: function () {
+    //     if (this.cartType == "online" && !cashier) return true;
 
-        return false;
-      },
-    },
+    //     return false;
+    //   },
+    // },
 
-    branch: { type: mongoose.Schema.ObjectId, ref: "Branch", required: true },
+    // branch: { type: mongoose.Schema.ObjectId, ref: "Branch", required: true },
 
     expireAt: {
       type: [Date, "not a valid date"],

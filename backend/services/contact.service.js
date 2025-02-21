@@ -4,6 +4,7 @@ const AppError = require("../utils/appError");
 const Email = require("../utils/email");
 
 class ContactService {
+  
   async createContact(contactData) {
     if (!contactData.name || !contactData.email || !contactData.message) {
       throw new AppError("Name, email and message are required", 400);
@@ -13,12 +14,17 @@ class ContactService {
     return contact;
   }
 
-  async getAllContacts() {
-    const contacts = await ContactRepository.getAllContacts();
-    if (!contacts) {
-      throw new AppError("No contacts found", 404);
+  async getContacts(validatedParams) {
+
+    try {
+
+      return await ContactRepository.getContacts(validatedParams.filters, validatedParams.sort,
+        validatedParams.page, validatedParams.limit);
+
+    } catch (err) {
+      throw err;
     }
-    return contacts;
+
   }
 
   async getContactById(id) {

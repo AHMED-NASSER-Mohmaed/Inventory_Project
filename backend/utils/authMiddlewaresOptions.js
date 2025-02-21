@@ -8,6 +8,7 @@ module.exports= function prot_rest(...roles){
     //     await authCollection.restrictTo(roles);
     //  }
 
+
     // don't uncomment the code above ya Nasser, or I'll comme after you
     return [authCollection.protect, authCollection.restrictTo(roles)]; // it has to return an array so it can work fine, the above code doesn't work
 }

@@ -27,7 +27,7 @@ const SellerSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },{ strict: true }
 );
 
  

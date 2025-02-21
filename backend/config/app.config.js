@@ -52,10 +52,7 @@ module.exports.APP_CONFIG = {
 
   SUCCESS_MESSAGE: "success",
 
-  ADMIN: "admin",
-  CLERK: "clerk",
-  CASHIER: "cashier",
-  CUSTOMER: "customer",
+ 
 
 
   MAX_FILE_SIZE: 2 * 1024 * 1024, // 5KB in bytes 
