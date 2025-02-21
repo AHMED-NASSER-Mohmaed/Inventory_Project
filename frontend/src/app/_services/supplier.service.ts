@@ -42,11 +42,11 @@ export class SupplierService {
     formData.append('image', file);
     const headers = this.getHeaders();
     headers.delete('Content-Type'); 
-    return this.http.patch(`${this.baseUrl}/updateImageProfile/${id}`, formData, { headers: headers });
+    return this.http.patch(`${this.baseUrl}/updateImageProfileFor/${id}`, formData, { headers: headers });
   }
 
   updateCustomer(id: string, data: any): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/updateCustomer/${id}`, data, { headers: this.getHeaders() });
+    return this.http.patch(`${this.baseUrl}/suppliers/${id}`, data, { headers: this.getHeaders() });
   }
 
   searchCustomers(filters: string, page: number, limit: number, sort?: string): Observable<any> {

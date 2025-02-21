@@ -518,7 +518,7 @@ export class SellersComponent implements OnInit, OnDestroy {
           if (result) {
             try {
               const response: any = await this.sellerService.changeImage(this.selectedUser._id, file).toPromise();
-              if (response.data.acknowledged) {
+              if (response.message  === 'success') {
                 this.selectedUser.photo.url = tempUrl;
               } else {
                 this.selectedUser.photo.url = backupUrl;
