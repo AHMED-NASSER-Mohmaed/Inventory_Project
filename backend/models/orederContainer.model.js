@@ -29,7 +29,7 @@ const OrderContainerSchema = new mongoose.Schema({
 
         enum: ["pending", "processing", "shipped", "partially shipped",
             "partially delivered", "delivered",
-            "Completed", "canceled"],
+            "completed", "canceled"],
 
         default: "pending"
 
