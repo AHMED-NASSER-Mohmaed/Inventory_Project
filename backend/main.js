@@ -49,7 +49,8 @@ process.on("uncaughtException", (err) => {
           SSN:"30101101206161",
           role:"super_admin",
         }
-      
+
+        /*      
         // console.log("delete all",await User.find({userType:"customer"}));
         // console.log("delete all",await User.find({userType:"staff"}));
         // console.log("delete all",await User.find({userType:"seller"}));
@@ -117,7 +118,7 @@ process.on("uncaughtException", (err) => {
         // console.log(await Seller.updateMany({status:true},{$set:{status:1 }}))
 
         // console.log(await Product.collection.drop());
-
+*/
          if( !await Staff.findOne({SSN:superAdmin.SSN}) ){
            
            // await Staff.deleteOne({SSN:superAdmin.SSN});
@@ -125,14 +126,14 @@ process.on("uncaughtException", (err) => {
            await Staff.create(superAdmin);
 
         }
-
+/*
         if(!await Seller.findOne({SSN:seller.SSN})){
           await Seller.create(seller);
           console.log("our seller record inserted");
         }
 
         // console.log(await Seller.updateMany({ photo: APP_CONFIG.DU_IMAGE_DEFALUT_OBG }));
-      
+   */   
       console.log("App database has connected successfully");
       app.listen(APP_CONFIG.HTTP_PORT, "0.0.0.0", () => {
         console.log(`App is up and running on port ${APP_CONFIG.HTTP_PORT}`);

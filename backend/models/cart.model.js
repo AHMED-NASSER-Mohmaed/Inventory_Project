@@ -15,7 +15,27 @@ const CartSchema = new mongoose.Schema({
     // session id 
     // 
 
+    cartType: { type: String, enum: ['online', 'offline'], required: true },
+
     isGuest:{ type:Boolean , default:false },
+
+    clerck: { type: mongoose.Schema.ObjectId,required: true },
+
+    cashier: { type: String, 
+
+      validate:function(){
+        
+        if(this.cartType == "online" && !cashier)
+          return true;
+
+        return false;
+      }
+      
+     },
+
+    branch: { type: mongoose.Schema.ObjectId, ref: "Branch" ,required: true },
+
+
 
     expireAt: { type: [Date,"not a valid date"] },
 
