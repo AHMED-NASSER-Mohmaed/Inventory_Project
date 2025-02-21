@@ -272,6 +272,7 @@ input:checked + .slider:before {
     border: none;
     outline: none;
     cursor: pointer;
+    flex-wrap: wrap;
 }
 
 :host #content main form .form-input button.search-btn {

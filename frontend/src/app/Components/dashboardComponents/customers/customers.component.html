@@ -4,7 +4,7 @@
             <div class="head-title">
                 <div class="left">
                     <div class="head-flex">
-                        <h1>Hi, Admin!</h1>
+                        <h1>Hi, {{tokenData.id.firstName}}!</h1>
                         <div class="switch-container">
                             <label class="switch-mode">
                                 <input type="checkbox" id="switch-mode" (change)="toggleDarkMode()">
@@ -21,6 +21,7 @@
                     </ul>
                 </div>
             </div>
+
             <!-- <ul class="box-info">
 
                 <li>    
@@ -100,11 +101,12 @@
                     </span>
                 </li>
             </ul> -->
+
             <div class="table-data">
                 <div class="order">
                     <div class="head">
                         <div class="headhead">
-                        <h3>Sellers</h3>
+                        <h3>Customers</h3>
                         <div class="items-per-page">
                             <label> 
                                 <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" name="itemsPerPage">
@@ -117,6 +119,7 @@
                         </div>
                         <form (ngSubmit)="onSearch($event)">
                             <div class="form-input">
+                                
                                 <input type="search" 
                                        [(ngModel)]="searchQuery" 
                                        name="searchQuery" 
@@ -137,7 +140,6 @@
                                             class="matbuttongroupfilter"
                                             (change)="onFilterChange($event)">
                                             <mat-button-toggle value="name">Name</mat-button-toggle>
-                                            <mat-button-toggle value="SSN">SSN</mat-button-toggle>
                                             <mat-button-toggle value="phoneNumber">Phone#</mat-button-toggle>
                                         </mat-button-toggle-group>
                                     </button>
@@ -165,10 +167,9 @@
                                         'bx-sort': sortField !== 'createdAt'
                                     }"></i>
                                 </th>
-                                <th>Company Name</th>
                                 <th>
                                     Status
-                                    <span>
+                                    <span id="dots-container">
                                         <span class="dot green-dot" [class.selected]="currentFilter === 'active'" (click)="setFilter('active')" title="Show Active"></span>
                                         <span class="dot red-dot"  [class.selected]="currentFilter === 'inactive'" (click)="setFilter('inactive')" title="Show Inactive"></span>
                                     </span>
@@ -179,12 +180,12 @@
                         <tbody>
                             <tr *ngIf="showNoResults" class="no-results-row">
                                 <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
-                                    No Sellers Found with this {{lastSearchFilter === 'name' ? 'Name' : lastSearchFilter === 'SSN' ? 'SSN' : 'Phone Number'}}
+                                    No Customers Found with this {{lastSearchFilter === 'name' ? 'Name' : lastSearchFilter === 'SSN' ? 'SSN' : 'Phone Number'}}
                                 </td>
                             </tr>
                             <tr *ngIf="!isLoading && !showNoResults && users.length === 0" class="no-results-row">
                                 <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
-                                    No {{ currentFilter === 'active' ? 'Active' : 'Inactive' }} Sellers Yet
+                                    No {{ currentFilter === 'active' ? 'Active' : 'Inactive' }} Customers Yet
                                 </td>
                             </tr>
                             <tr *ngIf="isLoading" class="no-results-row">
@@ -200,7 +201,6 @@
                                     <p>{{ user.firstName + " "+ user.lastName }}</p>
                                 </td>
                                 <td>{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
-                                <td><p>{{ user.companyName }}</p></td>
                                 <td>
                                     <span class="status process" [class.active]="user.isActive" [class.deactivated]="!user.isActive" [style]="{'min-width': '100px', 'display': 'inline-block', 'text-align': 'center', 'color': user.isActive ? '#2ed134' : '#e6382f'}">
                                         {{user.isActive ? 'Active' : 'Inactive'}}
@@ -214,7 +214,7 @@
                                         <div class="dropdown-menu dropdown-menu-lg" [ngClass]="{'show': dropdownStates[i]}" aria-labelledby="dropdownMenuLink" style=" cursor: pointer;">
                                             <a class="dropdown-item p-3" (click)="showSellerInfo(user)" data-toggle="modal" data-target="#sellerInfoModal"><i class='bx bx-show'></i> Show</a>
                                             <div class="dropdown-divider"></div>
-                                            <a *ngIf="user.status.toString() === '1'" class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user._id) : openConfirmDialog2(user._id)" style="cursor:pointer;">
+                                            <a  class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user._id) : openConfirmDialog2(user._id)" style="cursor:pointer;">
                                                 <i class='bx' [ngClass]="{'bx-check-circle': !user.isActive, 'bx-x-circle': user.isActive}"></i>
                                                 {{user.isActive ? 'Deactivate' : 'Activate'}}
                                             </a>
@@ -237,7 +237,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="sellerInfoModalLabel">Seller Details</h5>
+            <h5 class="modal-title" id="sellerInfoModalLabel">Customers Details</h5>
           </div>
           <div class="modal-body">
             <div class="seller-image-container">
@@ -260,18 +260,6 @@
                 </div>
                 </div>
                 <div class="info-item">
-                  <strong class="label">Company Name:</strong>
-                    <div class="input-wrapper" [ngClass]="{'valid': companyNameInput.touched && companyNameInput.valid, 'invalid': companyNameInput.touched && companyNameInput.invalid}">
-                    <input type="text" required minlength="3" maxlength="15" pattern="^[a-zA-Z0-9]+(?: [a-zA-Z0-9]+){0,3}$" [(ngModel)]="selectedUser.companyName" name="companyName" #companyNameInput="ngModel" [disabled]="!editing" class="value">
-                    </div>
-                </div>
-                <div class="info-item">
-                  <strong class="label">Company Reg#:</strong>
-                    <div class="input-wrapper" [ngClass]="{'valid': regNumberInput.touched && regNumberInput.valid, 'invalid': regNumberInput.touched && regNumberInput.invalid}">
-                    <input type="number" required pattern="^[0-9]{4}$" [(ngModel)]="selectedUser.companyRegistrationNumber" name="companyRegistrationNumber" #regNumberInput="ngModel" [disabled]="!editing" class="value">
-                    </div>
-                </div>
-                <div class="info-item">
                   <strong class="label">Email:</strong>
                     <div class="input-wrapper" [ngClass]="{'valid': emailInput.touched && emailInput.valid, 'invalid': emailInput.touched && emailInput.invalid}">
                     <input type="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" [(ngModel)]="selectedUser.email" name="email" #emailInput="ngModel" disabled class="value">
@@ -281,12 +269,6 @@
                   <strong class="label">Phone Number:</strong>
                     <div class="input-wrapper" [ngClass]="{'valid': phoneInput.touched && phoneInput.valid, 'invalid': phoneInput.touched && phoneInput.invalid}">
                     <input type="text" required pattern="^(010|011|012|015)\d{8}$" [(ngModel)]="selectedUser.phoneNumber" name="phoneNumber" #phoneInput="ngModel" [disabled]="!editing" class="value">
-                    </div>
-                </div>
-                <div class="info-item">
-                  <strong class="label">SSN:</strong>
-                    <div class="input-wrapper" [ngClass]="{'valid': ssnInput.touched && ssnInput.valid, 'invalid': ssnInput.touched && ssnInput.invalid}">
-                    <input type="number" required pattern="^[0-9]{14}$" [(ngModel)]="selectedUser.SSN" name="SSN" #ssnInput="ngModel" [disabled]="!editing" class="value">
                     </div>
                 </div>
                 

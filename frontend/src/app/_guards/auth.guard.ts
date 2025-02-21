@@ -10,15 +10,14 @@ export const authGuard: CanActivateFn = (route, state) => {
   let tokenData: any = null;
   if (token) {
     tokenData = decodeToken(token);
-    console.log('Decoded token:', tokenData);
   }
 
   // Allow access only if tokenData exists and user has admin privileges
-  if (tokenData && (tokenData.userType === 'staff')) {
+  if (tokenData && (tokenData.id.role === 'super_admin')) {
     return true;
   } else {
     router.navigateByUrl('/lock');
-    console.log('Access denied, tokenData:', tokenData);
+    console.log('Access denied');
     return false;
   }
 };

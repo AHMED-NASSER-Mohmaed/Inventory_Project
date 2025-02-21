@@ -6,7 +6,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ToastrService, ToastrModule } from 'ngx-toastr';
-
+import { decodeToken } from '../../_helpers/jwt-helper';
 
 
 @Component({
@@ -25,41 +25,44 @@ export class LoginComponent implements OnDestroy{
 
 
   login(){
+    // Clear any previous toaster messages to avoid spam.
+    this.toastr.clear();
     this.sub = this.accountService.login(this.account.email , this.account.password).subscribe({
       next: (res: any) => {
         if(res.status){
+          this.toastr.clear();
             this.toastr.success('Login Successful', 'Success', {
             timeOut: 1500,
             positionClass: 'toast-bottom-right',
             progressBar: true,
             closeButton: true
             });
-          this.accountService.setLoginStatus();
-          if(res.data.user.userType === "staff"){
-            this.accountService.setUserType(res.data.user.role);
-          }else{
-            this.accountService.setUserType(res.data.user.userType);
-          }
-          localStorage.setItem('token', res.token);
 
           console.log(res);
-          console.log(res.data.user.role);
-          console.log(res.token);
-          this.accountService.showLoginStatus();
 
-          if(res.data.user.role === 'admin' && this.accountService.isLoggedIn){
+          localStorage.setItem('token', res.token);
+
+          const token = localStorage.getItem('token');
+          let tokenData: any = null;
+          if (token) {
+            tokenData = decodeToken(token);
+            console.log('Decoded token:', tokenData);
+          }
+
+
+          if(tokenData.id.role === 'admin'){
             setTimeout(() => {
               this.router.navigateByUrl('/dashboard');
             }, 1500);
           }
 
-          if(res.data.user.role === 'super_admin' && this.accountService.isLoggedIn){
+          if(tokenData.id.role === 'super_admin'){
             setTimeout(() => {
               this.router.navigateByUrl('/dashboard');
             }, 1500);
           }
 
-          if(res.data.user.userType === 'customer' && this.accountService.isLoggedIn){
+          if(tokenData.id.role === 'customer'){
             setTimeout(() => {
               this.router.navigateByUrl('/LandingPage');
             }, 1500);
@@ -69,6 +72,14 @@ export class LoginComponent implements OnDestroy{
         }
       },
       error: (error) => {
+        this.toastr.clear();
+        this.toastr.error(error.error.message, 'Failed', {
+          timeOut: 1500,
+          positionClass: 'toast-bottom-right',
+          progressBar: true,
+          closeButton: true
+        });
+        
         console.log(error)
       },
       complete: () => {

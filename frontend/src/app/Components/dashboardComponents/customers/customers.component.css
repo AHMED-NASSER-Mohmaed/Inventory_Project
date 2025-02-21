@@ -282,7 +282,7 @@ input:checked + .slider:before {
 :host #content main form .form-input button[mat-icon-button] {
     background: transparent;
     width: auto;
-    padding: 0 10px;
+    padding: 0 5px;
 }
 
 :host #content main form .form-input button[mat-icon-button] i {
@@ -469,18 +469,19 @@ mat-button-toggle{
 }
 
 .mat-menu-item{
-  height: 8em;
+  height: 6em;
   padding: 0;
+  /* margin-top: 50px; */
 }
 
 .matbuttongroupfilter{
-  height: 9em;
+  height: 7em;
   border-radius: 0;
   margin-left: 0;
 }
 
 .matbuttongroupfilter mat-button-toggle{
-  height: 3em;
+  height: 70px;
   font-size: 0.9em;
 }
 
@@ -582,6 +583,10 @@ mat-button-toggle{
 }
 :host #content main .table-data .order table tr td .status.pending {
   background: var(--dark);
+}
+
+#dots-container{
+  margin-left: 0.5em;
 }
 
 .status-dots {

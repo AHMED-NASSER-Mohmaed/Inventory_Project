@@ -14,22 +14,22 @@ export class CustomersService {
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  getPaginatedSellersByStatus(page: number, limit: number, filters?: string, sort?: string): Observable<any> {
+  getPaginatedCustomersByStatus(page: number, limit: number, filters?: string, sort?: string): Observable<any> {
     const filterParam = filters ? `filters=${filters}` : '';
-    const url = `${this.baseUrl}/getSellers?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
+    const url = `${this.baseUrl}/getCustomers?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
     return this.http.get(url, { headers: this.getHeaders() });
   }
 
-  deActiveSeller(id: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/deleteSeller/${id}`, { headers: this.getHeaders() });
+  deActiveCustomer(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/---/${id}`, { headers: this.getHeaders() });
   }
 
-  activateSeller(id: string): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/activeSeller/${id}`, {}, { headers: this.getHeaders() });
+  activateCustomer(id: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/---/${id}`, {}, { headers: this.getHeaders() });
   }
 
-  getActiveSellersCount(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/sellerCount?filters=isActive:true`, { headers: this.getHeaders() });
+  getActiveCustomersCount(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/---?filters=isActive:true`, { headers: this.getHeaders() });
   }
 
   changeImage(id: string, file: File): Observable<any> {
@@ -40,12 +40,12 @@ export class CustomersService {
     return this.http.patch(`${this.baseUrl}/updateImageProfileFor/${id}`, formData, { headers: headers });
   }
 
-  updateSeller(id: string, data: any): Observable<any> {
+  updateCustomer(id: string, data: any): Observable<any> {
     return this.http.patch(`${this.baseUrl}/updateSeller/${id}`, data, { headers: this.getHeaders() });
   }
 
-  searchSellers(filters: string, page: number, limit: number, sort?: string): Observable<any> {
-    const url = `${this.baseUrl}/getSellers?page=${page}&limit=${limit}&filters=${filters}${sort || ''}`;
+  searchCustomers(filters: string, page: number, limit: number, sort?: string): Observable<any> {
+    const url = `${this.baseUrl}/getCustomers?page=${page}&limit=${limit}&filters=${filters}${sort || ''}`;
     return this.http.get(url, { headers: this.getHeaders() });
   }
 }

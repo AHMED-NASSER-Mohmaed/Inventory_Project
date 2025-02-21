@@ -16,6 +16,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { SellerService } from '../../../_services/seller.service';
+import { decodeToken } from '../../../_helpers/jwt-helper';
 
 @Component({
   selector: 'app-sellers',
@@ -25,8 +26,7 @@ import { SellerService } from '../../../_services/seller.service';
 })
 export class SellersComponent implements OnInit, OnDestroy {
 
-  @Input('myclass')
-  panelClass!: string;
+
   // Filter state and pagination
   currentFilter: 'active' | 'waiting' | 'rejected' | 'approved' = 'active';
   currentPage: number = 1;
@@ -56,25 +56,22 @@ export class SellersComponent implements OnInit, OnDestroy {
   selectedFilter: string = 'name'; // Default filter
   searchQuery: string = '';
 
-  // Add this property
   showNoResults: boolean = false;
 
-  // Add this new property
   lastSearchFilter: string = 'name';
 
-  // Add this new property
   isLoading: boolean = true;
 
-  // Add these properties after other properties
   sortField: 'name' | 'createdAt' | null = null;
   sortDirection: 'asc' | 'desc' | null = null;
 
-  // Add these properties
   showingActive: boolean | null = null;
   activityFilter: boolean | null = null;
 
-  // Add new property for search placeholder
   searchPlaceholder: string = ' Search By Name...';
+
+  tokenData: any = null;
+
 
   constructor(private sellerService: SellerService, public dialog: MatDialog) {}
 
@@ -85,6 +82,12 @@ export class SellersComponent implements OnInit, OnDestroy {
     this.getActiveSellersCount();
     this.getWaitingSellersCount();
     this.getRejectedSellersCount();
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.tokenData = decodeToken(token);
+      console.log('Decoded token:', this.tokenData);
+    }
   }
 
   hideSingleSelectionIndicator = signal(true);
@@ -144,6 +147,7 @@ export class SellersComponent implements OnInit, OnDestroy {
         this.pageCache[cacheKey] = { result: this.users, total: total };
         this.updatePaginationState();
         this.isLoading = false;
+        console.log(res);
       },
       error: (error) => {
         console.log(error);

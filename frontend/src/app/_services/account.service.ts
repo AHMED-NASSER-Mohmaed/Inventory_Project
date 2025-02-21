@@ -6,27 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AccountService {
-  private _isLoggedIn = false;
-  private _userType: string | null = null;
-
-  get isLoggedIn(): boolean {
-    return this._isLoggedIn;
-  }
-
-  set isLoggedIn(value: boolean) {
-    this._isLoggedIn = value;
-  }
-
-  get userType(): string | null {
-    return this._userType;
-  }
-
-  set userType(value: string | null) {
-    this._userType = value;
-  }
 
   constructor(public http: HttpClient) { 
-    // Removed localStorage initialization.
   }
 
   login(email: string, password: string) : Observable<any> {
@@ -41,21 +22,9 @@ export class AccountService {
     return this.http.post('http://127.0.0.1:3000/auth/signup', { firstName, lastName, email, phoneNumber, password, passwordConfirm, userType, SSN, companyRegistrationNumber, companyName });
   }
 
-  setLoginStatus(){
-    this.isLoggedIn = true;
-  }
 
-  setUserType(type: string) {
-    this.userType = type;
-  }
-
-  showLoginStatus() {
-    console.log(this.isLoggedIn);
-  }
 
   logout() {
-    this.isLoggedIn = false;
-    this.userType = '';
-    localStorage.removeItem('token');
+    
   }
 }

@@ -4,7 +4,7 @@ import { AccountService } from '../../../_services/account.service';
 import { ConfirmLogoutDialogComponent } from '../../../confirm-logout-dialog/confirm-logout-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
-
+import { decodeToken } from '../../../_helpers/jwt-helper';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -17,6 +17,7 @@ export class DashboardComponent implements OnInit , OnDestroy {
   activeMenu: string = 'users';
   dropdownStates: { [key: string]: boolean } = {};
   sub = {} as Subscription;
+  tokenData: any = null;
 
   toggleDropdown(menu: string): void {
     this.dropdownStates[menu] = !this.dropdownStates[menu];
@@ -47,6 +48,13 @@ export class DashboardComponent implements OnInit , OnDestroy {
 
   
   ngOnInit(): void {
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.tokenData = decodeToken(token);
+      console.log('Decoded token:', this.tokenData);
+    }
+
     const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
 
     allSideMenu.forEach(item => {
