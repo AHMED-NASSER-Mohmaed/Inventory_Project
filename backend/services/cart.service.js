@@ -56,6 +56,7 @@ class CartService {
 
     // find if product exists
     const product = await isProductExist(productId);
+
     if (!product || !product.isActive || product.satus !== "approved") {
       throw new AppError("Product not found", 404);
     }
@@ -95,8 +96,76 @@ class CartService {
     }
   };
 
-  async removeProductFromCart(cartId, productId) {
+  removeProductFromCart = async (cartId, productId) => {
     return await CartRepository.removeProduct(cartId, productId);
+  };
+
+  mergeGuestCartToUserCart = async (customerId, sessionId) => {
+    const guestCart = await CartRepository.findCartBySessionId(sessionId);
+    if (!guestCart) return null;
+
+    const customerCart = await CartRepository.findCartByCustomerId(customerId);
+    if (!customerCart) {
+      guestCart.customerId = customerId;
+      guestCart.isGuest = false;
+      guestCart.sessionId = undefined;
+      return await guestCart.save();
+    } else {
+      await CartRepository.mergeCarts(customerCart._id, guestCart);
+      await guestCart.remove();
+      return await CartRepository.findCartById(userCart._id);
+    }
+  };
+
+  clearCart = async (customerId) => {
+    return await CartRepository.deleteCart(customerId);
+  };
+
+  validateCart = async (cartId) => {
+    const cart = await CartRepository.findCartById(cartId);
+    if (!cart) throw new AppError("Cart not found", 404);
+
+    let messages = [];
+    let cartUpdated = false;
+
+    for (const item of cart.products) {
+      const product = isProductExist(item.onlineProduct);
+      if (!product || !product.isActive || product.satus !== "approved") {
+        messages.push(
+          `Product (id: ${item.onlineProduct}) is no longer available.`
+        );
+        cartUpdated = true;
+      } else if (product.stock === 0) {
+        messages.push(`Product "${product}" is out of stock!`);
+      } else if (product.stock < item.requiredQty) {
+        messages.push(
+          `Product "${product.product}" quantity adjusted to ${product.stock} due to limited stock.`
+        );
+        await CartRepository.updateProductQuantity(
+          cart._id,
+          product._id,
+          product.stock
+        );
+        cartUpdated = true;
+      }
+    }
+
+    const updatedCart = cartUpdated
+      ? await CartRepository.findCartById(cartId)
+      : cart;
+
+    return { cart: updatedCart, messages };
+  };
+
+  async checkoutCart(cartId) {
+    // Validate cart before checkout.
+    const { cart, messages } = await this.validateCart(cartId);
+    if (messages.length) {
+      throw new Error(`Cart validation failed: ${messages.join("; ")}`);
+    }
+
+    cart.products = [];
+    return await cart.save();
   }
 }
 
