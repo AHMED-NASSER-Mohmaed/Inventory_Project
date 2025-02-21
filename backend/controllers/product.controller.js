@@ -1,12 +1,12 @@
 const express = require("express");
 const productService = require("../services/product.service");
-const AuthMiddleware = require("../middlewares/auth.middleware");
+
+const { validateSearchParams, validatorFilterParams,validateSortPaginationParams } = require("../middlewares/validation.middlewares");
+
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
 const pro_res = require("../utils/authMiddlewaresOptions");
-const {
-  validatorForQueries,
-} = require("../middlewares/validation.middlewares");
+
 const categoryService = require("../services/category.service");
 const AppError = require("../utils/appError");
 const { deleteFiles, upload } = require("../services/media.service");
@@ -74,12 +74,11 @@ class ProductController {
         catchAsync(this.deleteProduct)
       );
 
-    /*
+    
     //site products
     this.router.get(
 
       "/getProducts",
-     
       
       validateSortPaginationParams(this.allowedSortFileds),
       
@@ -108,8 +107,8 @@ class ProductController {
 */
   }
 
-  allowedFilterFileds = ["isActive", "undefined"];
-  allowedFileterFildesValues = ["true", "false", "undefined"];
+  allowedFilterFileds = [["isActive", "undefined"]];
+  allowedFileterFildesValues = [["true", "false", "undefined"]];
 
   allowedSortFileds = ["price", "createdAt"];
   allowedSortFiledsValues = ["asc", "desc"];
@@ -135,8 +134,14 @@ class ProductController {
   }
 
   async getProducts(req, res, next) {
+    
+    if(!req.validatedParams.filters)
+      req.validatedParams['filters']={};
+
     req.validatedParams["filters"]["isActive"] = true;
     req.validatedParams["filters"]["status"] = true;
+
+    
 
     if (req.query.catId) {
       let filters = { isActive: true, _id: req.query.catId };
