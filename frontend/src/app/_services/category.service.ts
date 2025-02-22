@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class SupplierService {
+export class CategoryService {
 
   constructor(public http: HttpClient) { }
   private baseUrl = 'http://localhost:3000';
@@ -17,7 +17,7 @@ export class SupplierService {
 
   getPaginatedCustomersByStatus(page: number, limit: number, filters?: string, sort?: string): Observable<any> {
     const filterParam = filters ? `filters=${filters}` : '';
-    const url = `${this.baseUrl}/suppliers?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
+    const url = `${this.baseUrl}/categories?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
     return this.http.get(url, { headers: this.getHeaders() });
   }
 

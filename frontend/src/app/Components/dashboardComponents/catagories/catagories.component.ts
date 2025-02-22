@@ -3,7 +3,6 @@ import { Component, OnInit, OnDestroy, signal, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
-import { User } from '../../../_models/user';
 import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.component';
 import { ConfirmDialogComponent2 } from '../../../confirm-dialog2/confirm-dialog2.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -13,10 +12,11 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { decodeToken } from '../../../_helpers/jwt-helper';
 import { ToastrService } from 'ngx-toastr';
-import { SupplierService } from '../../../_services/supplier.service';
+import { CategoryService } from '../../../_services/category.service';
+import { category } from '../../../_models/category';
 
 @Component({
-  selector: 'app-suppliers',
+  selector: 'app-catagories',
   imports: [
     CommonModule,
     FormsModule,
@@ -26,12 +26,11 @@ import { SupplierService } from '../../../_services/supplier.service';
     MatProgressSpinnerModule,
     NgxSkeletonLoaderModule,
   ],
-  templateUrl: './suppliers.component.html',
-  styleUrl: './suppliers.component.css'
+  templateUrl: './catagories.component.html',
+  styleUrl: './catagories.component.css'
 })
-export class SuppliersComponent implements OnInit, OnDestroy {
 
-  // Filter state and pagination
+export class CatagoriesComponent implements OnInit, OnDestroy{
   currentFilter: string = '';
   currentPage: number = 1;
   itemsPerPage: number = 10;
@@ -39,17 +38,17 @@ export class SuppliersComponent implements OnInit, OnDestroy {
   hasNextPage: boolean = false;
   hasPreviousPage: boolean = false;
 
-  users: User[] = [];
+  users: category[] = [];
   isDarkMode: boolean = false;
   dropdownStates: boolean[] = [];
-  selectedUser: User = {} as User;
-  backupUser: User = {} as User;
+  selectedUser: category = {} as category;
+  backupUser: category = {} as category;
   editing: boolean = false;
 
   subscriptions: Subscription[] = [];
 
   // New cache for storing seller pages: keys are "<filter>_<page>"
-  pageCache: { [key: string]: { result: User[]; total: number } } = {};
+  pageCache: { [key: string]: { result: category[]; total: number } } = {};
 
   selectedFilter: string = 'name'; // Default filter
   searchQuery: string = '';
@@ -72,7 +71,7 @@ export class SuppliersComponent implements OnInit, OnDestroy {
 
 
   constructor(
-    private supplierService: SupplierService,
+    private supplierService: CategoryService,
     public dialog: MatDialog,
     public toaster: ToastrService
   ) {}
@@ -134,9 +133,9 @@ export class SuppliersComponent implements OnInit, OnDestroy {
 
     const sub = obs.subscribe({
       next: (res) => {
-        this.users = res.data.result;
+        this.users = res.categories;
         this.showNoResults = false;
-        const total = res.data.total;
+        const total =2; ////!!!!!!!!!!!!!
         this.totalPages = Math.ceil(total / this.itemsPerPage);
         this.dropdownStates = new Array(this.users.length).fill(false);
         this.pageCache[cacheKey] = { result: this.users, total: total };
@@ -201,35 +200,32 @@ export class SuppliersComponent implements OnInit, OnDestroy {
     this.isDarkMode = !this.isDarkMode;
   }
 
-  showSellerInfo(user: User): void {
+  showSellerInfo(user: category): void {
     this.selectedUser = {
       ...user,
-      firstName: user.firstName || '',
-      lastName: user.lastName || '',
-      companyName: user.companyName || '',
-      email: user.email || '',
-      phoneNumber: user.phoneNumber || '',
-      companyRegistrationNumber: user.companyRegistrationNumber || '',
+      id: user.id || '',
+      parentCatId: user.parentCatId || '',
+      name: user.name || '',
     };
     this.backupUser = { ...this.selectedUser };
     console.log(this.selectedUser);
   }
 
   // Customer actions
-  deActiveCustomer(_id: string): void {
-    const sub = this.supplierService.deActiveCustomer(_id).subscribe({
+  deActiveCustomer(id: string): void {
+    const sub = this.supplierService.deActiveCustomer(id).subscribe({
       next: (res) => {
         console.log(res);
-        const deactivatedCustomer = this.users.find((u) => u._id === _id);
+        const deactivatedCustomer = this.users.find((u) => u.id === id);
         if (deactivatedCustomer) {
           // Remove from current active list
-          this.users = this.users.filter((user) => user._id !== _id);
+          this.users = this.users.filter((user) => user.id !== id);
           deactivatedCustomer.isActive = false;
           
           // Remove from active cache (using "active" prefix)
           const activeKey = `active_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
           if (this.pageCache[activeKey]) {
-            this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter((user) => user._id !== _id);
+            this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter((user) => user.id !== id);
             this.pageCache[activeKey].total--;
           }
           
@@ -262,20 +258,20 @@ export class SuppliersComponent implements OnInit, OnDestroy {
     this.subscriptions.push(sub);
   }
 
-  activateCustomer(_id: string): void {
-    const sub = this.supplierService.activateCustomer(_id).subscribe({
+  activateCustomer(id: string): void {
+    const sub = this.supplierService.activateCustomer(id).subscribe({
       next: (res) => {
         console.log(res);
-        const activatedCustomer = this.users.find((u) => u._id === _id);
+        const activatedCustomer = this.users.find((u) => u.id === id);
         if (activatedCustomer) {
           // Remove from current inactive list
-          this.users = this.users.filter((user) => user._id !== _id);
+          this.users = this.users.filter((user) => user.id !== id);
           activatedCustomer.isActive = true;
           
           // Remove from inactive cache (using "inactive" prefix)
           const inactiveKey = `inactive_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
           if (this.pageCache[inactiveKey]) {
-            this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter((user) => user._id !== _id);
+            this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter((user) => user.id !== id);
             this.pageCache[inactiveKey].total--;
           }
           
@@ -307,28 +303,28 @@ export class SuppliersComponent implements OnInit, OnDestroy {
     this.subscriptions.push(sub);
   }
 
-  openConfirmDialog(_id: string): void {
+  openConfirmDialog(id: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
     const sub = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.deActiveCustomer(_id);
+        this.deActiveCustomer(id);
       }
     });
     this.subscriptions.push(sub);
   }
 
-  openConfirmDialog2(_id: string): void {
+  openConfirmDialog2(id: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent2);
     const sub = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.activateCustomer(_id);
+        this.activateCustomer(id);
       }
     });
     this.subscriptions.push(sub);
   }
 
-  updateUserActivity(_id: string, isActive: boolean): void {
-    const user = this.users.find((u) => u._id === _id);
+  updateUserActivity(id: string, isActive: boolean): void {
+    const user = this.users.find((u) => u.id === id);
     if (user) {
       user.isActive = isActive;
     }
@@ -378,12 +374,12 @@ export class SuppliersComponent implements OnInit, OnDestroy {
     if (this.editing) {
       const workingBackup = { ...this.backupUser };
       const sub = this.supplierService
-        .updateCustomer(this.selectedUser._id, this.selectedUser)
+        .updateCustomer(this.selectedUser.id, this.selectedUser)
         .subscribe({
           next: (res: any) => {
             if (res.message === 'success') {
               const index = this.users.findIndex(
-                (u) => u.SSN === this.selectedUser.SSN
+                (u) => u.id === this.selectedUser.id
               );
               if (index !== -1) {
                 this.users[index] = { ...this.selectedUser };
@@ -391,7 +387,7 @@ export class SuppliersComponent implements OnInit, OnDestroy {
               }
             } else {
               const index = this.users.findIndex(
-                (u) => u.SSN === workingBackup.SSN
+                (u) => u.id === workingBackup.id
               );
               if (index !== -1) {
                 this.users[index] = workingBackup;
@@ -410,7 +406,7 @@ export class SuppliersComponent implements OnInit, OnDestroy {
             });
             console.error('Error updating seller info', error);
             const index = this.users.findIndex(
-              (u) => u.SSN === workingBackup.SSN
+              (u) => u.id === workingBackup.id
             );
             if (index !== -1) {
               this.users[index] = workingBackup;
@@ -600,5 +596,4 @@ export class SuppliersComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
-
 }

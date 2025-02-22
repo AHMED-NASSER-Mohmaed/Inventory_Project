@@ -15,9 +15,7 @@
                     <ul class="breadcrumb">
                         <li><a >Dashboard</a></li>
                         <li><i class='bx bx-chevron-right'></i></li>
-                        <li><a >Users</a></li>
-                        <li><i class='bx bx-chevron-right'></i></li>
-                        <li><a class="active" >Suppliers</a></li>
+                        <li><a class="active" >Catagories</a></li>
                     </ul>
                 </div>
             </div>
@@ -37,10 +35,10 @@
                         </div>
                       </ngx-skeleton-loader>                      
                       
-                    <i *ngIf="activeCustomersCount !== null && activeCustomersCount !== undefined" class='bx bxs-contact'></i>
+                    <i *ngIf="activeCustomersCount !== null && activeCustomersCount !== undefined" class='bx bxs-category'></i>
                     <span *ngIf="activeCustomersCount !== null && activeCustomersCount !== undefined" class="text">
                         <h3>{{activeCustomersCount}}</h3>
-                        <p>Active Suppliers</p>
+                        <p>Active Catagories</p>
                     </span>
                 </li>
                 <li>
@@ -56,10 +54,10 @@
                         </div>
                       </ngx-skeleton-loader>
 
-                    <i  *ngIf="inactiveCustomersCount !== null && inactiveCustomersCount !== undefined" class='bx bxs-archive-in' id="lol"></i>
+                    <i  *ngIf="inactiveCustomersCount !== null && inactiveCustomersCount !== undefined" class='bx bxs-category-alt' id="lol"></i>
                     <span *ngIf="inactiveCustomersCount !== null && inactiveCustomersCount !== undefined" class="text">
                         <h3>{{inactiveCustomersCount}}</h3>
-                        <p>Inactive Suppliers</p>
+                        <p>Inactive Catagories</p>
                     </span>
                 </li>
             </ul>
@@ -68,7 +66,7 @@
                 <div class="order">
                     <div class="head">
                         <div class="headhead">
-                        <h3>Customers</h3>
+                        <h3>Catagories</h3>
                         <div class="items-per-page">
                             <label> 
                                 <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" name="itemsPerPage">
@@ -79,48 +77,15 @@
                             </label>
                         </div>
                         </div>
-                        <form (ngSubmit)="onSearch($event)">
-                            <div class="form-input">
-                                
-                                <input type="search" 
-                                       [(ngModel)]="searchQuery" 
-                                       name="searchQuery" 
-                                       [placeholder]="searchPlaceholder"
-                                       (keypress)="validateSearchInput($event)"
-                                       (paste)="handlePaste($event)">
-                                <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
-                                <div id="search-btns">
-                                <button mat-icon-button type="button" [matMenuTriggerFor]="menu" style="border: none; background-color: var(--light);">
-                                    <i class='bx bx-filter' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
-                                </button>
-                                <button mat-icon-button type="button" (click)="resetSearch()" style="border: none; background-color: var(--light);" title="Reset Search">
-                                    <i class='bx bx-reset' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
-                                </button>
-                                </div>
-                                <mat-menu #menu="matMenu" class="matMenu">
-                                    <button mat-menu-item class="mat-menu-item">
-                                        <mat-button-toggle-group vertical name="favoriteColor" aria-label="Favorite Color"
-                                            [hideSingleSelectionIndicator]="hideSingleSelectionIndicator()" 
-                                            class="matbuttongroupfilter"
-                                            (change)="onFilterChange($event)">
-                                            <mat-button-toggle value="name">Name</mat-button-toggle>
-                                            <mat-button-toggle value="phoneNumber">Phone#</mat-button-toggle>
-                                        </mat-button-toggle-group>
-                                    </button>
-                                </mat-menu>
-                            </div>
-                        </form>
                     </div>
 
                     <table style="border-spacing: 15px; border-collapse: separate;">
                         <thead>
                             <tr>
                                 <th>
-                                    Company Name
+                                    Name
                                 </th>
-                                <th>
-                                    Company Registration Number
-                                </th>
+
                                 <th>
                                     Status
                                     <span id="dots-container">
@@ -132,11 +97,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngIf="showNoResults" class="no-results-row">
-                                <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
-                                    No Suppliers Found with this {{lastSearchFilter === 'name' ? 'companyName' : lastSearchFilter === 'SSN' ? 'SSN' : 'Phone Number'}}
-                                </td>
-                            </tr>
                             <tr *ngIf="!isLoading && !showNoResults && users.length === 0" class="no-results-row">
                                 <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
                                     No {{ currentFilter === 'active' ? 'Active' : 'Inactive' }} Suppliers Yet
@@ -151,9 +111,8 @@
                             </tr>
                             <tr *ngFor="let user of users; let i = index">
                                 <td>
-                                    <p>{{ user.companyName }}</p>
+                                    <p>{{ user.name }}</p>
                                 </td>
-                                <td>{{ user.companyRegistrationNumber}}</td>
                                 <td>
                                     <span class="status process" [class.active]="user.isActive" [class.deactivated]="!user.isActive" [style]="{'min-width': '100px', 'display': 'inline-block', 'text-align': 'center', 'color': user.isActive ? '#2ed134' : '#e6382f'}">
                                         {{user.isActive ? 'Active' : 'Inactive'}}
@@ -167,7 +126,7 @@
                                         <div class="dropdown-menu dropdown-menu-lg" [ngClass]="{'show': dropdownStates[i]}" aria-labelledby="dropdownMenuLink" style=" cursor: pointer;">
                                             <a class="dropdown-item p-3" (click)="showSellerInfo(user)" data-toggle="modal" data-target="#sellerInfoModal"><i class='bx bx-show'></i> Show</a>
                                             <div class="dropdown-divider"></div>
-                                            <a  class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user._id) : openConfirmDialog2(user._id)" style="cursor:pointer;">
+                                            <a  class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user.id) : openConfirmDialog2(user.id)" style="cursor:pointer;">
                                                 <i class='bx' [ngClass]="{'bx-check-circle': !user.isActive, 'bx-x-circle': user.isActive}"></i>
                                                 {{user.isActive ? 'Deactivate' : 'Activate'}}
                                             </a>
@@ -196,29 +155,12 @@
             <form #editForm="ngForm">
               <div class="info-grid" *ngIf="selectedUser">
                 <div class="info-item">
-                    <strong class="label">Company Name:</strong>
+                    <strong class="label">Name:</strong>
                       <div class="input-wrapper" [ngClass]="{'valid': companyNameInput.touched && companyNameInput.valid, 'invalid': companyNameInput.touched && companyNameInput.invalid}">
-                      <input type="text" required minlength="3" maxlength="15" pattern="^[a-zA-Z0-9]+(?: [a-zA-Z0-9]+){0,3}$" [(ngModel)]="selectedUser.companyName" name="companyName" #companyNameInput="ngModel" [disabled]="!editing" class="value">
+                      <input type="text" required minlength="3" maxlength="15" pattern="^[a-zA-Z0-9]+(?: [a-zA-Z0-9]+){0,3}$" [(ngModel)]="selectedUser.name" name="companyName" #companyNameInput="ngModel" [disabled]="!editing" class="value">
                       </div>
                   </div>
-                  <div class="info-item">
-                    <strong class="label">Company Reg#:</strong>
-                      <div class="input-wrapper" [ngClass]="{'valid': regNumberInput.touched && regNumberInput.valid, 'invalid': regNumberInput.touched && regNumberInput.invalid}">
-                    <input required pattern="^(?!-)(?!.*-$)(?!.*--)(?=(?:.*[0-9]){4,10}$)[1-9]+(?:-[1-9]+)*$" [(ngModel)]="selectedUser.companyRegistrationNumber" name="companyRegistrationNumber" #regNumberInput="ngModel" [disabled]="!editing" class="value">
-                      </div>
-                  </div>
-                <div class="info-item">
-                  <strong class="label">Email:</strong>
-                    <div class="input-wrapper" [ngClass]="{'valid': emailInput.touched && emailInput.valid, 'invalid': emailInput.touched && emailInput.invalid}">
-                    <input type="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" [(ngModel)]="selectedUser.email" name="email" #emailInput="ngModel" disabled class="value">
-                    </div>
-                </div>
-                <div class="info-item">
-                  <strong class="label">Phone Number:</strong>
-                    <div class="input-wrapper" [ngClass]="{'valid': phoneInput.touched && phoneInput.valid, 'invalid': phoneInput.touched && phoneInput.invalid}">
-                    <input type="text" required pattern="^(010|011|012|015)\d{8}$" [(ngModel)]="selectedUser.phoneNumber" name="phoneNumber" #phoneInput="ngModel" [disabled]="!editing" class="value">
-                    </div>
-                </div>
+            
                 
               </div>
             </form>

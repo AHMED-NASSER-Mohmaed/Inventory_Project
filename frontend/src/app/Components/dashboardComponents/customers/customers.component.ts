@@ -221,30 +221,33 @@ export class CustomersComponent implements OnInit, OnDestroy {
     const sub = this.customerService.deActiveCustomer(_id).subscribe({
       next: (res) => {
         console.log(res);
-        const deactivatedCustomer = this.users.find((u) => u._id === _id);
+        const deactivatedCustomer = this.users.find(u => u._id === _id);
         if (deactivatedCustomer) {
-          // Remove from current active list
-          this.users = this.users.filter((user) => user._id !== _id);
-          deactivatedCustomer.isActive = false;
-          
-          // Remove from active cache (using "active" prefix)
-          const activeKey = `active_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-          if (this.pageCache[activeKey]) {
-            this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter((user) => user._id !== _id);
-            this.pageCache[activeKey].total--;
-          }
-          
-          // Add to first page of inactive cache (using "inactive" prefix)
-          const inactiveKey = `inactive_1_${this.sortField}_${this.sortDirection}`;
-          if (this.pageCache[inactiveKey]) {
-            const inactiveCache = this.pageCache[inactiveKey];
-            inactiveCache.result.unshift(deactivatedCustomer);
-            if (inactiveCache.result.length > this.itemsPerPage) {
-              inactiveCache.result.pop();
+          if (this.currentFilter === 'active') {
+            // In "active" view: remove from list and update caches
+            this.users = this.users.filter(user => user._id !== _id);
+            const activeKey = `active_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
+            if (this.pageCache[activeKey]) {
+              this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter(user => user._id !== _id);
+              this.pageCache[activeKey].total--;
             }
-            inactiveCache.total++;
+            const inactiveKey = `inactive_1_${this.sortField}_${this.sortDirection}`;
+            if (this.pageCache[inactiveKey]) {
+              this.pageCache[inactiveKey].result.unshift(deactivatedCustomer);
+              if (this.pageCache[inactiveKey].result.length > this.itemsPerPage) {
+                this.pageCache[inactiveKey].result.pop();
+              }
+              this.pageCache[inactiveKey].total++;
+            }
+          } else {
+            // In mixed view: only update the status
+            deactivatedCustomer.isActive = false;
+            const currentKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
+            if (this.pageCache[currentKey]) {
+              const cachedUser = this.pageCache[currentKey].result.find(u => u._id === _id);
+              if (cachedUser) { cachedUser.isActive = false; }
+            }
           }
-          
           this.getInActiveCustomersCount();
           this.getActiveCustomersCount();
         }
@@ -267,28 +270,32 @@ export class CustomersComponent implements OnInit, OnDestroy {
     const sub = this.customerService.activateCustomer(_id).subscribe({
       next: (res) => {
         console.log(res);
-        const activatedCustomer = this.users.find((u) => u._id === _id);
+        const activatedCustomer = this.users.find(u => u._id === _id);
         if (activatedCustomer) {
-          // Remove from current inactive list
-          this.users = this.users.filter((user) => user._id !== _id);
-          activatedCustomer.isActive = true;
-          
-          // Remove from inactive cache (using "inactive" prefix)
-          const inactiveKey = `inactive_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-          if (this.pageCache[inactiveKey]) {
-            this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter((user) => user._id !== _id);
-            this.pageCache[inactiveKey].total--;
-          }
-          
-          // Add to first page of active cache (using "active" prefix)
-          const activeKey = `active_1_${this.sortField}_${this.sortDirection}`;
-          if (this.pageCache[activeKey]) {
-            const activeCache = this.pageCache[activeKey];
-            activeCache.result.unshift(activatedCustomer);
-            if (activeCache.result.length > this.itemsPerPage) {
-              activeCache.result.pop();
+          if (this.currentFilter === 'inactive') {
+            // In "inactive" view: remove from list and update caches
+            this.users = this.users.filter(user => user._id !== _id);
+            const inactiveKey = `inactive_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
+            if (this.pageCache[inactiveKey]) {
+              this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter(user => user._id !== _id);
+              this.pageCache[inactiveKey].total--;
             }
-            activeCache.total++;
+            const activeKey = `active_1_${this.sortField}_${this.sortDirection}`;
+            if (this.pageCache[activeKey]) {
+              this.pageCache[activeKey].result.unshift(activatedCustomer);
+              if (this.pageCache[activeKey].result.length > this.itemsPerPage) {
+                this.pageCache[activeKey].result.pop();
+              }
+              this.pageCache[activeKey].total++;
+            }
+          } else {
+            // In mixed view: only update the status
+            activatedCustomer.isActive = true;
+            const currentKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
+            if (this.pageCache[currentKey]) {
+              const cachedUser = this.pageCache[currentKey].result.find(u => u._id === _id);
+              if (cachedUser) { cachedUser.isActive = true; }
+            }
           }
           this.getInActiveCustomersCount();
           this.getActiveCustomersCount();

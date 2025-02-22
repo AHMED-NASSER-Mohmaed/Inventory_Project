@@ -2,86 +2,93 @@
 <section id="sidebar">
     <a href="#" class="brand">
         <i class='bx bxs-watch'></i>
-        <span class="text">WatchLok</span>
+        <span class="text">Watchly</span>
     </a>
     <ul class="side-menu top">
-        <li [class.active]="activeMenu === 'users'" (click)="toggleDropdown('users'); setActiveMenu('users')">
+        <!-- Users menu with dropdown -->
+        <li routerLinkActive="active" (click)="toggleDropdown('users')">
             <a href="javascript:void(0)">
                 <i class='bx bxs-group'></i>
                 <span class="text">Users</span>
                 <i class='bx bx-chevron-down dropdown-icon' [class.rotate]="isDropdownOpen('users')"></i>
             </a>
             <ul class="dropdown-menu" [class.show]="isDropdownOpen('users')">
-                <li style="text-align: center; padding: 5px 0px; width: 96%; cursor: pointer">
-                  <a routerLink="/dashboard/customers" class="dropdown-item">
+                <li style="text-align: center; padding: 5px 0; width: 96%; cursor: pointer">
+                  <a routerLink="/dashboard/customers" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
                     <i class='bx bxs-user' style="font-size: 1.5em;"></i>
                     <span class="text" style="font-size: 0.9em;">Customers</span>
                   </a>
                 </li>
-                <li style="text-align: center; padding: 5px 0px; width: 96%; cursor: pointer">
-                  <a routerLink="/dashboard/sellers" class="dropdown-item">
+                <li style="text-align: center; padding: 5px 0; width: 96%; cursor: pointer">
+                  <a routerLink="/dashboard/sellers" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
                     <i class='bx bx-money' style="font-size: 1.5em;"></i>
                     <span class="text" style="font-size: 0.9em;">Sellers</span>
                   </a>
                 </li>
-                <li style="text-align: center; padding: 5px 0px; width: 96%; cursor: pointer">
-                  <a routerLink="/dashboard/suppliers" class="dropdown-item">
+                <li style="text-align: center; padding: 5px 0; width: 96%; cursor: pointer">
+                  <a routerLink="/dashboard/suppliers" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
                     <i class='bx bxs-package' style="font-size: 1.5em;"></i>
                     <span class="text" style="font-size: 0.9em;">Suppliers</span>
                   </a>
                 </li>
-                <li style="text-align: center; padding: 5px 0px; width: 96%; cursor: pointer;">
-                    <a routerLink="/dashboard/users/add" class="dropdown-item">
+                <li style="text-align: center; padding: 5px 0; width: 96%; cursor: pointer;">
+                    <a routerLink="/dashboard/users/add" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
                       <i class='bx bxs-key' style="font-size: 1.5em;"></i>
                       <span class="text" style="font-size: 0.9em;">Admins</span>
                     </a>
                 </li>
-                <li style="text-align: center; padding: 5px 0px; width: 96%; cursor: pointer">
-                  <a routerLink="/dashboard/users/add" class="dropdown-item">
+                <li style="text-align: center; padding: 5px 0; width: 96%; cursor: pointer">
+                  <a routerLink="/dashboard/users/add" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
                     <i class='bx bxs-wallet' style="font-size: 1.5em;"></i>
                     <span class="text" style="font-size: 0.9em;">Cashiers</span>
                   </a>
                 </li>
-                <li style="text-align: center; padding: 5px 0px; width: 96%; cursor: pointer;">
-                  <a routerLink="/dashboard/users/add" class="dropdown-item">
+                <li style="text-align: center; padding: 5px 0; width: 96%; cursor: pointer;">
+                  <a routerLink="/dashboard/users/add" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
                     <i class='bx bxs-briefcase' style="font-size: 1.5em;"></i>
                     <span class="text" style="font-size: 0.9em;">Clerks</span>
                   </a>
                 </li>
               </ul>
         </li>
-        <li [class.active]="activeMenu === 'Orders'" (click)="setActiveMenu('Orders')">
-            <a style=" cursor: pointer">
+        <!-- Orders menu -->
+        <li routerLinkActive="active">
+            <a routerLink="/dashboard/orders" style="cursor: pointer">
                 <i class='bx bxs-package'></i>
                 <span class="text">Orders</span>
             </a>
         </li>
-        <li [class.active]="activeMenu === 'catagories'" (click)="setActiveMenu('catagories')">
-            <a style=" cursor: pointer">
+        <!-- Categories menu -->
+        <li routerLinkActive="active">
+            <a routerLink="/dashboard/categories" style="cursor: pointer">
                 <i class='bx bxs-category'></i>
                 <span class="text">Catagories</span>
             </a>
         </li>
-        <li [class.active]="activeMenu === 'products'" (click)="setActiveMenu('products')">
-            <a style=" cursor: pointer">
+        <!-- Products menu -->
+        <li routerLinkActive="active">
+            <a routerLink="/dashboard/products" style="cursor: pointer">
                 <i class='bx bxs-shopping-bag-alt'></i>
                 <span class="text">Products</span>
             </a>
         </li>
-        <li [class.active]="activeMenu === 'analytics'" (click)="setActiveMenu('analytics')">
-            <a style=" cursor: pointer">
-                <i class='bx bxs-doughnut-chart'></i>
-                <span class="text">Analytics</span>
-            </a>
-        </li>
-        <li [class.active]="activeMenu === 'feedbacks'" (click)="setActiveMenu('feedbacks')">
-            <a style=" cursor: pointer">
+        <!-- Branches menu -->
+        <li routerLinkActive="active">
+            <a routerLink="/dashboard/branches" style="cursor: pointer">
                 <i class='bx bx-git-branch'></i>
                 <span class="text">Branches</span>
             </a>
         </li>
-        <li [class.active]="activeMenu === 'feedbacks'" (click)="setActiveMenu('feedbacks')">
-            <a style=" cursor: pointer">
+        <!-- Analytics menu -->
+        <li routerLinkActive="active">
+            <a routerLink="/dashboard/analytics" style="cursor: pointer">
+                <i class='bx bxs-doughnut-chart'></i>
+                <span class="text">Analytics</span>
+            </a>
+        </li>
+        <!-- Feedbacks menu -->
+        <li routerLinkActive="active">
+            <a routerLink="/dashboard/feedbacks" style="cursor: pointer">
                 <i class='bx bxs-message-dots'></i>
                 <span class="text">Feedbacks</span>
             </a>
@@ -89,8 +96,8 @@
     </ul>
     <ul class="side-menu">
         <li>
-            <a  class="logout" style=" cursor: pointer" (click)="openConfirmDialog()">
-                <i class='bx bx-log-out-circle' ></i>
+            <a class="logout" style="cursor: pointer" (click)="openConfirmDialog()">
+                <i class='bx bx-log-out-circle'></i>
                 <span class="text">Logout</span>
             </a>
         </li>

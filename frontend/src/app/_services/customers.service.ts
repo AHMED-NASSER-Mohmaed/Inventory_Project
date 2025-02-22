@@ -41,7 +41,7 @@ export class CustomersService {
     formData.append('image', file);
     const headers = this.getHeaders();
     headers.delete('Content-Type'); 
-    return this.http.patch(`${this.baseUrl}/updateImageProfile/${id}`, formData, { headers: headers });
+    return this.http.patch(`${this.baseUrl}/updateImageProfileFor/${id}`, formData, { headers: headers });
   }
 
   updateCustomer(id: string, data: any): Observable<any> {

@@ -3,6 +3,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { SellersComponent } from './sellers/sellers.component';
 import { CustomersComponent } from './customers/customers.component';
 import { SuppliersComponent } from './suppliers/suppliers.component';
+import { CatagoriesComponent } from './catagories/catagories.component';
 
 export const dashRoutes: Routes = [
   {
@@ -29,6 +30,11 @@ export const dashRoutes: Routes = [
         path: 'suppliers',
         component: SuppliersComponent,
         title: 'Suppliers'
+      },
+      {
+        path: 'categories',
+        component: CatagoriesComponent,
+        title: 'Categories'
       }
     ]
   }

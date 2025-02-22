@@ -232,38 +232,38 @@ export class SellersComponent implements OnInit, OnDestroy {
       next: (res) => {
         console.log(res);
         const deactivatedSeller = this.users.find(u => u._id === _id);
-        
         if (deactivatedSeller) {
-          // Remove from current list
-          this.users = this.users.filter(user => user._id !== _id);
-          
-          // Update seller's active status
-          deactivatedSeller.isActive = false;
-
-          // Update cache for active sellers (remove from active cache)
-          const activeKey = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:true`;
-          if (this.pageCache[activeKey]) {
-            this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter(user => user._id !== _id);
-            this.pageCache[activeKey].total--;
-          }
-
-          // Add to first page of inactive cache
-          const inactiveKey = `approved_1_${this.sortField}_${this.sortDirection}_active:false`;
-          if (this.pageCache[inactiveKey]) {
-            const inactiveCache = this.pageCache[inactiveKey];
-            inactiveCache.result.unshift(deactivatedSeller);
-            if (inactiveCache.result.length > this.itemsPerPage) {
-              inactiveCache.result.pop();
+          if (this.currentFilter === 'approved' && this.activityFilter === true) {
+            // In approved view filtered to Active: remove seller and update caches
+            this.users = this.users.filter(user => user._id !== _id);
+            const activeKey = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:true`;
+            if (this.pageCache[activeKey]) {
+              this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter(user => user._id !== _id);
+              this.pageCache[activeKey].total--;
             }
-            inactiveCache.total++;
+            const inactiveKey = `approved_1_${this.sortField}_${this.sortDirection}_active:false`;
+            if (this.pageCache[inactiveKey]) {
+              this.pageCache[inactiveKey].result.unshift(deactivatedSeller);
+              if (this.pageCache[inactiveKey].result.length > this.itemsPerPage) {
+                this.pageCache[inactiveKey].result.pop();
+              }
+              this.pageCache[inactiveKey].total++;
+            }
+          } else {
+            // In mixed view or when no specific activity filter is set: update status only
+            deactivatedSeller.isActive = false;
+            // For cache keys that include activity filter, update if present.
+            const keyActive = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:true`;
+            if (this.pageCache[keyActive]) {
+              const cachedSeller = this.pageCache[keyActive].result.find(u => u._id === _id);
+              if (cachedSeller) { cachedSeller.isActive = false; }
+            }
           }
-
-          // Refresh counts
           this.getActiveSellersCount();
           this.getDeActiveSellersCount();
         }
       },
-      error: (error) => console.log(error)
+      error: (error) => { console.log(error); }
     });
     this.subscriptions.push(sub);
   }
@@ -273,38 +273,37 @@ export class SellersComponent implements OnInit, OnDestroy {
       next: (res) => {
         console.log(res);
         const activatedSeller = this.users.find(u => u._id === _id);
-        
         if (activatedSeller) {
-          // Remove from current list
-          this.users = this.users.filter(user => user._id !== _id);
-          
-          // Update seller's active status
-          activatedSeller.isActive = true;
-
-          // Update cache for inactive sellers (remove from inactive cache)
-          const inactiveKey = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:false`;
-          if (this.pageCache[inactiveKey]) {
-            this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter(user => user._id !== _id);
-            this.pageCache[inactiveKey].total--;
-          }
-
-          // Add to first page of active cache
-          const activeKey = `approved_1_${this.sortField}_${this.sortDirection}_active:true`;
-          if (this.pageCache[activeKey]) {
-            const activeCache = this.pageCache[activeKey];
-            activeCache.result.unshift(activatedSeller);
-            if (activeCache.result.length > this.itemsPerPage) {
-              activeCache.result.pop();
+          if (this.currentFilter === 'approved' && this.activityFilter === false) {
+            // In approved view filtered to Inactive: remove seller and update caches
+            this.users = this.users.filter(user => user._id !== _id);
+            const inactiveKey = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:false`;
+            if (this.pageCache[inactiveKey]) {
+              this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter(user => user._id !== _id);
+              this.pageCache[inactiveKey].total--;
             }
-            activeCache.total++;
+            const activeKey = `approved_1_${this.sortField}_${this.sortDirection}_active:true`;
+            if (this.pageCache[activeKey]) {
+              this.pageCache[activeKey].result.unshift(activatedSeller);
+              if (this.pageCache[activeKey].result.length > this.itemsPerPage) {
+                this.pageCache[activeKey].result.pop();
+              }
+              this.pageCache[activeKey].total++;
+            }
+          } else {
+            // In mixed view: update status only
+            activatedSeller.isActive = true;
+            const keyInactive = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:false`;
+            if (this.pageCache[keyInactive]) {
+              const cachedSeller = this.pageCache[keyInactive].result.find(u => u._id === _id);
+              if (cachedSeller) { cachedSeller.isActive = true; }
+            }
           }
-
-          // Refresh counts
           this.getActiveSellersCount();
           this.getDeActiveSellersCount();
         }
       },
-      error: (error) => console.log(error)
+      error: (error) => { console.log(error); }
     });
     this.subscriptions.push(sub);
   }
