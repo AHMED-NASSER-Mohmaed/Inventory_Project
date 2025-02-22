@@ -28,6 +28,10 @@ const contactSchema = new mongoose.Schema(
     seenAt: {
       type: Date,
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

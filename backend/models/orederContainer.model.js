@@ -1,58 +1,89 @@
 const mongoose = require("mongoose");
 
-const OrderContainerSchema = new mongoose.Schema({
-
+const OrderContainerSchema = new mongoose.Schema(
+  {
     customer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        validate: requiredFieldsValidator("customer") // Pass the field name as a string
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      validate: {
+        validator: function () {
+          return requiredFieldsValidator(this.customer, this.orderType);
+        },
+        message: "Customer is required for online orders.",
+      },
     },
 
     customerNotes: { type: String },
 
-    orderType: { type: String, enum: ['online', 'offline'], required: true },
+    orderType: { type: String, enum: ["online", "offline"], required: true },
 
-    gov: { type: String, validate: requiredFieldsValidator("gov") }, // Pass the field name as a string
-    address: { type: String, validate: requiredFieldsValidator("address") }, // Pass the field name as a string
-    phone1: { type: String, }, // Pass the field name as a string
-    phone2: { type: String, validate: requiredFieldsValidator("phone1")  },
+    gov: {
+      type: String,
+      validate: {
+        validator: function () {
+          return requiredFieldsValidator(this.gov, this.orderType);
+        },
+        message: "Governorate is required for online orders.",
+      },
+    },
+
+    address: {
+      type: String,
+      validate: {
+        validator: function () {
+          return requiredFieldsValidator(this.address, this.orderType);
+        },
+        message: "Address is required for online orders.",
+      },
+    },
+
+    phone1: {
+      type: String,
+      validate: {
+        validator: function () {
+          return requiredFieldsValidator(this.phone1, this.orderType);
+        },
+        message: "Phone number is required for online orders.",
+      },
+    },
+
+    phone2: { type: String },
 
     sellersOrders: [
-        { 
-            order: { 
-                type: mongoose.Schema.Types.ObjectId, // Fixed ObjectId
-                // required: true, // Fixed typo in "required"
-                ref: "Order" 
-            } 
-        }
+      {
+        order: {
+          type: mongoose.Schema.Types.ObjectId,
+          // required: true,
+          ref: "Order",
+        },
+      },
     ],
 
     status: {
-        type: String,
-        enum: ["pending", "processing", "shipped", "partially shipped",
-            "partially delivered", "delivered",
-            "completed", "canceled"],
-        default: "pending"
+      type: String,
+      enum: [
+        "pending",
+        "processing",
+        "shipped",
+        "partially shipped", // means some orders have been shipped and some are not (those status here don't have the same meaning as in the order scheme)
+        "partially delivered", // means some orders have been delivered and some are not
+        "delivered",
+        "partially completed", // means that only some orders we have received our rate from the external seller
+        "completed",
+        "cancelled",
+      ],
+      default: "pending",
     },
 
-    branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch" } // Fixed ObjectId
-
-}, {
+    branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch" },
+  },
+  {
     timestamps: true,
-});
+  }
+);
 
-// Fixed mongoose.module to mongoose.model
-const OrderContainer = mongoose.model("OrderContainer", OrderContainerSchema);// Corrected mongoose.module to mongoose.model
+module.exports = mongoose.model("OrderContainer", OrderContainerSchema);
 
-module.exports = OrderContainer;
-// Updated requiredFieldsValidator function
-function requiredFieldsValidator(field) {
-    return function() {
-        // If orderType is 'online', the field is required
-        if (this.orderType === 'online' && !this[field]) {
-            return false; // Validation fails if the field is missing
-        }
-        // If orderType is 'offline', the field is not required
-        return true;
-    };
+function requiredFieldsValidator(fieldValue, orderType) {
+  return orderType === "online" ? !!fieldValue : true;
 }

@@ -22,7 +22,7 @@ class UserRepository {
   }
 
   //done ------------------
-  async createUser(userData){
+  async createUser(userData) {
     try {
       return await User.create(userData);
     } catch (error) {
@@ -33,19 +33,13 @@ class UserRepository {
   //super admin -- manager
   async updateUser(userId, newData) {
     try {
-      const updatedUser = await User.findByIdAndUpdate(
+      return await User.updateOne(
         { _id: userId },
-        newData,
+        { $set: newData },
         {
           runValidators: true,
         }
       );
-
-      if (!updatedUser)
-        throw new AppError("No user found with this id", 400);
-
-      return updatedUser;
-
     } catch (error) {
       throw error;
     }
@@ -151,12 +145,23 @@ class UserRepository {
   }
 
 
+  //get count
+  async getCountByFilter(filters) {
+    try {
+
+      return await User.countDocuments(filters);
+
+    } catch (err) {
+      throw err;
+    }
+  }
+
   async updateUserImage(userId, imageInfo) {
 
     try {
 
       console.log("image info : ", imageInfo, "from repo");
-      return await User.updateOne({ _id: userId }, { $set:{"photo": imageInfo} });
+      return await User.updateOne({ _id: userId }, { $set: { "photo": imageInfo } });
     } catch (err) {
       throw err;
     }

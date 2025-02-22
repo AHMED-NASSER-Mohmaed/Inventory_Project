@@ -1,70 +1,73 @@
 const mongoose = require('mongoose');
 
-const OrderSchema = new mongoose.Schema({
-
-  orderContainer: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "OrderContainer" }, 
-  seller: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Seller" },
-
-  status: {
-    type: String,
-    enum: [
-      "pending",
-      "processing",
-      "partially shipped",
-      "shipped",
-      "delivered",
-      "completed",
-      "canceled",
-    ],
-    default: "pending",
-  },
-
-  products: [
-    {
-      product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
-        required: true
-      },
-      //we will set this var with undefined when we are going to set order via internet for seller.
-
-      quantity: { // requested quantity
-        type: Number,
-        required: true
-      },
-
-      // New fields for tracking fulfillment and cancellations:
-      fulfilledQuantity: {
-        type: Number,
-        default: 0
-      },
-
-      canceledQuantity: {
-        type: Number,
-        default: 0
-      },
-
-      price: { type: Number }, //must be exsit for old price ...
-
-      //driven attribute 
-      totalPrice: { type: Number }, // changed from String to Number
-
+const OrderSchema = new mongoose.Schema(
+  {
+    seller: { type: mongoose.Schema.Types.ObjectId, required: true },
+    orderContainer: { type: mongoose.Schema.Types.ObjectId, required: true }, // added to able to update the status of the order container dircetly after updating the suborder here
+    status: {
+      type: String,
+      enum: [
+        "pending",
+        "processing",
+        "partially shipped",
+        "shipped",
+        "partially delivered",
+        "delivered",
+        "completed",
+        "cancelled",
+      ],
+      default: "pending",
     },
 
-  ],
+    products: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
 
-  totalPrice: { type: Number, required: true, default: 0},
+        onlineProduct: { type: mongoose.Schema.Types.ObjectId, ref: "OnlineProducts" }, // added just for stock in update i need that id to check on the stock if could fit or not
+        offlineProduct: { type: mongoose.Schema.Types.ObjectId, ref: "OfflineProducts" },
+        requestedQuantity: { // requested quantity
+          type: Number,
+          required: true,
+        },
 
-  totalQty: { type: Number, required: true, default: 0 },
+        // stock:{ // seller stock in inventory // but i cannot use it bc might be changed after the order is placed
+        //   type: Number,
+        //   required: true,
+        // }, // added
 
-  clerk: { type: mongoose.Schema.Types.ObjectId, default: null, },  // clerk would be the seller in case of external seller
+        fulfilledQuantity: {
+          type: Number,
+          default: 0,
+        },
 
-  cashier: { type: mongoose.Schema.Types.ObjectId, default: null, }, // Changed from String to ObjectId (in case of external seller) to take our rate
+        canceledQuantity: {
+          type: Number,
+          default: 0,
+        },
 
-}, {
-  timestamps: true,
-})
+        price: { type: Number }, // Old price reference
 
-const Order = mongoose.model("Order", OrderSchema); // Corrected mongoose.module to mongoose.model
+        totalPrice: { type: Number }, // Fixed type from String to Number
+      },
+    ],
 
-module.exports = Order; // Corrected module. Exports to module.exports
+    totalPrice: { type: Number },
+
+    totalQty: { type: Number },
+
+    clerk: { type: mongoose.Schema.Types.ObjectId },
+
+    cashier: { type: mongoose.Schema.Types.ObjectId, default: null }, // Removed required or add a default string
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const Order = mongoose.model("Order", OrderSchema);
+
+module.exports = Order;

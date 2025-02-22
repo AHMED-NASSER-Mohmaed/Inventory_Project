@@ -24,7 +24,7 @@ const SupplierOrderSchema = new mongoose.Schema({
 
     managerId: {  type: String, required: true },
 
-    notes: { type: String },
+    // notes: { type: String },
 
   });
   

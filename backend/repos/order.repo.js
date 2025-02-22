@@ -6,7 +6,7 @@ class OrderRepository {
     }
   
     async getOrderById(orderId) {
-      return await Order.findById(orderId).populate("products.product seller");
+      return await Order.findById(orderId).populate("products.onlineProduct products.product  seller");
     }
   
     async updateOrderStatus(orderId, status) {
