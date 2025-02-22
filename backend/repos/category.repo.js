@@ -5,14 +5,21 @@ const AppError = require('../utils/appError');
 
 class CategoryRepository {
 
+  
+
+  //you have to tell to which parent that brancd belong..
   async createCategory(categoryData) {
     try {
-      const category = await Category.create(categoryData);
-      return category;
+
+      return  await Category.create(categoryData);
     } catch (err) {
       throw err;
     }
+
   }
+
+
+
 
   async getCategoryById(categoryId) {
     try {

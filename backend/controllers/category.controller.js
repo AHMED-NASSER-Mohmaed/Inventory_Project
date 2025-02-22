@@ -122,8 +122,11 @@ class CategoryController {
         });
     }
 
+    //done
     async addCategory(req, res, next) {
+
         const category = await categoryService.createCategory(req.body);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,)
         res.status(APP_CONFIG.HTTP_CREATED).json({
             message: "success",
             category

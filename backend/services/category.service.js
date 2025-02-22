@@ -4,14 +4,28 @@ const AppError = require("../utils/appError");
 
 class CategoryService {
 
+
+    //i have cheack on the required fields
     async createCategory(categoryData) {
         try {
-            const category = await CategoryRepository.createCategory(categoryData);
-            return category;
+
+            feilds=['name','parentCatId']
+
+            Object.keys(categoryData).forEach(elememt=>{
+
+                if(!feilds.includes(elememt)){
+                    throw new AppError("invalid fields",APP_CONFIG.HTTP_BAD_REQUEST);
+                }
+            })
+
+           return await CategoryRepository.createCategory(categoryData);
+             
         } catch (err) {
             throw err;
         }
     }
+
+    
 
     async getCategoryById(categoryId) {
         try {
