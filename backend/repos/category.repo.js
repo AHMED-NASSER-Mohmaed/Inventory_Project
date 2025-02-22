@@ -1,3 +1,4 @@
+const { filter } = require('lodash');
 const { APP_CONFIG } = require('../config/app.config');
 const Category = require('../models/category.model');
 const AppError = require('../utils/appError');
@@ -108,14 +109,27 @@ class CategoryRepository {
     }
   }
 
-  async getdeActiveCategories(){
+  async getdeActiveCategories() {
     try {
-      const categories = await Category.find({ isActive: false }).select('-createdAt -updatedAt -__v');
+      const categories =await Category.find({ isActive: false }).select('-createdAt -updatedAt -__v');
       return categories;
     } catch (err) {
       throw err;
     }
   }
+
+  async getCountByFilter (filters) {
+  try {
+    
+    return await Category.countDocuments(filters);
+
+  } catch (err) {
+
+    throw err;
+
+  }
+
+}
 
 
   //this function will return array of child category or empty array
@@ -124,41 +138,41 @@ class CategoryRepository {
 
   async getCategoies(filters) {
 
-    try {
-      //filters = categoryId + isActive .
+  try {
+    //filters = categoryId + isActive .
 
-      console.log("filters:",filters);
+    console.log("filters:", filters);
 
-      const selectedCategory = await Category.findOne(filters);
+    const selectedCategory = await Category.findOne(filters);
 
-      // console.log(selectedCategory , " this is the selected cat from repo");
+    // console.log(selectedCategory , " this is the selected cat from repo");
 
 
 
-      //if parent id equal to null then this main category may have child categories.
-      let arrOfCild = [];
-      if (selectedCategory) { // this mean category is exit
+    //if parent id equal to null then this main category may have child categories.
+    let arrOfCild = [];
+    if (selectedCategory) { // this mean category is exit
 
-        // console.log("fuck father:",selectedCategory['parentCatId']==null);
-        if (selectedCategory['parentCatId'] == null) { // this mean this cat is parent
+      // console.log("fuck father:",selectedCategory['parentCatId']==null);
+      if (selectedCategory['parentCatId'] == null) { // this mean this cat is parent
 
-          arrOfCild = await Category.find({parentCatId:selectedCategory._id,isActive:true},{_id:1});
-
-        }
-
-        if (!arrOfCild.length) {
-          arrOfCild.push(selectedCategory._id);
-        }
-
-        return arrOfCild;
+        arrOfCild = await Category.find({ parentCatId: selectedCategory._id, isActive: true }, { _id: 1 });
 
       }
 
-    } catch (error) {
-      throw error;
+      if (!arrOfCild.length) {
+        arrOfCild.push(selectedCategory._id);
+      }
+
+      return arrOfCild;
+
     }
 
+  } catch (error) {
+    throw error;
   }
+
+}
 
 }
 

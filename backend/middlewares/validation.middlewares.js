@@ -143,6 +143,7 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
           }
 
           if (!allowedFilterValues[filterIndex].includes(value)) {
+          
             throw new AppError("Invalid filter fields", APP_CONFIG.HTTP_BAD_REQUEST)
           }
 
@@ -153,6 +154,7 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
         });
 
       } catch (e) {
+       
         throw new AppError(`"Invalid filter parameter format. Use "field:value"`, APP_CONFIG.HTTP_BAD_REQUEST)
       }
     }
