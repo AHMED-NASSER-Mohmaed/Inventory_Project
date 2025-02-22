@@ -50,6 +50,8 @@ module.exports.APP_CONFIG = {
   COMPANY_NAME: "inventory system",
 
 
+  SUPPERADMIN_ID:"67aa438c2823142f438539c1",
+
   SUCCESS_MESSAGE: "success",
 
  

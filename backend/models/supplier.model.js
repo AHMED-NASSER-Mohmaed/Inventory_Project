@@ -23,7 +23,7 @@ const SupplierSchema = new mongoose.Schema({
 
 
   //product commision different from one to another....
-  commissionPercentage:Number,
+  // commissionPercentage:Number,
    
 
   
