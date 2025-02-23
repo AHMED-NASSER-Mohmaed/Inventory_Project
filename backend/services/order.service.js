@@ -180,18 +180,19 @@ class OrderService {
             orderStatus: orderData.status,
             customerName: `${orderData.orderContainer.customer?.firstName} ${orderData.orderContainer.customer?.lastName}`,
             sellerName: `${orderData.seller.firstName} ${orderData.seller.lastName}`,
-            products: products.map(({ product, onlineProduct, requestedQuantity, fulfilledQuantity, canceledQuantity }) => ({
-                name: product.name,
-                urlImage: product.images?.length > 0 ? product.images[0].url : null,
-                code: product.code,
-                price: onlineProduct.price,
-                stock: onlineProduct.stock,
-                requestedQuantity,
-                fulfilledQuantity,
-                canceledQuantity,
+            products: products.map(({ product, onlineProduct, requestedQuantity: productRequestedQuantity, fulfilledQuantity: productFulfilledQuantity, canceledQuantity: productCanceledQuantity }) => ({
+                productId: product._id,
+                productName: product.name,
+                productUrlImage: product.images?.length > 0 ? product.images[0].url : null,
+                productCode: product.code,
+                productPrice: onlineProduct.price,
+                productStock: onlineProduct.stock,
+                productRequestedQuantity,
+                productFulfilledQuantity,
+                productCanceledQuantity,
             })),
-            totalQty: orderData.totalQty,
-            totalPrice: orderData.totalPrice,
+            orderTotalQty: orderData.totalQty,
+            orderTotalPrice: orderData.totalPrice,
             createdAt,
             updatedAt,
         };
@@ -202,23 +203,50 @@ class OrderService {
         return this.mapOrderData(returnedOrder);
       }
 
-      async getAllOnlineOrdersForSeller(sellerId) {
+      async getAllOnlineOrdersForClerkOrSellerBasedOnStatus(clerkId, status, userType) {
         // return await orderRepository.getAllOnlineOrdersForSeller(sellerId);
-        const returnedOrders =  await orderRepository.getAllOnlineOrdersForSeller(sellerId);
-        const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
-        return mappedOrders;
+        if(status == "pending" && userType == "seller") {
+          const returnedOrders =  await orderRepository.getAllOnlineOrdersForSellerPendingState(clerkId);
+          const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+          return mappedOrders;
+        }
+        else if(status == "pending" && userType == "clerk") {
+          const returnedOrders =  await orderRepository.getAllOnlineOrdersForOurCompanyForClerkPendingState(clerkId);
+          const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+          return mappedOrders;
+        }
+        else if(status == "processing"){
+          const returnedOrders =  await orderRepository.getAllOnlineOrdersForClerkOrSellerProcessingState(clerkId, userType);
+          const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+          return mappedOrders;
+        }
+        else if(status == "cancelled"){
+          const returnedOrders =  await orderRepository.getAllOnlineOrdersForClerkOrSellerCancelledState(clerkId, userType);
+          const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+          return mappedOrders;
+        }
+        else if(status == "shipped"){
+          const returnedOrders =  await orderRepository.getAllOnlineOrdersForClerkOrSellerShippedState(clerkId, userType);
+          const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+          return mappedOrders;
+        }
+        else if(status == "delivered"){
+          const returnedOrders =  await orderRepository.getAllOnlineOrdersForClerkOrSellerDeliveredState(clerkId, userType);
+          const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+          return mappedOrders;
+        }
       }
 
-      async getAllOnlineOrdersForClerk(clerkId) {
-        const returnedOrders =  await orderRepository.getAllOnlineOrdersForOurCompanyForClerk(clerkId);
+      async getAllOnlineOrdersForCashierBasedOnStatus(cashierId, status) {
+        if(status == "completed") {
+          const returnedOrders =  await orderRepository.getAllOnlineOrdersByStatusCompletedForCashier(cashierId);
+          const mappedOrders = await Promise.all(returnedOrders.map(order => mapOrderData(order)));
+          return mappedOrders;
+        }
+        const returnedOrders =  await orderRepository.getAllOnlineOrdersByStatusForCashierInDeliverStateToHandleTheDeliveredOrders(cashierId);
         const mappedOrders = await Promise.all(returnedOrders.map(order => mapOrderData(order)));
         return mappedOrders;
-      }
-      async getAllOnlineOrdersForCashier(cashierId) {
-        const returnedOrders =  await orderRepository.getAllOnlineOrdersByStatusForCashier(cashierId);
-        const mappedOrders = await Promise.all(returnedOrders.map(order => mapOrderData(order)));
-        return mappedOrders;
-      }
+    }
 }
 
 module.exports = new OrderService();
