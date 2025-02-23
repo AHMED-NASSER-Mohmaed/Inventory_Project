@@ -36,7 +36,11 @@ export class LoginComponent implements OnDestroy{
             closeButton: true
             });
           this.accountService.setLoginStatus();
-          this.accountService.setUserType(res.data.user.role);
+          if(res.data.user.userType === "staff"){
+            this.accountService.setUserType(res.data.user.role);
+          }else{
+            this.accountService.setUserType(res.data.user.userType);
+          }
           localStorage.setItem('token', res.token);
 
           console.log(res);
@@ -49,6 +53,20 @@ export class LoginComponent implements OnDestroy{
               this.router.navigateByUrl('/dashboard');
             }, 1500);
           }
+
+          if(res.data.user.role === 'super_admin' && this.accountService.isLoggedIn){
+            setTimeout(() => {
+              this.router.navigateByUrl('/dashboard');
+            }, 1500);
+          }
+
+          if(res.data.user.userType === 'customer' && this.accountService.isLoggedIn){
+            setTimeout(() => {
+              this.router.navigateByUrl('/LandingPage');
+            }, 1500);
+          }
+
+          
         }
       },
       error: (error) => {
