@@ -123,10 +123,15 @@ process.on("uncaughtException", (err) => {
         "status": true,
       }
 
-     /*
-      cat={ 
-        name:"male",
+     
+      let cat1={ 
+        "Cname":"male",
       }
+      let cat2={
+        "Cname":"female"
+      }
+
+      /*
 
       const supplier={
         companyRegistrationNumber:"31-21-39",
@@ -149,11 +154,14 @@ process.on("uncaughtException", (err) => {
       if(!await Supplier.findOne({email:Dawoodsupplier.email})){
         console.log(await Supplier.create(Dawoodsupplier));
       }
-         
-       if(!await Category.findOne({name:cat.name})){
-          console.log(await Category.create(cat));
+        */ /*
+       if(!await Category.findOne({name:cat1.Cname})){
+          console.log(await Category.create(cat1));
        }
-        
+       if(!await Category.findOne({name:cat2.Cname})){
+        console.log(await Category.create(cat2));
+     }*/
+        /*
        
 
       // console.log(await Product.deleteOne({_id:"67a75405e18e6927a8c1083e"}))

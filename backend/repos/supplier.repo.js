@@ -90,6 +90,7 @@ class SupplierRepository {
   //reviewed
   async getSupplierById(supplierId) {
     try {
+      console.log(supplierId,"from repoo");
      return await supplierModel.findById(supplierId);
     } catch (err) {
       throw err;
