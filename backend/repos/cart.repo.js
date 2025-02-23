@@ -1,3 +1,89 @@
+// cart.repository.js
+const Cart = require("../models/cart.model");
+
+class CartRepository {
+  async createCart(cartData) {
+    const cart = new Cart(cartData);
+    return await cart.save();
+  }
+
+  async findCartById(cartId) {
+    return await Cart.findById(cartId).populate("products.onlineProduct");
+  }
+
+  async findCartByCustomerId(customerId) {
+    return await Cart.findOne({ customerId: customerId });
+  }
+
+  async findCartBySessionId(sessionId) {
+    return await Cart.findOne({
+      sessionId: sessionId,
+      isGuest: true,
+    });
+  }
+
+  async updateCart(cartId, updateData) {
+    return await Cart.findByIdAndUpdate(cartId, updateData, { new: true });
+  }
+
+  async deleteCartByCustomerId(customerId) {
+    return await Cart.findOneAndDelete({ customerId: customerId });
+  }
+
+  async deleteCartById(cartId) {
+    return await Cart.findByIdAndDelete(cartId);
+  }
+
+  async deleteCartBySessionId(sessionId) {
+    return await Cart.findOneAndDelete({ sessionId: sessionId });
+  }
+
+  async addProduct(cartId, productData) {
+    return await Cart.findByIdAndUpdate(
+      cartId,
+      { $push: { products: productData } },
+      { new: true }
+    );
+  }
+
+  async updateProductQuantity(cartId, productId, quantity) {
+    return await Cart.findOneAndUpdate(
+      { _id: cartId, "products.onlineProduct": productId },
+      { $set: { "products.$.requiredQty": quantity } },
+      { new: true }
+    );
+  }
+
+  async removeProduct(cartId, productId) {
+    return await Cart.findByIdAndUpdate(
+      cartId,
+      { $pull: { products: { onlineProduct: productId } } },
+      { new: true }
+    );
+  }
+
+  async mergeCarts(primaryCartId, secondaryCart) {
+    const primaryCart = await this.findCartById(primaryCartId);
+    if (!primaryCart) throw new Error("Primary cart not found");
+
+    // Merge products from the secondary cart into the primary cart.
+    secondaryCart.products.forEach((item) => {
+      const existingItem = primaryCart.products.find((p) =>
+        p.onlineProduct.equals(item.onlineProduct)
+      );
+      if (existingItem) {
+        existingItem.requiredQty += item.requiredQty;
+      } else {
+        primaryCart.products.push(item);
+      }
+    });
+
+    return await primaryCart.save();
+  }
+}
+
+module.exports = new CartRepository();
+
 // const Cart = require("../models/cart.model");
 // const { create, exists } = require("../models/product.model");
 // const AppError = require("../utils/appError");

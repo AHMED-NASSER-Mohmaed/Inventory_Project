@@ -1,31 +1,31 @@
 const CartRepository = require("../repos/cart.repo");
-const Product = require("../models/product.model");
-const { APP_CONFIG } = require("../config/app.config");
-
-const { AppError } = require("../utils/appError");
+const AppError = require("../utils/appError");
 const { isProductExist } = require("../repos/onlineProducts.repo");
+const crypto = require("crypto");
 
 class CartService {
-  /**
-   * Finds or creates a cart based on the provided parameters.
-   * For online carts:
-   *  - If customerId is present, looks for a cart using customerId.
-   *  - Otherwise, uses sessionId for guest carts (with a 7-day expiry).
-   * For offline carts:
-   *  - Both clerk and cashier must be provided.
-   */
+  generateSessionId() {
+    return crypto.randomBytes(16).toString("hex");
+  }
+
   findOrCreateCart = async ({ customerId, sessionId }) => {
     let cart = null;
     if (customerId) {
       cart = await CartRepository.findCartByCustomerId(customerId);
+
       if (!cart) {
         cart = await CartRepository.createCart({
           customerId,
           isGuest: false,
           products: [],
+          expireAt: undefined,
         });
       }
-    } else if (sessionId) {
+    } else {
+      if (!sessionId) {
+        sessionId = this.generateSessionId();
+      }
+
       cart = await CartRepository.findCartBySessionId(sessionId);
       if (!cart) {
         cart = await CartRepository.createCart({
@@ -45,15 +45,6 @@ class CartService {
    */
 
   addToCart = async ({ customerId, sessionId, productId, quantity = 1 }) => {
-    // find cart
-    const cart = await this.findOrCreateCart({
-      customerId,
-      sessionId,
-    });
-    if (!cart) {
-      throw new AppError("Error creating cart", 500);
-    }
-
     // find if product exists
     const product = await isProductExist(productId);
 
@@ -68,9 +59,20 @@ class CartService {
       );
     }
 
+    // find cart
+    const cart = await this.findOrCreateCart({
+      customerId,
+      sessionId,
+    });
+    if (!cart) {
+      throw new AppError("Error creating cart", 500);
+    }
+
     const existingItem = cart.products.find((item) =>
       item.onlineProduct.equals(productId)
     );
+
+    let updatedCart;
 
     if (existingItem) {
       const newQuantity = existingItem.requiredQty + quantity;
@@ -81,26 +83,51 @@ class CartService {
         );
       }
 
-      const updatedCart = await CartRepository.updateProductQuantity(
-        cart._id,
+      updatedCart = await CartRepository.updateProductQuantity(
+        cart.id,
         productId,
         newQuantity
       );
-      return updatedCart;
     } else {
-      const updatedCart = await CartRepository.addProduct(cart._id, {
+      updatedCart = await CartRepository.addProduct(cart.id, {
         onlineProduct: productId,
         requiredQty: quantity,
       });
-      return updatedCart;
     }
+
+    // If guest cart, renew the expiry date
+    if (!customerId) {
+      updatedCart.expireAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      await updatedCart.save();
+    }
+    return updatedCart;
+  };
+
+  getCustomerCart = async (customerId) => {
+    const cart = await CartRepository.findCartByCustomerId(customerId);
+
+    if (!cart) {
+      throw new AppError("There is no cart for this user", 404);
+    }
+
+    return cart;
+  };
+
+  getGuestCart = async (sessionId) => {
+    const cart = await CartRepository.findCartBySessionId(sessionId);
+
+    if (!cart) {
+      throw new AppError("There is no cart for this user", 404);
+    }
+
+    return cart;
   };
 
   removeProductFromCart = async (cartId, productId) => {
     return await CartRepository.removeProduct(cartId, productId);
   };
 
-  mergeGuestCartToUserCart = async (customerId, sessionId) => {
+  mergeGuestCartToCustomerCart = async (customerId, sessionId) => {
     const guestCart = await CartRepository.findCartBySessionId(sessionId);
     if (!guestCart) return null;
 
@@ -109,16 +136,23 @@ class CartService {
       guestCart.customerId = customerId;
       guestCart.isGuest = false;
       guestCart.sessionId = undefined;
+      guestCart.expireAt = undefined;
       return await guestCart.save();
     } else {
-      await CartRepository.mergeCarts(customerCart._id, guestCart);
-      await guestCart.remove();
-      return await CartRepository.findCartById(userCart._id);
+      await CartRepository.mergeCarts(customerCart.id, guestCart);
+      await CartRepository.deleteCartById(guestCart.id);
+      return await CartRepository.findCartById(customerCart.id);
     }
   };
 
-  clearCart = async (customerId) => {
-    return await CartRepository.deleteCart(customerId);
+  clearCart = async ({ customerId, sessionId }) => {
+    if (customerId) {
+      return await CartRepository.deleteCartByCustomerId(customerId);
+    } else if (sessionId) {
+      return await CartRepository.deleteCartBySessionId(sessionId);
+    } else {
+      throw new AppError("No identifier provided to clear cart", 400);
+    }
   };
 
   validateCart = async (cartId) => {
@@ -129,7 +163,7 @@ class CartService {
     let cartUpdated = false;
 
     for (const item of cart.products) {
-      const product = isProductExist(item.onlineProduct);
+      const product = await isProductExist(item.onlineProduct);
       if (!product || !product.isActive || product.satus !== "approved") {
         messages.push(
           `Product (id: ${item.onlineProduct}) is no longer available.`
@@ -139,11 +173,11 @@ class CartService {
         messages.push(`Product "${product}" is out of stock!`);
       } else if (product.stock < item.requiredQty) {
         messages.push(
-          `Product "${product.product}" quantity adjusted to ${product.stock} due to limited stock.`
+          `Product "${product.product.name}" quantity adjusted to ${product.stock} due to limited stock.`
         );
         await CartRepository.updateProductQuantity(
-          cart._id,
-          product._id,
+          cart.id,
+          product.id,
           product.stock
         );
         cartUpdated = true;
@@ -156,17 +190,6 @@ class CartService {
 
     return { cart: updatedCart, messages };
   };
-
-  async checkoutCart(cartId) {
-    // Validate cart before checkout.
-    const { cart, messages } = await this.validateCart(cartId);
-    if (messages.length) {
-      throw new Error(`Cart validation failed: ${messages.join("; ")}`);
-    }
-
-    cart.products = [];
-    return await cart.save();
-  }
 }
 
 module.exports = new CartService();

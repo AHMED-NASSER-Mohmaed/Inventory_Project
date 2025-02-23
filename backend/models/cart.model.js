@@ -7,7 +7,7 @@ const CartSchema = new mongoose.Schema(
     products: [
       {
         onlineProduct: {
-          type: [mongoose.Schema.ObjectId, "invalid product id"],
+          type: mongoose.Schema.ObjectId,
           ref: "OnlineProducts",
           required: true,
         },
@@ -21,7 +21,7 @@ const CartSchema = new mongoose.Schema(
     ],
 
     customerId: {
-      type: [mongoose.Schema.ObjectId, "not valid user id"],
+      type: mongoose.Schema.ObjectId,
       required: function () {
         return !this.isGuest;
       },

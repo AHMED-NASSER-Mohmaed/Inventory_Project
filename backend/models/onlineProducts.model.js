@@ -43,6 +43,6 @@ const OnlineProductsSchema = new mongoose.Schema(
 );
 
 //very important one...
-await OnlineProductsSchema.createIndex({ isActive: 1, satus: "approved" });
+OnlineProductsSchema.index({ isActive: 1, satus: "approved" });
 
-model.exports = mongoose.model("OnlineProducts", SellerProductSchema);
+module.exports = mongoose.model("OnlineProducts", OnlineProductsSchema);

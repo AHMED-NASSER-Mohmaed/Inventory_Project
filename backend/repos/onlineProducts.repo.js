@@ -4,6 +4,7 @@ class OnlineProductsRepository {
   async isProductExist(productId) {
     try {
       return await OnlineProducts.findById(productId);
+      // .populate("product");
     } catch (err) {
       throw err;
     }
