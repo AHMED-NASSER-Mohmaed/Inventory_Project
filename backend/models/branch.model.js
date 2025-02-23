@@ -1,77 +1,73 @@
 const mongoose = require("mongoose");
+const Counter = require("./counter.model"); 
 
-const { APP_CONFIG } = require("../config/app.config");
+const BranchSchema = new mongoose.Schema(
+    {
+        _id: { type: Number },
 
-const validator = require('validator');
-
-const BranchSchema = new mongoose.Schema({
-
-    name: { type: String, default: APP_CONFIG.COMPANYNAME, trim: true },
-
-    // we Added a type field to distinguish main stock from sub-branches.
-    //be aware -- for separation perpose 
-
-    //the only one who can create main stock and online the supper admin 
-    type: {
-        type: String,
-        enum: [ "main" , "sub" , "online"],
-        default: "sub",
-        trim: true
-    },
-
-    registrationNumber:{ type :Number , required:true  },
-
-    // in online is going to be [[url]]
-
-    governate: { type: Number, min: 1, max: 27 },
-
-    //only one online site
-    location: {
-        type: String,
-        required: true,
-        validate: {
-            validator: function (field) {
-                if (this.type === 'online') {
-                    return validator.isURL(field); // Properly call isURL function
-                }
-                return true; // Allow other types of locations
-            },
-            message: "Invalid location"
+        type: {
+            type: String,
+            enum: ["main", "sub", "online"],
+            default: "sub",
+            trim: true,
         },
-        trim: true
+
+        registrationNumber: { type: String, required: true },
+
+        governate: { type: Number, min: 1, max: 27, required: true },
+
+        location: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+
+        admin: { type: mongoose.Schema.ObjectId, ref: "WorksOn", default: null  },
+
+        employees: [
+            {
+                employeeWorksOnRel: { type: mongoose.Schema.ObjectId, ref: "WorksOn" },
+            },
+        ],
+
+        isActive: {
+            type: Boolean,
+            default:false,
+        },
     },
+    { timestamps: true }
+);
 
 
-    //we have a manget for online branch 
-    //only the active one 
-    admins: {
-        adminWorksOnRel: { type: mongoose.Schema.ObjectId, ref: "WorksOn", default: null, },
-    }
-    ,
+BranchSchema.pre("validate", async function (next) {
 
-    //we have employees for our online site ...
-    //only the active ones 
-    employees: [
-        {
-            employeeWorksOnRel: { type: mongoose.Schema.ObjectId, ref: "WorksOn" },
-
-        }],
-
-
-    isActive: {
-        type: Boolean,
+    if (!this._id) {
+        const counter = await Counter.findByIdAndUpdate(
+            { _id: "branch" }, 
+            { $inc: { seq: 1 } }, 
+            { new: true, upsert: true } 
+        );
+        this._id = counter.seq;
     }
 
-
-}, { timestamps: true });
-
-module.exports = mongoose.model("Branch", BranchSchema);
-
-BranchSchema.pre('save',function(next){
-
-    this.isActive = this.admin? true : false ;
+    if (this.isActive) {
+        return next(new Error("Branch cannot be active without an admin."));
+    }
 
     next();
-})
+});
+
+BranchSchema.pre("updateOne", async function (next) {
+    const update = this.getUpdate();
+    if (update.isActive === true) {
+        const branch = await this.model.findOne(this.getQuery());
+        if (!branch.admin) {
+            return next(new Error("Branch cannot be active without an admin."));
+        }
+    }
+    next();
+});
 
 BranchSchema.index({ governate: 1, registrationNumber: 1 }, { unique: true });
+
+module.exports = mongoose.model("Branch", BranchSchema);

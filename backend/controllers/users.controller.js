@@ -14,7 +14,6 @@ const {
 const { sendResponseToClint } = require("../utils/apiFeatures");
 const { deleteFiles, upload } = require("../services/media.service");
 const AppError = require("../utils/appError");
-const { protect } = require("../middlewares/auth.middleware");
 
 const route = express.Router();
 
