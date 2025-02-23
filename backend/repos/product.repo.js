@@ -178,42 +178,59 @@ class ProductRepository {
   async getProducts(page, limit, sort, filters, prjection={}) {
     try {
 
-      const [results, total] = await Promise.all([
+      if( filters['category']){
+        const [results, total] = await Promise.all([
 
-        await Product.find({
+          await Product.find({
+            isActive: filters['isActive'], // Ensure filters['isActive'] is defined
+            status: filters['status'],     // Ensure filters['status'] is defined
+            category: { $in: filters['category'] } }// Ensure filters['category'] is an array
+            ,prjection)
+            .sort(sort)
+            .skip((page - 1) * limit) // (starting index = page-1)*limit
+            .limit(limit)
+            .select("-__v")
+            .lean()
+          ,
+  
+          await Product.countDocuments({
+  
+            isActive: filters['isActive'], // Ensure filters['isActive'] is defined
+            status: filters['status'],     // Ensure filters['status'] is defined
+            category: { $in: filters['category'] } // Ensure filters['category'] is an array
+  
+          }).exec()
+  
+        ]);
+        console.log(results);
 
-          isActive: filters['isActive'], // Ensure filters['isActive'] is defined
-          status: filters['status'],     // Ensure filters['status'] is defined
-          category: { $in: filters['category'] } // Ensure filters['category'] is an array
+        return inboxResult(results, total, page, limit);
+      }else{
 
-        },prjection)
-          .sort(sort)
-          .skip((page - 1) * limit) // (starting index = page-1)*limit
-          .limit(limit)
-          .select("-__v")
-          .populate("category")
-          .lean()
-        ,
+        const [results, total] = await Promise.all([
+  
+          await Product.find({ isActive: filters['isActive'], status: filters['status'] } ,prjection)
+            .sort(sort)
+            .skip((page - 1) * limit) // (starting index = page-1)*limit
+            .limit(limit)
+            .select("-__v")
+            .lean()
+          ,
+  
+          await Product.countDocuments({ isActive: filters['isActive'], status: filters['status']}).exec()
+  
+        ]);
 
-        await Product.countDocuments({
+        
 
-          isActive: filters['isActive'], // Ensure filters['isActive'] is defined
-          status: filters['status'],     // Ensure filters['status'] is defined
-          category: { $in: filters['category'] } // Ensure filters['category'] is an array
+        return inboxResult(results, total, page, limit);
+      }
 
-        }).exec()
-
-      ]);
-
-      return inboxResult(results, total, page, limit);
 
     } catch (err) {
       throw err;
     }
 
-
-
-
   }
 
   async updateProductMedia(id,productRepo){
@@ -229,21 +246,6 @@ class ProductRepository {
     }
 
   }
-
-  async updateProductMedia(id,productRepo){
-
-    try{
-
-      return await Product.updateOne({_id:id},
-        {$set:{images:productRepo}}
-      );
-
-    }catch(error){
-      throw error;
-    }
-
-  }
-
 
 }
 

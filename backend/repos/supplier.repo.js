@@ -1,101 +1,103 @@
-const Supplier = require('../models/supplier.model');
+const supplierModel = require('../models/supplier.model');
 const AppError = require('../utils/appError');
+const { inboxResult } = require("../utils/apiFeatures");
+
 
 class SupplierRepository {
-  
+
+  //reviewed 
   async createSupplier(supplierData) {
     try {
-      const supplier = await Supplier.create(supplierData);
-      return supplier;
+      return await supplierModel.create(supplierData);
     } catch (err) {
       throw err;
     }
   }
 
-  async getSupplierById(supplierId) {
+  //reviewed
+  async getSuppliers(filters, sort, page, limit) {
+
     try {
-      const supplier = await Supplier.findById(supplierId).select('-createdAt -updatedAt -__v');
-      if (!supplier) {
-        throw new AppError('Supplier not found', 404);
-      }
-      return supplier;
+
+      const [results, total] = await Promise.all([
+
+        await supplierModel.find(filters)
+          .sort(sort)
+          .skip((page - 1) * limit) // (starting index = page-1)*limit
+          .limit(limit)
+          .lean(),
+
+        await supplierModel.countDocuments(filters).exec()
+      ]);
+
+
+
+      return inboxResult(results, total, page, limit);
+
     } catch (err) {
       throw err;
     }
   }
 
-  async getAllSuppliers() {
+  //reviewed
+  async getCount(filters) {
     try {
-      const suppliers = await Supplier.find().select('-createdAt -updatedAt -__v');
-      return suppliers;
+      //filters :['isActive','undefined']-->['true','false','undefined']
+      return await supplierModel.countDocuments(filters).exec();
     } catch (err) {
       throw err;
     }
   }
 
-  async getActiveSuppliers() {
+ 
+
+  //reviewed
+  async updateSupplier(supplierId, updateData) {
     try {
-      const suppliers = await Supplier.find({ isActive: true }).select('-createdAt -updatedAt -__v');
-      return suppliers;
+
+      return await supplierModel.updateOne({ _id: supplierId }, {$set:updateData}, { runValidators: true })
+        .select('-createdAt -updatedAt -__v');
+
     } catch (err) {
       throw err;
     }
   }
 
-  async updateSupplierById(supplierId, updateData) {
-    try {
-      const supplier = await Supplier.findByIdAndUpdate(supplierId, updateData, { new: true, runValidators: true }).select('-createdAt -updatedAt -__v');
-      return supplier;
-    } catch (err) {
-      throw err;
-    }
-  }
-
+  //reviewed
   async deleteSupplierById(supplierId) { // soft delete
     try {
-      const supplier = await Supplier.findByIdAndUpdate(
-        supplierId,
-        { isActive: false },
-        { new: true }
-      ).select('-createdAt -updatedAt -__v');
-      return supplier;
+
+      return await supplierModel.updateOne({ _id: supplierId }, {$set:{ isActive: false}}, )
+        
+
     } catch (err) {
       throw err;
     }
   }
 
-  async activateSupplierById(supplierId) { 
+
+
+  //reviewed
+  async activateSupplier(supplierId) {
     try {
-      const supplier = await Supplier.findByIdAndUpdate(
-        supplierId,
-        { isActive: true },
-        { new: true }
-      ).select('-createdAt -updatedAt -__v');
-      return supplier;
+      return await supplierModel.updateOne({_id:supplierId},{ isActive: true });
     } catch (err) {
       throw err;
     }
   }
 
-  async isSupplierExist(supplierId) {
+
+  //reviewed
+  async getSupplierById(supplierId) {
     try {
-      const supplier = await Supplier.findById(supplierId);
-      return !!supplier;
+     return await supplierModel.findById(supplierId);
     } catch (err) {
       throw err;
     }
   }
 
-  async isSupplierActive(supplierId) {
-    try {
-      const supplier = await Supplier.findById(supplierId).select('isActive');
-      return supplier.isActive;
-    } catch (err) {
-      throw err;
-    }
-  }
 
-  
+ 
 }
 
 module.exports = new SupplierRepository();

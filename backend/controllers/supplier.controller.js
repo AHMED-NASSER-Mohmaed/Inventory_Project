@@ -1,104 +1,140 @@
 const express = require("express");
 const supplierService = require("../services/supplier.service");
-const AuthMiddleware = require("../middlewares/auth.middleware");
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
 const pro_res = require("../utils/authMiddlewaresOptions");
 
+const { validateSearchParams, validatorFilterParams, validateSortPaginationParams } = require("../middlewares/validation.middlewares");
+const { sendResponseToClint } = require("../utils/apiFeatures");
+
 class SupplierController {
+
     constructor() {
         this.router = express.Router();
         this.initializeRoutes();
     }
 
     initializeRoutes() {
-        this.router.post("/suppliers", pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN), catchAsync(this.addSupplier));
-    
+
+        //add supplier -- reviewed
+        this.router.post("/suppliers",
+            pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+            catchAsync(this.addSupplier));
+
+
+        //reviewed
+        //for filteration + pagination + search 
         this.router.get(
             "/suppliers",
             pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-            catchAsync(this.getAllSuppliers)
-        );
-        this.router.get( // get active suppliers only
-            "/suppliers/active",
-            catchAsync(this.getActiveSuppliers)
+            validateSortPaginationParams(this.sortFileds),
+            validatorFilterParams(this.filedfilters, this.filedValues),
+            validateSearchParams(this.searchfilters, this.searchValues),
+            catchAsync(this.getSuppliers)
         );
 
+        //reviewed
+        //get count
+        this.router.get(
+            '/suppliers/count',
+            pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
+            validatorFilterParams(this.filedfilters, this.filedValues),
+            catchAsync(this.getCount)
+        )
+
+
+        //reviewed
         this.router.patch( // activate supplier
             "/suppliers/active/:supplierId",
             pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
-            catchAsync(this.activateSupplierById)
+            catchAsync(this.activateSupplier)
         );
-    
-        this.router.get(
-            "/suppliers/:supplierId",
-            catchAsync(this.getSupplierById)
-        );
-    
+
+
+        //reviewed
         this.router.patch(
             "/suppliers/:supplierId",
             pro_res(APP_CONFIG.ADMIN, APP_CONFIG.SUPPERADMIN),
-            catchAsync(this.updateSupplierById)
+            catchAsync(this.updateSupplier)
         );
-    
+
+        //reviewed
         this.router.delete(
             "/suppliers/:supplierId",
             pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
             catchAsync(this.deleteSupplierById)
         );
+
+
     }
 
-    async getAllSuppliers(req, res, next) {
-        const suppliers = await supplierService.getAllSuppliers();
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message: "success",
-            results: suppliers.length,
-            suppliers,
-        });
+
+    searchfilters = ['companyName', 'phoneNumber']
+    searchValues = [true, false]
+
+    filedfilters = [['undefined', 'isActive']]
+    filedValues = [['undefined', 'true', 'false']]
+
+    sortFileds = ['commissionPercentage', 'undefined']
+
+    //reviwed
+    async getSuppliers(req, res, next) {
+
+        const result = await supplierService.getSuppliers(req.validatedParams);
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     }
 
+    //reviewed
+    async getSupplierCount(req, res, next) {
+        const result = await supplierService.getCount(req.validatedParams.filters);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    }
+
+    //reviewed
     async addSupplier(req, res, next) {
-        const supplier = await supplierService.createSupplier(req.body);
-        res.status(APP_CONFIG.HTTP_CREATED).json({
-            message: "success",
-            supplier
-        });
+
+        const result = await supplierService.createSupplier(req.body);
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_CREATED, APP_CONFIG.SUCCESS_MESSAGE, result);
+
     }
 
+    //reviewed
+    async getCount(req, res, next) {
+
+        const result = await supplierService.getCount(req.validatedParams.filters);
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_CREATED, APP_CONFIG.SUCCESS_MESSAGE, result);
+
+    }
+
+
+    //reviewed
     async deleteSupplierById(req, res, next) {
-        await supplierService.deleteSupplierById(req.params.supplierId);
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message: "success",
-        });
+
+        const result = await supplierService.deleteSupplierById(req.params.supplierId);
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     }
 
-    async activateSupplierById(req, res, next) {
-        const supplier = await supplierService.activateSupplierById(req.params.supplierId);
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message: "success",
-            supplier
-        });
+
+
+    //reviewed
+    async activateSupplier(req, res, next) {
+         
+        const result = await supplierService.activateSupplier(req.params.supplierId);
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     }
 
-    async getActiveSuppliers(req, res, next) {
-        const suppliers = await supplierService.getActiveSuppliers();
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message: "success",
-            results: suppliers.length,
-            suppliers,
-        });
-    }
 
-    async getSupplierById(req, res, next) {
-        const supplier = await supplierService.getSupplierById(req.params.supplierId);
-        res.status(APP_CONFIG.HTTP_OK).json({
-            message: "success",
-            supplier,
-        });
-    }
 
-    async updateSupplierById(req, res, next) {
-        const supplier = await supplierService.updateSupplierById(req.params.supplierId, req.body);
+    //reviewing...
+    async updateSupplier(req, res, next) {
+
+        const supplier = await supplierService.updateSupplier(req.params.supplierId, req.body);
+
         res.status(APP_CONFIG.HTTP_OK).json({
             message: "success",
             supplier,

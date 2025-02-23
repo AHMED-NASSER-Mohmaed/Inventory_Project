@@ -5,6 +5,7 @@ const userRepo = require("../repos/user.repo");
 class UserService {
   
   //done ----------------
+  //canceled
   async getUser(userId) {
 
     try {
@@ -28,8 +29,24 @@ class UserService {
     }
   }
 
+  //done
   async updateUser(userId, newData) {
-    return await userRepo.updateUser(userId, newData);
+
+    let fields = ['firstName', 'lastName', 'phoneNumber'];
+
+    Object.keys(newData).forEach(Element=>{
+      if(!fields.includes(Element))
+        return false;
+    })
+
+    let updatedUser= await userRepo.updateUser(userId, newData);
+    
+
+    if (!updatedUser)
+      throw new AppError("No user found with this id", 400);
+
+    return updatedUser;
+
   }
 
   async updateUserImage(userId, imageInfo){
@@ -50,6 +67,7 @@ class UserService {
       if (!ack.acknowledged) {
         throw new AppError("No user found with this id", APP_CONFIG.HTTP_BAD_REQUEST);
       }
+      return ack;
     } catch (err) {
       throw err;
     }
@@ -77,6 +95,14 @@ class UserService {
     }
   }
 
+  //get coung by filters
+  async getCountByFilter(filters){
+    try{
+      return await userRepo.getCountByFilter(filters);
+    }catch{
+      throw err;
+    }
+  }
 
   async isAttributeExist(userId,name,value){
     try{

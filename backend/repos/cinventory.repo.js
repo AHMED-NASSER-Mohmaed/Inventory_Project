@@ -72,8 +72,10 @@ class CInventoryRepository {
       if (currentStock !== undefined) {
         inventory.currentStock += currentStock;
       }
+      console.log(inventory);
 
       Object.assign(inventory, rest);
+
 
       await inventory.save({ runValidators: true });
       const inv = await CInventory.findById(inventory._id).populate('product')

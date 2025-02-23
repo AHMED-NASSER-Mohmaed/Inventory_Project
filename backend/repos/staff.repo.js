@@ -1,83 +1,106 @@
-const Staff=require("../models/staff.model");
-const APP_CONST=require("../config/app.config");
+const Staff = require("../models/staff.model");
 
-const {inboxResult}=require("../utils/apiFeatures")
+const { inboxResult } = require("../utils/apiFeatures");
 
 
-module.exports.staffRepo={
 
-     
-    createStaffOfType:async (data)=>{
+module.exports.staffRepo = {
 
-        try{
-            data.userType="staff";
 
-            return await Staff.create(data);
+    createStaffOfType: async (data) => {
 
-        }catch(err){
+        try {
+            data.userType = "staff";
+
+            if (await Staff.create(data))
+                return true
+            return false;
+
+        } catch (err) {
             throw err;
         }
     },
 
-    deleteStaffOfType:async (data)=>{
-        try{
-            return await Staff.updateOne({ SSN:data.SSN , role:data.role },{isActive:false});
-        }catch(err){
+    deleteStaffOfType: async (filters) => {
+        try {
+            return await Staff.updateOne(filters, { $set: { "isActive": false } });
+        } catch (err) {
             throw err;
         }
     },
 
-    getStaffOfType:async (data)=>{
-        try{
-            return await Staff.findOne({SSN:data.SSN,role:data.role});
-        }catch(err){
+
+
+
+    activeStaffOfType: async (filters) => {
+        try {
+            return await Staff.updateOne(filters, { $set: { "isActive": true } });
+        } catch (err) {
             throw err;
         }
     },
 
-    activeStaffOfType:async (data)=>{
-        try{
-            return await Staff.updateOne({SSN:data.SSN,role:data.role},{$set:{isActive:true}});
-        }catch(err){
-            throw err;
-        }
-    },
 
-    getALLStaffOfType:async (role_)=>{
-        try{
-            return Staff.find({role:role_});
-        }catch(err){
-            throw err;
-        }
-    },
-    
-    
-    getStaffOfTypeByFilter:async (filters,sort,page,limit)=>{
 
-        try{
-            
+    getStaffOfTypeByFilter: async (filters, sort, page, limit) => {
+
+        try {
+
             const [results, total] = await Promise.all([
 
                 await Staff.find(filters)
+                    .collation({ locale: 'en', strength: 1 })
                     .sort(sort)
                     .skip((page - 1) * limit) // (starting index = page-1)*limit
                     .limit(limit)
+                    .select("-__v -kind")
                     .lean(),
-    
-                await Staff.countDocuments(filters).exec()
+
+                await Staff.countDocuments(filters).collation({ locale: 'en', strength: 1 }).exec()
             ]);
-    
+
             // console.log("from repo" , results);
-    
+
             return inboxResult(results, total, page, limit);
 
-           
+
+        } catch (err) {
+            throw err;
+        }
+    },
+
+    updateStaffOfType: async (filters, data) => {
+        try {
+            
+            return await Staff.updateOne(filters, {$set:data});
+
+        } catch (err) {
+            throw err;
+        }
+    },
 
 
+    getCountByFilter: async (filters) => {
+        try {
 
+            return await Staff.countDocuments(filters);
+
+        } catch (err) {
+
+            throw err;
+
+        }
+
+    },
+
+    getById:async(id)=>{
+
+        try{
+            return await Staff.findById(id);
         }catch(err){
             throw err;
         }
+
     }
 
 

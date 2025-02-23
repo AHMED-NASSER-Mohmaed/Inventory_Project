@@ -1,76 +1,111 @@
-const {staffRepo}= require("../repos/staff.repo");
-const AppError=require("../utils/appError");
+const { filter, forEach } = require("lodash");
+const { staffRepo } = require("../repos/staff.repo");
+const AppError = require("../utils/appError");
+const { APP_CONFIG } = require("../config/app.config");
 
-module.exports.staffService={
-    
-    createStaff: async (data)=>{
-        try{
+module.exports.staffService = {
+
+    //done
+    createStaff: async (data) => {
+        try {
             return await staffRepo.createStaffOfType(data);
-        }catch(err){
+        } catch (err) {
             throw err;
         }
     },
 
-    deleteStaff: async (data)=>{
-        try{
-            const ack=await staffRepo.deleteStaffOfType(data);
-            if(!ack.acknowledged){
-                throw new AppError("user not found",APP_CONFIG.HTTP_BAD_REQUEST);
+    //by id
+    deleteStaff: async (filters) => {
+        try {
+
+            let obj= await staffRepo.getById(filters['_id']);
+
+            if(!obj || !obj['isActive'])
+                throw new AppError("staff dose not exist ", APP_CONFIG.HTTP_NOT_FOUND);
+
+
+            const ack = await staffRepo.deleteStaffOfType(filters);
+            if (!ack.acknowledged) {
+                throw new AppError("user not found", APP_CONFIG.HTTP_BAD_REQUEST);
             }
             return ack;
-        }catch(err){
-            throw err;
-        }
-    },
 
-    getStaff:async (data)=>{
-        try{
-            const staff=await staffRepo.getStaffOfType(data);
-
-            if(!staff){
-                throw new AppError("user not found",APP_CONFIG.HTTP_BAD_REQUEST);
-            }
-
-            return staff;
-
-        }catch(err){
+        } catch (err) {
             throw err;
         }
     },
 
     //ack -->false -- throw
-    activeStaff:async (data)=>{
-        try{
-            const ack=await staffRepo.activeStaffOfType(data);
+    activeStaff: async (filters) => {
+        try {
 
-            if(!ack.acknowledged){
-                throw new AppError("user not found",APP_CONFIG.HTTP_BAD_REQUEST);
+            let obj= await staffRepo.getById(filters['_id']);           
+
+            if(!obj )
+                throw new AppError("staff dose not exist ", APP_CONFIG.HTTP_NOT_FOUND);
+
+            if(obj['isActive'])
+                throw new AppError("this user is already activated", APP_CONFIG.HTTP_BAD_REQUEST);
+
+            const ack = await staffRepo.activeStaffOfType(filters);
+
+            if (!ack.acknowledged) {
+                throw new AppError("user not found", APP_CONFIG.HTTP_BAD_REQUEST);
             }
 
             return ack;
-        }catch(err){
+        } catch (err) {
             throw err;
         }
     },
 
     // role is my filteration rule
 
-    getAll:async (role)=>{
-        try{
+    getAll: async (role) => {
+        try {
             return await staffRepo.getALLStaffOfType(role);
-        }catch(err){
+        } catch (err) {
             throw err;
         }
     },
 
-    getStaffByFilter:async(data)=>{
-        try{
-            return await staffRepo.getStaffOfTypeByFilter(data.filters,data.sort,data.page,data.limit);
-        }catch(err){
+    getStaffByFilter: async (data) => {
+        try {
+            return await staffRepo.getStaffOfTypeByFilter(data.filters, data.sort, data.page, data.limit);
+        } catch (err) {
             throw err;
         }
-    }
+    },
 
-    
+
+    updateStaff: async (filters, data) => {
+        try {
+
+            let fields = ['SSN', 'firstName', 'lastName', 'phoneNumber'];
+
+            Object.keys(data)
+                .forEach(Element => {
+                    if(!fields.includes(Element))
+                        throw new AppError("invalid fields",APP_CONFIG.HTTP_BAD_REQUEST);
+                })
+
+            return await staffRepo.updateStaffOfType(filters, data);
+
+        } catch (err) {
+            throw err;
+        }
+    },
+
+    //allowed fields isActive   ||  values --> true || false 
+    getStaffCount: async (filters) => {
+        try {
+            return staffRepo.getCountByFilter(filters);
+        } catch (err) {
+            return err;
+        }
+    },
+
+
+
 
 }

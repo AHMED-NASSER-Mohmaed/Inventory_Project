@@ -41,13 +41,13 @@ class ProductService {
             }
 
             //upload images to kit 
-            let imagesURLS=[]
+            // let imagesURLS=[]
 
 
             //throw exception from databse
-            const new_one =await product.create({ name:productData.name , code:productData.code ,  images:imagesURLS,
+            const new_one =await product.create({ name:productData.name , code:productData.code ,  images:productData.images,
                             description:productData.description , category:productData.category
-                            ,sellerId:user._id , sellerName: user.companyName, status: false});
+                            ,sellerId:user._id , sellerName: user.companyName, status: user._id==APP_CONFIG.COMPANY_ID?true : false});
 
                 
             
@@ -366,7 +366,6 @@ class ProductService {
 
     async updateProductMedia(id,productMedia){
         try{
-
             return await productRepo.updateProductMedia(id,productMedia);
 
         }catch(err){
@@ -375,6 +374,15 @@ class ProductService {
 
     }
 
+    // async getProductsByFilter(filters){
+    //     try{
+
+    //         return await productRepo.getProductByFilter(filters); 
+
+    //     }catch(err){
+    //         throw err;
+    //     }
+    // }
 
 }
 

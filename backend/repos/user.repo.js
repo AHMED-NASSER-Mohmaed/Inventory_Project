@@ -1,7 +1,8 @@
 const User = require("../models/user.model");
 const AppError = require("../utils/appError");
-const {inboxResult,checkIfAttributeExists}=require("../utils/apiFeatures");
+const { inboxResult, checkIfAttributeExists } = require("../utils/apiFeatures");
 const { throttle } = require("lodash");
+const { locales } = require("validator/lib/isIBAN");
 
 class UserRepository {
 
@@ -23,9 +24,7 @@ class UserRepository {
   //done ------------------
   async createUser(userData) {
     try {
-      
       return await User.create(userData);
-      
     } catch (error) {
       throw error;
     }
@@ -34,18 +33,13 @@ class UserRepository {
   //super admin -- manager
   async updateUser(userId, newData) {
     try {
-      const updatedUser = await User.findByIdAndUpdate(
+      return await User.updateOne(
         { _id: userId },
-        newData,
+        { $set: newData },
         {
-          new: true,
           runValidators: true,
         }
       );
-
-      if (!updatedUser) throw new AppError("No user found with this id", 400);
-
-      return updatedUser;
     } catch (error) {
       throw error;
     }
@@ -77,6 +71,8 @@ class UserRepository {
       }
     }
   */
+
+  /*
   // the one who own the account
   async updateMe(userId, newData) {
     try {
@@ -95,7 +91,7 @@ class UserRepository {
     } catch (error) {
       throw error;
     }
-  }
+  }*/
 
   //done ------------------
   async deleteUser(userId) {
@@ -111,7 +107,7 @@ class UserRepository {
     try {
 
       //return ack.
-      return await user.updateOne({ _id: userId }, { isActive: true });
+      return await User.updateOne({ _id: userId }, { isActive: true });
 
     } catch (err) {
       throw err;
@@ -129,12 +125,13 @@ class UserRepository {
 
       const [results, total] = await Promise.all([
         await User.find(filters)
+          .collation({ locale: 'en', strength: 1 })
           .sort(sort)
           .skip((page - 1) * limit) // (starting index = page-1)*limit
           .limit(limit).select("-__v")
-          ,
+        ,
 
-        await User.countDocuments(filters).exec()
+        await User.countDocuments(filters).collation({ locale: 'en', strength: 1 }).exec()
 
       ]);
 
@@ -148,29 +145,41 @@ class UserRepository {
   }
 
 
-  async updateUserImage(userId,imageInfo){
+  //get count
+  async getCountByFilter(filters) {
+    try {
 
-    try{
+      return await User.countDocuments(filters);
 
-      console.log("image info : ",imageInfo,"from repo");
-       return await User.updateOne({_id:userId},{"photo":imageInfo});
-    }catch(err){
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async updateUserImage(userId, imageInfo) {
+
+    try {
+
+      console.log("image info : ", imageInfo, "from repo");
+      return await User.updateOne({ _id: userId }, { $set: { "photo": imageInfo } });
+    } catch (err) {
       throw err;
     }
 
   }
 
-  async isAttributeExists(userId,name,value){
-    return await checkIfAttributeExists(User,userId,name,value);
+
+  async isAttributeExists(userId, name, value) {
+    return await checkIfAttributeExists(User, userId, name, value);
   }
 
-  async getUserImageId(userId){
+  async getUserImageId(userId) {
 
-    try{
+    try {
 
-      return await User.findById({_id:userId},{"photo.fileId":1, "_id":0});
+      return await User.findById({ _id: userId }, { "photo.fileId": 1, "_id": 0 });
 
-    }catch(err){
+    } catch (err) {
       throw err;
     }
 

@@ -1,56 +1,62 @@
 const SupplierRepository = require("../repos/supplier.repo");
-const CInventoryRepository = require("../repos/cinventory.repo")
 const AppError = require("../utils/appError");
-const CInventory = require("../models/cinventory.model");
+const { APP_CONFIG } = require("../config/app.config");
 
 class SupplierService {
   
+    //reviewed 
     async createSupplier(supplierData) {
         try {
-            const supplier = await SupplierRepository.createSupplier(supplierData);
-            return supplier;
+              return await SupplierRepository.createSupplier(supplierData);
         } catch (err) {
             throw err;
         }
     }
 
-    async getSupplierById(supplierId) {
+  
+    //reviewed
+    async getSuppliers(validatedParams) {
         try {
-            const supplier = await SupplierRepository.getSupplierById(supplierId);
+
+            return await SupplierRepository.getSuppliers(validatedParams.filters,validatedParams.sort,validatedParams.page,validatedParams.limit);
+        
+        } catch (err) {
+
+            throw err;
+
+        }
+    }
+
+    
+    //reviewed
+    async getCount(filters) {
+        try{
+            return await SupplierRepository.getCount(filters);
+        }catch(err){
+            throw err;
+        }
+    }
+
+
+    //reviewed
+    async updateSupplier(supplierId, updateData) {
+
+        try {
+
+            const supplier = await SupplierRepository.updateSupplier(supplierId, updateData);
+
             if (!supplier) {
                 throw new AppError('Supplier not found', 404);
-            }
+            }else if(!supplier.acknowledged)
+                throw new AppError('invalid fields',APP_CONFIG.HTTP_BAD_REQUEST)
+
             return supplier;
         } catch (err) {
             throw err;
         }
     }
 
-    async getAllSuppliers() {
-        try {
-            const suppliers = await SupplierRepository.getAllSuppliers();
-            return suppliers;
-        } catch (err) {
-            throw err;
-        }
-    }
-
-    async updateSupplierById(supplierId, updateData) {
-        try {
-            const { companyName, ...rest } = updateData;
-            const supplier = await SupplierRepository.updateSupplierById(supplierId, updateData);
-            if (!supplier) {
-                throw new AppError('Supplier not found', 404);
-            }
-            if(companyName){
-                const result = await CInventoryRepository.updateInventoriesByProviderId(supplierId, companyName);
-            }
-            return supplier;
-        } catch (err) {
-            throw err;
-        }
-    }
-
+    //reviewed
     async deleteSupplierById(supplierId) {
         try {
             const supplier = await SupplierRepository.deleteSupplierById(supplierId);
@@ -63,44 +69,45 @@ class SupplierService {
         }
     }
 
-    async activateSupplierById(supplierId) {
+    
+    //reviewed
+    async activateSupplier(supplierId) {
         try {
-            const supplier = await SupplierRepository.activateSupplierById(supplierId);
+
+            if(!supplierId)
+                throw new AppError("invalid params",APP_CONFIG.HTTP_BAD_REQUEST);
+
+            let supplier=null;
+            
+            supplier = await SupplierRepository.activateSupplier(supplierId);
             if (!supplier) {
-                throw new AppError('Supplier not found', 404);
+                throw new AppError('Supplier not found', APP_CONFIG.HTTP_NOT_FOUND);
             }
+
+            console.log(supplier,"from service...");
+
             return supplier;
         } catch (err) {
             throw err;
         }
     }
 
+
+    //for add product
+    //reviewed
     async isSupplierExist(supplierId) {
         try {
-            const exists = await SupplierRepository.isSupplierExist(supplierId);
-            return exists;
+            const supplier = await SupplierRepository.getSupplierById(supplierId);
+
+            if(!supplier&&!supplier['isActive'])
+                throw new AppError("sorry supplier dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
+
         } catch (err) {
             throw err;
         }
     }
 
-    async isSupplierActive(supplierId) {
-        try {
-            const isActive = await SupplierRepository.isSupplierActive(supplierId);
-            return isActive;
-        } catch (err) {
-            throw err;
-        }
-    }
 
-    async getActiveSuppliers() {
-        try {
-            const suppliers = await SupplierRepository.getActiveSuppliers();
-            return suppliers;
-        } catch (err) {
-            throw err;
-        }
-    }
 }
 
 module.exports = new SupplierService();

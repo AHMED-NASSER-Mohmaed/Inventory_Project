@@ -36,15 +36,25 @@ module.exports.sellerService = {
     },
     //return acknowlage  , or throw an exception.
     //done
-    deleteSeller: async (SSN) => {
+    deleteSeller: async (id) => {
+
         try {
 
-            const seller=await sellerRepo.getSeller(SSN);
-            console.log(seller);
-            if(!seller['status'])
-                throw new AppError("you cannot de-active pending seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
+           
+            const seller=await sellerRepo.getSeller(id);
 
-            const ack = await sellerRepo.deleteSeller(SSN);
+            // console.log(seller);
+
+            if(!seller['status'] )
+                throw new AppError("you cannot de-active pending seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
+            else if (seller['status']==-1)
+                throw new AppError("you cannot de-active rejected seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
+
+            if(!seller['isActive'])
+                throw new AppError("seller dose not exist!!", APP_CONFIG.HTTP_NOT_FOUND);
+
+
+            const ack = await sellerRepo.deleteSeller(id);
 
             if (!ack.acknowledged) {
                 throw new AppError("user not found", APP_CONFIG.HTTP_BAD_REQUEST);
@@ -58,16 +68,19 @@ module.exports.sellerService = {
     },
 
     //done
-    activeSeller: async (SSN) => {
+    activeSeller: async (id) => {
         try {
 
-            const seller=await sellerRepo.getSeller(SSN);
+            const seller=await sellerRepo.getSeller(id);
 
-            if(!seller['status'])
+            if(!seller['status']) // 0 -- pending 
                 throw new AppError("you cannot active pending seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
+            else if(seller['status']==-1) // -1 for rejected 
+                throw new AppError("you cannot active rejected seller!!",APP_CONFIG.HTTP_BAD_REQUEST);
                 
-                
-            const ack= await sellerRepo.activeSeller(SSN);
+            
+
+            const ack= await sellerRepo.activeSeller(id);
 
             if (!ack.acknowledged) {
                 throw new AppError("user not found", APP_CONFIG.HTTP_BAD_REQUEST);
@@ -81,10 +94,10 @@ module.exports.sellerService = {
     },
 
     //done
-    approveSeller: async (SSN) => {
+    approveSeller: async (id) => {
         try {
 
-            const ack = await sellerRepo.approveSeller(SSN);
+            const ack = await sellerRepo.approveSeller(id);
 
             if (!ack.acknowledged) {
                 throw new AppError("user not found", APP_CONFIG.HTTP_BAD_REQUEST);
@@ -99,6 +112,21 @@ module.exports.sellerService = {
         }
     },
 
+    rejectSeller: async (id) =>{
+
+        try{
+            const seller=await sellerRepo.getSeller(id);
+            if(seller.status!=0)
+                throw new AppError("you can't reject approved seller.",APP_CONFIG.HTTP_BAD_REQUEST);
+
+            return await sellerRepo.rejectSeller(id);
+             
+        }catch(err){
+
+        }
+
+    },
+
     getAllSellers:async function (params) {
         try{
 
@@ -106,6 +134,14 @@ module.exports.sellerService = {
 
         }catch(err){
             throw err;
+        }
+    },
+
+    getCountByFilter:async function (filter){
+        try{
+            return sellerRepo.getCountByFilter(filter);
+        }catch(err){
+            return err;
         }
     },
 
@@ -138,6 +174,7 @@ module.exports.sellerService = {
     ,
 
 
+   //for pagination + search process 
    getSellers:async(data)=>{
         try{
             return await sellerRepo.getSellers(data.filters,data.sort,data.page,data.limit);
