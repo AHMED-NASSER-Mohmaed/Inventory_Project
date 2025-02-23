@@ -59,6 +59,13 @@ class CartService {
       );
     }
 
+    if (quantity < 0) {
+      throw new AppError(
+        `What are you doing? Can't add negative quantity!!!!`,
+        400
+      );
+    }
+
     // find cart
     const cart = await this.findOrCreateCart({
       customerId,

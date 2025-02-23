@@ -53,7 +53,7 @@ const CartSchema = new mongoose.Schema(
     // branch: { type: mongoose.Schema.ObjectId, ref: "Branch", required: true },
 
     expireAt: {
-      type: [Date, "not a valid date"],
+      type: Date,
     },
   },
   {
