@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { concatWith } from 'rxjs';
+import { CartService } from '../../_services/cart.service';
 
 @Component({
   selector: 'app-checkout-details',
@@ -13,44 +14,13 @@ import { concatWith } from 'rxjs';
   templateUrl: './checkout-details.component.html',
   styleUrl: './checkout-details.component.css'
 })
+
+
 export class CheckoutDetailsComponent implements OnInit {
-  ngOnInit(): void {
-    this.fetchLocationData();
-
-  }
-  apiUrl = 'http://ip-api.com/json/';
-
+  products: any[] = [];
   shippingFees = 50;
-
-  products = [
-    { 
-      name: 'Product 1', 
-      description: "dfddddddddd dddddddddddddddd ddddddddddd ddddfffffffff dfffffffdf fdfd dfd  fdfd dfddddddddd dddddddddddddddd ddddddddddd ddddfffffffff dfffffffdf fdfd dfd  fdfd",
-      price: 100, 
-      quantity: 2, 
-      seller: "de7k",
-      image: '../../../assets/2-750x374.jpg', 
-      category: 'Category 1' 
-    },
-    { 
-      name: 'Product 2', 
-      description: "dfddddddddd dddddddddddddddd ddddddddddd ddddfffffffff dfffffffdf fdfd dfd  fdfd dfddddddddd dddddddddddddddd ddddddddddd ddddfffffffff dfffffffdf fdfd dfd  fdfd",
-      price: 200, 
-      quantity: 1, 
-      seller: "de7k",
-      image: '../../../assets/11-300x300.png', 
-      category: 'Category 2' 
-    },
-    { 
-      name: 'Product 3', 
-      description: "dfddddddddd dddddddddddddddd ddddddddddd ddddfffffffff dfffffffdf fdfd dfd  fdfd dfddddddddd dddddddddddddddd ddddddddddd ddddfffffffff dfffffffdf fdfd dfd  fdfd",
-      price: 150, 
-      quantity: 3, 
-      seller: "de7k",
-      image: '../../../assets/12-300x300.png', 
-      category: 'Category 3' 
-    }
-  ];
+  sessionId: string | null = null;
+  apiUrl = 'http://ip-api.com/json/';
 
   checkoutData = {
     email: '',
@@ -65,49 +35,62 @@ export class CheckoutDetailsComponent implements OnInit {
     paymentMethod: ''
   };
 
+  constructor(private cartService: CartService) {}
+
+  ngOnInit(): void {
+    this.sessionId = localStorage.getItem('sessionId');
+    this.loadCart();
+    this.fetchLocationData();
+  }
+
+  loadCart() {
+    this.cartService.getCart(this.sessionId!).subscribe((response) => {
+      this.products = response.cart.products;
+      if (!this.sessionId && response.sessionId) {
+        localStorage.setItem('sessionId', response.sessionId);
+      }
+    });
+  }
 
   getSubtotal(): number {
-    return this.products.reduce((acc, product) => acc + (product.price * product.quantity), 0);
+    return this.products.reduce((acc, product) => acc + (product.onlineProduct.price * product.requiredQty), 0);
   }
 
   getTotalAmount(): number {
     return this.getSubtotal() + this.shippingFees;
   }
 
-
-// fetching data from IP-API and display it on a map
- fetchLocationData() {
-  fetch(this.apiUrl)
-      .then(response => response.json())
-      .then(data => {
-          console.log('IP-API Data:', data);
-          const { lat, lon, city, regionName } = data;
-         
-          const map = L.map('map').setView([lat, lon], 13);
-
-          
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          }).addTo(map);
-
-          
-          const marker = L.marker([lat, lon]).addTo(map)
-              .bindPopup('قفشتك يا معلم و هجيبك')
-              .openPopup();
-
-          // getting values from object from response to input fields
-          map.on('click', () => { // Use an arrow function
-            this.checkoutData.region = city; // Correctly updates the Angular component property
-            this.checkoutData.postcode = '123413';
-            console.log(this.checkoutData.region)
-          });
-      })
-      .catch(error => {
-          console.error('Erroorrrr !!!');
-      });
-}
-
-// fetchLocationData();
+  
+  fetchLocationData() {
+    fetch(this.apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            console.log('IP-API Data:', data);
+            const { lat, lon, city, regionName } = data;
+           
+            const map = L.map('map').setView([lat, lon], 13);
+  
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+  
+            
+            const marker = L.marker([lat, lon]).addTo(map)
+                .bindPopup('قفشتك يا معلم و هجيبك')
+                .openPopup();
+  
+            // getting values from object from response to input fields
+            map.on('click', () => { // Use an arrow function
+              this.checkoutData.region = city; // Correctly updates the Angular component property
+              this.checkoutData.postcode = '123413';
+              console.log(this.checkoutData.region)
+            });
+        })
+        .catch(error => {
+            console.error('Erroorrrr !!!');
+        });
+  }
 
   onSubmit() {
     if (this.checkoutData.email && this.checkoutData.firstName && this.checkoutData.lastName && this.checkoutData.paymentMethod) {
@@ -130,3 +113,4 @@ export class CheckoutDetailsComponent implements OnInit {
     }
   }
 }
+

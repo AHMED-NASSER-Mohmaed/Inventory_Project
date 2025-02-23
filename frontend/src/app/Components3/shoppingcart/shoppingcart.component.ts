@@ -4,65 +4,75 @@ import { FooterComponent } from "../../core/footer/footer.component";
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
+import { CartService } from '../../_services/cart.service';
 @Component({
   selector: 'app-shoppingcart',
   imports: [HeaderComponent, FooterComponent, CommonModule, RouterModule],
   templateUrl: './shoppingcart.component.html',
   styleUrl: './shoppingcart.component.css'
 })
+
+
+/**
+ * // don't  forget the guard on check out and if the products.length was equal to zero to redirct user again to this page
+ */
 export class ShoppingcartComponent implements OnInit {
-  products = [
-    { 
-      name: 'Product 1', 
-      description: "dfddddddddd dddddddddddddddd ddddddddddd ddddfffffffff dfffffffdf fdfd dfd  fdfd dfddddddddd dddddddddddddddd ddddddddddd ddddfffffffff dfffffffdf fdfd dfd  fdfd",
-      price: 100, 
-      quantity: 2, 
-      seller: "de7k",
-      image: '../../assets/2-750x374.jpg', 
-      category: 'Category 1' 
-    },
-    { 
-      name: 'Product 2', 
-      description: "dfddddddddd dddddddddddddddd ddddddddddd ddddfffffffff dfffffffdf fdfd dfd  fdfd dfddddddddd dddddddddddddddd ddddddddddd ddddfffffffff dfffffffdf fdfd dfd  fdfd",
-      price: 200, 
-      quantity: 1, 
-      seller: "de7k",
-      image: '../../assets/11-300x300.png', 
-      category: 'Category 2' 
-    },
-    { 
-      name: 'Product 3', 
-      description: "dfddddddddd dddddddddddddddd ddddddddddd ddddfffffffff dfffffffdf fdfd dfd  fdfd dfddddddddd dddddddddddddddd ddddddddddd ddddfffffffff dfffffffdf fdfd dfd  fdfd",
-      price: 150, 
-      quantity: 3, 
-      seller: "de7k",
-      image: '../../assets/12-300x300.png', 
-      category: 'Category 3' 
-    }
-  ];
+  products: any[] = [];
   shippingFees = 50;
   maxQuantity = 10;
-  
-  constructor() { }
+  sessionId: string | null = null;
 
+  constructor(private cartService: CartService) {}
   ngOnInit(): void {
+    this.sessionId = localStorage.getItem('sessionId');
+    this.loadCart();
+  }
+
+  loadCart() {
+    this.cartService.getCart(this.sessionId!).subscribe((response) => {
+      this.products = response.cart.products;
+      this.getSubtotal();
+      this.getTotalAmount();
+      if (!this.sessionId && response.sessionId) {
+        localStorage.setItem('sessionId', response.sessionId);
+      }
+    });
   }
 
   getSubtotal(): number {
-    return this.products.reduce((acc, product) => acc + (product.price * product.quantity), 0);
+    return this.products.reduce((acc, product) => acc + (product.onlineProduct.price * product.requiredQty), 0);
   }
 
   getTotalAmount(): number {
     return this.getSubtotal() + this.shippingFees;
   }
 
-  increase(_product:any){
-    if(_product.quantity + 1 > this.maxQuantity) return;
-    _product.quantity += 1;
-
+  increase(product: any) {
+    if (product.requiredQty + 1 > this.maxQuantity) return;
+    this.cartService.addToCart(product.onlineProduct._id, 1, this.sessionId!).subscribe(() => {
+      product.requiredQty += 1;
+      //this.loadCart(); but it takes more time
+      this.getSubtotal();
+      this.getTotalAmount();
+    });
   }
-  decrease(_product:any){
-    if(_product.quantity - 1 < 1) return;
-    _product.quantity -= 1;
+
+  decrease(product: any) {
+    if (product.requiredQty - 1 < 1) return;
+    this.cartService.addToCart(product.onlineProduct._id, -1, this.sessionId!).subscribe(() => {
+      product.requiredQty -= 1;
+      //this.loadCart();
+      this.getSubtotal();
+      this.getTotalAmount();
+    });
+  }
+
+  removeProduct(productId: string) {
+    this.cartService.removeFromCart(productId, this.sessionId!).subscribe(() => {
+      this.products = this.products.filter(p => p.onlineProduct._id !== productId);
+      //this.loadCart();
+      this.getSubtotal();
+      this.getTotalAmount();
+    });
   }
 }

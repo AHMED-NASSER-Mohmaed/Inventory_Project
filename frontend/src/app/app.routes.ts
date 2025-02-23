@@ -20,6 +20,7 @@ import { ShoppingcartComponent } from './Components3/shoppingcart/shoppingcart.c
 import { CheckoutDetailsComponent } from './Components3/checkout-details/checkout-details.component';
 import { OrderCompeleteComponent } from './Components3/order-compelete/order-compelete.component';
 import { CartMainComponent } from './Components3/cart-main/cart-main.component';
+import { authGuardForCartGuard } from './_guards/auth-guard-for-cart.guard';
 
 export const routes: Routes = [
 
@@ -128,6 +129,8 @@ export const routes: Routes = [
 {path: "maincart", component: CartMainComponent,
     children: [
         {path: "", component: ShoppingcartComponent},
+        // {path: "checkout", component: CheckoutDetailsComponent,  canActivate: [authGuardForCartGuard]},
+        // {path: "completeorder", component: OrderCompeleteComponent,  canActivate: [authGuardForCartGuard]},
         {path: "checkout", component: CheckoutDetailsComponent},
         {path: "completeorder", component: OrderCompeleteComponent},
     ]
