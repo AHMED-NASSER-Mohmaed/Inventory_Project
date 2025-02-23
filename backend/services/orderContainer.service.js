@@ -73,6 +73,7 @@ class OrderContainerService {
         cashier: null, // cashier ID (for offline orders)
         orderContainer: orderContainer._id, // Link the order to the orderContainer
         status:  "pending", 
+        subOrderType: "online", // added to be able to return the suborders directly related to the online store
       };
 
       // save the order to the database
@@ -90,7 +91,7 @@ class OrderContainerService {
     return orderContainer;
   }
 
-  async createOfflineOrderContainerFromCart(cart) {
+  async createOfflineOrderContainer(cart) {
     if (!cart || !cart.products || cart.products.length === 0) {
       throw new AppError("Invalid cart data");
     }
@@ -114,11 +115,17 @@ class OrderContainerService {
       // add product details to the seller's order
       sellerOrders[sellerId].products.push({
         product: OfflineProduct.product._id, // reference to the main product itself so we can retrieve the related data like images         quantity: item.requiredQty,
-        price: OfflineProduct.price,
+        price: OfflineProduct.product.price,
         requestedQuantity: item.requiredQty,
-        totalPrice: item.requiredQty * OfflineProduct.product.price,
+        fulfilledQuantity : Math.min(item.requiredQty, OfflineProduct.stock), // fulfilled quantity is the minimum between the required quantity and the available stock
+        canceledQuantity : Math.max(0, item.requiredQty - OfflineProduct.stock), // canceled quantity is the maximum between 0 and the difference between the required quantity and the available stock (if the stock is enough, canceled quantity will be 0)
+        totalPrice: Math.min(item.requiredQty, OfflineProduct.stock) * OfflineProduct.product.price,
         offlineProduct: OfflineProduct._id, // reference to the online product so we can retrieve the stock
       });
+
+      await offlineProductRepo.updateOfflineProductById(item.offlineProduct, { 
+          $inc: { stock: - Math.min(item.requiredQty, OfflineProduct.stock) }  // update the stock in the database after the order is fulfilled
+       });
     }
 
     
@@ -131,7 +138,7 @@ class OrderContainerService {
       phone1: cart.phone1, // primary phone number
       phone2: cart.phone2 , // secondary phone number
       branch: cart.branch, // branch (for offline orders)
-      status: "pending", 
+      status: "processing", 
     };// if it's offline, there's no need to use any other status than "Completed" as the order is already completed and delivered dircetly to the customer
 
     // save the orderContainer to the database
@@ -140,11 +147,11 @@ class OrderContainerService {
     // create orders for each seller and link them to the orderContainer
     const orderPromises = Object.values(sellerOrders).map(async ({ seller, products }) => {
       // calculate total quantity and total price for the order
-      const totalQty = products.reduce((sum, p) => sum + p.requestedQuantity, 0); // sum of all quantities in the order products
+      const totalQty = products.reduce((sum, p) => sum + p.fulfilledQuantity, 0); // sum of all quantities in the order products
       const totalPrice = products.reduce((sum, p) => sum + p.totalPrice, 0); // sum of all total prices in the order products
 
      /*********************** to be reviewed  */
-        tempClerk = seller; // clerk here should be the one who filled the cart in case of offline
+        tempClerk = cart.clerk; // clerk here should be the one who filled the cart in case of offline
       /*********************** to be reviewed */
       // prepare order data
       const orderData = {
@@ -155,7 +162,7 @@ class OrderContainerService {
         clerk: tempClerk, // Clerk ID (for offline orders)
         cashier: null, // Cashier ID (for offline orders)
         orderContainer: orderContainer._id, // Link the order to the orderContainer
-        status:  "pending", 
+        status:  "processing", 
       };
 
       // save the order to the database
@@ -173,6 +180,49 @@ class OrderContainerService {
     return orderContainer;
   }
 
+  async finalizeOfflineOrderContainerForCashier({ containerOrderId, newStatus }) {
+    const orderContainer = await orderContainerRepository.getOrderContainerById(containerOrderId);
+    if (!orderContainer) {
+      throw new AppError("Order container not found");
+    }
+  
+    const orders = await orderRepository.getOrdersByContainerId(containerOrderId); // that function doesn't populate no worries
+    if (!orders || orders.length === 0) {
+      throw new AppError("No orders found within this container");
+    }
+  
+    if (newStatus === "completed") {
+      // mark all orders as completed
+      await Promise.all(orders.map(order => 
+        orderRepository.updateOrderStatus(order._id, "completed" )
+      ));
+      
+      // update order container status
+      orderContainer.status = "completed";
+      await orderContainer.save();
+      
+    } else if (newStatus === "cancelled") {
+      // reverse stock changes
+      for (const order of orders) {
+        for (const item of order.products) {
+          await offlineProductRepo.updateOfflineProductById(item.offlineProduct, { 
+            $inc: { stock: item.fulfilledQuantity } // return the fulfilled quantity back to stock
+          });
+        }
+        // mark order as cancelled
+        await orderRepository.updateOrderStatus(order._id, "cancelled" ) ;
+      }
+      
+      // update order container status
+      orderContainer.status = "cancelled";
+      await orderContainer.save();
+    } else {
+      throw new AppError("Invalid status update");
+    }
+  
+    return orderContainer;
+  }
+  
 
   async getOrderContainerById(containerId) {
     return await orderContainerRepository.getOrderContainerById(containerId);

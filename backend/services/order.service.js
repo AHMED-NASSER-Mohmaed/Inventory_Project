@@ -1,3 +1,4 @@
+const { map } = require("lodash");
 const orderRepository = require("../repos/order.repo");
 const orderContainerRepository = require("../repos/orderContainer.repo");
 const onlineProductRepo = require("../repos/tempOnlineProduct.repo");
@@ -6,23 +7,28 @@ class OrderService {
 // need to check on the user comming to update the order if he is the clerk or the cashier or the external seller
 // cahier is the one who takes the rate of the order from the external seller by confirming the order by status completed
 // clerk is the one who processes the order and fulfill it same as the external seller who handles his own orders
-    async processOnlineOrderForClerkOrExternalSeller({ orderId, newStatus, clerkId, cashierId, fulfilledQuantities }) {
+    async processOnlineOrderForClerkOrExternalSeller({ orderId, newStatus, clerkId, fulfilledQuantities }) {
         const order = await orderRepository.getOrderById(orderId);
         if (!order) throw new AppError("Order not found");
     
         // assign clerk if it's the first time updating the order
-        if (!order.clerk && clerkId) {
+        if (!order.clerk && clerkId && order.seller.equals(APP_CONFIG.COMPANY_ID)) {
             order.clerk = clerkId;
         }
-    
-        // update cashier if provided
-        if (!order.cashier && cashierId) {// the one who takes the rate of the order from the external seller
-            order.cashier = cashierId;
-        }
+
+        if(order.clerk && !clerkId.equals(order.clerk)){
+          if(order.seller.equals(APP_CONFIG.COMPANY_ID)) { // if the order belongs to the company and there's already a clerk assigned to it
+              throw new AppError("Another clerk is already assigned to this order");
+          }else{ // if the order belongs to an external seller he's already handling his own orders // cannot update the clerk here bc it's eqaul to the seller
+            throw new AppError("Sorry, you are not allowed to update this order since it belongs to another seller");
+          }
+        }  
+        
     
         let newTotalPrice = 0;
         let newTotalQty = 0;
     
+        if(order.status == "shipped" && !fulfilledQuantities) throw new AppError("You have to fulfill the order first before updating the status to shipped");
         // update fulfilled and canceled quantities
         if (fulfilledQuantities) {
             await Promise.all(order.products.map(async prod => {
@@ -104,11 +110,35 @@ class OrderService {
         await orderRepository.updateOrder(orderId, order);
     
         // Now update the OrderContainer's status
-        await this.updateOrderContainerStatus(order.orderContainer);
+        await this.updateOnlineOrderContainerStatus(order.orderContainer);
     }
 
+    async cashierFinalisOnlineOrderByCompleteStatus({orderId, cashierId}) {
 
-    async updateOrderContainerStatus(containerId) {
+        // update cashier if provided
+        if (!order.cashier && cashierId) {// the one who takes the rate of the order from the external seller
+          order.cashier = cashierId;
+        }
+
+        if(order.cashier && !cashierId.equals(order.cashier)){
+          throw new AppError("Another cashier is already assigned to this order");
+        }
+      
+        const order = await orderRepository.getOrderById(orderId);
+        if (!order) throw new AppError("Order not found");
+        
+        if(order.status == "completed") throw new AppError("Order is already completed");
+
+        if (order.status != "delivered" || order.status != "partially delivered") throw new AppError("Cannot finalize order if it wasn't delivered or partially delivered yet!");
+    
+        order.status = "completed";
+        await orderRepository.updateOrder(orderId, order);
+    
+        // Now update the OrderContainer's status
+        await this.updateOnlineOrderContainerStatus(order.orderContainer);
+    }
+
+    async updateOnlineOrderContainerStatus(containerId) {
         const container = await orderContainerRepository.getOrderContainerById(containerId);
         if (!container) throw new AppError("Order container not found");
     
@@ -129,20 +159,65 @@ class OrderService {
 
         if(highestStatus == "cancelled") { // cannot make the whole order container cannceled if only one order is canceled
           orders.forEach(order => {
-            if(order.status != highestStatus) highestStatus = secondHighestStatus;
+            if(order.status != highestStatus){ highestStatus = secondHighestStatus;
+              return;
+            }
           });
         }
         if(highestStatus == "shipped" || highestStatus == "delivered" || highestStatus == "completed") {
           orders.forEach(order => { // cannot make the whole order container shipped if only one order is shipped and the rest are not, delivered and completed are the same
-            if(order.status != highestStatus) highestStatus = `partially ${highestStatus}`;
+            if(order.status != highestStatus){ highestStatus = `partially ${highestStatus}`; return;}
           });
         }
         
         await orderContainerRepository.updateOrderContainerStatus(containerId, highestStatus);
       }
 
+      async mapOrderData(orderData) { // helper function
+        const { _id: orderId, products, updatedAt, createdAt } = orderData;
+        return {
+            orderId,
+            orderStatus: orderData.status,
+            customerName: `${orderData.orderContainer.customer?.firstName} ${orderData.orderContainer.customer?.lastName}`,
+            sellerName: `${orderData.seller.firstName} ${orderData.seller.lastName}`,
+            products: products.map(({ product, onlineProduct, requestedQuantity, fulfilledQuantity, canceledQuantity }) => ({
+                name: product.name,
+                urlImage: product.images?.length > 0 ? product.images[0].url : null,
+                code: product.code,
+                price: onlineProduct.price,
+                stock: onlineProduct.stock,
+                requestedQuantity,
+                fulfilledQuantity,
+                canceledQuantity,
+            })),
+            totalQty: orderData.totalQty,
+            totalPrice: orderData.totalPrice,
+            createdAt,
+            updatedAt,
+        };
+    }
       async getOrderById(orderId) {
-        return await orderRepository.getOrderById(orderId);
+        const returnedOrder = await orderRepository.getOrderById(orderId);
+
+        return this.mapOrderData(returnedOrder);
+      }
+
+      async getAllOnlineOrdersForSeller(sellerId) {
+        // return await orderRepository.getAllOnlineOrdersForSeller(sellerId);
+        const returnedOrders =  await orderRepository.getAllOnlineOrdersForSeller(sellerId);
+        const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+        return mappedOrders;
+      }
+
+      async getAllOnlineOrdersForClerk(clerkId) {
+        const returnedOrders =  await orderRepository.getAllOnlineOrdersForOurCompanyForClerk(clerkId);
+        const mappedOrders = await Promise.all(returnedOrders.map(order => mapOrderData(order)));
+        return mappedOrders;
+      }
+      async getAllOnlineOrdersForCashier(cashierId) {
+        const returnedOrders =  await orderRepository.getAllOnlineOrdersByStatusForCashier(cashierId);
+        const mappedOrders = await Promise.all(returnedOrders.map(order => mapOrderData(order)));
+        return mappedOrders;
       }
 }
 

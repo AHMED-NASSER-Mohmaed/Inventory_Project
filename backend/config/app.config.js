@@ -49,6 +49,8 @@ module.exports.APP_CONFIG = {
   COMPANY_ID: "67aa438c2823142f438539c4",
   COMPANY_NAME: "inventory system",
 
+  ONLINE_BRANCH_ID: "",
+
 
   SUCCESS_MESSAGE: "success",
 

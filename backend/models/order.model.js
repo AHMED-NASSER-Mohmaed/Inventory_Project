@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 const OrderSchema = new mongoose.Schema(
   {
-    seller: { type: mongoose.Schema.Types.ObjectId, required: true },
-    orderContainer: { type: mongoose.Schema.Types.ObjectId, required: true }, // added to able to update the status of the order container dircetly after updating the suborder here
+    seller: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    orderContainer: { type: mongoose.Schema.Types.ObjectId, ref: "OrderContainer", required: true }, // added to able to update the status of the order container dircetly after updating the suborder here
     status: {
       type: String,
       enum: [
@@ -18,7 +18,7 @@ const OrderSchema = new mongoose.Schema(
       ],
       default: "pending",
     },
-
+    subOrderType: { type: String, default: null, select: false }, // added in order to return the suborders dirctlty related to the online store bc if it doesn't exist i cannot return all online suborders directly without the container order if the cashier was null 
     products: [
       {
         product: {
@@ -48,7 +48,7 @@ const OrderSchema = new mongoose.Schema(
           type: Number,
           default: 0,
         },
-
+        
         price: { type: Number }, // Old price reference
 
         totalPrice: { type: Number }, // Fixed type from String to Number
@@ -59,9 +59,9 @@ const OrderSchema = new mongoose.Schema(
 
     totalQty: { type: Number },
 
-    clerk: { type: mongoose.Schema.Types.ObjectId },
+    clerk: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
 
-    cashier: { type: mongoose.Schema.Types.ObjectId, default: null }, // Removed required or add a default string
+    cashier: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null }, // Removed required or add a default string
   },
   {
     timestamps: true,
