@@ -4,16 +4,20 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { CustomersProfileService } from '../../_services/customer-profile.service';
 import { Account } from '../../_models/account';
+import { AccountService } from '../../_services/account.service';
+import { MatDialog } from '@angular/material/dialog';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { ConfirmLogoutDialogComponent } from '../../confirm-logout-dialog/confirm-logout-dialog.component';
 
 @Component({
   selector: 'app-userprofile',
   templateUrl: './userprofile.component.html',
-  imports: [FormsModule , CommonModule],
+  imports: [FormsModule , CommonModule , RouterLink , RouterOutlet],
   styleUrls: ['./userprofile.component.css']
 })
 export class UserprofileComponent implements AfterViewInit , OnInit {
 
-  constructor(public customerProfileService: CustomersProfileService){}
+  constructor(public customerProfileService: CustomersProfileService , public accountService: AccountService, public dialog: MatDialog, public router: Router){}
 
   isEditing = false;
   sub = {} as Subscription;
@@ -52,11 +56,11 @@ export class UserprofileComponent implements AfterViewInit , OnInit {
         navLinks.forEach(l => l.classList.remove('active'));
         link.classList.add('active');
         
-        document.querySelectorAll('.rightbox > div')
-          .forEach(div => div.classList.add('noshow'));
+        // document.querySelectorAll('.rightbox > div')
+        //   .forEach(div => div.classList.add('noshow'));
         
         const sectionId = '.' + link.id;
-        document.querySelector(sectionId)?.classList.remove('noshow');
+        // document.querySelector(sectionId)?.classList.remove('noshow');
       });
     });
   }
@@ -92,5 +96,17 @@ export class UserprofileComponent implements AfterViewInit , OnInit {
       reader.readAsDataURL(file);
     }
   }
+
+  openConfirmDialog(){
+       const dialogRef = this.dialog.open(ConfirmLogoutDialogComponent);
+       this.sub = dialogRef.afterClosed().subscribe(result => {
+         if (result) {
+           this.router.navigateByUrl('/login');
+           this.accountService.logout();
+         } else {
+           console.log('User canceled logout');
+         }
+       });
+     }
   
 }

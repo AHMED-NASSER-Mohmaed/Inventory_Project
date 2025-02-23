@@ -788,43 +788,34 @@ mat-button-toggle{
     }
 }
 
-#sellerInfoModal .modal-dialog {
+#sellerInfoModal .modal-dialog,
+#addCategoryModal .modal-dialog {
     max-width: 500px;
     margin: 30px auto;
-
 }
 
-#sellerInfoModal .modal-content {
-    border-radius: 0; 
+#sellerInfoModal .modal-content,
+#addCategoryModal .modal-content {
     border-radius: 15px;
-
 }
 
-#sellerInfoModal .modal-header {
+#sellerInfoModal .modal-header,
+#addCategoryModal .modal-header {
     background: linear-gradient(90deg, var(--dark), #eee);
     padding: 20px;
     border-bottom: none;
     font-family: var(--poppins);
-  }
+}
 
-#sellerInfoModal .modal-header .modal-title {
+#sellerInfoModal .modal-header .modal-title,
+#addCategoryModal .modal-header .modal-title {
     color: #fff;
     font-size: 1.5em;
     font-weight: 500;
 }
 
-#sellerInfoModal .modal-header .close {
-    color: #fff;
-    font-size: 1.2em;
-    opacity: 0.8;
-    transition: opacity 0.3s ease;
-}
-
-#sellerInfoModal .modal-header .close:hover {
-    opacity: 1;
-}
-
-#sellerInfoModal .modal-body {
+#sellerInfoModal .modal-body,
+#addCategoryModal .modal-body {
     padding: 25px 20px;
     font-size: 0.95em;
     color: var(--dark);
@@ -997,14 +988,16 @@ input[type="number"] {
   display: block;
 }
 
-#sellerInfoModal .modal-footer {
+#sellerInfoModal .modal-footer,
+#addCategoryModal .modal-footer {
     background: #f1f1f1;
     border-top: none;
     padding: 15px 20px;
     font-family: var(--poppins);
 }
 
-#sellerInfoModal .modal-footer .btn {
+#sellerInfoModal .modal-footer .btn,
+#addCategoryModal .modal-footer .btn {
     background-color: var(--dark);  
     border: none;
     font-size: 1.2em;               
@@ -1014,36 +1007,46 @@ input[type="number"] {
     margin-right: 1em;
 }
 
-#sellerInfoModal .modal-footer .btn:hover {
+#sellerInfoModal .modal-footer .btn:hover,
+#addCategoryModal .modal-footer .btn:hover {
     background-color: var(--dark-grey);
     color: var(--dark);
 }
 
-#sellerInfoModal .modal-footer .btn:disabled {
+#sellerInfoModal .modal-footer .btn:disabled,
+#addCategoryModal .modal-footer .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-:host .parent3.dark #sellerInfoModal .modal-content {
+:host .parent3.dark #sellerInfoModal .modal-content,
+:host .parent3.dark #addCategoryModal .modal-content {
     background: var(--grey);
 }
-:host .parent3.dark #sellerInfoModal .modal-header {
+:host .parent3.dark #sellerInfoModal .modal-header,
+:host .parent3.dark #addCategoryModal .modal-header {
     background: linear-gradient(135deg, var(--dark), var(--grey));
 }
-:host .parent3.dark #sellerInfoModal .modal-body {
+:host .parent3.dark #sellerInfoModal .modal-body,
+:host .parent3.dark #addCategoryModal .modal-body {
     background: var(--grey);
     color: var(--dark);
 }
-:host .parent3.dark #sellerInfoModal .modal-footer {
+:host .parent3.dark #sellerInfoModal .modal-footer,
+:host .parent3.dark #addCategoryModal .modal-footer {
     background: var(--grey);
 }
 
 :host .parent3.dark #sellerInfoModal .modal-header .modal-title,
-:host .parent3.dark #sellerInfoModal .modal-header .close {
+:host .parent3.dark #addCategoryModal .modal-header .modal-title,
+:host .parent3.dark #sellerInfoModal .modal-header .close,
+:host .parent3.dark #addCategoryModal .modal-header .close {
     color: var(--light); 
 }
 :host .parent3.dark #sellerInfoModal .modal-body,
-:host .parent3.dark #sellerInfoModal .modal-footer {
+:host .parent3.dark #addCategoryModal .modal-body,
+:host .parent3.dark #sellerInfoModal .modal-footer,
+:host .parent3.dark #addCategoryModal .modal-footer {
     color: var(--dark); 
 }
 

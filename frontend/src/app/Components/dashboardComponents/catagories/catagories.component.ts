@@ -15,6 +15,8 @@ import { ToastrService } from 'ngx-toastr';
 import { CategoryService } from '../../../_services/category.service';
 import { category } from '../../../_models/category';
 
+declare var $: any;
+
 @Component({
   selector: 'app-catagories',
   imports: [
@@ -69,12 +71,13 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
   activeCustomersCount: any = null; 
   inactiveCustomersCount : any = null;
 
+  newCategoryName: string = '';
+  newCategoryGender: string = 'male'; // radio value: 'male' or 'female'
 
   constructor(
     private supplierService: CategoryService,
     public dialog: MatDialog,
-    public toaster: ToastrService
-  ) {}
+    public toaster: ToastrService) {}
 
   ngOnInit(): void {
     this.updateSearchPlaceholder();
@@ -135,7 +138,7 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
       next: (res) => {
         this.users = res.categories;
         this.showNoResults = false;
-        const total =2; ////!!!!!!!!!!!!!
+        const total = res.total; ////!!!!!!!!!!!!!
         this.totalPages = Math.ceil(total / this.itemsPerPage);
         this.dropdownStates = new Array(this.users.length).fill(false);
         this.pageCache[cacheKey] = { result: this.users, total: total };
@@ -203,7 +206,7 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
   showSellerInfo(user: category): void {
     this.selectedUser = {
       ...user,
-      id: user.id || '',
+      _id: user._id || '',
       parentCatId: user.parentCatId || '',
       name: user.name || '',
     };
@@ -216,16 +219,16 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
     const sub = this.supplierService.deActiveCustomer(id).subscribe({
       next: (res) => {
         console.log(res);
-        const deactivatedCustomer = this.users.find((u) => u.id === id);
+        const deactivatedCustomer = this.users.find((u) => u._id === id);
         if (deactivatedCustomer) {
           // Remove from current active list
-          this.users = this.users.filter((user) => user.id !== id);
+          this.users = this.users.filter((user) => user._id !== id);
           deactivatedCustomer.isActive = false;
           
           // Remove from active cache (using "active" prefix)
           const activeKey = `active_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
           if (this.pageCache[activeKey]) {
-            this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter((user) => user.id !== id);
+            this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter((user) => user._id !== id);
             this.pageCache[activeKey].total--;
           }
           
@@ -262,16 +265,16 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
     const sub = this.supplierService.activateCustomer(id).subscribe({
       next: (res) => {
         console.log(res);
-        const activatedCustomer = this.users.find((u) => u.id === id);
+        const activatedCustomer = this.users.find((u) => u._id === id);
         if (activatedCustomer) {
           // Remove from current inactive list
-          this.users = this.users.filter((user) => user.id !== id);
+          this.users = this.users.filter((user) => user._id !== id);
           activatedCustomer.isActive = true;
           
           // Remove from inactive cache (using "inactive" prefix)
           const inactiveKey = `inactive_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
           if (this.pageCache[inactiveKey]) {
-            this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter((user) => user.id !== id);
+            this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter((user) => user._id !== id);
             this.pageCache[inactiveKey].total--;
           }
           
@@ -324,7 +327,7 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
   }
 
   updateUserActivity(id: string, isActive: boolean): void {
-    const user = this.users.find((u) => u.id === id);
+    const user = this.users.find((u) => u._id === id);
     if (user) {
       user.isActive = isActive;
     }
@@ -374,12 +377,12 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
     if (this.editing) {
       const workingBackup = { ...this.backupUser };
       const sub = this.supplierService
-        .updateCustomer(this.selectedUser.id, this.selectedUser)
+        .updateCustomer(this.selectedUser._id, this.selectedUser)
         .subscribe({
           next: (res: any) => {
             if (res.message === 'success') {
               const index = this.users.findIndex(
-                (u) => u.id === this.selectedUser.id
+                (u) => u._id === this.selectedUser._id
               );
               if (index !== -1) {
                 this.users[index] = { ...this.selectedUser };
@@ -387,7 +390,7 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
               }
             } else {
               const index = this.users.findIndex(
-                (u) => u.id === workingBackup.id
+                (u) => u._id === workingBackup._id
               );
               if (index !== -1) {
                 this.users[index] = workingBackup;
@@ -406,7 +409,7 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
             });
             console.error('Error updating seller info', error);
             const index = this.users.findIndex(
-              (u) => u.id === workingBackup.id
+              (u) => u._id === workingBackup._id
             );
             if (index !== -1) {
               this.users[index] = workingBackup;
@@ -591,6 +594,45 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
     } else {
       this.loadSellers();
     }
+  }
+
+  openAddModal(): void {
+    this.newCategoryName = '';
+    this.newCategoryGender = 'male';
+    // Optionally, additional reset logic.
+  }
+
+  addCategory(): void {
+    const parentCatId = this.newCategoryGender === 'male' 
+      ? '67a92037523f30d9de2d71e7' 
+      : '67a92f7992df3a4b6957625d';
+    const newCat = { parentCatId, name: this.newCategoryName };
+    const sub = this.supplierService.addCategory(newCat).subscribe({
+      next: (res) => {
+        this.toaster.success('Category added successfully');
+        this.loadSellers();
+        // Hide modal using vanilla JS
+        const modalElement = document.getElementById('addCategoryModal');
+        if (modalElement) {
+          modalElement.classList.remove('show');
+          modalElement.style.display = 'none';
+        }
+        const backdrops = document.getElementsByClassName('modal-backdrop');
+        while (backdrops.length > 0) {
+          backdrops[0].parentNode?.removeChild(backdrops[0]);
+        }
+      },
+      error: (error) => {
+        this.toaster.clear();
+        this.toaster.error(error.error.message, 'Failed', {
+          timeOut: 1500,
+          positionClass: 'toast-bottom-right',
+          progressBar: true,
+          closeButton: true
+        });
+      }
+    });
+    this.subscriptions.push(sub);
   }
 
   ngOnDestroy(): void {

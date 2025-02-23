@@ -75,13 +75,13 @@ nav a {
     list-style: none;
     padding: 35px;
     color: #FFFFFF;
-    font-size: 2.3em; /* Increased font size for larger icons */
+    font-size: 2.3em; 
     display: flex;
     justify-content: center;
     align-items: center;
     transition: all .3s ease-in-out;
     text-align: center;
-    margin-top: 2.6em;
+    margin-top: 4.2em;
     text-decoration: none;
 
 }

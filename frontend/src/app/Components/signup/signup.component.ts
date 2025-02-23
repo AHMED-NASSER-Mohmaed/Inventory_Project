@@ -21,6 +21,7 @@ export class SignupComponent implements OnDestroy {
   public account: Account = {userType: 'customer'} as Account;
 
   public sub: Subscription | null = null;
+  public isLoading = false;
   
   ensurePhoneNumberStartsWithZero(phoneNumber: any): string {
     const phoneNumberStr = phoneNumber.toString();
@@ -32,6 +33,7 @@ export class SignupComponent implements OnDestroy {
   
 
   signUpForCustomer(){
+    this.isLoading = true;
     this.account.phoneNumber = this.ensurePhoneNumberStartsWithZero(this.account.phoneNumber);
     console.log(this.account);
     this.sub = this.accountService.signupForCustomer(this.account.firstName, this.account.lastName, this.account.email, this.account.phoneNumber, this.account.password, this.account.passwordConfirm, this.account.userType).subscribe({
@@ -56,19 +58,13 @@ export class SignupComponent implements OnDestroy {
             console.log('Decoded token:', tokenData);
           }
 
-          if (tokenData.id.role === 'admin') {
+          if (tokenData.id.role === 'seller') {
             setTimeout(() => {
-              this.router.navigateByUrl('/dashboard');
+              this.router.navigateByUrl('/login');
             }, 1500);
           }
 
-          if (tokenData.id.role === 'super_admin') {
-            setTimeout(() => {
-              this.router.navigateByUrl('/dashboard');
-            }, 1500);
-          }
-
-          if (tokenData.id.role === 'customer') {
+          if (tokenData.id.userType === 'customer') {
             setTimeout(() => {
               this.router.navigateByUrl('/LandingPage');
             }, 1500);
@@ -77,7 +73,15 @@ export class SignupComponent implements OnDestroy {
         }
       },
       error: (error) => {
+        this.isLoading = false;
         console.log(error);
+        this.toastr.clear();
+        this.toastr.error(error.error.message, 'Failed', {
+          timeOut: 1500,
+          positionClass: 'toast-bottom-right',
+          progressBar: true,
+          closeButton: true
+        });
       },
       complete: () => {
         console.log('Signup Complete');
@@ -86,6 +90,7 @@ export class SignupComponent implements OnDestroy {
   }
 
   signUpForSeller(){
+    this.isLoading = true;
     this.account.phoneNumber = this.ensurePhoneNumberStartsWithZero(this.account.phoneNumber);
     this.sub = this.accountService.signupForSeller(this.account.firstName, this.account.lastName, this.account.email, this.account.phoneNumber, this.account.password, this.account.passwordConfirm, this.account.userType , this.account.SSN , this.account.companyRegistrationNumber , this.account.companyName).subscribe({
       next: (res: any) => {
@@ -95,6 +100,7 @@ export class SignupComponent implements OnDestroy {
         }
       },
       error: (error) => {
+        this.isLoading = false;
         this.toastr.clear();
         this.toastr.error(error.error.message, 'Failed', {
           timeOut: 1500,

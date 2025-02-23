@@ -23,8 +23,10 @@ export class LoginComponent implements OnDestroy{
 
   public sub: Subscription | null = null;
 
+  public isLoading = false;
 
   login(){
+    this.isLoading = true;
     // Clear any previous toaster messages to avoid spam.
     this.toastr.clear();
     this.sub = this.accountService.login(this.account.email , this.account.password).subscribe({
@@ -62,7 +64,7 @@ export class LoginComponent implements OnDestroy{
             }, 1500);
           }
 
-          if(tokenData.id.role === 'customer'){
+          if(tokenData.id.userType === 'customer'){
             setTimeout(() => {
               this.router.navigateByUrl('/LandingPage');
             }, 1500);
@@ -72,6 +74,7 @@ export class LoginComponent implements OnDestroy{
         }
       },
       error: (error) => {
+        this.isLoading = false;
         this.toastr.clear();
         this.toastr.error(error.error.message, 'Failed', {
           timeOut: 1500,
