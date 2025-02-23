@@ -75,7 +75,7 @@ const genaraicFunctions = {
   },
 
   updateImageProfile: async (req, res, next) => {
-    console.log("from here ...");
+   
 
     let result = null;
     try {
@@ -957,7 +957,7 @@ route
     catchAsync(customerOp.getCustomerCount)
   )
   
-  .patch("/updateCustomer",
+  .post("/updateCustomer",
     prot_rest(APP_CONFIG.CUSTOMER),
     catchAsync(customerOp.updateCustomer)
   )
@@ -972,7 +972,7 @@ route
 
   //update personal image profile for users
   .post(
-    "/updateImageProfile/:id",
+    "/updateImageProfile",
     prot_rest("supper_admin", "customer"),
     catchAsync(genaraicFunctions.updateImageProfile)
   )
