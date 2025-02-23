@@ -1,8 +1,93 @@
-const { filter } = require('lodash');
-const { APP_CONFIG } = require('../config/app.config');
-const Category = require('../models/category.model');
-const AppError = require('../utils/appError');
 
+const Category = require('../models/category.model');
+
+
+module.exports.categoryRepo = {
+
+    // done
+    addCategory: async (data) => {
+        try {
+          console.log("from repooo");
+            return await Category.create(data);
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    // done 
+    updateCategory: async (id, data) => {
+        try {
+            return await Category.updateOne(id, { $set: data });
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    //done 
+    deleteCategory: async (id) => {
+        try {
+            return await Category.updateOne(id, { $set: { isActive: false } });
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    //done 
+    activateCategory: async (id) => {
+        try {
+            return await Category.updateOne(id, { $set: { isActive: true } } );
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    // done --> apgination + search 
+    getCategories: async (filters = {}, sort = {}, page = 1, limit = 10) => {
+        try {
+            //is active or not 
+            const [results, total] = await Promise.all([
+                Category.find(filters)
+                    .sort(sort)
+                    .skip((page - 1) * limit)
+                    .limit(limit)
+                    .lean(),
+                Category.countDocuments(filters).exec(),
+            ]);
+
+            return { results, total, page, limit };
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    // done
+    getCategoryById: async (id) => {
+        try {
+            return await Category.findById(id)
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    //done 
+    isCategoryActive: async (categoryId) => {
+      try {
+          const category = await Category.findById(categoryId).select("isActive").lean();
+          return category ? category.isActive : null; // Returns true, false, or null if not found
+      } catch (error) {
+          throw error;
+      }
+  }
+
+};
+
+
+
+
+
+
+/*
+const Category = require("../models/category.model");
 class CategoryRepository {
 
   
@@ -184,3 +269,4 @@ class CategoryRepository {
 }
 
 module.exports = new CategoryRepository();
+*/

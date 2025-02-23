@@ -3,7 +3,7 @@ const { brandService } = require("../services/brand.service");
 const { sendResponseToClint } = require("../utils/apiFeatures");
 const prot_rest = require("../utils/authMiddlewaresOptions");
 const { validateSearchParams, validatorFilterParams, validateSortPaginationParams } = require("../middlewares/validation.middlewares");
-
+const catchAsync = require("../utils/catchAsync")
 
 const genaricFilters = {
     searchFiledName: ["Bname"],
@@ -59,39 +59,32 @@ const brandOp = {
 }
 
 
-
-
-
-
 const router = require("express").Router();
-
-
-
 
 router
     .post("/brands",
         prot_rest(APP_CONFIG.SUPPERADMIN),
-        brandOp.addBrand
+        catchAsync(brandOp.addBrand)
     )
     .delete("/brands/:id",
         prot_rest(APP_CONFIG.SUPPERADMIN),
-        brandOp.deleteBrand
+        catchAsync(brandOp.deleteBrand)
     )
     .get("/brands",
         prot_rest(APP_CONFIG.SUPPERADMIN),
         validateSortPaginationParams(genaricFilters.allowedSort),
         validatorFilterParams(genaricFilters.allowedFilterFileds,genaricFilters.allowedFiltervalues),
         validateSearchParams(genaricFilters.searchFiledName,genaricFilters.searchValueAcoordingNaN),
-        brandOp.getBrands
+        catchAsync(brandOp.getBrands)
     )
     .get("/brands/count",
         prot_rest(APP_CONFIG.SUPPERADMIN),
         validatorFilterParams(genaricFilters.allowedFilterFileds,genaricFilters.allowedFiltervalues),
-        brandOp.getCount
+        catchAsync(brandOp.getCount)
     )
     .patch("/brands/:id",
         prot_rest(APP_CONFIG.SUPPERADMIN),
-        brandOp.updateBrand
+        catchAsync(brandOp.updateBrand)
     )
 
 

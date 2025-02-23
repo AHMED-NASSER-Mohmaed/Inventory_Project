@@ -8,6 +8,7 @@ const handleCastErrorDB = (err) => {
 
 const handleDuplicateFieldsDB = (err) => {
   try {
+    
     const duplicatedFields = [];
     console.log(err);
     for (const key in err.keyValue) {
@@ -73,6 +74,7 @@ const sendErrorProd = (err, req, res) => {
 };
 
 module.exports = (err, req, res, next) => {
+  
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 

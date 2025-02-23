@@ -13,6 +13,11 @@ const ProductSchema = new mongoose.Schema(
       required: [true, "Please provide the product code"],
       unique: true,
     },
+
+    markupPercentage: { type: Number, default:.25  },
+
+    cost : {type:Number , require:true},
+
     price: {
       type: Number,
       min: [0, "Price cannot be negative"],
@@ -45,12 +50,16 @@ const ProductSchema = new mongoose.Schema(
       required: [true, "Please provide the product category"],
       ref: "Category", // it should be uncommented but till we make the category CRUD operations it will stay commented
     },
+    brand: {
+      type: mongoose.Schema.ObjectId,
+      required: [true, "Please provide the product brand"],
+      ref: "Brand",
+    },
 
     isActive: {
       type: Boolean,
       default: false,
     },
-
 
     //default is false for the seller
     satus: {                                    // "pending", "approved", or "rejected"
@@ -59,11 +68,14 @@ const ProductSchema = new mongoose.Schema(
       default: "pending"
     },
 
-     // Array of seller product references
-     sellers: [{ type: mongoose.Schema.Types.ObjectId, ref: "SellerProduct" }],
+    // Array of seller product references
+    sellers: [{ type: mongoose.Schema.Types.ObjectId, ref: "SellerProduct" }],
 
-     // Array of supplier product references
-     supplier: { type: mongoose.Schema.Types.ObjectId, ref: "SupplierProduct" },
+    // Array of supplier product references
+    supplier: { type: mongoose.Schema.Types.ObjectId, ref: "SupplierProduct" },
+
+    
+
 
     rating: {
       type: Number,
@@ -87,7 +99,7 @@ const ProductSchema = new mongoose.Schema(
 
 // Create a compound index on Code and category to ensure uniqueness
 // for adding product also , we don't need to combine also is Active --
-ProductSchema.index({ productCode: 1, category: 1 }, { unique: true });
+ProductSchema.index({ productCode: 1, category: 1, brand: 1 }, { unique: true });
 
 
 const Product = mongoose.model("Product", ProductSchema);
