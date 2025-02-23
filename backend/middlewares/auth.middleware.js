@@ -85,7 +85,7 @@ module.exports.protect = catchAsync(async (req, res, next) => {
 
 module.exports.restrictTo = (...userTypes) => {
   return (req, res, next) => {
-    console.log(userTypes, "frommmmmm restirct to t");
+    
     //userType , role
     userTypes = userTypes.flat();
 
@@ -101,6 +101,8 @@ module.exports.restrictTo = (...userTypes) => {
       );
     }
 
+    console.log(userTypes, "frommmmmm restirct to t");
+    
     next();
   };
 };

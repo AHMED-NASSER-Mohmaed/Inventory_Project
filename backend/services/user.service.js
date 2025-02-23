@@ -33,13 +33,14 @@ class UserService {
   async updateUser(userId, newData) {
 
     let fields = ['firstName', 'lastName', 'phoneNumber'];
-
+   
     Object.keys(newData).forEach(Element=>{
       if(!fields.includes(Element))
         return false;
     })
 
     let updatedUser= await userRepo.updateUser(userId, newData);
+    
     
 
     if (!updatedUser)

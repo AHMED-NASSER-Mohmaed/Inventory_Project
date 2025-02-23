@@ -608,7 +608,10 @@ const customerOp = {
 
   //done
   updateCustomer: async (req, res, next) => {
-    if (req.user.role != APP_CONFIG.SUPPERADMIN) {
+    
+      
+    if (req.user.role !== APP_CONFIG.SUPPERADMIN) {
+
       if (req.user.userType == APP_CONFIG.CUSTOMER)
         req.params.id = req.user._id;
       else
@@ -618,7 +621,9 @@ const customerOp = {
         );
     }
 
-    let result = await userService.updateUser(req.params.id, req.body);
+    console.log(req.params.id);
+
+    let result = await userService.updateUser(req.params.id , req.body);
     sendResponseToClint(
       res,
       APP_CONFIG.HTTP_OK,
@@ -903,6 +908,9 @@ route
   /****************************************************************************************************/
   // customer section
 
+   
+ 
+
   .post(
     "/addCustomer",
     prot_rest(APP_CONFIG.SUPPERADMIN),
@@ -938,12 +946,7 @@ route
     catchAsync(customerOp.activeCustomer)
   ) //end of patch
 
-  .patch(
-    "/updateCustomer/:id",
-    prot_rest(APP_CONFIG.SUPPERADMIN),
-    catchAsync(customerOp.updateCustomer)
-  )
-
+  
   .get(
     "/customerCount",
     prot_rest(APP_CONFIG.SUPPERADMIN),
@@ -953,22 +956,25 @@ route
     ),
     catchAsync(customerOp.getCustomerCount)
   )
-
-  //not reviwed yet
-  //update me
-  .patch(
-    "/updateCustomer",
+  
+  .patch("/updateCustomer",
     prot_rest(APP_CONFIG.CUSTOMER),
+    catchAsync(customerOp.updateCustomer)
+  )
+  
+  .patch(
+    "/updateCustomer/:id",
+    prot_rest(APP_CONFIG.SUPPERADMIN),
     catchAsync(customerOp.updateCustomer)
   )
 
   /************************************************************************/
 
   //update personal image profile for users
-  .patch(
-    "/updateImageProfile",
+  .post(
+    "/updateImageProfile/:id",
     prot_rest("supper_admin", "customer"),
-    genaraicFunctions.updateImageProfile
+    catchAsync(genaraicFunctions.updateImageProfile)
   )
 
   //update image profile for othe with intvention from super admin.
