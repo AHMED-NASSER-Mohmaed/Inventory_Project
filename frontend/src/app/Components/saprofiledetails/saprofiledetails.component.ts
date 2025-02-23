@@ -12,13 +12,12 @@ import { ToastrService } from 'ngx-toastr';
 import { ConfirmDialogImgchangeComponent } from '../../confirm-dialog-imgchange/confirm-dialog-imgchange.component';
 
 @Component({
-  selector: 'app-cprofiledetails',
-  imports: [FormsModule , CommonModule ],
-  templateUrl: './cprofiledetails.component.html',
-  styleUrl: './cprofiledetails.component.css'
+  selector: 'app-saprofiledetails',
+  imports: [FormsModule , CommonModule],
+  templateUrl: './saprofiledetails.component.html',
+  styleUrl: './saprofiledetails.component.css'
 })
-
-export class CprofiledetailsComponent implements AfterViewInit , OnInit{
+export class SAprofiledetailsComponent {
   constructor(public customerProfileService: CustomersProfileService , public accountService: AccountService, public dialog: MatDialog, public router: Router , private toastr: ToastrService){}
   
     isEditing = false;
@@ -160,31 +159,5 @@ export class CprofiledetailsComponent implements AfterViewInit , OnInit{
           });
         };
         reader.readAsDataURL(file);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-    openConfirmDialog(){
-         const dialogRef = this.dialog.open(ConfirmLogoutDialogComponent);
-         this.sub = dialogRef.afterClosed().subscribe(result => {
-           if (result) {
-             this.router.navigateByUrl('/login');
-             this.accountService.logout();
-           } else {
-             console.log('User canceled logout');
-           }
-         });
-       }
+}
 }

@@ -6,10 +6,12 @@ import { Router } from '@angular/router';
 import { ConfirmLogoutDialogComponent } from '../../confirm-logout-dialog/confirm-logout-dialog.component';
 import { Account } from '../../_models/account';
 import { Subscription } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-adminprofile',
-  imports: [],
+  imports: [FormsModule , CommonModule ],
   templateUrl: './adminprofile.component.html',
   styleUrl: './adminprofile.component.css'
 })

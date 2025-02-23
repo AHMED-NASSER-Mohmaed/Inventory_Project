@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { decodeToken } from '../_helpers/jwt-helper';
 
-export const auth3Guard: CanActivateFn = (route, state) => {
+export const auth6Guard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   // Get and decode token with error handling
@@ -19,14 +19,8 @@ export const auth3Guard: CanActivateFn = (route, state) => {
     // Check if tokenData exists and has the expected structure
     if (tokenData) {
       // Check for customer type
-      if (tokenData.id.userType === 'customer') {
+      if (tokenData.id.role === 'super_admin') {
         return true;
-      }else if(tokenData.id.userType === 'seller'){
-        router.navigateByUrl('/Sprofile');
-      }else if(tokenData.id.role === 'admin'){
-        router.navigateByUrl('/Aprofile');
-      }else if(tokenData.id.role === 'super_admin'){
-        router.navigateByUrl('/SAprofile');
       }else{
         router.navigateByUrl('/LandingPage');
         return false;
@@ -34,6 +28,4 @@ export const auth3Guard: CanActivateFn = (route, state) => {
     }
 
     return false;
-
-  
 };

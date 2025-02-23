@@ -33,6 +33,9 @@ import { CartMainComponent } from './Components3/cart-main/cart-main.component';
 import { authGuardForCartGuard } from './_guards/auth-guard-for-cart.guard';
 import { Component } from '@angular/core';
 import { SpringCollectionComponent } from './Components2/HomePage/spring-collection/spring-collection.component';
+import { SuperadminprofileComponent } from './Components/superadminprofile/superadminprofile.component';
+import { auth6Guard } from './_guards/auth6.guard';
+import { SAprofiledetailsComponent } from './Components/saprofiledetails/saprofiledetails.component';
 
 export const routes: Routes = [
 
@@ -169,9 +172,30 @@ export const routes: Routes = [
         component: AdminprofileComponent,
         title: 'Profile',
         canActivate: [auth5Guard]
-    }
-
-,
+    },
+    {
+        path: 'SAprofile',
+        component: SuperadminprofileComponent,
+        title: 'Profile',
+        canActivate: [auth6Guard],
+        children: [
+            {
+                path: '',
+                redirectTo: 'SAdetails',
+                pathMatch: 'full'
+            },
+            {
+                path: 'SAdetails',
+                component: SAprofiledetailsComponent,
+                title: 'Profile'
+            },
+            {
+                path: 'resetpassword',
+                component: ResetpasswordComponent,
+                title: 'Reset Password'
+            }
+        ]
+    },
  
 
 {path: "maincart", component: CartMainComponent,

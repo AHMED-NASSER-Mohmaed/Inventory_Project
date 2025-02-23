@@ -19,7 +19,7 @@ export const auth5Guard: CanActivateFn = (route, state) => {
     // Check if tokenData exists and has the expected structure
     if (tokenData) {
       // Check for customer type
-      if (tokenData.id.role === 'super_admin') {
+      if (tokenData.id.role === 'admin') {
         return true;
       }else{
         router.navigateByUrl('/LandingPage');

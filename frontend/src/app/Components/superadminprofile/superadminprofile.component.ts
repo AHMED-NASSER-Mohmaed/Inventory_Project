@@ -10,12 +10,14 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { ConfirmLogoutDialogComponent } from '../../confirm-logout-dialog/confirm-logout-dialog.component';
 
 @Component({
-  selector: 'app-userprofile',
-  templateUrl: './userprofile.component.html',
+  selector: 'app-superadminprofile',
   imports: [FormsModule, CommonModule, RouterLink, RouterOutlet],
-  styleUrls: ['./userprofile.component.css'],
+  templateUrl: './superadminprofile.component.html',
+  styleUrl: './superadminprofile.component.css'
 })
-export class UserprofileComponent implements AfterViewInit, OnInit {
+
+export class SuperadminprofileComponent implements AfterViewInit, OnInit {
+
   constructor(
     public customerProfileService: CustomersProfileService,
     public accountService: AccountService,
@@ -106,4 +108,5 @@ export class UserprofileComponent implements AfterViewInit, OnInit {
       }
     });
   }
+
 }

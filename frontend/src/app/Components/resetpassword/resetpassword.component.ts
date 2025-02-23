@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { CustomersProfileService } from '../../_services/customer-profile.service';
-import { Account } from '../../_models/account';
 import { AccountService } from '../../_services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
