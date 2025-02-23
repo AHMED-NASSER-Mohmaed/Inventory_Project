@@ -96,7 +96,7 @@ export const routes: Routes = [
     {
         // default route
         path: '',
-        redirectTo:'login',
+        redirectTo:'LandingPage',
         pathMatch:'full'
     },
 

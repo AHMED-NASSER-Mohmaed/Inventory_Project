@@ -27,6 +27,7 @@
     "fontawesome": "^5.6.3",
     "front-end": "file:",
     "jquery": "^3.7.1",
+    "jwt-decode": "^4.0.0",
     "latest": "^0.2.0",
     "leaflet": "^1.9.4",
     "ngx-toastr": "^19.0.0",
