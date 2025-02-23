@@ -42,7 +42,7 @@
 
 .product-image img {
     width: 100%;
-    max-width: 300px; /* Increase the image size */
+    max-width: 300px; 
 }
 
 .product-details {
@@ -94,4 +94,30 @@
     padding: 10px 20px;
     cursor: pointer;
     width: 100%;
+}
+
+
+
+@media (max-width: 600px) {
+    .modal-content {
+        width: 80%; 
+        max-width: none;
+  
+    }
+
+    .product-image img {
+        max-width: 80%;
+    }
+
+    .modal-body {
+        flex-direction: column;
+    }
+
+    .price, .description {
+        font-size: larger; 
+    }
+
+    .quantity-control button, .add-to-cart-btn {
+        padding: 10px 15px; 
+    }
 }

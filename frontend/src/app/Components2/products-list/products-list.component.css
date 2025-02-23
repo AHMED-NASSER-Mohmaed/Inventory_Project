@@ -17,8 +17,7 @@
 
 .filter-btn {
     margin: 10px;
-    width: 40%;
-    border-radius: 0.25rem;
+    width: 70%;
     color: white;
     background-color: #85411c;
 }
@@ -93,8 +92,9 @@
 
 
 .image-container {
-    width: 100%;
-    height: 250px; 
+    
+    width: 250px;
+    height: 250px;
     position: relative;
     overflow: hidden;
     text-align: center; 
@@ -125,13 +125,6 @@
     background-color: #6a3416; 
 }
 
-.image-container{
-
-
-    width: 250px;
-    height: 250px;
-
-}
 
 
 
@@ -225,8 +218,6 @@
 
 
 
-
-
 .SInputs {
     margin-top: 10px;
 }
@@ -259,23 +250,14 @@
 
 
 
-
-
-@media (max-width: 768px) {
+@media (max-width: 983px) {
     .product-card {
-        width: 48%; 
-        margin: 1%; 
-        height: auto; 
+        width: 45%; 
     }
 }
-
-@media (max-width: 576px) {
+/* Smaller screen adjustments */
+@media (max-width: 768px) {
     .product-card {
-        width: 100%; 
-        margin: 10px 0; 
-    }
-
-    .row {
-        justify-content: center; 
+        width: 100%;
     }
 }

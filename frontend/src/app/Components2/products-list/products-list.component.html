@@ -34,7 +34,7 @@
              <input class="form-check-input" type="radio" name="brand" [value]="brand._id"
                     (change)="onBrandChange(brand._id)" id={{brand._id}}>
                  <label class="form-check-label" for={{brand._id}}>
-               {{brand.name}}
+                  {{brand.name}}
               </label>
 </div>
             </div>
@@ -49,21 +49,20 @@
 
             <div class="col-md-8 col-lg-9 ">
                 <!-- Search Bar and Sort Dropdown -->
-                <div class="row mb-4 SInputs">
-                    <div class="col-md-6 position-relative">
-                        <input type="text" class="form-control searchBar" placeholder="Search products...">
-                        <i class="fas fa-search search-icon"></i> 
-                    </div>
-                    <div class="col-md-6">
-                        <select class="form-control custom-select" (change)="onSortChange($event)">
-                            <option value="" disabled selected hidden  >Sort</option>
-                            <option value="price_asc">Price: Low to High</option>
-                            <option value="price_desc">Price: High to Low</option>
-                        </select>
-                        
-                        
-                    </div>
-                </div>
+        <div *ngIf="products.length > 0" class="row mb-4 SInputs">
+          <div class="col-md-6 position-relative">
+        <input type="text" class="form-control searchBar" placeholder="Search products...">
+        <i class="fas fa-search search-icon"></i> 
+            </div>
+         <div class="col-md-6">
+                  <select class="form-control custom-select" (change)="onSortChange($event)">
+                        <option value="" disabled selected hidden>Sort</option>
+                        <option value="price_asc">Price: Low to High</option>
+                         <option value="price_desc">Price: High to Low</option>
+                      </select>
+                 </div>
+            </div>
+
 
 
 
@@ -71,7 +70,7 @@
                     @if(products.length==0){
                         <p class="text-danger">Sorry ! No products available</p>
                     }@else{
-                        <div *ngFor="let product of products" class="product-card col-md-4">
+                        <div *ngFor="let product of products" class="product-card ">
                             <div class="image-container position-relative">
                                 <img [src]="product.images[0].url" class="card-img-top product-img" alt="...">
                                 <div class="overlay-icons">

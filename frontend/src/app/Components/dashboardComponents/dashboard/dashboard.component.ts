@@ -4,12 +4,13 @@ import { AccountService } from '../../../_services/account.service';
 import { ConfirmLogoutDialogComponent } from '../../../confirm-logout-dialog/confirm-logout-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
-
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
-  imports: [RouterOutlet, RouterLink],
+  // imports: [RouterOutlet, RouterLink , CommonModule,RouterModule],
 })
 export class DashboardComponent implements OnInit , OnDestroy {
   constructor(public accountService: AccountService , public dialog: MatDialog , public router: Router) {}
