@@ -1,0 +1,24 @@
+//- views/emails/contactAcknowledgement.pug
+extends baseEmail
+
+block content
+  table(role='presentation', border='0', cellpadding='0', cellspacing='0')
+    tr
+      td(style='padding: 20px;')
+        h1(style='color: #2d3436; margin-bottom: 25px;') Thank you for contacting us, #{firstName}!
+        p(style='font-size: 16px; line-height: 1.6;')
+          | We've received your message and our team is currently reviewing it.
+          br
+          | We aim to respond to all inquiries within 24-48 business hours.
+        
+        div(style='margin-top: 30px; background: #f8f9fa; padding: 20px; border-radius: 8px;')
+          h3(style='color: #2d3436; margin-bottom: 15px;') What's next?
+          ul(style='list-style: none; padding-left: 0;')
+            li(style='margin-bottom: 10px;') ✓ Your message is in our queue
+            li(style='margin-bottom: 10px;') ✓ Our team is reviewing your inquiry
+            li(style='margin-bottom: 10px;') ✓ We'll respond to the email you provided
+        
+        p(style='margin-top: 30px; font-size: 14px; color: #6c757d;')
+          | This is an automated response - please do not reply to this email.
+          br
+          | For urgent matters, please call our support team 

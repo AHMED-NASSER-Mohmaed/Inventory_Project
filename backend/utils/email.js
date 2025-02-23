@@ -39,7 +39,7 @@ module.exports = class Email {
     });
   }
 
-  async send(template, subject) {
+  async send(template, subject, _content = "") {
     try {
       const transport = this.newTransport();
 
@@ -51,7 +51,12 @@ module.exports = class Email {
 
       const html = pug.renderFile(
         `${__dirname}/../views/emails/${template}.pug`,
-        { firstName: this.firstName, url: this.url, subject }
+        {
+          firstName: this.firstName,
+          url: this.url,
+          subject,
+          _content: _content,
+        }
       );
 
       const inlinedHtml = juice(html);
@@ -97,6 +102,21 @@ module.exports = class Email {
     await this.send(
       "verifyEmail",
       "Resend: Your email verification token (valid for only 10 minutes)"
+    );
+  }
+
+  async sendContactAcknowledgement() {
+    await this.send(
+      "contactAcknowledgement",
+      "WatchLok: We've Received Your Message"
+    );
+  }
+
+  async sendContactReply(_content) {
+    await this.send(
+      "contactReply",
+      "WatchLok: Reply to Your Message",
+      _content
     );
   }
 };

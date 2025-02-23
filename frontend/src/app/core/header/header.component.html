@@ -34,7 +34,7 @@
                     </li>
                   
                     <li class="nav-item">
-                        <a class="nav-link" [routerLink]="['/products']">Shop</a>         
+                        <a class="nav-link" [routerLink]="['/products']"  routerLinkActive="router-link-active">Shop</a>         
                     </li>
                   
                     <li class="nav-item">
@@ -50,10 +50,10 @@
 
                 <div class="navbar-nav">
 
-                    <a class="nav-item nav-link nav-icon " href="#"><i class='bx bx-user'></i></a>
-                    <a class="nav-item nav-link nav-icon " href="#"><i class='bx bx-cart'></i></a>
+                    <a class="nav-item nav-link nav-icon " routerLink="/Cprofile"><i class='bx bx-user'></i></a>
+                    <a class="nav-item nav-link nav-icon " routerLink="/maincart"><i class='bx bx-cart'></i></a>
                     <a *ngIf="!token" class="nav-item nav-link nav-icon" [routerLink]="['/login']"><i class='bx bx-log-in loginIcon'></i></a>
-                    <a *ngIf="token" class="nav-item nav-link nav-icon" (click)="logout()"  href="#"><i class='bx bx-log-out logoutIcon'></i></a>
+                    <a *ngIf="token" class="nav-item nav-link nav-icon" (click)="openConfirmDialog()"><i class='bx bx-log-out logoutIcon'></i></a>
     
                 </div>
             </div>

@@ -5,6 +5,8 @@ import { AccountService } from '../../_services/account.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { decodeToken } from '../../_helpers/jwt-helper';
 
 @Component({
   selector: 'app-signup',
@@ -14,11 +16,12 @@ import { Router } from '@angular/router';
 })
 export class SignupComponent implements OnDestroy {
 
-  constructor(public accountService: AccountService , public router: Router) {}
+  constructor(public accountService: AccountService , public router: Router , private toastr: ToastrService) {}
 
   public account: Account = {userType: 'customer'} as Account;
 
   public sub: Subscription | null = null;
+  public isLoading = false;
   
   ensurePhoneNumberStartsWithZero(phoneNumber: any): string {
     const phoneNumberStr = phoneNumber.toString();
@@ -30,24 +33,55 @@ export class SignupComponent implements OnDestroy {
   
 
   signUpForCustomer(){
+    this.isLoading = true;
     this.account.phoneNumber = this.ensurePhoneNumberStartsWithZero(this.account.phoneNumber);
     console.log(this.account);
     this.sub = this.accountService.signupForCustomer(this.account.firstName, this.account.lastName, this.account.email, this.account.phoneNumber, this.account.password, this.account.passwordConfirm, this.account.userType).subscribe({
       next: (res: any) => {
         if(res.status){
-          alert('Signup Success');
-          this.accountService.setLoginStatus();
-          this.accountService.setUserType(res.data.user.role);
           localStorage.setItem('token', res.token);
 
+          this.toastr.clear();
+          this.toastr.success('Registered Successfully', 'Success', {
+            timeOut: 1500,
+            positionClass: 'toast-bottom-right',
+            progressBar: true,
+            closeButton: true
+          });
+
           console.log(res);
-          console.log(res.data.user.role);
-          console.log(res.token);
-          this.accountService.showLoginStatus();
+
+          const token = localStorage.getItem('token');
+          let tokenData: any = null;
+          if (token) {
+            tokenData = decodeToken(token);
+            console.log('Decoded token:', tokenData);
+          }
+
+          if (tokenData.id.role === 'seller') {
+            setTimeout(() => {
+              this.router.navigateByUrl('/login');
+            }, 1500);
+          }
+
+          if (tokenData.id.userType === 'customer') {
+            setTimeout(() => {
+              this.router.navigateByUrl('/LandingPage');
+            }, 1500);
+          }
+
         }
       },
       error: (error) => {
+        this.isLoading = false;
         console.log(error);
+        this.toastr.clear();
+        this.toastr.error(error.error.message, 'Failed', {
+          timeOut: 1500,
+          positionClass: 'toast-bottom-right',
+          progressBar: true,
+          closeButton: true
+        });
       },
       complete: () => {
         console.log('Signup Complete');
@@ -56,22 +90,24 @@ export class SignupComponent implements OnDestroy {
   }
 
   signUpForSeller(){
+    this.isLoading = true;
     this.account.phoneNumber = this.ensurePhoneNumberStartsWithZero(this.account.phoneNumber);
     this.sub = this.accountService.signupForSeller(this.account.firstName, this.account.lastName, this.account.email, this.account.phoneNumber, this.account.password, this.account.passwordConfirm, this.account.userType , this.account.SSN , this.account.companyRegistrationNumber , this.account.companyName).subscribe({
       next: (res: any) => {
         if(res.status){
-          alert('Signup Success');
-          this.accountService.setLoginStatus();
-          this.accountService.setUserType(res.data.user.userType);
           localStorage.setItem('token', res.token);
 
-          console.log(res);
-          console.log(res.data.user.userType);
-          console.log(res.token);
-          this.accountService.showLoginStatus();
         }
       },
       error: (error) => {
+        this.isLoading = false;
+        this.toastr.clear();
+        this.toastr.error(error.error.message, 'Failed', {
+          timeOut: 1500,
+          positionClass: 'toast-bottom-right',
+          progressBar: true,
+          closeButton: true
+        });
         console.log(error);
       },
       complete: () => {

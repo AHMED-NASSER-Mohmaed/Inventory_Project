@@ -1,33 +1,102 @@
-
+// cart.repository.js
 const Cart = require("../models/cart.model");
-const { create, exists } = require("../models/product.model");
-const AppError = require("../utils/appError");
-const { APP_CONFIG } = require("../config");
-const cartModel = require("../models/cart.model");
 
+class CartRepository {
+  async createCart(cartData) {
+    const cart = new Cart(cartData);
+    return await cart.save();
+  }
 
-module.exports.CartRepo = {
+  async findCartById(cartId) {
+    return await Cart.findById(cartId).populate("products.onlineProduct");
+  }
 
-  
+  async findCartByCustomerId(customerId) {
+    return await Cart.findOne({ customerId: customerId });
+  }
 
+  async findCartBySessionId(sessionId) {
+    return await Cart.findOne({
+      sessionId: sessionId,
+      isGuest: true,
+    });
+  }
 
+  async updateCart(cartId, updateData) {
+    return await Cart.findByIdAndUpdate(cartId, updateData, { new: true });
+  }
+
+  async deleteCartByCustomerId(customerId) {
+    return await Cart.findOneAndDelete({ customerId: customerId });
+  }
+
+  async deleteCartById(cartId) {
+    return await Cart.findByIdAndDelete(cartId);
+  }
+
+  async deleteCartBySessionId(sessionId) {
+    return await Cart.findOneAndDelete({ sessionId: sessionId });
+  }
+
+  async addProduct(cartId, productData) {
+    return await Cart.findByIdAndUpdate(
+      cartId,
+      { $push: { products: productData } },
+      { new: true }
+    );
+  }
+
+  async updateProductQuantity(cartId, productId, quantity) {
+    return await Cart.findOneAndUpdate(
+      { _id: cartId, "products.onlineProduct": productId },
+      { $set: { "products.$.requiredQty": quantity } },
+      { new: true }
+    );
+  }
+
+  async removeProduct(cartId, productId) {
+    return await Cart.findByIdAndUpdate(
+      cartId,
+      { $pull: { products: { onlineProduct: productId } } },
+      { new: true }
+    );
+  }
+
+  async mergeCarts(primaryCartId, secondaryCart) {
+    const primaryCart = await this.findCartById(primaryCartId);
+    if (!primaryCart) throw new Error("Primary cart not found");
+
+    // Merge products from the secondary cart into the primary cart.
+    secondaryCart.products.forEach((item) => {
+      const existingItem = primaryCart.products.find((p) =>
+        p.onlineProduct.equals(item.onlineProduct)
+      );
+      if (existingItem) {
+        existingItem.requiredQty += item.requiredQty;
+      } else {
+        primaryCart.products.push(item);
+      }
+    });
+
+    return await primaryCart.save();
+  }
 }
 
+module.exports = new CartRepository();
 
-
-
-
-
-
-
-
+// const Cart = require("../models/cart.model");
+// const { create, exists } = require("../models/product.model");
+// const AppError = require("../utils/appError");
+// const { APP_CONFIG } = require("../config");
+// const cartModel = require("../models/cart.model");
+// module.exports.CartRepo = {
 //   //we assum total qty here is valid
 //   //we have to check if user has a cart or not
-//   addToCart: async (UserId, productId, qty, isGust_ = flase) => {
+//   addToCart: async (UserId, productId, qty, isGuest = false) => {
 //     try {
-//       let expirydate;
+//       let expiryDate;
 //       if (isGuest) {
-//         expirydate = new Date() + 7;
+//         expiryDate = new Date() + 7;
 //       }
 
 //       const cart = await Cart.findOneAndUpdate(
@@ -35,8 +104,8 @@ module.exports.CartRepo = {
 //         {
 //           $set: {
 //             "products.$.qty": qty,
-//             expireAt: expirydate,
-//             isGuest: isGust_,
+//             expireAt: expiryDate,
+//             isGuest: isGuest,
 //           },
 //         },
 //         { new: true }
@@ -46,7 +115,7 @@ module.exports.CartRepo = {
 //         const updatedCart = await Cart.findOneAndUpdate(
 //           { _id: customerId },
 //           { $push: { products: { productId, qty } } },
-//           { $set: { expireAt: expirydate, isGuest: isGust_ } },
+//           { $set: { expireAt: expiryDate, isGuest: isGuest } },
 //           { new: true }
 //         );
 
@@ -61,15 +130,15 @@ module.exports.CartRepo = {
 
 //   //this function is assume all args is valid
 //   deleteFromCart: async (userId, productId, isGuest_) => {
-//     let expirydate;
+//     let expiryDate;
 //     if (isGuest_) {
-//       expirydate = new Date() + 7;
+//       expiryDate = new Date() + 7;
 //     }
 //     try {
 //       await Cart.UpdateOne(
 //         { customerId: userId },
 //         { $pull: { products: { productId } } },
-//         { $set: { expireAt: expirydate } },
+//         { $set: { expireAt: expiryDate } },
 //         { new: true }
 //       );
 //     } catch (error) {
@@ -98,7 +167,7 @@ module.exports.CartRepo = {
 //   getCart: async (userId) => {
 //     try {
 //       return await Cart.findOne({ _id: userId });
-//     } catch (err) {
+//     } catch (error) {
 //       throw error;
 //     }
 //   },

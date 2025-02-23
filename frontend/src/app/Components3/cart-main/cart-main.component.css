@@ -1,0 +1,68 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+ul{
+    list-style-type: none;
+}
+li{
+    text-decoration: none;
+    font-weight: bold;
+    text-shadow: 0 2px 0 gray;
+}
+h1{
+    text-shadow: 0 2px 0 gray;
+    font-weight: 700;
+    color: white !important;
+}
+.text-color{
+    text-shadow: 0 1px 0 gray;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.141) !important;
+}
+a{
+    text-decoration: none;
+}
+
+.active-link {
+    text-shadow: 0 1px 0 gray;
+    font-weight: 700;
+    color: rgb(235, 180, 53) !important;
+}
+
+.dimmed-link {
+    color: rgba(255, 255, 255, 0.589) !important;
+}
+
+
+h1{
+    font-weight: bolder;
+    text-shadow: 0 2px 0 gray;
+}
+
+.ground{
+    width: 100%;
+  background-image: url('../../../assets/temp-clock2.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.ground::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Adjust opacity for better contrast */
+    z-index: 1;
+}
+
+.ground > * {
+    position: relative;
+    z-index: 2;
+}

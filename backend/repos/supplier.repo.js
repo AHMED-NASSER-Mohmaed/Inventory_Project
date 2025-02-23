@@ -55,7 +55,7 @@ class SupplierRepository {
   async updateSupplier(supplierId, updateData) {
     try {
 
-      return await supplierModel.updateOne({ _id: supplierId }, {$set:{updateData}}, { runValidators: true })
+      return await supplierModel.updateOne({ _id: supplierId }, {$set:updateData}, { runValidators: true })
         .select('-createdAt -updatedAt -__v');
 
     } catch (err) {
@@ -90,6 +90,7 @@ class SupplierRepository {
   //reviewed
   async getSupplierById(supplierId) {
     try {
+      console.log(supplierId,"from repoo");
      return await supplierModel.findById(supplierId);
     } catch (err) {
       throw err;
