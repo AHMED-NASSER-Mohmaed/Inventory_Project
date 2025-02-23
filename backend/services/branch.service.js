@@ -45,7 +45,8 @@ module.exports = {
                     throw new AppError("invalid fields!!", APP_CONFIG.HTTP_BAD_REQUEST);
             });
 
-            return await branchRepo.updateBranch(id,data);
+            let res= await branchRepo.updateBranch(id,data);
+            
 
         } catch (err) {
             throw err;

@@ -1,3 +1,92 @@
+const { APP_CONFIG } = require("../config/app.config");
+const { categoryService } = require("../services/category.service");
+const { sendResponseToClint } = require("../utils/apiFeatures");
+const prot_rest = require("../utils/authMiddlewaresOptions");
+const { validateSearchParams, validatorFilterParams, validateSortPaginationParams } = require("../middlewares/validation.middlewares");
+const catchAsync = require("../utils/catchAsync")
+
+const genaricFilters = {
+    searchFiledName: ["Cname"],
+    searchValueAcoordingNaN: [true],
+
+    allowedFilterFileds: [ ['isActive', 'undefined'] ],
+    allowedFiltervalues: [['true', "false", 'undefined']],
+
+    allowedSort: ['createdAt'],
+}
+
+const categoryOp = {
+
+    addCategory: async (req, res, next) => {
+        let result = await categoryService.addCategory(req.body);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
+    updateCategory: async (req, res, next) => {
+        let result = await categoryService.updateCategory(req.params.id, req.body);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
+    deleteCategory: async (req, res, next) => {
+        let result = await categoryService.deleteCategory(req.params.id);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
+    activateCategory: async (req, res, next) => {
+        let result = await categoryService.activateCategory(req.params.id);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
+    getCategories: async (req, res, next) => {
+        let result = await categoryService.getCategories(req.validatedParams);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
+    getCount: async (req, res, next) => {
+        let result = await categoryService.getCount(req.validatedParams.filters);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    }
+}
+
+const router = require("express").Router();
+
+router
+    .post("/categories",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        catchAsync(categoryOp.addCategory)
+    )
+    .delete("/categories/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        catchAsync(categoryOp.deleteCategory)
+    )
+    .get("/categories",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        validateSortPaginationParams(genaricFilters.allowedSort),
+        validatorFilterParams(genaricFilters.allowedFilterFileds, genaricFilters.allowedFiltervalues),
+        validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN),
+        catchAsync(categoryOp.getCategories)
+    )
+    .get("/categories/count",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        validatorFilterParams(genaricFilters.allowedFilterFileds, genaricFilters.allowedFiltervalues),
+        catchAsync(categoryOp.getCount)
+    )
+    .patch("/categories/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        catchAsync(categoryOp.updateCategory)
+    )
+    .patch("/categories/:id/activate",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        catchAsync(categoryOp.activateCategory)
+    )
+
+module.exports = router;
+
+
+
+
+
+/*
 const express = require("express");
 const categoryService = require("../services/category.service");
 const AuthMiddleware = require("../middlewares/auth.middleware");
@@ -122,8 +211,11 @@ class CategoryController {
         });
     }
 
+    //done
     async addCategory(req, res, next) {
+
         const category = await categoryService.createCategory(req.body);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,)
         res.status(APP_CONFIG.HTTP_CREATED).json({
             message: "success",
             category
@@ -174,3 +266,5 @@ class CategoryController {
 
 
 module.exports = new CategoryController().router;
+
+*/

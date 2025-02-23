@@ -1,0 +1,147 @@
+.banner {
+    background-image: url('/assets/contactheader.jpg'); 
+    background-size: cover;
+    background-repeat: no-repeat; 
+    background-position: center; 
+    position: relative;
+    height: 150px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; 
+    padding: 20px 0; 
+}
+
+.banner-text {
+    font-family: 'Baskerville Serial', serif;
+    color: rgb(255, 253, 253);
+    text-align: center;
+    margin-bottom: 10px; 
+}
+
+.banner-text p {
+    font-size: 40px;
+    line-height: 1.2;
+   
+}
+
+.banner-nav {
+    font-family: 'Arial', sans-serif; 
+    text-align: center; 
+}
+
+.banner-nav a {
+    text-decoration: none;
+    color: #ffffff; 
+    margin: 0 10px; 
+}
+.banner-nav a:hover{
+    color: yellow;
+    
+}
+
+.banner-nav span {
+    color: #ffffff; 
+}
+
+
+
+
+
+
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.contact-info, .contact-form {
+    background: #fff;
+    padding: 40px;
+}
+
+.contact-info h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.contact-info p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+
+
+.info-details p {
+    font-size: 1.1em;
+    margin: 10px 0;
+}
+
+.info-details a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.info-details a:hover {
+    text-decoration: underline;
+}
+
+.contact-form h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.contact-form p {
+    font-size: 1.1em;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+.form-group input, .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #c8c8c8;
+    
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+button {
+    background: #85411c;;
+    color: #fff;
+    padding: 15px 30px;
+    border: none;
+    font-size: 1.1em;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #6c3212;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+}

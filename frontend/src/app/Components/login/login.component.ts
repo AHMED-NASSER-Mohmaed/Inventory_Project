@@ -11,6 +11,7 @@ import { decodeToken } from '../../_helpers/jwt-helper';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
   imports: [FormsModule , RouterLink , CommonModule , ToastrModule ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'

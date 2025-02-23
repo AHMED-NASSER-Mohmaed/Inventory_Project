@@ -24,6 +24,15 @@ import { auth4Guard } from './_guards/auth4.guard';
 import { auth5Guard } from './_guards/auth5.guard';
 import { CprofiledetailsComponent } from './Components/cprofiledetails/cprofiledetails.component';
 import { ResetpasswordComponent } from './Components/resetpassword/resetpassword.component';
+import { ContactsComponent } from './Components2/contacts/contacts.component';
+import { AboutComponent } from './Components2/about/about.component';
+import { ShoppingcartComponent } from './Components3/shoppingcart/shoppingcart.component';
+import { CheckoutDetailsComponent } from './Components3/checkout-details/checkout-details.component';
+import { OrderCompeleteComponent } from './Components3/order-compelete/order-compelete.component';
+import { CartMainComponent } from './Components3/cart-main/cart-main.component';
+import { authGuardForCartGuard } from './_guards/auth-guard-for-cart.guard';
+import { Component } from '@angular/core';
+import { SpringCollectionComponent } from './Components2/HomePage/spring-collection/spring-collection.component';
 
 export const routes: Routes = [
 
@@ -43,6 +52,11 @@ export const routes: Routes = [
         path: 'featured-products',
         component: FeaturedProductsComponent
     },
+{
+    path: 'springCollection',
+    component: SpringCollectionComponent
+} 
+,
     {
         path: 'category',
         component: CategoryComponent,
@@ -64,6 +78,29 @@ export const routes: Routes = [
         path: '',
         redirectTo: 'signup',
         pathMatch: 'full'
+    },
+    
+   {
+    path:'products',
+    component:ProductsListComponent,
+   }
+   ,
+
+  { path:'contacts',
+   component:ContactsComponent,
+  },
+
+
+ { path:'about',
+    component:AboutComponent,
+ },
+
+ 
+    {
+        // default route
+        path: '',
+        redirectTo:'LandingPage',
+        pathMatch:'full'
     },
     {
         path: 'signup',
@@ -133,6 +170,20 @@ export const routes: Routes = [
         title: 'Profile',
         canActivate: [auth5Guard]
     }
+
+,
+ 
+
+{path: "maincart", component: CartMainComponent,
+    children: [
+        {path: "", component: ShoppingcartComponent},
+        // {path: "checkout", component: CheckoutDetailsComponent,  canActivate: [authGuardForCartGuard]},
+        // {path: "completeorder", component: OrderCompeleteComponent,  canActivate: [authGuardForCartGuard]},
+        {path: "checkout", component: CheckoutDetailsComponent},
+        {path: "completeorder", component: OrderCompeleteComponent},
+    ]
+},
+
 ];
 
 

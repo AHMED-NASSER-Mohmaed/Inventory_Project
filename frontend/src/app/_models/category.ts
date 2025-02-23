@@ -7,6 +7,7 @@ export class category {
            public parentCatId :string,
             public name:string,
             public isActive:boolean  
+            
     ) {
        
     }

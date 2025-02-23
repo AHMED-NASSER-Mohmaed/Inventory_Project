@@ -1,51 +1,36 @@
-/* Original Styles */
-.carousel {
+ .carousel {
     height: 80vh;
     margin-bottom: 30px;
     position: relative;
+    overflow: hidden; 
 }
 
 .carousel-inner {
     height: 100%;
     position: relative;
-    overflow: hidden;
 }
 
 .carousel-item {
     height: 100%;
-    transition: all 0.6s ease-in-out;
+    position: absolute; 
+    top: 0;
     left: 0;
+    opacity: 0; 
+    transition: all 0.6s ease-in-out;
+   
 }
 
-.carousel-fade .carousel-item {
-    opacity: 0;
-    transition: opacity 0.6s ease-in-out;
-    transform: scale(0.95);
-} 
-
-.carousel-fade .carousel-item.active {
-    opacity: 1;
-    transform: scale(1);
+.carousel-item.active {
+    opacity: 1; 
+    z-index: 1;
 }
 
 .carousel-item img {
     height: 80vh;
     width: 100%;
-    object-fit: cover;
-    transition: transform 0.6s ease;
+    object-fit: cover; 
 }
 
-.carousel-control-prev,
-.carousel-control-next {
-    width: 5%;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.carousel:hover .carousel-control-prev,
-.carousel:hover .carousel-control-next {
-    opacity: 0.8;
-}
 
 .carousel-indicators {
     bottom: 20px;
@@ -69,24 +54,24 @@
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5); /* Black background with 50% opacity */
+    background: rgba(0, 0, 0, 0.5);
     z-index: 1;
 }
 
 .carousel-caption {
     position: absolute;
-    left: 100px; /* Start from left on PC screens */
+    left: 100px;
     top: 50%;
     transform: translateY(-50%);
-    font-family: 'Raleway', sans-serif; 
+    font-family: 'Raleway', sans-serif;
     text-align: left;
-    z-index: 2; /* Ensure text is above the overlay */
+    z-index: 2;
     width: auto;
 }
 
-.carousel-caption1, .carousel-caption2, .btn.Explorebtn {
+.carousel-caption1,
+.carousel-caption2,
+.btn.Explorebtn {
     font-family: 'Baskerville Serial', serif;
 }
 
@@ -102,25 +87,24 @@
 
 .Explorebtn {
     color: #85411c;
-    border-radius: 20px;
     background-color: white;
     margin-top: 40px;
 }
 
-/* Responsive Styles */
+
 @media (max-width: 1200px) {
     .carousel-caption {
-        left: 50%; /* Center on mid-sized devices */
+        left: 50%;
         transform: translate(-50%, -50%);
-        width: 90%; /* Max width to prevent edge clipping */
+        width: 90%;
     }
 
     .carousel-caption1 {
-        font-size: 70px; /* Smaller font size for mid-sized devices */
+        font-size: 70px;
     }
 
     .carousel-caption2 {
-        font-size: 40px; /* Smaller font size for mid-sized devices */
+        font-size: 40px;
     }
 }
 
@@ -131,18 +115,26 @@
     }
 
     .carousel-caption {
-        left: 20px; /* Adjust left alignment for small devices */
-        right: 20px; /* Ensure padding from the right side */
+        left: 20px;
+        right: 20px;
         transform: translateY(-50%);
         text-align: left;
     }
 
     .carousel-caption1 {
-        font-size: 50px; /* Even smaller font size for smaller devices */
+        font-size: 50px;
     }
 
     .carousel-caption2 {
-        font-size: 30px; /* Even smaller font size for smaller devices */
+        font-size: 30px;
         margin-top: 20px;
     }
-}
+} 
+
+
+
+
+
+
+
+

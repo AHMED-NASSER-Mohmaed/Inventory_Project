@@ -5,7 +5,7 @@
 
 
 .brandname {
-    margin-left: 50px;
+    margin-left: 20px;
 }
 
 .nav-item.dropdown:hover .dropdown-menu {
@@ -84,4 +84,15 @@
         border: none;
         box-shadow: none;
     }
+}
+
+
+
+.nav-icon {
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.nav-icon:hover {
+    color: #85411c;
 }

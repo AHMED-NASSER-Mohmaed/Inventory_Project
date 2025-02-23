@@ -97,10 +97,7 @@ class SupplierService {
     //reviewed
     async isSupplierExist(supplierId) {
         try {
-            const supplier = await SupplierRepository.getSupplierById(supplierId);
-
-            if(!supplier&&!supplier['isActive'])
-                throw new AppError("sorry supplier dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
+            return await SupplierRepository.getSupplierById(supplierId);
 
         } catch (err) {
             throw err;

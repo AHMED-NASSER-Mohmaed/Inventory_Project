@@ -19,7 +19,7 @@ const SupplierSchema = new mongoose.Schema({
 
   companyRegistrationNumber: { type: String, required: true, unique: true },
 
-  isActive: { type: Boolean, default: true },
+  // isActive: { type: Boolean, default: true },
 
 
   //product commision different from one to another....

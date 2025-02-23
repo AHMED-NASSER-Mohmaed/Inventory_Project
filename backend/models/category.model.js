@@ -2,8 +2,7 @@ const mongoose = require("mongoose");
 
 const CategorySchema = new mongoose.Schema({
 
-    parentCatId: { type: mongoose.Schema.ObjectId, default: null, ref: "Category" },
-    name: { type: String, required: true },
+    Cname: { type: String, required: true ,unique:true },
 
     isActive: { type: Boolean, default: true },
 });

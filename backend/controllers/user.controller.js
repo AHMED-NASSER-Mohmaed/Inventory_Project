@@ -63,6 +63,7 @@ const deleteMe = catchAsync(async (req, res, next) => {
 });
 
 // Routes
+/*
 
 userRouter.get(
   "/users/me",
@@ -75,7 +76,7 @@ userRouter.delete("/users/deleteMe", AuthMiddleware.protect, deleteMe);
 
 userRouter.get("/users", prot_rest("admin", "super_admin"), getAllUsers);
 userRouter.post("/users", prot_rest("admin", "super_admin"), createUser);
-
+*/
 userRouter
   .route("/users/:userId")
   .get(getUser)

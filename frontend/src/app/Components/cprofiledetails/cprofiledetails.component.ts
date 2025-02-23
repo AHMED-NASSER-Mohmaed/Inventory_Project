@@ -8,76 +8,83 @@ import { AccountService } from '../../_services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ConfirmLogoutDialogComponent } from '../../confirm-logout-dialog/confirm-logout-dialog.component';
+import { decodeToken } from '../../_helpers/jwt-helper';
 @Component({
   selector: 'app-cprofiledetails',
-  imports: [FormsModule , CommonModule ],
+  imports: [FormsModule, CommonModule],
   templateUrl: './cprofiledetails.component.html',
-  styleUrl: './cprofiledetails.component.css'
+  styleUrl: './cprofiledetails.component.css',
 })
-export class CprofiledetailsComponent implements AfterViewInit , OnInit{
-  constructor(public customerProfileService: CustomersProfileService , public accountService: AccountService, public dialog: MatDialog, public router: Router){}
-  
-    isEditing = false;
-    sub = {} as Subscription;
-  
-  
-    user = {} as Account;
-    userP : string = '';
-  
-    ngOnInit(): void {
-      this.sub = this.customerProfileService.getMe().subscribe({
-        next: (res: any) => {
-          console.log(res);
-          this.user = res.user;
-          this.userP = res.user.photo.url;
-          console.log(this.userP);
-        },
-        error: (error) => {
-          console.log(error);
-        },
-        complete: () => {
-          console.log('Get Me Complete');
-        }
-      })
+export class CprofiledetailsComponent implements AfterViewInit, OnInit {
+  tokenData: any;
+  constructor(
+    public customerProfileService: CustomersProfileService,
+    public accountService: AccountService,
+    public dialog: MatDialog,
+    public router: Router
+  ) {}
+
+  isEditing = false;
+  sub = {} as Subscription;
+
+  user = {} as Account;
+  userP: string = '';
+
+  ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.tokenData = decodeToken(token);
+      console.log('Decoded token:', this.tokenData);
+
+      this.user.firstName = this.tokenData.id.firstName;
+      this.user.lastName = this.tokenData.id.lastName;
+      this.user.phoneNumber = this.tokenData.id.phoneNumber;
+      this.user.email = this.tokenData.id.email;
+      this.userP = this.tokenData.id.photo.url;
+
     }
-  
-  
-  
-  
-  
-    ngAfterViewInit() {
-      const navLinks = document.querySelectorAll('nav a');
-      navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          
-          navLinks.forEach(l => l.classList.remove('active'));
-          link.classList.add('active');
-          
-          // document.querySelectorAll('.rightbox > div')
-          //   .forEach(div => div.classList.add('noshow'));
-          
-          const sectionId = '.' + link.id;
-          // document.querySelector(sectionId)?.classList.remove('noshow');
-        });
+  }
+
+  ngAfterViewInit() {
+    const navLinks = document.querySelectorAll('nav a');
+    navLinks.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        navLinks.forEach((l) => l.classList.remove('active'));
+        link.classList.add('active');
+
+        // document.querySelectorAll('.rightbox > div')
+        //   .forEach(div => div.classList.add('noshow'));
+
+        const sectionId = '.' + link.id;
+        // document.querySelector(sectionId)?.classList.remove('noshow');
       });
+    });
+  }
+
+  toggleEdit() {
+    this.isEditing = !this.isEditing;
+  }
+
+  handleSaveClick() {
+    if (this.isEditing) {
+      this.saveChanges();
+      this.toggleEdit();
+    } else {
+      this.toggleEdit();
     }
-  
-    toggleEdit() {
-      this.isEditing = !this.isEditing;
-    }
-  
-    handleSaveClick() {
-      if (this.isEditing) {
-        this.saveChanges();
-        this.toggleEdit();
-      } else {
-        this.toggleEdit();
-      }
-    }
-  
-    saveChanges() {
-      this.sub = this.customerProfileService.updateMe(this.user.firstName, this.user.lastName, this.user.phoneNumber, this.user.email).subscribe({
+  }
+
+  saveChanges() {
+    this.sub = this.customerProfileService
+      .updateMe(
+        this.user.firstName,
+        this.user.lastName,
+        this.user.phoneNumber,
+        this.user.email
+      )
+      .subscribe({
         next: (res) => {
           console.log(res);
         },
@@ -86,34 +93,36 @@ export class CprofiledetailsComponent implements AfterViewInit , OnInit{
         },
         complete: () => {
           console.log('Update Me Complete');
-        }
+        },
       });
+  }
+
+  triggerImageUpload() {
+    document.getElementById('imageUpload')?.click();
+  }
+
+  onImageChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        document
+          .querySelector('.firstImage')
+          ?.setAttribute('src', e.target.result);
+      };
+      reader.readAsDataURL(file);
     }
-  
-    triggerImageUpload() {
-      document.getElementById('imageUpload')?.click();
-    }
-  
-    onImageChange(event: any) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          document.querySelector('.firstImage')?.setAttribute('src', e.target.result);
-        };
-        reader.readAsDataURL(file);
+  }
+
+  openConfirmDialog() {
+    const dialogRef = this.dialog.open(ConfirmLogoutDialogComponent);
+    this.sub = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.router.navigateByUrl('/login');
+        this.accountService.logout();
+      } else {
+        console.log('User canceled logout');
       }
-    }
-  
-    openConfirmDialog(){
-         const dialogRef = this.dialog.open(ConfirmLogoutDialogComponent);
-         this.sub = dialogRef.afterClosed().subscribe(result => {
-           if (result) {
-             this.router.navigateByUrl('/login');
-             this.accountService.logout();
-           } else {
-             console.log('User canceled logout');
-           }
-         });
-       }
+    });
+  }
 }

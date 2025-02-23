@@ -8,6 +8,7 @@ import { AccountService } from '../../_services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { ConfirmLogoutDialogComponent } from '../../confirm-logout-dialog/confirm-logout-dialog.component';
+import { decodeToken } from '../../_helpers/jwt-helper';
 
 @Component({
   selector: 'app-userprofile',
@@ -16,6 +17,7 @@ import { ConfirmLogoutDialogComponent } from '../../confirm-logout-dialog/confir
   styleUrls: ['./userprofile.component.css']
 })
 export class UserprofileComponent implements AfterViewInit , OnInit {
+  tokenData: any;
 
   constructor(public customerProfileService: CustomersProfileService , public accountService: AccountService, public dialog: MatDialog, public router: Router){}
 
@@ -27,20 +29,11 @@ export class UserprofileComponent implements AfterViewInit , OnInit {
   userP : string = '';
 
   ngOnInit(): void {
-    this.sub = this.customerProfileService.getMe().subscribe({
-      next: (res: any) => {
-        console.log(res);
-        this.user = res.user;
-        this.userP = res.user.photo.url;
-        console.log(this.userP);
-      },
-      error: (error) => {
-        console.log(error);
-      },
-      complete: () => {
-        console.log('Get Me Complete');
-      }
-    })
+    const token = localStorage.getItem('token');
+        if (token) {
+          this.tokenData = decodeToken(token);
+          console.log('Decoded token:', this.tokenData);
+        }
   }
 
 

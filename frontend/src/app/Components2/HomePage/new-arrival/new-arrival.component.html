@@ -1,0 +1,59 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+<div class="mt-5 container text-center">
+    <p style="font-family: 'Baskerville Serial', serif;" class="fs-1 fw-medium">New Arrival</p>
+    <p class="NewArrival"   style="margin-bottom: 50px;" >
+        Discover our latest arrivals - fresh styles and trending pieces just added to our collection.<br>
+         Shop the newest fashion must-haves!
+    </p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <!-- Loop through NewArrival -->
+        <div *ngFor="let product of products" class="col">
+            <div class="image-container position-relative">
+              <img [src]="product.images[0].url" class="card-img-top product-img" alt="{{ product.name }}">
+              <div class="overlay-icons">
+                <a class="product-item product-link product-icon" href="#"><i class="fas fa-heart"></i></a>
+                <a class="product-item product-link product-icon" (click)="openQuickView(product)"><i class="fas fa-eye"></i></a>
+              </div>
+              <button class="btn add-to-cart-btn">Add to Cart</button>
+            </div>
+            <div class="img-body">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-price">{{ product.price }} le</p>
+              <p class="card-seller">Sold by: {{ product.sellerName }}</p>
+            </div>
+          </div>
+    </div>
+</div>
+
+<!-- Quick View Modal -->
+<app-quickview 
+    [isVisible]="showQuickView" 
+    [selectedProduct]="selectedProduct" 
+    (closeModalEvent)="closeQuickView()">
+</app-quickview>
+
+
+
+
+
+
+
+
+<!-- 
+<div class="springcontainer">
+
+  <div class="springimage">
+      <img src="assets/girl1-1.jpg" alt="Spring Winter 2022">
+  </div>
+  <div class="springtext">
+      <p class="spring">Spring Winter 2022</p>
+      <p class="text-secondary">Looking for love in all the wrong places? Start with something pure, something good for you, and something that makes you feel pampered like a princess. We’re talking about clean beauty gift sets, of course –
+           and we’ve got a bouquet of beauties for yourself or someone you love!</p>
+      <button  class="springbtn">SHOP THE LOOK</button>
+  </div>
+ 
+</div> -->

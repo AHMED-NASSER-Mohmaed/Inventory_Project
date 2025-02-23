@@ -1,0 +1,74 @@
+<app-header></app-header>
+
+
+<div class="container-fluid d-flex justify-content-center align-items-center text-center ground" style="height: 40vh;">
+    <div class="text-color">
+        <h1 class="fs-1">{{ currentTitle }}</h1>
+        <div class="my-5 d-none d-md-flex">
+            <ul class="d-flex justify-content-center p-0">
+                <li class="fs-3">
+                    <a [routerLink]="['/LandingPage']" routerLinkActive="active-link" 
+                       [ngClass]="{ 'dimmed-link': !isActive('/LandingPage'), 'fs-5':  !isActive('/LandingPage') }">
+                        Home
+                    </a>
+                </li>
+                <li class="fs-3">&nbsp; > &nbsp;</li>
+                <li class="fs-3">
+                    <a [routerLink]="['/maincart']" routerLinkActive="active-link" 
+                       [ngClass]="{ 'dimmed-link': !isActive('/maincart'), 'fs-5':  !isActive('/maincart')}">
+                        Cart
+                    </a>
+                </li>
+                <li class="fs-3">&nbsp; > &nbsp;</li>
+                <li class="fs-3">
+                    <a [routerLink]="['/maincart/checkout']" routerLinkActive="active-link" 
+                       [ngClass]="{ 'dimmed-link': !isActive('/maincart/checkout'), 'fs-5':   !isActive('/maincart/checkout')}">
+                        Checkout
+                    </a>
+                </li>
+                <li class="fs-3">&nbsp; > &nbsp;</li>
+                <li class="fs-3">
+                    <a [routerLink]="['/maincart/completeorder']" routerLinkActive="active-link" 
+                       [ngClass]="{ 'dimmed-link': !isActive('/maincart/completeorder'), 'fs-5':  !isActive('/maincart/completeorder')}">
+                        Complete Order
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<!-- <div class="container-fluid d-flex justify-content-center align-items-center text-center ground" style="height: 40vh;">
+    <div>
+
+        <h1 class="fs-1">{{ currentTitle }}</h1>
+        <div class="my-5 d-none d-md-flex">
+        
+            <mat-tab-group>
+                <mat-tab>
+                <ng-template mat-tab-label>
+                    <a [routerLink]="['/maincart']">Cart</a>
+                </ng-template>
+                </mat-tab>
+                <mat-tab>
+                <ng-template mat-tab-label>
+                    <a [routerLink]="['/maincart/checkout']">Checkout</a>
+                </ng-template>
+                </mat-tab>
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                    <a [routerLink]="['/maincart/completeorder']">Complete Order</a>
+                    </ng-template>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+    </div>
+      
+</div> -->
+
+
+
+<router-outlet></router-outlet>
+<app-footer></app-footer>
+
