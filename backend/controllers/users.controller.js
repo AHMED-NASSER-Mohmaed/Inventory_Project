@@ -75,7 +75,7 @@ const genaraicFunctions = {
   },
 
   updateImageProfile: async (req, res, next) => {
-    console.log("from here ...");
+   
 
     let result = null;
     try {

@@ -1,5 +1,5 @@
 const { APP_CONFIG } = require("../config/app.config");
-const product=require("../models/product.model");
+const productRepo=require("../repos/product.repo");
 const supplierRepo=require("../repos/supplier.repo");
 const AppError = require('../utils/appError');
 
@@ -10,14 +10,16 @@ module.exports.productService={
 
     //   who can use this function is the supper admin only 
     //   and also category , brand 
-    addProduct:async(supplierId,data)=>{
+    addProduct:async(data)=>{
 
-        if(!supplierId)
+        let fields=[ "name" , "code" , "price"  , "description" , "category" , "brand" , "supplier" ,]
+
+        if(! data.supplierId)
             throw new AppError("supplier must be provided");
 
         //cheack if supplier is exist in the system and active or not 
 
-        let supplier=await supplierRepo.getSupplierById(supplierId);
+        let supplier=await supplierRepo.getSupplierById(data.supplierId);
         
         if(!supplier || !supplier['isActive'])
             throw new AppError("sorry supplier dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
@@ -42,11 +44,8 @@ module.exports.productService={
             throw new AppError("sorry brand dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
 
 
-
-
-
-
-
+        productRepo.addProduct(data);
+        
 
     }
 }
