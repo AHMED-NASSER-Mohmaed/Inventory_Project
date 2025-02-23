@@ -108,7 +108,6 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
       return;
     }
 
-    // Only show loading spinner when fetching from server
     this.isLoading = true;
     this.users = [];
 
@@ -119,7 +118,6 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
       filterParam = 'isActive:false';
     }
 
-    // Add sort parameters
     let sortParam = '';
     if (this.sortField && this.sortDirection) {
       sortParam = `&sort=${
@@ -267,18 +265,15 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
         console.log(res);
         const activatedCustomer = this.users.find((u) => u._id === id);
         if (activatedCustomer) {
-          // Remove from current inactive list
           this.users = this.users.filter((user) => user._id !== id);
           activatedCustomer.isActive = true;
           
-          // Remove from inactive cache (using "inactive" prefix)
           const inactiveKey = `inactive_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
           if (this.pageCache[inactiveKey]) {
             this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter((user) => user._id !== id);
             this.pageCache[inactiveKey].total--;
           }
           
-          // Add to first page of active cache (using "active" prefix)
           const activeKey = `active_1_${this.sortField}_${this.sortDirection}`;
           if (this.pageCache[activeKey]) {
             const activeCache = this.pageCache[activeKey];
@@ -444,7 +439,7 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
   resetSearch(): void {
     this.searchQuery = '';
     this.isSearchMode = false;
-    this.currentFilter = ''; // reset filter to show all statuses
+    this.currentFilter = ''; 
     this.currentPage = 1;
     this.sortField = null;
     this.sortDirection = null;
@@ -455,9 +450,8 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
   validateSearchInput(event: KeyboardEvent): boolean {
     const pattern =
       this.selectedFilter === 'name'
-        ? /^[a-zA-Z\s]$/ // Only letters and spaces for names
-        : /^[0-9]$/; // Only numbers for SSN and phone
-
+        ? /^[a-zA-Z\s]$/ 
+        : /^[0-9]$/; 
     if (!pattern.test(event.key)) {
       event.preventDefault();
       return false;
@@ -471,8 +465,8 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
 
     const pattern =
       this.selectedFilter === 'name'
-        ? /^[a-zA-Z\s]*$/ // Only letters and spaces for names
-        : /^[0-9]*$/; // Only numbers for SSN and phone
+        ? /^[a-zA-Z\s]*$/ 
+        : /^[0-9]*$/; 
 
     if (pattern.test(pastedText)) {
       this.searchQuery = pastedText;
@@ -493,7 +487,6 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
     let filters: string;
     this.lastSearchFilter = this.selectedFilter;
 
-    // Build the search filter based on current filter state
     let searchFilter = '';
     if (this.selectedFilter === 'name') {
       const nameParts = this.searchQuery;
@@ -504,7 +497,7 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
       searchFilter = `${this.selectedFilter}:${this.searchQuery}`;
     }
 
-    // Update status filter: only add filter when explicitly set to 'active' or 'inactive'
+  
     const statusFilter =
       this.currentFilter === 'active'
         ? '+isActive:true'
@@ -565,8 +558,7 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
   }
 
   onItemsPerPageChange(): void {
-    this.currentPage = 1; // Reset to first page when changing items per page
-    // Clear the cache when changing items per page
+    this.currentPage = 1; 
     this.pageCache = {};
     if (this.isSearchMode) {
       this.loadSearchResults();
@@ -575,18 +567,14 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
     }
   }
 
-  // Add sorting method
   toggleSort(field: 'name' | 'createdAt'): void {
     if (this.sortField === field) {
-      // Toggle direction if same field
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
-      // New field, start with ascending
       this.sortField = field;
       this.sortDirection = 'asc';
     }
 
-    // Reset to first page when sorting
     this.currentPage = 1;
 
     if (this.isSearchMode) {
@@ -599,7 +587,6 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
   openAddModal(): void {
     this.newCategoryName = '';
     this.newCategoryGender = 'male';
-    // Optionally, additional reset logic.
   }
 
   addCategory(): void {
@@ -611,7 +598,6 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
       next: (res) => {
         this.toaster.success('Category added successfully');
         this.loadSellers();
-        // Hide modal using vanilla JS
         const modalElement = document.getElementById('addCategoryModal');
         if (modalElement) {
           modalElement.classList.remove('show');

@@ -27,7 +27,7 @@
                 id="phoneNumber" />
 
             <h2>Email</h2>
-            <input type="email" [(ngModel)]="user.email" name="email" [disabled]="!isEditing" required email
+            <input type="email" [(ngModel)]="user.email" name="email" disabled required email
                 #email="ngModel" [ngClass]="{'valid': email.valid, 'invalid': email.invalid && email.touched}"
                 id="email" />
         </form>

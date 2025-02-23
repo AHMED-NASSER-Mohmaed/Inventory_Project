@@ -19,6 +19,6 @@ export class CustomersProfileService {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.patch('http://127.0.0.1:3000/users/updateMe', {firstName, lastName, phoneNumber, email}, {headers});
+    return this.http.patch('http://127.0.0.1:3000/updateCustomer', {firstName, lastName, phoneNumber, email}, {headers});
   }
 }

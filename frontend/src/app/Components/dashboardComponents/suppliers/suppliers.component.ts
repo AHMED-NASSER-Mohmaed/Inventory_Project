@@ -48,10 +48,9 @@ export class SuppliersComponent implements OnInit, OnDestroy {
 
   subscriptions: Subscription[] = [];
 
-  // New cache for storing seller pages: keys are "<filter>_<page>"
   pageCache: { [key: string]: { result: User[]; total: number } } = {};
 
-  selectedFilter: string = 'name'; // Default filter
+  selectedFilter: string = 'name'; 
   searchQuery: string = '';
 
   showNoResults: boolean = false;
@@ -90,9 +89,7 @@ export class SuppliersComponent implements OnInit, OnDestroy {
 
   hideSingleSelectionIndicator = signal(true);
 
-  // Consolidated seller loading method with caching
   loadSellers(): void {
-    // Check cache before setting loading state
     const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
 
     if (this.pageCache[cacheKey]) {
@@ -106,7 +103,6 @@ export class SuppliersComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Only show loading spinner when fetching from server
     this.isLoading = true;
     this.users = [];
 
@@ -117,7 +113,6 @@ export class SuppliersComponent implements OnInit, OnDestroy {
       filterParam = 'isActive:false';
     }
 
-    // Add sort parameters
     let sortParam = '';
     if (this.sortField && this.sortDirection) {
       sortParam = `&sort=${
@@ -215,23 +210,19 @@ export class SuppliersComponent implements OnInit, OnDestroy {
     console.log(this.selectedUser);
   }
 
-  // Customer actions
   deActiveCustomer(_id: string): void {
     const sub = this.supplierService.deActiveCustomer(_id).subscribe({
       next: (res) => {
         const deactivatedCustomer = this.users.find((u) => u._id === _id);
         if (deactivatedCustomer) {
           deactivatedCustomer.isActive = false;
-          // Only remove from list if "active" filter is applied
           if (this.currentFilter === 'active') {
             this.users = this.users.filter((user) => user._id !== _id);
-            // Update active cache removal
             const activeKey = `active_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
             if (this.pageCache[activeKey]) {
               this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter((user) => user._id !== _id);
               this.pageCache[activeKey].total--;
             }
-            // Add to 1st page of inactive cache
             const inactiveKey = `inactive_1_${this.sortField}_${this.sortDirection}`;
             if (this.pageCache[inactiveKey]) {
               const inactiveCache = this.pageCache[inactiveKey];
@@ -242,7 +233,6 @@ export class SuppliersComponent implements OnInit, OnDestroy {
               inactiveCache.total++;
             }
           }
-          // In mixed view, just update counts
           this.getInActiveCustomersCount();
           this.getActiveCustomersCount();
         }
@@ -270,13 +260,11 @@ export class SuppliersComponent implements OnInit, OnDestroy {
           // Only remove from list if "inactive" filter is applied
           if (this.currentFilter === 'inactive') {
             this.users = this.users.filter((user) => user._id !== _id);
-            // Update inactive cache removal
             const inactiveKey = `inactive_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
             if (this.pageCache[inactiveKey]) {
               this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter((user) => user._id !== _id);
               this.pageCache[inactiveKey].total--;
             }
-            // Add to 1st page of active cache
             const activeKey = `active_1_${this.sortField}_${this.sortDirection}`;
             if (this.pageCache[activeKey]) {
               const activeCache = this.pageCache[activeKey];
@@ -287,7 +275,6 @@ export class SuppliersComponent implements OnInit, OnDestroy {
               activeCache.total++;
             }
           }
-          // In mixed view, just update counts
           this.getInActiveCustomersCount();
           this.getActiveCustomersCount();
         }
@@ -444,7 +431,7 @@ export class SuppliersComponent implements OnInit, OnDestroy {
   resetSearch(): void {
     this.searchQuery = '';
     this.isSearchMode = false;
-    this.currentFilter = ''; // reset filter to show all statuses
+    this.currentFilter = '';
     this.currentPage = 1;
     this.sortField = null;
     this.sortDirection = null;
@@ -455,8 +442,8 @@ export class SuppliersComponent implements OnInit, OnDestroy {
   validateSearchInput(event: KeyboardEvent): boolean {
     const pattern =
       this.selectedFilter === 'name'
-        ? /^[a-zA-Z\s]$/ // Only letters and spaces for names
-        : /^[0-9]$/; // Only numbers for SSN and phone
+        ? /^[a-zA-Z\s]$/ 
+        : /^[0-9]$/; 
 
     if (!pattern.test(event.key)) {
       event.preventDefault();
@@ -471,8 +458,8 @@ export class SuppliersComponent implements OnInit, OnDestroy {
 
     const pattern =
       this.selectedFilter === 'name'
-        ? /^[a-zA-Z\s]*$/ // Only letters and spaces for names
-        : /^[0-9]*$/; // Only numbers for SSN and phone
+        ? /^[a-zA-Z\s]*$/ 
+        : /^[0-9]*$/; 
 
     if (pattern.test(pastedText)) {
       this.searchQuery = pastedText;
@@ -493,7 +480,6 @@ export class SuppliersComponent implements OnInit, OnDestroy {
     let filters: string;
     this.lastSearchFilter = this.selectedFilter;
 
-    // Build the search filter based on current filter state
     let searchFilter = '';
     if (this.selectedFilter === 'name') {
       const nameParts = this.searchQuery;
@@ -504,7 +490,6 @@ export class SuppliersComponent implements OnInit, OnDestroy {
       searchFilter = `${this.selectedFilter}:${this.searchQuery}`;
     }
 
-    // Update status filter: only add filter when explicitly set to 'active' or 'inactive'
     const statusFilter =
       this.currentFilter === 'active'
         ? '+isActive:true'
@@ -565,8 +550,7 @@ export class SuppliersComponent implements OnInit, OnDestroy {
   }
 
   onItemsPerPageChange(): void {
-    this.currentPage = 1; // Reset to first page when changing items per page
-    // Clear the cache when changing items per page
+    this.currentPage = 1; 
     this.pageCache = {};
     if (this.isSearchMode) {
       this.loadSearchResults();
@@ -575,18 +559,14 @@ export class SuppliersComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Add sorting method
   toggleSort(field: 'name' | 'createdAt'): void {
     if (this.sortField === field) {
-      // Toggle direction if same field
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
-      // New field, start with ascending
       this.sortField = field;
       this.sortDirection = 'asc';
     }
 
-    // Reset to first page when sorting
     this.currentPage = 1;
 
     if (this.isSearchMode) {

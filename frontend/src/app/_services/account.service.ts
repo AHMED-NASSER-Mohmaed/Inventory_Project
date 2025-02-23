@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -7,8 +7,13 @@ import { Observable } from 'rxjs';
 })
 export class AccountService {
 
-  constructor(public http: HttpClient) { 
-  }
+  constructor(public http: HttpClient) { }
+    private baseUrl = 'http://localhost:3000';
+  
+    private getHeaders(): HttpHeaders {
+      const token = localStorage.getItem('token');
+      return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    }
 
   login(email: string, password: string) : Observable<any> {
     return this.http.post('http://127.0.0.1:3000/auth/login', { email, password });
@@ -22,9 +27,13 @@ export class AccountService {
     return this.http.post('http://127.0.0.1:3000/auth/signup', { firstName, lastName, email, phoneNumber, password, passwordConfirm, userType, SSN, companyRegistrationNumber, companyName });
   }
 
-
-
   logout() {
     localStorage.removeItem('token');
   }
-}
+
+  resetPassword(data: any): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/auth/updatePassword`, data , { headers: this.getHeaders() });
+  }
+
+  
+  }

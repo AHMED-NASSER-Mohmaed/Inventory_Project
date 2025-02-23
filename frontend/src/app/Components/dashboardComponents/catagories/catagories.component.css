@@ -619,9 +619,9 @@ mat-button-toggle{
 }
 
 .skeleton-container {
-  display: flex; /* Ensures row alignment */
-  align-items: center; /* Aligns items vertically */
-  gap: 15px; /* Space between box and text */
+  display: flex; 
+  align-items: center;
+  gap: 15px; 
   width: 100%;
 }
 

@@ -6,11 +6,11 @@ import { CustomersProfileService } from '../../_services/customer-profile.servic
 import { Account } from '../../_models/account';
 import { AccountService } from '../../_services/account.service';
 import { MatDialog } from '@angular/material/dialog';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router } from '@angular/router';
 import { ConfirmLogoutDialogComponent } from '../../confirm-logout-dialog/confirm-logout-dialog.component';
 @Component({
   selector: 'app-cprofiledetails',
-  imports: [FormsModule , CommonModule , RouterLink , ],
+  imports: [FormsModule , CommonModule ],
   templateUrl: './cprofiledetails.component.html',
   styleUrl: './cprofiledetails.component.css'
 })
@@ -77,7 +77,17 @@ export class CprofiledetailsComponent implements AfterViewInit , OnInit{
     }
   
     saveChanges() {
-      console.log("lol")
+      this.sub = this.customerProfileService.updateMe(this.user.firstName, this.user.lastName, this.user.phoneNumber, this.user.email).subscribe({
+        next: (res) => {
+          console.log(res);
+        },
+        error: (error) => {
+          console.log(error);
+        },
+        complete: () => {
+          console.log('Update Me Complete');
+        }
+      });
     }
   
     triggerImageUpload() {

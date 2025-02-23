@@ -50,7 +50,7 @@ export class SellersComponent implements OnInit, OnDestroy {
 
   subscriptions: Subscription[] = [];
 
-  // New cache for storing seller pages: keys are "<filter>_<page>"
+  //  cache for storing seller pages: keys are "<filter>_<page>"
   pageCache: { [key: string]: { result: User[]; total: number } } = {};
 
   selectedFilter: string = 'name'; // Default filter
@@ -234,7 +234,6 @@ export class SellersComponent implements OnInit, OnDestroy {
         const deactivatedSeller = this.users.find(u => u._id === _id);
         if (deactivatedSeller) {
           if (this.currentFilter === 'approved' && this.activityFilter === true) {
-            // In approved view filtered to Active: remove seller and update caches
             this.users = this.users.filter(user => user._id !== _id);
             const activeKey = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:true`;
             if (this.pageCache[activeKey]) {
@@ -250,9 +249,7 @@ export class SellersComponent implements OnInit, OnDestroy {
               this.pageCache[inactiveKey].total++;
             }
           } else {
-            // In mixed view or when no specific activity filter is set: update status only
             deactivatedSeller.isActive = false;
-            // For cache keys that include activity filter, update if present.
             const keyActive = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:true`;
             if (this.pageCache[keyActive]) {
               const cachedSeller = this.pageCache[keyActive].result.find(u => u._id === _id);
@@ -275,7 +272,6 @@ export class SellersComponent implements OnInit, OnDestroy {
         const activatedSeller = this.users.find(u => u._id === _id);
         if (activatedSeller) {
           if (this.currentFilter === 'approved' && this.activityFilter === false) {
-            // In approved view filtered to Inactive: remove seller and update caches
             this.users = this.users.filter(user => user._id !== _id);
             const inactiveKey = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:false`;
             if (this.pageCache[inactiveKey]) {
@@ -291,7 +287,6 @@ export class SellersComponent implements OnInit, OnDestroy {
               this.pageCache[activeKey].total++;
             }
           } else {
-            // In mixed view: update status only
             activatedSeller.isActive = true;
             const keyInactive = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:false`;
             if (this.pageCache[keyInactive]) {
@@ -602,8 +597,8 @@ export class SellersComponent implements OnInit, OnDestroy {
 
   validateSearchInput(event: KeyboardEvent): boolean {
     const pattern = this.selectedFilter === 'name' 
-      ? /^[a-zA-Z\s]$/  // Only letters and spaces for names
-      : /^[0-9]$/;      // Only numbers for SSN and phone
+      ? /^[a-zA-Z\s]$/  
+      : /^[0-9]$/;      
 
     if (!pattern.test(event.key)) {
       event.preventDefault();
@@ -617,8 +612,8 @@ export class SellersComponent implements OnInit, OnDestroy {
     const pastedText = event.clipboardData?.getData('text') || '';
     
     const pattern = this.selectedFilter === 'name'
-      ? /^[a-zA-Z\s]*$/  // Only letters and spaces for names
-      : /^[0-9]*$/;      // Only numbers for SSN and phone
+      ? /^[a-zA-Z\s]*$/  
+      : /^[0-9]*$/;      
 
     if (pattern.test(pastedText)) {
       this.searchQuery = pastedText;
@@ -639,7 +634,6 @@ export class SellersComponent implements OnInit, OnDestroy {
     let filters: string;
     this.lastSearchFilter = this.selectedFilter;
     
-    // Build the search filter based on current filter state
     let searchFilter = '';
     if (this.selectedFilter === 'name') {
       const nameParts = this.searchQuery.trim().split(/\s+/);
@@ -652,7 +646,6 @@ export class SellersComponent implements OnInit, OnDestroy {
       searchFilter = `${this.selectedFilter}:${this.searchQuery}`;
     }
 
-    // Add status filter based on current filter state
     let statusFilter = '';
     if (this.currentFilter === 'approved') {
       statusFilter = '+status:1';
@@ -718,8 +711,7 @@ export class SellersComponent implements OnInit, OnDestroy {
   }
 
   onItemsPerPageChange(): void {
-    this.currentPage = 1; // Reset to first page when changing items per page
-    // Clear the cache when changing items per page
+    this.currentPage = 1; 
     this.pageCache = {};
     if (this.isSearchMode) {
       this.loadSearchResults();
@@ -728,18 +720,14 @@ export class SellersComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Add sorting method
   toggleSort(field: 'name' | 'createdAt'): void {
     if (this.sortField === field) {
-      // Toggle direction if same field
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
-      // New field, start with ascending
       this.sortField = field;
       this.sortDirection = 'asc';
     }
 
-    // Reset to first page when sorting
     this.currentPage = 1;
     
     if (this.isSearchMode) {
