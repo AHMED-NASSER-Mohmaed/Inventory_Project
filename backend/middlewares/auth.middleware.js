@@ -2,6 +2,36 @@ const UserService = require("../services/user.service");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const JWT_Manager = require("../utils/jwt.manager");
+const jwt = require("jsonwebtoken");
+
+module.exports.optionalAuth = (req, res, next) => {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    const token = req.headers.authorization.split(" ")[1];
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (!err) {
+        req.user = decoded; // attach decoded user info to req.user
+      }
+      // Even if token is invalid, we simply continue as a guest.
+      next();
+    });
+  } else {
+    next();
+  }
+};
+
+module.exports.checkCustomerRole = (req, res, next) => {
+  if (req.user && req.user._id) {
+    // If logged in, only allow if user is a customer.
+    if (req.user.role !== "customer" && req.user.userType !== "customer") {
+      return next(new AppError("Only customers can use the cart", 403));
+    }
+  }
+  next();
+};
 
 module.exports.protect = catchAsync(async (req, res, next) => {
   let token;
@@ -55,24 +85,22 @@ module.exports.protect = catchAsync(async (req, res, next) => {
 
 module.exports.restrictTo = (...userTypes) => {
   return (req, res, next) => {
-    console.log(userTypes,"frommmmmm restirct to t");
+    console.log(userTypes, "frommmmmm restirct to t");
     //userType , role
     userTypes = userTypes.flat();
 
-   
-      // to be reviewed
-      console.log(`request user type from post: ${req.user.userType}`);
-      if (
-        !userTypes.includes(req.user.userType) &&
-        !userTypes.includes(req.user.role)
-      ) {
-         
-        
-        throw  new AppError("You do not have permission to perform this action", 403)
-        
-      }
+    // to be reviewed
+    console.log(`request user type from post: ${req.user.userType}`);
+    if (
+      !userTypes.includes(req.user.userType) &&
+      !userTypes.includes(req.user.role)
+    ) {
+      throw new AppError(
+        "You do not have permission to perform this action",
+        403
+      );
+    }
 
-      next();
-    
+    next();
   };
 };

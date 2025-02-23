@@ -1,0 +1,435 @@
+.banner {
+    background-image: url('/assets/contactheader.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: relative;
+    height: 150px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.banner-text {
+    font-family: 'Baskerville Serial', serif;
+    color: rgb(255, 253, 253);
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.banner-text p {
+    font-size: 40px;
+    line-height: 1.2;
+}
+
+.banner-nav {
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+}
+
+.banner-nav a {
+    text-decoration: none;
+    color: #ffffff;
+    margin: 0 10px;
+}
+
+.banner-nav a:hover {
+    color: yellow;
+}
+
+.banner-nav span {
+    color: #ffffff;
+}
+
+.container {
+    margin-top: 70px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 20px;
+}
+
+.text {
+    flex: 1 1 50%;
+    padding: 20px;
+}
+
+.spring {
+    font-family: 'Baskerville Serial', serif;
+    font-size: 40px;
+    margin-bottom: 30px;
+}
+
+.image {
+    flex: 1 1 50%;
+    padding: 20px;
+}
+
+.image img {
+    max-width: 100%;
+    height: auto;
+}
+
+button {
+    margin-top: 20px;
+    padding: 20px 40px;
+    font-size: 20px;
+    color: #ffffff;
+    background-color: #000000;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #85411c;
+    color: #ddd;
+}
+
+.sec2 {
+    background-color: #f5f3f2;
+}
+
+.quote-section {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.quote-section blockquote {
+    font-family: 'Baskerville Serial', serif;
+    font-size: 28px;
+    line-height: 30px;
+    max-width: 800px;
+    margin: 0 auto;
+    color: #555;
+}
+
+.logos-section {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+}
+
+.logo-item {
+    max-width: 150px;
+    height: auto;
+}
+
+.logo-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+
+.mission {
+    flex: 1 1 50%;
+    padding: 20px;
+}
+
+.mission img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+@media (max-width: 1200px) {
+    .mission img {
+        max-width: 90%;
+    }
+}
+
+@media (max-width: 992px) {
+    .mission img {
+        max-width: 85%;
+    }
+
+    .text-secondary.fs-5 {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .text, .mission {
+        flex: 1 1 100%;
+        text-align: center;
+    }
+
+    .mission img {
+        max-width: 80%;
+    }
+
+    .text-secondary.fs-5 {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 576px) {
+    .mission img {
+        max-width: 70%;
+    }
+
+    .text-secondary.fs-5 {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mission img {
+        max-width: 60%;
+    }
+
+    .text-secondary.fs-5 {
+        font-size: 12px;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.team {
+    padding: 20px;
+    background-color: #fff;
+    text-align: center;
+}
+
+.team .fs-1 {
+    font-size: 48px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 40px;
+}
+
+.card {
+    border: none;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 20px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-img-top {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 20px;
+    text-align: center;
+}
+
+.card-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.card-text {
+    font-size: 18px;
+    color: #555;
+}
+
+.team .imgCards {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 1200px) {
+    .banner-text p {
+        font-size: 36px;
+    }
+
+    .spring {
+        font-size: 36px;
+    }
+
+    .quote-section blockquote {
+        font-size: 24px;
+    }
+
+    .team .fs-1 {
+        font-size: 40px;
+    }
+}
+
+@media (max-width: 992px) {
+    .banner-text p {
+        font-size: 32px;
+    }
+
+    .spring {
+        font-size: 32px;
+    }
+
+    .quote-section blockquote {
+        font-size: 22px;
+    }
+
+    .team .fs-1 {
+        font-size: 36px;
+    }
+
+    .card-img-top {
+        height: 250px;
+    }
+
+    .card-title {
+        font-size: 22px;
+    }
+
+    .card-text {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .banner-text p {
+        font-size: 28px;
+    }
+
+    .spring {
+        font-size: 28px;
+    }
+
+    .container {
+        flex-direction: column;
+    }
+
+    .text, .image {
+        flex: 1 1 100%;
+        text-align: center;
+    }
+
+    .quote-section blockquote {
+        font-size: 20px;
+    }
+
+    .logos-section {
+        gap: 15px;
+    }
+
+    .logo-item {
+        max-width: 120px;
+    }
+
+    .team .fs-1 {
+        font-size: 32px;
+    }
+
+    .card-img-top {
+        height: 200px;
+    }
+
+    .card-title {
+        font-size: 20px;
+    }
+
+    .card-text {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 576px) {
+    .banner-text p {
+        font-size: 24px;
+    }
+
+    .spring {
+        font-size: 24px;
+    }
+
+    .quote-section blockquote {
+        font-size: 18px;
+    }
+
+    .logos-section {
+        gap: 10px;
+    }
+
+    .logo-item {
+        max-width: 100px;
+    }
+
+    .team .fs-1 {
+        font-size: 28px;
+    }
+
+    .card-img-top {
+        height: 180px;
+    }
+
+    .card-title {
+        font-size: 18px;
+    }
+
+    .card-text {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .banner-text p {
+        font-size: 20px;
+    }
+
+    .spring {
+        font-size: 20px;
+    }
+
+    .quote-section blockquote {
+        font-size: 16px;
+    }
+
+    .logos-section {
+        gap: 5px;
+    }
+
+    .logo-item {
+        max-width: 80px;
+    }
+
+    .team .fs-1 {
+        font-size: 24px;
+    }
+
+    .card-img-top {
+        height: 150px;
+    }
+
+    .card-title {
+        font-size: 16px;
+    }
+
+    .card-text {
+        font-size: 12px;
+    }
+}

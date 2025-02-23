@@ -77,11 +77,15 @@ class ProductController {
     /*
     //site products
     this.router.get(
+
       "/getProducts",
-      validatorForQueries(this.allowedFilterFileds, this.allowedFileterFildesValues, this.allowedSortFileds, this.allowedSortFiledsValues),
+     
+      
+      validateSortPaginationParams(this.allowedSortFileds),
+      
       catchAsync(this.getProducts),
     )
-*/
+
     this.router.patch(
       "/updateProductMedia/:id",
       pro_res(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN, APP_CONFIG.SELLER),

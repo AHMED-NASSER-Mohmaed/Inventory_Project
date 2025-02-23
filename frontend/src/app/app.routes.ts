@@ -16,6 +16,10 @@ import { FooterComponent } from './core/footer/footer.component';
 import { ProductsComponent } from './Components/dashboardComponents/products/products.component';
 import { ProductsListComponent } from './Components2/products-list/products-list.component';
 import { LandingPageComponent } from './Components2/HomePage/landing-page/landing-page.component';
+import { Component } from '@angular/core';
+import { ContactsComponent } from './Components2/contacts/contacts.component';
+import { AboutComponent } from './Components2/about/about.component';
+import { SpringCollectionComponent } from './Components2/HomePage/spring-collection/spring-collection.component';
 
 export const routes: Routes = [
 
@@ -41,6 +45,11 @@ export const routes: Routes = [
         path: 'featured-products',
         component: FeaturedProductsComponent
     }    
+,
+{
+    path: 'springCollection',
+    component: SpringCollectionComponent
+} 
 ,
     {
         path: 'category',
@@ -69,12 +78,20 @@ export const routes: Routes = [
    }
    ,
 
+  { path:'contacts',
+   component:ContactsComponent,
+  },
 
 
+ { path:'about',
+    component:AboutComponent,
+ },
+
+ 
     {
         // default route
         path: '',
-        redirectTo:'LandingPage',
+        redirectTo:'login',
         pathMatch:'full'
     },
 

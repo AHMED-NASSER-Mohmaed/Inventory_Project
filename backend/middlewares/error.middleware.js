@@ -19,12 +19,15 @@ const handleDuplicateFieldsDB = (err) => {
 
     // Creating the message
     let message = "";
-    console.log(duplicatedFields);
+    //console.log(duplicatedFields);
     if (duplicatedFields.length === 1) {
       message += `This ${duplicatedFields} already exists.`;
     }
 
-    if (duplicatedFields.length > 1) {
+    if (
+      duplicatedFields.length > 1 &&
+      err.errorResponse.errmsg.includes("reviews")
+    ) {
       message += "You already have a posted a review for this product.";
     }
 
