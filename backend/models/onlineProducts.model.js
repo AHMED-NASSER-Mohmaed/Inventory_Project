@@ -36,6 +36,19 @@ const OnlineProductsSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
+    
+    rating: {
+      type: Number,
+      default: 0,
+      min: [0, "Rating must be at least 1"],
+      max: [5, "Rating must be at most 5"],
+      set: (val) => Math.round(val * 10) / 10,
+    },
+
+    ratingsQuantity: {
+      type: Number,
+      default: 0,
+    },
 
     branch: { type: mongoose.Schema.ObjectId, ref: "Branch", required: true }, //online branches only
   },
