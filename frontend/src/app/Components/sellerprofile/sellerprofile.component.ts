@@ -8,7 +8,6 @@ import { Router, RouterLink } from '@angular/router';
 import { AccountService } from '../../_services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmLogoutDialogComponent } from '../../confirm-logout-dialog/confirm-logout-dialog.component';
-import { decodeToken } from '../../_helpers/jwt-helper';
 @Component({
   selector: 'app-sellerprofile',
   imports: [FormsModule , CommonModule , RouterLink],
@@ -16,7 +15,6 @@ import { decodeToken } from '../../_helpers/jwt-helper';
   styleUrl: './sellerprofile.component.css'
 })
 export class SellerprofileComponent implements OnInit {
-  tokenData: any;
   constructor(public customerProfileService: CustomersProfileService ,public accountService: AccountService, public dialog: MatDialog, public router: Router){}
 
   isEditing = false;
@@ -27,11 +25,20 @@ export class SellerprofileComponent implements OnInit {
   userP : string = '';
 
   ngOnInit(): void {
-    const token = localStorage.getItem('token');
-        if (token) {
-          this.tokenData = decodeToken(token);
-          console.log('Decoded token:', this.tokenData);
-        }
+    this.sub = this.customerProfileService.getMe().subscribe({
+      next: (res: any) => {
+        console.log(res);
+        this.user = res.user;
+        this.userP = res.user.photo.url;
+        console.log(this.userP);
+      },
+      error: (error) => {
+        console.log(error);
+      },
+      complete: () => {
+        console.log('Get Me Complete');
+      }
+    })
   }
 
 
