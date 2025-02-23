@@ -1,9 +1,69 @@
+const { APP_CONFIG } = require("../config/app.config");
+const product=require("../models/product.model");
+const supplierRepo=require("../repos/supplier.repo");
+const AppError = require('../utils/appError');
+
+const categoryRepo = require("../repos/category.repo")
+const brandRepo = require("../repos/brand.repo")
+
+module.exports.productService={
+
+    //   who can use this function is the supper admin only 
+    //   and also category , brand 
+    addProduct:async(supplierId,data)=>{
+
+        if(!supplierId)
+            throw new AppError("supplier must be provided");
+
+        //cheack if supplier is exist in the system and active or not 
+
+        let supplier=await supplierRepo.getSupplierById(supplierId);
+        
+        if(!supplier || !supplier['isActive'])
+            throw new AppError("sorry supplier dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
+
+        
+
+        if(!data.category || !data.brand)
+            throw new AppError("sorry you have to fill required fields.",APP_CONFIG.HTTP_NOT_FOUND);
+
+        
+        let selectedCat=await categoryRepo.getCategoryById(data.category);
+
+
+        if(!selectedCat || !selectedCat['isActive'])
+            throw new AppError("sorry category dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
+
+
+
+        let selectedBrand= await brandRepo.getBrandById(id);
+
+        if(!selectedBrand || !selectedBrand['isActive'])
+            throw new AppError("sorry brand dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
+
+
+
+
+
+
+
+
+    }
+}
+
+
+
+
+
+
+
+
+
+
+/*
 const cinventory=require("../repos/cinventory.repo");
 const sinventory=require("../repos/sinventory.repo");
-const product=require("../models/product.model");
-const AppError = require('../utils/appError');
 const {APP_CONFIG} = require("../config/app.config")
-const supplier=require("../models/supplier.model");
 const CategoryRepository = require("../repos/category.repo");
 const {sellerRepo} = require("../repos/sellers.repo");
 
@@ -83,7 +143,7 @@ class ProductService {
         //first we have to to check role or user type
  
             //check if supplier exist  in suppller Schema
-
+/*
             try{
 
               
@@ -125,7 +185,7 @@ class ProductService {
             } 
          
     }
-
+/*
     async updateProductById(productId, updatedData,  userType, sellerId_, isSellerInventory) {
     try {
         let {
@@ -363,7 +423,7 @@ class ProductService {
     }
 
     /*************************************************/
-
+/*
     async updateProductMedia(id,productMedia){
         try{
             return await productRepo.updateProductMedia(id,productMedia);
@@ -387,3 +447,5 @@ class ProductService {
 }
 
 module.exports = new ProductService();
+
+*/

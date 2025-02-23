@@ -62,6 +62,15 @@ module.exports.brandRepo = {
         }catch(error){
             throw error;
         }
+    },
+
+    //for internal using
+    getBrandById:async(id)=>{
+        try{
+            return await Brand.findById(id);
+        }catch(error){
+            throw error;
+        }
     }
 
 
