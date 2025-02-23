@@ -33,7 +33,9 @@ export class CartService {
   }
 
   addToCart(productId: string, quantity: number, sessionId?: string): Observable<any> {
-    const body: any = { productId, quantity };
+
+    // const body: any = { productId, quantity };
+    const body: any =  {productId: "67b8f7c83c7eb38260dfc804",  quantity : 6};
     if (!localStorage.getItem('token')) {
       body.sessionId = sessionId; // Send sessionId if the user is not logged in or fo guest users
     }
