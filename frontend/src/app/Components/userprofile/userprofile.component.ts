@@ -4,59 +4,59 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { CustomersProfileService } from '../../_services/customer-profile.service';
 import { Account } from '../../_models/account';
+import { AccountService } from '../../_services/account.service';
+import { MatDialog } from '@angular/material/dialog';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { ConfirmLogoutDialogComponent } from '../../confirm-logout-dialog/confirm-logout-dialog.component';
 
 @Component({
   selector: 'app-userprofile',
   templateUrl: './userprofile.component.html',
-  imports: [FormsModule , CommonModule],
-  styleUrls: ['./userprofile.component.css']
+  imports: [FormsModule, CommonModule, RouterLink, RouterOutlet],
+  styleUrls: ['./userprofile.component.css'],
 })
-export class UserprofileComponent implements AfterViewInit , OnInit {
-
-  constructor(public customerProfileService: CustomersProfileService){}
+export class UserprofileComponent implements AfterViewInit, OnInit {
+  constructor(
+    public customerProfileService: CustomersProfileService,
+    public accountService: AccountService,
+    public dialog: MatDialog,
+    public router: Router
+  ) {}
 
   isEditing = false;
   sub = {} as Subscription;
 
-
   user = {} as Account;
-  userP : string = '';
+  userP: string = '';
 
   ngOnInit(): void {
-    this.sub = this.customerProfileService.getMe().subscribe({
-      next: (res: any) => {
-        console.log(res);
-        this.user = res.user;
-        this.userP = res.user.photo.url;
-        console.log(this.userP);
-      },
-      error: (error) => {
-        console.log(error);
-      },
-      complete: () => {
-        console.log('Get Me Complete');
-      }
-    })
+    // this.sub = this.customerProfileService.getMe().subscribe({
+    //   next: (res: any) => {
+    //     this.user = res.user;
+    //     this.userP = res.user.photo.url;
+    //   },
+    //   error: (error) => {
+    //     console.log(error);
+    //   },
+    //   complete: () => {
+    //   }
+    // })
   }
-
-
-
-
 
   ngAfterViewInit() {
     const navLinks = document.querySelectorAll('nav a');
-    navLinks.forEach(link => {
+    navLinks.forEach((link) => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
-        
-        navLinks.forEach(l => l.classList.remove('active'));
+
+        navLinks.forEach((l) => l.classList.remove('active'));
         link.classList.add('active');
-        
-        document.querySelectorAll('.rightbox > div')
-          .forEach(div => div.classList.add('noshow'));
-        
+
+        // document.querySelectorAll('.rightbox > div')
+        //   .forEach(div => div.classList.add('noshow'));
+
         const sectionId = '.' + link.id;
-        document.querySelector(sectionId)?.classList.remove('noshow');
+        // document.querySelector(sectionId)?.classList.remove('noshow');
       });
     });
   }
@@ -75,7 +75,7 @@ export class UserprofileComponent implements AfterViewInit , OnInit {
   }
 
   saveChanges() {
-    console.log("lol")
+    console.log('lol');
   }
 
   triggerImageUpload() {
@@ -87,10 +87,23 @@ export class UserprofileComponent implements AfterViewInit , OnInit {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        document.querySelector('.firstImage')?.setAttribute('src', e.target.result);
+        document
+          .querySelector('.firstImage')
+          ?.setAttribute('src', e.target.result);
       };
       reader.readAsDataURL(file);
     }
   }
-  
+
+  openConfirmDialog() {
+    const dialogRef = this.dialog.open(ConfirmLogoutDialogComponent);
+    this.sub = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.router.navigateByUrl('/login');
+        this.accountService.logout();
+      } else {
+        console.log('User canceled logout');
+      }
+    });
+  }
 }

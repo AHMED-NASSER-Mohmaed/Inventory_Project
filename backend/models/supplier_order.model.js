@@ -17,6 +17,8 @@ const SupplierOrderSchema = new mongoose.Schema({
       },
     ],
 
+    markupPercentage: { type: Number, default: 0 },
+    
     orderedDate: { type: Date,},
     arrivalDate: { type: Date ,  default: Date.now },
 
@@ -24,7 +26,7 @@ const SupplierOrderSchema = new mongoose.Schema({
 
     managerId: {  type: String, required: true },
 
-    notes: { type: String },
+    // notes: { type: String },
 
   });
   

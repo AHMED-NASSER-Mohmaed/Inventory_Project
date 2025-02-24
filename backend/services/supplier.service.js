@@ -1,7 +1,5 @@
 const SupplierRepository = require("../repos/supplier.repo");
-const CInventoryRepository = require("../repos/cinventory.repo")
 const AppError = require("../utils/appError");
-const CInventory = require("../models/cinventory.model");
 const { APP_CONFIG } = require("../config/app.config");
 
 class SupplierService {
@@ -49,7 +47,8 @@ class SupplierService {
 
             if (!supplier) {
                 throw new AppError('Supplier not found', 404);
-            }
+            }else if(!supplier.acknowledged)
+                throw new AppError('invalid fields',APP_CONFIG.HTTP_BAD_REQUEST)
 
             return supplier;
         } catch (err) {
@@ -98,19 +97,14 @@ class SupplierService {
     //reviewed
     async isSupplierExist(supplierId) {
         try {
-            const supplier = await SupplierRepository.getSupplierById(supplierId);
-
-            if(!supplier&&!supplier['isActive'])
-                throw new AppError("sorry supplier dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
+            return await SupplierRepository.getSupplierById(supplierId);
 
         } catch (err) {
             throw err;
         }
     }
 
-   
 
-   
 }
 
 module.exports = new SupplierService();

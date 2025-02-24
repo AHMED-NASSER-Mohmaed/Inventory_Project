@@ -1,7 +1,9 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { UsersComponent } from './users/users.component';
 import { SellersComponent } from './sellers/sellers.component';
+import { CustomersComponent } from './customers/customers.component';
+import { SuppliersComponent } from './suppliers/suppliers.component';
+import { CatagoriesComponent } from './catagories/catagories.component';
 
 export const dashRoutes: Routes = [
   {
@@ -11,12 +13,12 @@ export const dashRoutes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'users',
+        redirectTo: 'customers',
         pathMatch: 'full'
       },
       { 
-        path: 'users',
-        component: UsersComponent,
+        path: 'customers',
+        component: CustomersComponent,
         title: 'Customers'
       },
       { 
@@ -24,6 +26,16 @@ export const dashRoutes: Routes = [
         component: SellersComponent,
         title: 'Sellers'
       },
+      {
+        path: 'suppliers',
+        component: SuppliersComponent,
+        title: 'Suppliers'
+      },
+      {
+        path: 'categories',
+        component: CatagoriesComponent,
+        title: 'Categories'
+      }
     ]
   }
 ];

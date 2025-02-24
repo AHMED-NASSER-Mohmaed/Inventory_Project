@@ -70,7 +70,7 @@ class SupplierController {
 
 
     searchfilters = ['companyName', 'phoneNumber']
-    searchValues = ['true', 'false']
+    searchValues = [true, false]
 
     filedfilters = [['undefined', 'isActive']]
     filedValues = [['undefined', 'true', 'false']]

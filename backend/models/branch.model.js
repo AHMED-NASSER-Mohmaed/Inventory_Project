@@ -1,63 +1,73 @@
-const mongoose= require("mongoose");
+const mongoose = require("mongoose");
+const Counter = require("./counter.model"); 
 
-const { APP_CONFIG } = require("../config/app.config");
+const BranchSchema = new mongoose.Schema(
+    {
+        _id: { type: Number },
 
-const validator = require('validator');
-
-const BranchSchema = new mongoose.Schema({
-
-    name: { type: String, default: APP_CONFIG.COMPANYNAME , trim: true },
-
-    // we Added a type field to distinguish main stock from sub-branches.
-    //be aware -- for separation perpose 
-
-    type: {
-        type: String,
-        enum: ["main", "sub", "online"],
-        default: "sub",
-        required:true,
-        trim: true
-    },
-
-    // in online is going to be [[url]]
-    
-
-    location: {
-        type: String,
-        required: true,
-        validate: {
-            validator: function (field) {
-                if (this.type === 'online') {
-                    return validator.isURL(field); // Properly call isURL function
-                }
-                return true; // Allow other types of locations
-            },
-            message: "Invalid location"
+        type: {
+            type: String,
+            enum: ["main", "sub", "online"],
+            default: "sub",
+            trim: true,
         },
-        trim: true
-    },
-    
 
-    //we have a manget for online branch 
-    admin: { type: mongoose.Schema.Types.ObjectId, ref: "Staff" , default:null,},
+        registrationNumber: { type: String, required: true },
 
-    //we have employees for our online site ...
-    employees: [{ employee: { type: mongoose.Schema.ObjectId, ref: "Staff" , default:null} }],
+        governate: { type: Number, min: 1, max: 27, required: true },
 
+        location: {
+            type: String,
+            required: true,
+            trim: true,
+        },
 
-    isActive: {
-        type: Boolean,
-        default: true,
-        validate: {
-            validator: function () {
-                return this.isActive ? !!this.admin : true;
+        admin: { type: mongoose.Schema.ObjectId, ref: "WorksOn", default: null  },
+
+        employees: [
+            {
+                employeeWorksOnRel: { type: mongoose.Schema.ObjectId, ref: "WorksOn" },
             },
-            message: "An active branch must have an admin."
+        ],
+
+        isActive: {
+            type: Boolean,
+            default:false,
+        },
+    },
+    { timestamps: true }
+);
+
+
+BranchSchema.pre("validate", async function (next) {
+
+    if (!this._id) {
+        const counter = await Counter.findByIdAndUpdate(
+            { _id: "branch" }, 
+            { $inc: { seq: 1 } }, 
+            { new: true, upsert: true } 
+        );
+        this._id = counter.seq;
+    }
+
+    if (this.isActive) {
+        return next(new Error("Branch cannot be active without an admin."));
+    }
+
+    next();
+});
+
+BranchSchema.pre("updateOne", async function (next) {
+    const update = this.getUpdate();
+    if (update.isActive === true) {
+        const branch = await this.model.findOne(this.getQuery());
+        if (!branch.admin) {
+            return next(new Error("Branch cannot be active without an admin."));
         }
     }
-    
+    next();
+});
 
+BranchSchema.index({ governate: 1, registrationNumber: 1 }, { unique: true });
 
-}, { timestamps: true });
-
-module.exports= mongoose.model("Branch", BranchSchema);
+module.exports = mongoose.model("Branch", BranchSchema);

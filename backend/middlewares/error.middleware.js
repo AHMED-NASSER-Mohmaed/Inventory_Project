@@ -8,6 +8,7 @@ const handleCastErrorDB = (err) => {
 
 const handleDuplicateFieldsDB = (err) => {
   try {
+    
     const duplicatedFields = [];
     console.log(err);
     for (const key in err.keyValue) {
@@ -18,12 +19,15 @@ const handleDuplicateFieldsDB = (err) => {
 
     // Creating the message
     let message = "";
-    console.log(duplicatedFields);
+    //console.log(duplicatedFields);
     if (duplicatedFields.length === 1) {
       message += `This ${duplicatedFields} already exists.`;
     }
 
-    if (duplicatedFields.length > 1) {
+    if (
+      duplicatedFields.length > 1 &&
+      err.errorResponse.errmsg.includes("reviews")
+    ) {
       message += "You already have a posted a review for this product.";
     }
 
@@ -73,6 +77,7 @@ const sendErrorProd = (err, req, res) => {
 };
 
 module.exports = (err, req, res, next) => {
+  
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 

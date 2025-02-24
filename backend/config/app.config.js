@@ -46,16 +46,17 @@ module.exports.APP_CONFIG = {
   CUSTOMER: "customer",
   SELLER: "seller",
 
+  MAIN_BRANCH_ID:"19777",
+
   COMPANY_ID: "67aa438c2823142f438539c4",
   COMPANY_NAME: "inventory system",
 
 
+  SUPPERADMIN_ID:"67aa438c2823142f438539c1",
+
   SUCCESS_MESSAGE: "success",
 
-  ADMIN: "admin",
-  CLERK: "clerk",
-  CASHIER: "cashier",
-  CUSTOMER: "customer",
+ 
 
 
   MAX_FILE_SIZE: 2 * 1024 * 1024, // 5KB in bytes 
