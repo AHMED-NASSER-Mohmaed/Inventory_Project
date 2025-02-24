@@ -6,10 +6,11 @@ module.exports.productRepo={
 
   addProduct:async(data)=>{
     try{
-
+       
       return await Product.create(data);
       
     }catch(error){
+
       throw error;
     }
   }

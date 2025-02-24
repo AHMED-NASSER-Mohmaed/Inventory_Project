@@ -11,11 +11,8 @@ module.exports.productService={
     //   who can use this function is the supper admin only 
     //   and also category , brand 
     addProduct:async(data)=>{
-
         try{
-
             
-
             let fields=[ "name" , "code" , "cost"  , "description" , "category" , "brand" , "supplier" ,]
     
             if(! data.supplier)
@@ -41,18 +38,15 @@ module.exports.productService={
                 throw new AppError("sorry category dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
     
     
-            console.log(data);
-    
+            
             let selectedBrand= await brandRepo.getBrandById(data.brand);
-    
+             
+
             if(!selectedBrand || !selectedBrand['isActive'])
                 throw new AppError("sorry brand dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
-    
-            
-            
-
+             
             return await productRepo.addProduct(data);
-            
+
         }catch(error){
             throw error;
         }

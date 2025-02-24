@@ -295,7 +295,7 @@ const adminOp = {
     //attach role on data
 
     req.body.role = APP_CONFIG.ADMIN;
-    req.body.managerId = req.user._id;
+    // req.body.managerId = req.user._id;
 
     // req.body.passwordConfirm = req.body.password;
 
@@ -328,8 +328,11 @@ const adminOp = {
 
   //by id
   activeAdmin: async (req, res, next) => {
+
+
     const result = await staffService.activeStaff({
       _id: req.params.id,
+      branch:req.params.bid,
       role: APP_CONFIG.ADMIN,
     });
 
@@ -424,8 +427,11 @@ const clerkOp = {
 
   //active clerk by id
   activeClerk: async (req, res, next) => {
+
+    console.log(req.params)
     const ack = await staffService.activeStaff({
       _id: req.params.id,
+      branch:req.params.bid,
       role: APP_CONFIG.CLERK,
     });
 
@@ -489,8 +495,7 @@ const cashierOp = {
   addCashier: async (req, res, next) => {
     //attach role on data
     req.body.role = APP_CONFIG.CASHIER;
-    req.body.managerId = req.user._id;
-    req.body.passwordConfirm = req.body.password;
+     
     const cashier = await staffService.createStaff(req.body);
 
     sendResponseToClint(
@@ -521,6 +526,7 @@ const cashierOp = {
   activeCashier: async (req, res, next) => {
     const ack = await staffService.activeStaff({
       _id: req.params.id,
+      branch:req.params.bid,
       role: APP_CONFIG.CASHIER,
     });
 
@@ -763,7 +769,7 @@ route
 
   //active admin by id
   .patch(
-    "/activeAdmin/:id",
+    "/activeAdmin/:id/:bid",
     prot_rest(APP_CONFIG.SUPPERADMIN),
     catchAsync(adminOp.activeAdmin)
   )
@@ -826,7 +832,7 @@ route
 
   //active clerk by id  -- done
   .patch(
-    "/activeClerk/:id",
+    "/activeClerk/:id/:bid",
     prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
     catchAsync(clerkOp.activeClerk)
   )
@@ -885,7 +891,7 @@ route
 
   //delete cashier by id
   .delete(
-    "/deleteCashier/:id",
+    "/deleteCashier/:id/:bid",
     prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
     catchAsync(cashierOp.deleteCashier)
   )
@@ -919,8 +925,6 @@ route
   // customer section
 
    
- 
-
   .post(
     "/addCustomer",
     prot_rest(APP_CONFIG.SUPPERADMIN),
@@ -987,6 +991,7 @@ route
     catchAsync(genaraicFunctions.updateImageProfile)
   )
 
+   
   //update image profile for othe with intvention from super admin.
   .patch(
     "/updateImageProfileFor/:id",

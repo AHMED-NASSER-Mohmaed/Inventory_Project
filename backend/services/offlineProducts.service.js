@@ -8,10 +8,7 @@ module.exports.OfflineProductsService={
         try{
             data.status='approved'
 
-            let newProduct = await  productService.addProduct(data);
-            
-
-            console.log(newProduct);
+            let newProduct = await productService.addProduct(data);
             
             return await OfflineProductsRepo.addOfflineProduct({branch:APP_CONFIG.MAIN_BRANCH_ID,
                 product:newProduct._id,stock:data.stock

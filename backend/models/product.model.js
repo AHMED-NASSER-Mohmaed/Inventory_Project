@@ -68,7 +68,7 @@ const ProductSchema = new mongoose.Schema(
     },
  
     //default is false for the seller -- for us approved in case we are the people who add this product to the system 
-    satus: {                                    // "pending", "approved", or "rejected"
+    status: {                                    // "pending", "approved", or "rejected"
       type: String,
       enum: ["pending", "approved", "rejected"],
       default: "pending"

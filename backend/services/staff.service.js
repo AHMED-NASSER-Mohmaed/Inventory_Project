@@ -1,8 +1,8 @@
-const { filter, forEach } = require("lodash");
 const { staffRepo } = require("../repos/staff.repo");
 const AppError = require("../utils/appError");
 const { APP_CONFIG } = require("../config/app.config");
-const {branchService} = require("../services/branch.service");
+const branchService = require("../services/branch.service");
+ 
 
 
 
@@ -12,16 +12,37 @@ module.exports.staffService = {
     createStaff: async (data) => {
         try {
 
-            let fields= ['firstName','lastName','email','phoneNumber','password','passwordConfirm','branch','SSN','managerId','role']
+            if (!data.branch)
+                throw new AppError('branch must be selected!', APP_CONFIG.HTTP_BAD_REQUEST);
 
-           
 
+            let admin=await branchService.getBranchAdmin(data.branch);
+
+
+            if(data.role==APP_CONFIG.ADMIN && admin){
+                // this.staffService.updateStaff(admin._id,{branch:null,isActive:false});
+                throw new AppError("you have to delete the current admin firstly!!",APP_CONFIG.HTTP_BAD_REQUEST);
+            } 
+
+            let fields = ['firstName', 'lastName', 'email', 'phoneNumber', 'password', 'passwordConfirm', 'branch', 'SSN', 'managerId', 'role']
+
+
+             
             Object.keys(data).forEach(element => {
-                if (!fields.includes(element))
+                if (!fields.includes(element)){
+                   
                     throw new AppError("invalid fields!!", APP_CONFIG.HTTP_BAD_REQUEST);
+                }
             });
 
-            return await staffRepo.createStaffOfType(data);
+            let res= await staffRepo.createStaffOfType(data);
+
+            if(data.role==APP_CONFIG.ADMIN)
+                await branchService.updateStffFromBranch(data.branch,{$set:{admin:res._id}});
+            else
+                await branchService.updateStffFromBranch(data.branch,{$push:{employees:res._id}});
+            return res;
+
         } catch (err) {
             throw err;
         }
@@ -31,20 +52,24 @@ module.exports.staffService = {
     deleteStaff: async (filters) => {
         try {
 
-            let obj= await staffRepo.getById(filters['_id']);
+            let obj = await staffRepo.getById(filters['_id']);
 
-            if(!obj || !obj['isActive'])
+            if (!obj || !obj['isActive'])
                 throw new AppError("staff dose not exist ", APP_CONFIG.HTTP_NOT_FOUND);
 
 
-            const ack = await staffRepo.deleteStaffOfType(filters);
-            if (!ack.acknowledged) {
-                throw new AppError("user not found", APP_CONFIG.HTTP_BAD_REQUEST);
+            console.log(obj.branch);
+
+            if(obj.branch){
+                if(obj.role==APP_CONFIG.ADMIN)
+                    await branchService.updateStffFromBranch(obj.branch,{$set:{admin:null}});
+                else 
+                    await branchService.updateStffFromBranch(obj.branch,{$pull:{employees:obj._id}});
             }
 
+            return await staffRepo.deleteStaffOfType(filters);
             
-            return ack;
-
+            
         } catch (err) {
             throw err;
         }
@@ -54,21 +79,42 @@ module.exports.staffService = {
     activeStaff: async (filters) => {
         try {
 
-            let obj= await staffRepo.getById(filters['_id']);           
+            if(!filters._id ||  !filters.branch || !filters.role)
+                throw new AppError("invalid params!!",APP_CONFIG.HTTP_BAD_REQUEST);
 
-            if(!obj )
+            
+            let obj = await staffRepo.getById(filters._id);
+            
+            if (!obj)
                 throw new AppError("staff dose not exist ", APP_CONFIG.HTTP_NOT_FOUND);
+            
+            if (obj['isActive'])
+                throw new AppError("this user is already activated and has it's own branch", APP_CONFIG.HTTP_BAD_REQUEST);
+            
 
-            if(obj['isActive'])
-                throw new AppError("this user is already activated", APP_CONFIG.HTTP_BAD_REQUEST);
-
-            const ack = await staffRepo.activeStaffOfType(filters);
-
-            if (!ack.acknowledged) {
-                throw new AppError("user not found", APP_CONFIG.HTTP_BAD_REQUEST);
+            //chek if branch has an admin or not 
+            if(obj.role==APP_CONFIG.ADMIN){
+                
+                let admin=await branchService.getBranchAdmin(filters.branch);
+                
+                if(admin){
+                    throw new AppError("you have to delete the current admin firstly!!",APP_CONFIG.HTTP_BAD_REQUEST);
+                }
+                await branchService.updateStffFromBranch(filters.branch,{$set:{admin:filters._id}});
+                
+            }else{
+                
+                await branchService.updateStffFromBranch(filters.branch,  { $push: { employees: obj._id } });
+                
             }
 
-            return ack;
+
+            let branch=filters.branch;
+            delete filters.branch;
+
+            return await staffRepo.activeStaffOfType(filters,branch);
+
+
         } catch (err) {
             throw err;
         }
@@ -96,12 +142,12 @@ module.exports.staffService = {
     updateStaff: async (filters, data) => {
         try {
 
-            let fields = ['SSN', 'firstName', 'lastName', 'phoneNumber','email'];
+            let fields = ['SSN', 'firstName', 'lastName', 'phoneNumber', 'email'];
 
             Object.keys(data)
                 .forEach(Element => {
-                    if(!fields.includes(Element))
-                        throw new AppError("invalid fields",APP_CONFIG.HTTP_BAD_REQUEST);
+                    if (!fields.includes(Element))
+                        throw new AppError("invalid fields", APP_CONFIG.HTTP_BAD_REQUEST);
                 })
 
             return await staffRepo.updateStaffOfType(filters, data);
@@ -119,6 +165,8 @@ module.exports.staffService = {
             return err;
         }
     },
+
+
 
 
 

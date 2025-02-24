@@ -12,9 +12,8 @@ module.exports.staffRepo = {
         try {
             data.userType = "staff";
 
-            if (await Staff.create(data))
-                return true
-            return false;
+            return await Staff.create(data);
+              
 
         } catch (err) {
             throw err;
@@ -23,18 +22,17 @@ module.exports.staffRepo = {
 
     deleteStaffOfType: async (filters) => {
         try {
-            return await Staff.updateOne(filters, { $set: { "isActive": false } });
+            return await Staff.updateOne(filters, { $set: { "isActive": false , branch:null}});
         } catch (err) {
             throw err;
         }
     },
 
 
-
-
-    activeStaffOfType: async (filters) => {
+    activeStaffOfType: async (filters,bid) => {
         try {
-            return await Staff.updateOne(filters, { $set: { "isActive": true } });
+            
+            return await Staff.updateOne(filters, { $set: { "isActive": true,branch:bid } });
         } catch (err) {
             throw err;
         }
@@ -53,6 +51,13 @@ module.exports.staffRepo = {
                     .sort(sort)
                     .skip((page - 1) * limit) // (starting index = page-1)*limit
                     .limit(limit)
+                    .populate({path:"branch",
+                        select:"admin -_id",
+                        populate:{
+                            path:"admin",
+                            select:"firstName lastName -_id"
+                        }
+                    })
                     .select("-__v -kind")
                     .lean(),
 
@@ -95,13 +100,23 @@ module.exports.staffRepo = {
 
     getById:async(id)=>{
 
+        
         try{
             return await Staff.findById(id);
         }catch(err){
             throw err;
         }
 
+    },
+
+    UpdateStaffByInjection:async(filter,query)=>{
+        try{
+            return await Staff.updateMany(filter,query);
+        }catch(err){
+            throw err;
+        }
     }
 
+    
 
 }
