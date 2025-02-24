@@ -71,9 +71,11 @@
 
 .carousel-caption1,
 .carousel-caption2,
-.btn.Explorebtn {
+.Explorebtn{
     font-family: 'Baskerville Serial', serif;
 }
+
+
 
 .carousel-caption1 {
     margin-top: 25px;
@@ -86,10 +88,21 @@
 }
 
 .Explorebtn {
-    color: #85411c;
-    background-color: white;
+    color: #85411c; 
+    background-color: rgb(252, 252, 252); 
     margin-top: 40px;
+    border: none;
+    transition: background-color 0.3s ease, color 0.3s ease; 
+    padding: 12px; 
+    border-radius: 5px;
+   
 }
+
+.Explorebtn:hover {
+    background-color: #85411c; 
+    color: white;
+}
+
 
 
 @media (max-width: 1200px) {

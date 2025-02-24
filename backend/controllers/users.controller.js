@@ -11,6 +11,7 @@ const {
   validatorFilterParams,
   validateSortPaginationParams,
 } = require("../middlewares/validation.middlewares");
+
 const { sendResponseToClint } = require("../utils/apiFeatures");
 const { deleteFiles, upload } = require("../services/media.service");
 const AppError = require("../utils/appError");
@@ -289,13 +290,18 @@ const sellerOp = {
 /********************************************************************/
 
 const adminOp = {
+
   addAdmin: async (req, res, next) => {
     //attach role on data
-    req.body.role = APP_CONFIG.ADMIN;
-    req.body.managerId = req.user._id;
 
-    req.body.passwordConfirm = req.body.password;
+    req.body.role = APP_CONFIG.ADMIN;
+    // req.body.managerId = req.user._id;
+
+    // req.body.passwordConfirm = req.body.password;
+
+
     const result = await staffService.createStaff(req.body);
+
     sendResponseToClint(
       res,
       APP_CONFIG.HTTP_CREATED,
@@ -306,10 +312,12 @@ const adminOp = {
 
   //delete by id
   deleteAdmin: async (req, res, next) => {
+
     const result = await staffService.deleteStaff({
       _id: req.params.id,
       role: APP_CONFIG.ADMIN,
     });
+    
     sendResponseToClint(
       res,
       APP_CONFIG.HTTP_OK,
@@ -320,8 +328,11 @@ const adminOp = {
 
   //by id
   activeAdmin: async (req, res, next) => {
+
+
     const result = await staffService.activeStaff({
       _id: req.params.id,
+      branch:req.params.bid,
       role: APP_CONFIG.ADMIN,
     });
 
@@ -380,13 +391,15 @@ const adminOp = {
 /***********************************************************************/
 
 const clerkOp = {
+
   addClerk: async (req, res, next) => {
+
     //attach role on data
     req.body.role = APP_CONFIG.CLERK;
 
-    req.body.managerId = req.user._id;
+    // req.body.managerId = req.user._id;
 
-    req.body.passwordConfirm = req.body.password;
+    // req.body.passwordConfirm = req.body.password;
 
     const clerk = await staffService.createStaff(req.body);
 
@@ -414,8 +427,11 @@ const clerkOp = {
 
   //active clerk by id
   activeClerk: async (req, res, next) => {
+
+    console.log(req.params)
     const ack = await staffService.activeStaff({
       _id: req.params.id,
+      branch:req.params.bid,
       role: APP_CONFIG.CLERK,
     });
 
@@ -479,8 +495,7 @@ const cashierOp = {
   addCashier: async (req, res, next) => {
     //attach role on data
     req.body.role = APP_CONFIG.CASHIER;
-    req.body.managerId = req.user._id;
-    req.body.passwordConfirm = req.body.password;
+     
     const cashier = await staffService.createStaff(req.body);
 
     sendResponseToClint(
@@ -511,6 +526,7 @@ const cashierOp = {
   activeCashier: async (req, res, next) => {
     const ack = await staffService.activeStaff({
       _id: req.params.id,
+      branch:req.params.bid,
       role: APP_CONFIG.CASHIER,
     });
 
@@ -753,7 +769,7 @@ route
 
   //active admin by id
   .patch(
-    "/activeAdmin/:id",
+    "/activeAdmin/:id/:bid",
     prot_rest(APP_CONFIG.SUPPERADMIN),
     catchAsync(adminOp.activeAdmin)
   )
@@ -816,7 +832,7 @@ route
 
   //active clerk by id  -- done
   .patch(
-    "/activeClerk/:id",
+    "/activeClerk/:id/:bid",
     prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
     catchAsync(clerkOp.activeClerk)
   )
@@ -875,7 +891,7 @@ route
 
   //delete cashier by id
   .delete(
-    "/deleteCashier/:id",
+    "/deleteCashier/:id/:bid",
     prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
     catchAsync(cashierOp.deleteCashier)
   )
@@ -909,8 +925,6 @@ route
   // customer section
 
    
- 
-
   .post(
     "/addCustomer",
     prot_rest(APP_CONFIG.SUPPERADMIN),
@@ -977,6 +991,7 @@ route
     catchAsync(genaraicFunctions.updateImageProfile)
   )
 
+   
   //update image profile for othe with intvention from super admin.
   .patch(
     "/updateImageProfileFor/:id",

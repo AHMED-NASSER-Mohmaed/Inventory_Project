@@ -53,13 +53,26 @@ const CartSchema = new mongoose.Schema(
     // branch: { type: mongoose.Schema.ObjectId, ref: "Branch", required: true },
 
     expireAt: {
-      type: [Date, "not a valid date"],
+      type: Date,
     },
   },
   {
     timestamps: true,
   }
 );
+
+CartSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "products.onlineProduct",
+    select:
+      "-branch -isActive -satus -rating -ratingsQuantity -createdAt -updatedAt",
+    populate: [
+      { path: "seller", select: "firstName lastName" },
+      { path: "product", select: "name price images category description" },
+    ],
+  });
+  next();
+});
 
 CartSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
 

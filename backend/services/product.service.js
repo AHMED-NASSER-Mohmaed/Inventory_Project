@@ -1,51 +1,55 @@
 const { APP_CONFIG } = require("../config/app.config");
-const productRepo=require("../repos/product.repo");
+const {productRepo}=require("../repos/product.repo");
 const supplierRepo=require("../repos/supplier.repo");
 const AppError = require('../utils/appError');
 
-const categoryRepo = require("../repos/category.repo")
-const brandRepo = require("../repos/brand.repo")
+const {categoryRepo} = require("../repos/category.repo")
+const {brandRepo} = require("../repos/brand.repo")
 
 module.exports.productService={
 
     //   who can use this function is the supper admin only 
     //   and also category , brand 
     addProduct:async(data)=>{
+        try{
+            
+            let fields=[ "name" , "code" , "cost"  , "description" , "category" , "brand" , "supplier" ,]
+    
+            if(! data.supplier)
+                throw new AppError("supplier must be provided");
+    
+            //cheack if supplier is exist in the system and active or not 
+    
+            let supplier=await supplierRepo.getSupplierById(data.supplier);
+              
+            if(!supplier || !supplier['isActive'])
+                throw new AppError("sorry supplier dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
+    
+            
+            
+            if(!data.category || !data.brand)
+                throw new AppError("sorry you have to fill required fields.",APP_CONFIG.HTTP_NOT_FOUND);
+    
+            
+            let selectedCat=await categoryRepo.getCategoryById(data.category);
+    
+    
+            if(!selectedCat || !selectedCat['isActive'])
+                throw new AppError("sorry category dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
+    
+    
+            
+            let selectedBrand= await brandRepo.getBrandById(data.brand);
+             
 
-        let fields=[ "name" , "code" , "price"  , "description" , "category" , "brand" , "supplier" ,]
+            if(!selectedBrand || !selectedBrand['isActive'])
+                throw new AppError("sorry brand dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
+             
+            return await productRepo.addProduct(data);
 
-        if(! data.supplierId)
-            throw new AppError("supplier must be provided");
-
-        //cheack if supplier is exist in the system and active or not 
-
-        let supplier=await supplierRepo.getSupplierById(data.supplierId);
-        
-        if(!supplier || !supplier['isActive'])
-            throw new AppError("sorry supplier dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
-
-        
-
-        if(!data.category || !data.brand)
-            throw new AppError("sorry you have to fill required fields.",APP_CONFIG.HTTP_NOT_FOUND);
-
-        
-        let selectedCat=await categoryRepo.getCategoryById(data.category);
-
-
-        if(!selectedCat || !selectedCat['isActive'])
-            throw new AppError("sorry category dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
-
-
-
-        let selectedBrand= await brandRepo.getBrandById(id);
-
-        if(!selectedBrand || !selectedBrand['isActive'])
-            throw new AppError("sorry brand dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
-
-
-        productRepo.addProduct(data);
-        
+        }catch(error){
+            throw error;
+        }
 
     }
 }

@@ -138,14 +138,21 @@
         <div class="order-summary col-12 col-lg-5 mb-5 sticky-lg-top order-lg-2 order-1">
             <h2>Your Order</h2>
             <div class="summary-content">
-                <table class="table">
-                    @for (product of products; track product.name){
-                        <tr>
-                            <td>
-                                <img [src]="product.image" alt="Silver Bracelet" class="product-img">
-                                <span>{{product.name}}</span>
+                <table >
+                    @for (product of products; track product.onlineProductId){
+                        <tr class="no-border " >
+                            <td  >
+                                <img [src]="product.productImages[0].url" alt="Silver Bracelet" class="product-img">
+                                <span>{{product.productName}}</span>
                             </td>
-                            <td>{{product.price | currency}}</td>
+                        </tr>
+                        <tr class="no-border ">
+                            <td>Price</td>
+                            <td >{{product.price | currency}}</td>
+                        </tr>
+                        <tr>
+                            <td>Quantity</td>
+                            <td>{{product.requiredQty}}X</td>
                         </tr>
                     }
                     <tr>

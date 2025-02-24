@@ -79,15 +79,15 @@ export const routes: Routes = [
     {
         // default route
         path: '',
-        redirectTo: 'signup',
+        redirectTo: 'LandingPage',
         pathMatch: 'full'
     },
     
-   {
-    path:'products',
-    component:ProductsListComponent,
-   }
-   ,
+//    {
+//     path:'products',
+//     component:ProductsListComponent,
+//    }
+   
 
   { path:'contacts',
    component:ContactsComponent,
