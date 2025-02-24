@@ -14,7 +14,7 @@ const ProductSchema = new mongoose.Schema(
       unique: true,
     },
 
-    markupPercentage: { type: Number, default:.25  },
+    markupPercentage: { type: Number, default: 0.25 },
 
     cost : {type:Number , require:true },
 
@@ -68,10 +68,10 @@ const ProductSchema = new mongoose.Schema(
     },
  
     //default is false for the seller -- for us approved in case we are the people who add this product to the system 
-    satus: {                                    // "pending", "approved", or "rejected"
+    status: {                                    // "pending", "approved", or "rejected"
       type: String,
       enum: ["pending", "approved", "rejected"],
-      default: "pending"
+      default: "pending",
     },
 
 
@@ -102,7 +102,6 @@ const ProductSchema = new mongoose.Schema(
     timestamps: true,
   },{ strict: true }
 );
-
 
 // Create a compound index on Code and category to ensure uniqueness
 // for adding product also , we don't need to combine also is Active --

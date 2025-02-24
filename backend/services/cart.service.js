@@ -59,6 +59,13 @@ class CartService {
       );
     }
 
+    // if (quantity - 1 <= 0) {
+    //   throw new AppError(
+    //     `What are you doing? Can't add negative quantity!!!!`,
+    //     400
+    //   );
+    // }
+
     // find cart
     const cart = await this.findOrCreateCart({
       customerId,
@@ -76,6 +83,12 @@ class CartService {
 
     if (existingItem) {
       const newQuantity = existingItem.requiredQty + quantity;
+      if(newQuantity < 0) {
+        throw new AppError(
+          `What are you doing? Can't add negative quantity!!!!`,
+          400
+        );
+      }
       if (product.stock < newQuantity) {
         throw new AppError(
           `Insufficient stock: Only ${product.stock} available.`,
@@ -89,6 +102,12 @@ class CartService {
         newQuantity
       );
     } else {
+      if(quantity <= 0) {
+        throw new AppError(
+          `What are you doing? Can't add negative quantity!!!!`,
+          400
+        );
+      }
       updatedCart = await CartRepository.addProduct(cart.id, {
         onlineProduct: productId,
         requiredQty: quantity,
@@ -157,6 +176,7 @@ class CartService {
 
   validateCart = async (cartId) => {
     const cart = await CartRepository.findCartById(cartId);
+
     if (!cart) throw new AppError("Cart not found", 404);
 
     let messages = [];
@@ -188,7 +208,43 @@ class CartService {
       ? await CartRepository.findCartById(cartId)
       : cart;
 
-    return { cart: updatedCart, messages };
+    return { cart: this.flattenCart(updatedCart), messages };
+  };
+
+  flattenCart = (cart) => {
+    // If cart is a Mongoose document, convert it to a plain object.
+    const cartObj = cart.toObject ? cart.toObject() : { ...cart };
+
+    if (Array.isArray(cartObj.products)) {
+      cartObj.products = cartObj.products.map((item) => {
+        if (item.onlineProduct) {
+          const op = item.onlineProduct;
+          const seller = op.seller || {};
+          const product = op.product || {};
+
+          return {
+            _id: item._id,
+            requiredQty: item.requiredQty,
+            onlineProductId: op._id,
+            stock: op.stock,
+            price: op.price,
+            // Flatten product details:
+            productId: product._id,
+            productName: product.name,
+            productPrice: product.price,
+            productImages: product.images,
+            productDescription: product.description,
+            productCategory: product.category,
+            // Flatten seller details:
+            sellerId: seller._id,
+            sellerCompanyName: seller.companyName || seller.firstName
+          };
+        }
+        // If no onlineProduct, return the item as is.
+        return item;
+      });
+    }
+    return cartObj;
   };
 }
 

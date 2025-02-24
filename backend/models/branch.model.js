@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Counter = require("./counter.model"); 
-
 const BranchSchema = new mongoose.Schema(
     {
         _id: { type: Number },
@@ -50,13 +49,13 @@ BranchSchema.pre("validate", async function (next) {
         this._id = counter.seq;
     }
 
-    if (this.isActive) {
-        return next(new Error("Branch cannot be active without an admin."));
-    }
+    // if (this.isActive) {
+    //     return next(new Error("Branch cannot be active without an admin."));
+    // }
 
     next();
 });
-
+/*
 BranchSchema.pre("updateOne", async function (next) {
     const update = this.getUpdate();
     if (update.isActive === true) {
@@ -67,7 +66,7 @@ BranchSchema.pre("updateOne", async function (next) {
     }
     next();
 });
-
+*/
 BranchSchema.index({ governate: 1, registrationNumber: 1 }, { unique: true });
 
 module.exports = mongoose.model("Branch", BranchSchema);

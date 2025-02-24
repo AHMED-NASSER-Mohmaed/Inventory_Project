@@ -78,12 +78,18 @@ export const routes: Routes = [
         path: 'products',
         component: ProductsListComponent,
     },
+    {
+        // default route
+        path: '',
+        redirectTo: 'LandingPage',
+        pathMatch: 'full'
+    },
+    
+//    {
+//     path:'products',
+//     component:ProductsListComponent,
+//    }
    
-   {
-    path:'products',
-    component:ProductsListComponent,
-   }
-   ,
 
   { path:'contacts',
    component:ContactsComponent,

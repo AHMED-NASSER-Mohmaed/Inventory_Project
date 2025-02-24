@@ -1,6 +1,8 @@
 const Branch = require("../models/branch.model");
 const AppError = require("../utils/appError");
 const { inboxResult } = require("../utils/apiFeatures");
+const { filter } = require("lodash");
+const branchModel = require("../models/branch.model");
 
 module.exports = {
 
@@ -38,8 +40,6 @@ module.exports = {
         }
     },
 
-
-
     updateBranch: async (id, data) => {
         try {
 
@@ -57,7 +57,8 @@ module.exports = {
             if (!branch) {
                 throw new Error("Branch does not exist");
             }
-            return await Branch.updateOne({ _id: id }, { isAvtive: false });
+            return await Branch.updateOne({ _id: id }, { $set:{isAvtive: false , admin:null , employees:[]} });
+        
         } catch (error) {
             throw error;
         }
@@ -107,6 +108,22 @@ module.exports = {
     getCountByFilter:async (filters)=>{
         try{
             return await Branch.countDocuments(filters);
+        }catch(error){
+            throw error;
+        }
+    },
+
+    getBranchById:async(id)=>{
+        try{
+            return await Branch.findById(id);
+        }catch{
+            throw Error
+        }
+    },
+
+    updateBranchByInjextion:async(id,query)=>{
+        try{
+            return await branchModel.updateOne({_id:id},query);
         }catch(error){
             throw error;
         }

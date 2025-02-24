@@ -6,13 +6,25 @@ module.exports.productRepo={
 
   addProduct:async(data)=>{
     try{
-
+       
       return await Product.create(data);
       
     }catch(error){
+
       throw error;
     }
-  }
+  },
+
+  getProductById:async(id)=>{
+    try{
+      return await  Product.findById(id);
+    }catch(error){
+      throw new error;
+    }
+  },
+
+   
+
 
 
 

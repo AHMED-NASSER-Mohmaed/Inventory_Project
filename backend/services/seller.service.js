@@ -2,7 +2,7 @@ const { sellerRepo } = require("../repos/sellers.repo");
 const AppError = require("../utils/appError");
 const APP_CONFIG = require("../config/app.config")
 
-const sellerInventoryRepo = require("../repos/sinventory.repo");
+ 
 const productRepo = require("../repos/product.repo");
 
 //refactored
