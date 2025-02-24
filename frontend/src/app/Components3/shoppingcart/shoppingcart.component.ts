@@ -39,6 +39,9 @@ export class ShoppingcartComponent implements OnInit {
       // console.log("de7k");
       // console.log( response.cart)
       this.products = response.cart.products;
+      for(let i = 0; i < this.products.length; i++){
+        console.log(this.products[i].productName)
+      }
       console.log(this.products);
       this.getSubtotal();
       this.getTotalAmount();
@@ -49,13 +52,15 @@ export class ShoppingcartComponent implements OnInit {
     });
   }
 
+  // for test
   // loadCart() {
   //   this.cartService.getCart(this.sessionId!).pipe(
   //     catchError(error => {
   //       console.error('Error loading cart:', error);
   //       // Call the increase method even if there was an error
   //       // this.increase("");
-  //       // this.increase("");
+  //       this.increase("");
+        
   //       return of(null); // Return an observable to keep the stream alive
   //     })
   //   ).subscribe((response) => {
@@ -69,13 +74,13 @@ export class ShoppingcartComponent implements OnInit {
   //       if (!this.sessionId && response.sessionId) {
   //         localStorage.setItem('sessionId', response.sessionId);
   //       }
-  //       // this.increase("");
+  //       this.increase("");
   //     }
   //   });
   // }
 
   getSubtotal(): number {
-    return this.products.reduce((acc, product) => acc + (product.onlineProduct.price * product.requiredQty), 0);
+    return this.products.reduce((acc, product) => acc + (product.price * product.requiredQty), 0);
   }
 
   getTotalAmount(): number {
@@ -84,28 +89,27 @@ export class ShoppingcartComponent implements OnInit {
 
   increase(product: any) {
     if (product.requiredQty + 1 > product.stock) return;
-    this.cartService.addToCart(product.onlineProduct._id, 1, this.sessionId!).subscribe((response) => {
-      localStorage.setItem('sessionId', response.data.sessionId);
       product.requiredQty += 1;
-      //this.loadCart(); but it takes more time
+      this.cartService.addToCart(product.onlineProductId, 1, this.sessionId!).subscribe((response) => {
+      localStorage.setItem('sessionId', response.data.sessionId);
+      // this.loadCart(); //but it takes more time
       this.getSubtotal();
       this.getTotalAmount();
     });
-    // this.cartService.addToCart("67b8f7c83c7eb38260dfc804", 12, this.sessionId!).subscribe((response) => {
-    //   localStorage.setItem('sessionId', response.data.sessionId);
-    //   product.requiredQty += 1;
-    //   // this.loadCart();// but it takes more time
-    //   this.getSubtotal();
-    //   this.getTotalAmount();
+
+    // for test
+    // this.cartService.addToCart("67ba5e1f6a5ee83dec32d95a", 20, this.sessionId!).subscribe((response) => {
+    //   localStorage.setItem('sessionId', response.data.sessionId); // 67b8f7c83c7eb38260dfc804
+    //  // for test
     // });
   }
 
   decrease(product: any) {
     if (product.requiredQty - 1 < 1) return;
-    this.cartService.addToCart(product.onlineProduct._id, -1, this.sessionId!).subscribe((response) => {
+    product.requiredQty -= 1;
+    this.cartService.addToCart(product.onlineProductId, -1, this.sessionId!).subscribe((response) => {
       localStorage.setItem('sessionId', response.data.sessionId);
-      product.requiredQty -= 1;
-      //this.loadCart();
+      // this.loadCart();
       this.getSubtotal();
       this.getTotalAmount();
     });
@@ -115,8 +119,8 @@ export class ShoppingcartComponent implements OnInit {
  
   removeProduct(productId: string) {
     this.cartService.removeFromCart(productId, this.sessionId!).subscribe(() => {
-      this.products = this.products.filter(p => p.onlineProduct._id !== productId);
-      //this.loadCart();
+      this.products = this.products.filter(p => p.onlineProductId !== productId);
+      this.loadCart();
       this.getSubtotal();
       this.getTotalAmount();
     });

@@ -9,6 +9,9 @@ body {
     background-color: #f4f4f4;
     padding: 30px;
 }
+.no-border td {
+    border: none;
+  }
 
 .container {
     /* max-width: 1100px; Wider container */

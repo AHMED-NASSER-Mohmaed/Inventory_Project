@@ -30,6 +30,7 @@ export class HeaderComponent  implements OnInit {
 
  logout(){
   localStorage.removeItem("token");
+  localStorage.removeItem("sessionId");
  }
 
 

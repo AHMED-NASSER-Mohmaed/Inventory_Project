@@ -102,7 +102,7 @@ class CartService {
         newQuantity
       );
     } else {
-      if(quantity < 0) {
+      if(quantity <= 0) {
         throw new AppError(
           `What are you doing? Can't add negative quantity!!!!`,
           400

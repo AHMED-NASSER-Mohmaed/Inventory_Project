@@ -53,7 +53,7 @@ export class CheckoutDetailsComponent implements OnInit {
   }
 
   getSubtotal(): number {
-    return this.products.reduce((acc, product) => acc + (product.onlineProduct.price * product.requiredQty), 0);
+    return this.products.reduce((acc, product) => acc + (product.price * product.requiredQty), 0);
   }
 
   getTotalAmount(): number {
