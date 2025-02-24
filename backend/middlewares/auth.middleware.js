@@ -2,26 +2,26 @@ const UserService = require("../services/user.service");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const JWT_Manager = require("../utils/jwt.manager");
-const jwt = require("jsonwebtoken");
 
-module.exports.optionalAuth = (req, res, next) => {
+module.exports.optionalAuth = catchAsync(async (req, res, next) => {
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
     const token = req.headers.authorization.split(" ")[1];
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-      if (!err) {
-        req.user = decoded; // attach decoded user info to req.user
-      }
-      // Even if token is invalid, we simply continue as a guest.
-      next();
-    });
-  } else {
-    next();
+    JWT_Manager.verifyToken(token);
+    const decoded = JWT_Manager.decodedToken({ token });
+
+    const currentUser = await UserService.getUser(decoded.payload.id);
+
+    if (currentUser) {
+      req.user = currentUser;
+      res.locals.user = currentUser;
+    }
   }
-};
+  next();
+});
 
 module.exports.checkCustomerRole = (req, res, next) => {
   if (req.user && req.user._id) {
@@ -85,7 +85,6 @@ module.exports.protect = catchAsync(async (req, res, next) => {
 
 module.exports.restrictTo = (...userTypes) => {
   return (req, res, next) => {
-    
     //userType , role
     userTypes = userTypes.flat();
 
@@ -102,7 +101,7 @@ module.exports.restrictTo = (...userTypes) => {
     }
 
     console.log(userTypes, "frommmmmm restirct to t");
-    
+
     next();
   };
 };
