@@ -33,22 +33,28 @@ module.exports.productService={
             
             let selectedCat=await categoryRepo.getCategoryById(data.category);
     
-    
-            if(!selectedCat || !selectedCat['isActive'])
+
+            // console.log(selectedCat,"HHHHHHHHHHHH");
+
+            if(selectedCat==null)
                 throw new AppError("sorry category dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
+
+            if(!selectedCat['isActive'])
+                throw new AppError("sorry category is deactivated",APP_CONFIG.HTTP_NOT_FOUND); 
     
-    
-            
             let selectedBrand= await brandRepo.getBrandById(data.brand);
              
 
-            if(!selectedBrand || !selectedBrand['isActive'])
+            console.log(selectedBrand,"HHHHHHHHHHHH");
+
+            if(selectedBrand==null || !selectedBrand['isActive'])
                 throw new AppError("sorry brand dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
              
             return await productRepo.addProduct(data);
 
-        }catch(error){
-            throw error;
+        }catch(err){
+            console.log(err,"errrrrrrrrr");
+            throw err;
         }
 
     },
@@ -68,7 +74,8 @@ module.exports.productService={
             return product;
 
         }catch(error){
-            throw new error;
+
+            throw error;
         }
 
     },

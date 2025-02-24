@@ -19,9 +19,14 @@ const offlineProductOp={
         sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
     },
 
-    increaseStock:async(req,res,next)=>{
-        let result = await OfflineProductsService.increaseStock(req.params.id,req.params.qty);
-    }
+    updateQty:async(req,res,next)=>{
+
+        let result = await OfflineProductsService.updateQuantitiy(req.params.id,req.params.qty);
+        
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+    },
+
+
 
 }
 
@@ -33,9 +38,9 @@ router
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(offlineProductOp.addProduct)
     )
-    .patch("/increaseStock/:id/:qty",
+    .patch("/OffProduct/updateQty/:id/:qty",
         prot_rest(APP_CONFIG.SUPPERADMIN),
-        catchAsync(offlineProductOp.increaseStock)
+        catchAsync(offlineProductOp.updateQty)
     )
     
 

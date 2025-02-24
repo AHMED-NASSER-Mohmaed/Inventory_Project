@@ -893,14 +893,14 @@ route
 
   //delete cashier by id
   .delete(
-    "/deleteCashier/:id/:bid",
+    "/deleteCashier/:id",
     prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
     catchAsync(cashierOp.deleteCashier)
   )
 
   //active cashier by id
   .patch(
-    "/activeCashier/:id",
+    "/activeCashier/:id/:bid",
     prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
     catchAsync(cashierOp.activeCashier)
   )
