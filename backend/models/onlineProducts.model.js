@@ -1,74 +1,36 @@
 const mongoose = require("mongoose");
 
-//onlineProducts
+// Online Products Schema
 const OnlineProductsSchema = new mongoose.Schema(
   {
-    //reference to seller
-    seller: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Seller",
-      required: true,
-    },
+    // Reference to seller
+    seller: { type: mongoose.Schema.Types.ObjectId, ref: "Seller", required: true },
 
-    // reference to product
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
-      required: true,
-    },
+    // Reference to product
+    product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
 
     stock: { type: Number, required: true, default: 0 },
 
-    //actual price from the seller this one is going to appear for the customer
+    // Actual price from the seller (visible to the customer)
     price: { type: Number, required: true },
 
-    // Product availability from this seller
-
-    //who can manage this --> admins only
+    // Product availability from this seller (managed by admins)
     isActive: { type: Boolean, default: true },
 
-    //seller ratings.......... fairouz
-
-    //default is false for the seller
-    satus: {
-      // "pending", "approved", or "rejected"
+    // Default is "pending" for the seller
+    status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
-    
-    rating: {
-      type: Number,
-      default: 0,
-      min: [0, "Rating must be at least 1"],
-      max: [5, "Rating must be at most 5"],
-      set: (val) => Math.round(val * 10) / 10,
-    },
 
-    ratingsQuantity: {
-      type: Number,
-      default: 0,
-    },
-
-    branch: { type: mongoose.Schema.ObjectId, ref: "Branch", required: true }, //online branches only
-
-    rating: {
-      type: Number,
-      default: 0,
-      min: [0, "Rating must be at least 1"],
-      max: [5, "Rating must be at most 5"],
-      set: (val) => Math.round(val * 10) / 10,
-    },
-
-    ratingsQuantity: {
-      type: Number,
-      default: 0,
-    },
+    // Online branches only
+    branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", required: true },
   },
   { timestamps: true }
 );
 
-//very important one...
-OnlineProductsSchema.index({ isActive: 1, satus: "approved" });
-
-module.exports = mongoose.model("OnlineProducts", OnlineProductsSchema);
+// Create index on isActive and status for efficient queries
+OnlineProductsSchema.index({ isActive: 1, status: 1 });
+const OnlineProducts = mongoose.model("OnlineProducts", OnlineProductsSchema);
+module.exports = OnlineProducts;
