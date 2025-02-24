@@ -15,7 +15,7 @@ const userProductSchema = new mongoose.Schema({
   },
 });
 
-userProductSchema.index({ customerId: 1, productIds: 1 }); // for faster lookups
+userProductSchema.index({ customerId: 1 });
 
 const userProduct = mongoose.model("UserProduct", userProductSchema);
 

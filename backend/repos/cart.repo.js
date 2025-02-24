@@ -8,7 +8,8 @@ class CartRepository {
   }
 
   async findCartById(cartId) {
-    return await Cart.findById(cartId).populate("products.onlineProduct");
+    return await Cart.findById(cartId);
+    //.populate("products.onlineProduct");
   }
 
   async findCartByCustomerId(customerId) {

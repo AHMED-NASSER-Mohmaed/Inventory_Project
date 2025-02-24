@@ -14,9 +14,9 @@ const ProductSchema = new mongoose.Schema(
       unique: true,
     },
 
-    markupPercentage: { type: Number, default:.25  },
+    markupPercentage: { type: Number, default: 0.25 },
 
-    cost : {type:Number , require:true},
+    cost: { type: Number, require: true },
 
     price: {
       type: Number,
@@ -62,10 +62,11 @@ const ProductSchema = new mongoose.Schema(
     },
 
     //default is false for the seller
-    satus: {                                    // "pending", "approved", or "rejected"
+    satus: {
+      // "pending", "approved", or "rejected"
       type: String,
       enum: ["pending", "approved", "rejected"],
-      default: "pending"
+      default: "pending",
     },
 
     // Array of seller product references
@@ -73,34 +74,18 @@ const ProductSchema = new mongoose.Schema(
 
     // Array of supplier product references
     supplier: { type: mongoose.Schema.Types.ObjectId, ref: "SupplierProduct" },
-
-    
-
-
-    rating: {
-      type: Number,
-      default: 0,
-      min: [0, "Rating must be at least 1"],
-      max: [5, "Rating must be at most 5"],
-      set: (val) => Math.round(val * 10) / 10,
-    },
-
-    ratingsQuantity: {
-      type: Number,
-      default: 0,
-    },
-
   },
   {
     timestamps: true,
   }
 );
 
-
 // Create a compound index on Code and category to ensure uniqueness
 // for adding product also , we don't need to combine also is Active --
-ProductSchema.index({ productCode: 1, category: 1, brand: 1 }, { unique: true });
-
+ProductSchema.index(
+  { productCode: 1, category: 1, brand: 1 },
+  { unique: true }
+);
 
 const Product = mongoose.model("Product", ProductSchema);
 module.exports = Product;
