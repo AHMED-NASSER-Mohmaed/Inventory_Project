@@ -81,7 +81,10 @@ class CartController {
     if (req.user) {
       if (req.query.sessionId) {
         cart = await CartService.getGuestCart(req.query.sessionId);
-        console.log(cart);
+        cart = await CartService.mergeGuestCartToCustomerCart(
+          req.user.id,
+          req.query.sessionId
+        );
       } else cart = await CartService.getCustomerCart(req.user.id);
     } else cart = await CartService.getGuestCart(req.query.sessionId);
 
