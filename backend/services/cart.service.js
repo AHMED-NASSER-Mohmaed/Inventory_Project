@@ -59,12 +59,12 @@ class CartService {
       );
     }
 
-    if (quantity < 0) {
-      throw new AppError(
-        `What are you doing? Can't add negative quantity!!!!`,
-        400
-      );
-    }
+    // if (quantity < 0) {
+    //   throw new AppError(
+    //     `What are you doing? Can't add negative quantity!!!!`,
+    //     400
+    //   );
+    // }
 
     // find cart
     const cart = await this.findOrCreateCart({
@@ -83,6 +83,12 @@ class CartService {
 
     if (existingItem) {
       const newQuantity = existingItem.requiredQty + quantity;
+      if(newQuantity <= 0) {
+        throw new AppError(
+              `What are you doing? Can't add negative quantity!!!!`,
+              400
+            );
+      }
       if (product.stock < newQuantity) {
         throw new AppError(
           `Insufficient stock: Only ${product.stock} available.`,
@@ -96,6 +102,12 @@ class CartService {
         newQuantity
       );
     } else {
+      if(quantity <= 0) {
+        throw new AppError(
+              `What are you doing? Can't add negative quantity!!!!`,
+              400
+        );
+      }
       updatedCart = await CartRepository.addProduct(cart.id, {
         onlineProduct: productId,
         requiredQty: quantity,
