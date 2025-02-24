@@ -46,8 +46,12 @@ module.exports.APP_CONFIG = {
   CUSTOMER: "customer",
   SELLER: "seller",
 
+  MAIN_BRANCH_ID:"19777",
+
   COMPANY_ID: "67aa438c2823142f438539c4",
   COMPANY_NAME: "inventory system",
+
+  ONLINE_BRANCH_ID: "",
 
 
   SUPPERADMIN_ID:"67aa438c2823142f438539c1",

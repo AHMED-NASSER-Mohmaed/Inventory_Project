@@ -1,41 +1,48 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ProductsService } from '../../../_services/products.service';
 import { Product } from '../../../_models/products';
-import { OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { QuickviewComponent } from '../quickview/quickview.component';
+import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-featured-products',
-  imports: [CommonModule,FormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, QuickviewComponent ,RouterLink],
   templateUrl: './featured-products.component.html',
   styleUrl: './featured-products.component.css'
 })
-export class FeaturedProductsComponent  implements OnInit {
-
- product:Product[]=[] 
+export class FeaturedProductsComponent implements OnInit {
+  products: Product[] = []; 
+  showQuickView: boolean = false;
+  selectedProduct: Product | null = null;
 
   constructor(private productsService: ProductsService) { }
 
   ngOnInit(): void {
-    this.productsService.getAll().subscribe({
+    this.getFeaturedProducts(); 
+  }
 
-      next: (data) => {
+  getFeaturedProducts(): void {
+    this.productsService.getFeaturedProducts().subscribe({
+      next: (res) => {
+        console.log(res.result)
+        this.products = res.result.result;
 
-        console.log(data);
-         this.product = data;
-         console.log(this.product);
-         this.product=this.product;
-         console.log(this.product);
-
+        console.log('Featured Products:', this.products);
       },
       error: (error) => {
-        console.error('Error fetching products', error);
+        console.error('Error fetching featured products', error);
       }
     });
   }
+
+  openQuickView(product: Product) {
+    this.selectedProduct = product;
+    this.showQuickView = true;
+  }
+
+  closeQuickView() {
+    this.showQuickView = false;
+  }
 }
-
-
-  
-

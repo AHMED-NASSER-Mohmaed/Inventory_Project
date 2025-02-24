@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product } from '../_models/products';
 import { category } from '../_models/category';
@@ -11,21 +11,35 @@ export class ProductsService {
 
   constructor(private http: HttpClient) { }
 
-  private url: string = "http://localhost:3000/products";
   private CatUrl: string = "http://localhost:3000/categories/active";
+  private baseUrl = 'http://localhost:3000';
+  
 
-  getAll(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.url);
-  }
 
-  getBycategory(id: string): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.url}/${id}`);
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
   getAllcategories(): Observable<category[]> {
     return this.http.get<category[]>(this.CatUrl);
   }
 
+  getFeaturedProducts(): Observable<any> {
+    return this.http.get<Product[]>(`${this.baseUrl}/getProducts?limit=3`, { headers: this.getHeaders() })
+    ;
+  }
  
-  
+getPaginatedProducts(page: number, itemsPerPage: number, sort: string, categoryId: string) {
+    const params = {
+        page: page,
+        limit: itemsPerPage,
+        sort: sort,
+        catId: categoryId,
+    };
+    return this.http.get(`${this.baseUrl}/getProducts`, { params });
 }
+}  
+
+
+

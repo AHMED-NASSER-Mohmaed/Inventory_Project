@@ -4,19 +4,22 @@ import { AccountService } from '../../../_services/account.service';
 import { ConfirmLogoutDialogComponent } from '../../../confirm-logout-dialog/confirm-logout-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
+import { decodeToken } from '../../../_helpers/jwt-helper';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
+  standalone: true,
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink , RouterModule],
 })
-export class DashboardComponent implements OnInit , OnDestroy {
-  constructor(public accountService: AccountService , public dialog: MatDialog , public router: Router) {}
-
-  activeMenu: string = 'users';
+export class DashboardComponent implements OnInit, OnDestroy {
   dropdownStates: { [key: string]: boolean } = {};
   sub = {} as Subscription;
+  tokenData: any = null;
+
+  constructor(public accountService: AccountService, public dialog: MatDialog, public router: Router) {}
 
   toggleDropdown(menu: string): void {
     this.dropdownStates[menu] = !this.dropdownStates[menu];
@@ -26,27 +29,25 @@ export class DashboardComponent implements OnInit , OnDestroy {
     return this.dropdownStates[menu];
   }
 
-
-  setActiveMenu(menu: string): void {
-    this.activeMenu = menu;
-  }
-
   openConfirmDialog(){
     const dialogRef = this.dialog.open(ConfirmLogoutDialogComponent);
-
     this.sub = dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.router.navigateByUrl('/login');
         this.accountService.logout();
-
       } else {
         console.log('User canceled logout');
       }
     });
   }
-
   
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.tokenData = decodeToken(token);
+      console.log('Decoded token:', this.tokenData);
+    }
+
     const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
 
     allSideMenu.forEach(item => {

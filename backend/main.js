@@ -64,11 +64,13 @@ process.on("uncaughtException", (err) => {
         location: "Elmasoura - Ahmed Maher Street"
       }
 
+      /*
       let worksOnObj = {
         employee: APP_CONFIG.SUPPERADMIN_ID,
         type: APP_CONFIG.SUPPERADMIN,
         branch: "19777"
-      }
+      }*/
+
       /*
       let onlineBranch = {
         _id: '0',
@@ -99,10 +101,11 @@ process.on("uncaughtException", (err) => {
       */
     
 
-      /*      
+       
       // console.log("delete all",await User.find({userType:"customer"}));
       // console.log("delete all",await User.find({userType:"staff"}));
       // console.log("delete all",await User.find({userType:"seller"}));
+
 
       let seller={
         "firstName": "ahmed",
@@ -121,9 +124,14 @@ process.on("uncaughtException", (err) => {
       }
 
      
-      cat={ 
-        name:"male",
+      let cat1={ 
+        "Cname":"male",
       }
+      let cat2={
+        "Cname":"female"
+      }
+
+      /*
 
       const supplier={
         companyRegistrationNumber:"31-21-39",
@@ -146,11 +154,14 @@ process.on("uncaughtException", (err) => {
       if(!await Supplier.findOne({email:Dawoodsupplier.email})){
         console.log(await Supplier.create(Dawoodsupplier));
       }
-         
-       if(!await Category.findOne({name:cat.name})){
-          console.log(await Category.create(cat));
+        */ /*
+       if(!await Category.findOne({name:cat1.Cname})){
+          console.log(await Category.create(cat1));
        }
-        
+       if(!await Category.findOne({name:cat2.Cname})){
+        console.log(await Category.create(cat2));
+     }*/
+        /*
        
 
       // console.log(await Product.deleteOne({_id:"67a75405e18e6927a8c1083e"}))
@@ -169,14 +180,14 @@ process.on("uncaughtException", (err) => {
       // console.log(await Product.collection.drop());
 */
      
-      /*
+      
               if(!await Seller.findOne({SSN:seller.SSN})){
                 await Seller.create(seller);
                 console.log("our seller record inserted");
               }
       
               // console.log(await Seller.updateMany({ photo: APP_CONFIG.DU_IMAGE_DEFALUT_OBG }));
-         */
+         
       console.log("App database has connected successfully");
       app.listen(APP_CONFIG.HTTP_PORT, "0.0.0.0", () => {
         console.log(`App is up and running on port ${APP_CONFIG.HTTP_PORT}`);

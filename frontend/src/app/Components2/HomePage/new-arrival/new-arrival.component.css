@@ -1,0 +1,138 @@
+.featuredProducts {
+    margin: 25px;
+    font-size: 15px;
+    color: rgb(89, 88, 88);
+}
+
+.card-title {
+    color: #85411c;
+    text-align: center;
+    font-size: 15px;
+    margin: 10px 0;
+}
+
+.card-text {
+    text-align: center;
+    font-size: 15px;
+    margin: 10px 0;
+}
+
+.card-text:hover {
+    color: #85411c;
+}
+
+.card-price {
+    text-align: center;
+    font-size: 20px;
+    font-weight: medium; 
+}
+
+.image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.image-container img {
+    width: 80%;
+    margin: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.img-body{
+    text-align: center;
+}
+
+.add-to-cart-btn {
+    width: 380px;
+    border-radius: 0;
+    background-color: rgb(255, 255, 255);
+    border:#85411c solid 1px ;
+    color: #85411c;
+    position: absolute;
+    bottom: -50px; 
+    left: 50%;
+    transform: translateX(-50%);
+    transition: bottom 0.3s ease;
+}
+
+.add-to-cart-btn:hover {
+    background-color: #85411c;
+    color: white;
+}
+
+.image-container:hover .add-to-cart-btn {
+    bottom: 10px;
+}
+
+.image-container:hover img {
+    transform: scale(1.05);
+}
+
+.overlay-icons {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #000000;
+    font-size: 20px;
+    padding: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.product-icon {
+    display: block;
+    text-align: center;
+    border: 2px solid #000000;
+    border-radius: 50%;
+    padding: 5px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.product-icon:hover {
+    color: #85411c;
+}
+
+.image-container:hover .overlay-icons {
+    opacity: 1;
+}
+
+.product-item {
+    padding: 5px;
+    margin-right: 10px; 
+}
+
+.product-link {
+    color: #000000; 
+    text-decoration: none; 
+}
+
+.product-link:hover {
+    color: #85411c;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+    .add-to-cart-btn {
+        width: 100%; 
+    }
+}
+
+@media (max-width: 768px) {
+    .row .col {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .image-container img {
+        height: auto; 
+    }
+
+    .add-to-cart-btn {
+        width: 80%; 
+    }
+}
+

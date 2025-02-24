@@ -5,7 +5,7 @@ const brandSchema = new mongoose.Schema({
     
     Bname: { type: String, required: true, unique: true },
 
-    isActive: { type: Boolean, default: false },  // Soft delete field
+    isActive: { type : Boolean , default:true},  // Soft delete field
 
 
 },{

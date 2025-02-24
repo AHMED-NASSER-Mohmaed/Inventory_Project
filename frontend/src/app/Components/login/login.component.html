@@ -14,7 +14,9 @@
 			<small *ngIf="loginForm.controls['password']?.errors?.['required']">Password is required.</small>
 			<small *ngIf="loginForm.controls['password']?.errors?.['minlength']">Password must be at least 8 characters long.</small>
 		  </div>
-		  <button type="button" id="createAccount" (click)="login()" [disabled]="loginForm.invalid" [ngClass]="{'disabled': loginForm.invalid}">Login</button>
+		  <button type="button" id="createAccount" (click)="login()" [disabled]="loginForm.invalid || isLoading" [ngClass]="{'disabled': loginForm.invalid || isLoading}">
+			{{isLoading ? 'Logging in...' : 'Login'}}
+		  </button>
 		  <button type="button" id="googleLogin">
 			<img draggable="false" src="https://cdn-icons-png.flaticon.com/128/300/300221.png" alt="Google" width="14">
 			Sign in with Google
@@ -43,7 +45,7 @@
 				<label for="slide2" class="after">→</label>
 			  </div>
 			</span>
-			<img draggable="false" src="assets/him.jpeg" alt="model1" id="imgModel1" width="110" height="150" style="object-fit: cover">
+			<img draggable="false" src="assets/watch4.jpg" alt="model1" id="imgModel1" width="110" height="150" style="object-fit: cover">
 		  </div>
 		  <div id="model2">
 			<h1>"Experience the timeless craftsmanship of our watches, where every detail is meticulously crafted."</h1>
@@ -53,7 +55,7 @@
 				<label for="slide3" class="after">→</label>
 			  </div>
 			</span>
-			<img draggable="false" src="watch2.jpeg" alt="model2" id="imgModel2" width="110" height="150" style="object-fit: cover">
+			<img draggable="false" src="assets/watch2.jpeg" alt="model2" id="imgModel2" width="110" height="150" style="object-fit: cover">
 		  </div>
 		  <div id="model3">
 			<h1>"Our watches are a testament to innovation, blending style and functionality seamlessly."</h1>
@@ -63,7 +65,7 @@
 				<label for="slide4" class="after">→</label>
 			  </div>
 			</span>
-			<img draggable="false" src="watch3.jpg" alt="model3" id="imgModel3" width="110" height="150" style="object-fit: cover">
+			<img draggable="false" src="assets/watch3.jpg" alt="model3" id="imgModel3" width="110" height="150" style="object-fit: cover">
 		  </div>
 		  <div id="model4">
 			<h1>"Enhance your look with our watches, a perfect mix of elegance and technology."</h1>
@@ -73,7 +75,7 @@
 				<label for="slide1" class="after">→</label>
 			  </div>
 			</span>
-			<img draggable="false" src="watch1.jpg" alt="model4" id="imgModel4" width="110" height="150" style="object-fit: cover">
+			<img draggable="false" src="assets/watch1.jpg" alt="model4" id="imgModel4" width="110" height="150" style="object-fit: cover">
 		  </div>
 		</div>
 	  </div>

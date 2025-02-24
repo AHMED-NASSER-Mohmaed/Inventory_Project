@@ -26,3 +26,10 @@ mat-dialog-container {
 .cdk-overlay-container {
   z-index: 5000 !important;
 }
+
+  .cdk-overlay-container .cdk-overlay-connected-position-bounding-box .mat-mdc-menu-panel {
+	width: 0px !important;
+	/* height: 10.3em !important; */
+	border-radius: 15px;
+
+  } 

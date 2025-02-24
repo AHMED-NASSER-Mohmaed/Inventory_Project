@@ -1,3 +1,34 @@
+const Product = require('../models/product.model');
+const { inboxResult } = require("../utils/apiFeatures")
+
+module.exports.productRepo={
+
+
+  addProduct:async(data)=>{
+    try{
+       
+      return await Product.create(data);
+      
+    }catch(error){
+
+      throw error;
+    }
+  }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+/*
 const { filter } = require('lodash');
 const Product = require('../models/product.model');
 const AppError = require('../utils/appError');
@@ -250,3 +281,5 @@ class ProductRepository {
 }
 
 module.exports = new ProductRepository();
+
+*/

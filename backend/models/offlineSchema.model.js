@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 const OfflineProductsSchema = new mongoose.Schema({
     
-    branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", required: true },//offline branches only 
+    branch: { type: Number, ref: "Branch", required: true },//offline branches only 
 
     product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
 

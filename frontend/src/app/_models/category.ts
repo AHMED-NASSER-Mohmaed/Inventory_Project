@@ -3,10 +3,11 @@ export class category {
 
     constructor(
   
-           public id :string,
+           public _id :string,
            public parentCatId :string,
             public name:string,
             public isActive:boolean  
+            
     ) {
        
     }

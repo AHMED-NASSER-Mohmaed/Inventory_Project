@@ -1,0 +1,60 @@
+<app-header></app-header>
+
+<div class="banner">
+    <div class="banner-text">
+        <p>Contact us</p>
+    </div>
+    <nav class=" banner-nav  text-white">
+        <a [routerLink]="['/LandingPage']">Home</a>
+        <span>/</span>
+          Contacts
+    </nav>
+</div>
+
+
+
+<!-- Map Container -->
+<div id="map" style="height: 300px; width: 100%; margin-top: 20px;">
+    
+</div>
+
+
+
+<div class="container">
+    <div class="grid-container">
+        <section class="contact-info">
+            <h1 style="font-family: 'Baskerville Serial'; color: #000000;">How To Find Us</h1>
+            <p style="color: #a4a4a4;">Get in touch to discuss your employee wellbeing needs today. Please give us a call, drop us an email or fill out the contact form and we'll get back to you.</p>
+            <div class="info-details">
+                <p  style="color: #85411c;">+80 123 567 89</p>
+                <p>283 N. Glenwood Street, Levittown, NY</p>
+                <p >+<a href="mailto:help.lenoss@gmail.com"  style="color: #85411c;">help.lenossgmail.com</a></p>
+            </div>
+        </section>
+
+        <section class="contact-form">
+            <h2  style="font-family: 'Baskerville Serial'; ">Contact Us</h2>
+            <p style="color: #a4a4a4;">Your email address won't be published. Required fields are marked *</p>
+            <form (ngSubmit)="submitContactForm()">
+                <div class="form-group">
+                    <input type="text" id="name" name="name" [(ngModel)]="contact.name" placeholder="Your name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" name="email" [(ngModel)]="contact.email" placeholder="Your Email" required>
+                </div>
+                <div class="form-group">
+                    <textarea id="message" name="message" [(ngModel)]="contact.message" rows="5" placeholder="Message..." required></textarea>
+                </div>
+                <button type="submit">GET IN TOUCH</button>
+            </form>
+            
+        </section>
+    </div>
+</div>
+
+
+
+
+
+
+<app-footer></app-footer>
