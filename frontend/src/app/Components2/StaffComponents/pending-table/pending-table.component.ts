@@ -10,12 +10,9 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { ToastrService } from 'ngx-toastr';
 import { User } from '../../../_models/user';
-import { CustomersService } from '../../../_services/customers.service';
 import { decodeToken } from '../../../_helper/jwt-helper';
-import { ConfirmDialogComponent2 } from '../../../confirm-dialog2/confirm-dialog2.component';
-import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.component';
-import { ConfirmDialogImgchangeComponent } from '../../../confirm-dialog-imgchange/confirm-dialog-imgchange.component';
 
+import { ClerkDashboardService } from '../../../_services/clerk-dashboard.service';
 @Component({
   selector: 'app-pending-table',
   imports: [
@@ -31,6 +28,10 @@ import { ConfirmDialogImgchangeComponent } from '../../../confirm-dialog-imgchan
   styleUrl: './pending-table.component.css'
 })
 export class PendingTableComponent  implements OnInit, OnDestroy{
+
+  orders: any[] = [];
+
+
   // Filter state and pagination
   currentFilter: string = '';
   currentPage: number = 1;
@@ -72,21 +73,46 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
 
 
   constructor(
-    private customerService: CustomersService,
     public dialog: MatDialog,
-    public toaster: ToastrService
+    public toaster: ToastrService,
+
+    private clerkDashboardService: ClerkDashboardService
   ) {}
 
   ngOnInit(): void {
     this.updateSearchPlaceholder();
     this.loadSellers();
-    this.getInActiveCustomersCount();
-    this.getActiveCustomersCount();
+   // this.getInActiveCustomersCount();
+    //this.getActiveCustomersCount();
     const token = localStorage.getItem('token');
     if (token) {
       this.tokenData = decodeToken(token);
     }
+
+    this.fetchOrders();
+
+
   }
+
+
+
+  fetchOrders() {
+    this.clerkDashboardService.getAllOrders().subscribe({
+      next: (data) => {
+        this.orders = data;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('There was an error fetching the orders:', error);
+        this.isLoading = false;
+      }
+    });
+  }
+
+
+
+
+
 
   hideSingleSelectionIndicator = signal(true);
 
@@ -125,38 +151,38 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
       }:${this.sortDirection}`;
     }
 
-    const obs = this.customerService.getPaginatedCustomersByStatus(
-      this.currentPage,
-      this.itemsPerPage,
-      filterParam,
-      sortParam
-    );
+    // const obs = this.customerService.getPaginatedCustomersByStatus(
+    //   this.currentPage,
+    //   this.itemsPerPage,
+    //   filterParam,
+    //   sortParam
+    // );
 
-    const sub = obs.subscribe({
-      next: (res) => {
-        this.users = res.data.result;
-        this.showNoResults = false;
-        const total = res.data.total;
-        this.totalPages = Math.ceil(total / this.itemsPerPage);
-        this.dropdownStates = new Array(this.users.length).fill(false);
-        this.pageCache[cacheKey] = { result: this.users, total: total };
-        this.updatePaginationState();
-        this.isLoading = false;
-        console.log(res);
-      },
-      error: (error) => {
-        this.toaster.clear();
-        this.toaster.error(error.error.message, 'Failed', {
-          timeOut: 1500,
-          positionClass: 'toast-bottom-right',
-          progressBar: true,
-          closeButton: true
-        });
-        console.log(error);
-        this.isLoading = false;
-      },
-    });
-    this.subscriptions.push(sub);
+    // const sub = obs.subscribe({
+    //   next: (res) => {
+    //     this.users = res.data.result;
+    //     this.showNoResults = false;
+    //     const total = res.data.total;
+    //     this.totalPages = Math.ceil(total / this.itemsPerPage);
+    //     this.dropdownStates = new Array(this.users.length).fill(false);
+    //     this.pageCache[cacheKey] = { result: this.users, total: total };
+    //     this.updatePaginationState();
+    //     this.isLoading = false;
+    //     console.log(res);
+    //   },
+    //   error: (error) => {
+    //     this.toaster.clear();
+    //     this.toaster.error(error.error.message, 'Failed', {
+    //       timeOut: 1500,
+    //       positionClass: 'toast-bottom-right',
+    //       progressBar: true,
+    //       closeButton: true
+    //     });
+    //     console.log(error);
+    //     this.isLoading = false;
+    //   },
+    // });
+    // this.subscriptions.push(sub);
   }
 
   updatePaginationState(): void {
@@ -215,123 +241,123 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
   }
 
   // Customer actions
-  deActiveCustomer(_id: string): void {
-    const sub = this.customerService.deActiveCustomer(_id).subscribe({
-      next: (res) => {
-        console.log(res);
-        const deactivatedCustomer = this.users.find(u => u._id === _id);
-        if (deactivatedCustomer) {
-          if (this.currentFilter === 'active') {
-            // In "active" view: remove from list and update caches
-            this.users = this.users.filter(user => user._id !== _id);
-            const activeKey = `active_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[activeKey]) {
-              this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter(user => user._id !== _id);
-              this.pageCache[activeKey].total--;
-            }
-            const inactiveKey = `inactive_1_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[inactiveKey]) {
-              this.pageCache[inactiveKey].result.unshift(deactivatedCustomer);
-              if (this.pageCache[inactiveKey].result.length > this.itemsPerPage) {
-                this.pageCache[inactiveKey].result.pop();
-              }
-              this.pageCache[inactiveKey].total++;
-            }
-          } else {
-            // In mixed view: only update the status
-            deactivatedCustomer.isActive = false;
-            const currentKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[currentKey]) {
-              const cachedUser = this.pageCache[currentKey].result.find(u => u._id === _id);
-              if (cachedUser) { cachedUser.isActive = false; }
-            }
-          }
-          this.getInActiveCustomersCount();
-          this.getActiveCustomersCount();
-        }
-      },
-      error: (error) => {
-        this.toaster.clear();
-        this.toaster.error(error.error.message, 'Failed', {
-          timeOut: 1500,
-          positionClass: 'toast-bottom-right',
-          progressBar: true,
-          closeButton: true
-        });
-        console.log(error);
-      },
-    });
-    this.subscriptions.push(sub);
-  }
+  // deActiveCustomer(_id: string): void {
+  //   const sub = this.customerService.deActiveCustomer(_id).subscribe({
+  //     next: (res) => {
+  //       console.log(res);
+  //       const deactivatedCustomer = this.users.find(u => u._id === _id);
+  //       if (deactivatedCustomer) {
+  //         if (this.currentFilter === 'active') {
+  //           // In "active" view: remove from list and update caches
+  //           this.users = this.users.filter(user => user._id !== _id);
+  //           const activeKey = `active_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
+  //           if (this.pageCache[activeKey]) {
+  //             this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter(user => user._id !== _id);
+  //             this.pageCache[activeKey].total--;
+  //           }
+  //           const inactiveKey = `inactive_1_${this.sortField}_${this.sortDirection}`;
+  //           if (this.pageCache[inactiveKey]) {
+  //             this.pageCache[inactiveKey].result.unshift(deactivatedCustomer);
+  //             if (this.pageCache[inactiveKey].result.length > this.itemsPerPage) {
+  //               this.pageCache[inactiveKey].result.pop();
+  //             }
+  //             this.pageCache[inactiveKey].total++;
+  //           }
+  //         } else {
+  //           // In mixed view: only update the status
+  //           deactivatedCustomer.isActive = false;
+  //           const currentKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
+  //           if (this.pageCache[currentKey]) {
+  //             const cachedUser = this.pageCache[currentKey].result.find(u => u._id === _id);
+  //             if (cachedUser) { cachedUser.isActive = false; }
+  //           }
+  //         }
+  //         this.getInActiveCustomersCount();
+  //         this.getActiveCustomersCount();
+  //       }
+  //     },
+  //     error: (error) => {
+  //       this.toaster.clear();
+  //       this.toaster.error(error.error.message, 'Failed', {
+  //         timeOut: 1500,
+  //         positionClass: 'toast-bottom-right',
+  //         progressBar: true,
+  //         closeButton: true
+  //       });
+  //       console.log(error);
+  //     },
+  //   });
+  //   this.subscriptions.push(sub);
+  // }
 
-  activateCustomer(_id: string): void {
-    const sub = this.customerService.activateCustomer(_id).subscribe({
-      next: (res) => {
-        console.log(res);
-        const activatedCustomer = this.users.find(u => u._id === _id);
-        if (activatedCustomer) {
-          if (this.currentFilter === 'inactive') {
-            // In "inactive" view: remove from list and update caches
-            this.users = this.users.filter(user => user._id !== _id);
-            const inactiveKey = `inactive_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[inactiveKey]) {
-              this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter(user => user._id !== _id);
-              this.pageCache[inactiveKey].total--;
-            }
-            const activeKey = `active_1_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[activeKey]) {
-              this.pageCache[activeKey].result.unshift(activatedCustomer);
-              if (this.pageCache[activeKey].result.length > this.itemsPerPage) {
-                this.pageCache[activeKey].result.pop();
-              }
-              this.pageCache[activeKey].total++;
-            }
-          } else {
-            // In mixed view: only update the status
-            activatedCustomer.isActive = true;
-            const currentKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[currentKey]) {
-              const cachedUser = this.pageCache[currentKey].result.find(u => u._id === _id);
-              if (cachedUser) { cachedUser.isActive = true; }
-            }
-          }
-          this.getInActiveCustomersCount();
-          this.getActiveCustomersCount();
-        }
-      },
-      error: (error) => {
-        this.toaster.clear();
-        this.toaster.error(error.error.message, 'Failed', {
-          timeOut: 1500,
-          positionClass: 'toast-bottom-right',
-          progressBar: true,
-          closeButton: true
-        });
-        console.log(error);
-      },
-    });
-    this.subscriptions.push(sub);
-  }
+  // activateCustomer(_id: string): void {
+  //   const sub = this.customerService.activateCustomer(_id).subscribe({
+  //     next: (res) => {
+  //       console.log(res);
+  //       const activatedCustomer = this.users.find(u => u._id === _id);
+  //       if (activatedCustomer) {
+  //         if (this.currentFilter === 'inactive') {
+  //           // In "inactive" view: remove from list and update caches
+  //           this.users = this.users.filter(user => user._id !== _id);
+  //           const inactiveKey = `inactive_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
+  //           if (this.pageCache[inactiveKey]) {
+  //             this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter(user => user._id !== _id);
+  //             this.pageCache[inactiveKey].total--;
+  //           }
+  //           const activeKey = `active_1_${this.sortField}_${this.sortDirection}`;
+  //           if (this.pageCache[activeKey]) {
+  //             this.pageCache[activeKey].result.unshift(activatedCustomer);
+  //             if (this.pageCache[activeKey].result.length > this.itemsPerPage) {
+  //               this.pageCache[activeKey].result.pop();
+  //             }
+  //             this.pageCache[activeKey].total++;
+  //           }
+  //         } else {
+  //           // In mixed view: only update the status
+  //           activatedCustomer.isActive = true;
+  //           const currentKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
+  //           if (this.pageCache[currentKey]) {
+  //             const cachedUser = this.pageCache[currentKey].result.find(u => u._id === _id);
+  //             if (cachedUser) { cachedUser.isActive = true; }
+  //           }
+  //         }
+  //         this.getInActiveCustomersCount();
+  //         this.getActiveCustomersCount();
+  //       }
+  //     },
+  //     error: (error) => {
+  //       this.toaster.clear();
+  //       this.toaster.error(error.error.message, 'Failed', {
+  //         timeOut: 1500,
+  //         positionClass: 'toast-bottom-right',
+  //         progressBar: true,
+  //         closeButton: true
+  //       });
+  //       console.log(error);
+  //     },
+  //   });
+  //   this.subscriptions.push(sub);
+  // }
 
-  openConfirmDialog(_id: string): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent);
-    const sub = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.deActiveCustomer(_id);
-      }
-    });
-    this.subscriptions.push(sub);
-  }
+  // openConfirmDialog(_id: string): void {
+  //   const dialogRef = this.dialog.open(ConfirmDialogComponent);
+  //   const sub = dialogRef.afterClosed().subscribe((result) => {
+  //     if (result) {
+  //       this.deActiveCustomer(_id);
+  //     }
+  //   });
+  //   this.subscriptions.push(sub);
+  // }
 
-  openConfirmDialog2(_id: string): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent2);
-    const sub = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.activateCustomer(_id);
-      }
-    });
-    this.subscriptions.push(sub);
-  }
+  // openConfirmDialog2(_id: string): void {
+  //   const dialogRef = this.dialog.open(ConfirmDialogComponent2);
+  //   const sub = dialogRef.afterClosed().subscribe((result) => {
+  //     if (result) {
+  //       this.activateCustomer(_id);
+  //     }
+  //   });
+  //   this.subscriptions.push(sub);
+  // }
 
   updateUserActivity(_id: string, isActive: boolean): void {
     const user = this.users.find((u) => u._id === _id);
@@ -340,39 +366,23 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
     }
   }
 
-  getActiveCustomersCount(): void {
-    const sub = this.customerService.getActiveCustomersCount().subscribe({
-      next: (res) => { this.activeCustomersCount = res.data; },
-      error: (error) => {
-        this.toaster.clear();
-        this.toaster.error(error.error.message, 'Failed', {
-          timeOut: 1500,
-          positionClass: 'toast-bottom-right',
-          progressBar: true,
-          closeButton: true
-        });
-        console.error('Error getting active sellers count', error);
-      }
-    });
-    this.subscriptions.push(sub);
-  }
+  // getActiveCustomersCount(): void {
+  //   const sub = this.customerService.getActiveCustomersCount().subscribe({
+  //     next: (res) => { this.activeCustomersCount = res.data; },
+  //     error: (error) => {
+  //       this.toaster.clear();
+  //       this.toaster.error(error.error.message, 'Failed', {
+  //         timeOut: 1500,
+  //         positionClass: 'toast-bottom-right',
+  //         progressBar: true,
+  //         closeButton: true
+  //       });
+  //       console.error('Error getting active sellers count', error);
+  //     }
+  //   });
+  //   this.subscriptions.push(sub);
+  // }
 
-  getInActiveCustomersCount(): void {
-    const sub = this.customerService.getInActiveCustomersCount().subscribe({
-      next: (res) => { this.inactiveCustomersCount = res.data; },
-      error: (error) => {
-        this.toaster.clear();
-        this.toaster.error(error.error.message, 'Failed', {
-          timeOut: 1500,
-          positionClass: 'toast-bottom-right',
-          progressBar: true,
-          closeButton: true
-        });
-        console.error('Error getting deactive sellers count', error);
-      }
-    });
-    this.subscriptions.push(sub);
-  }
 
   toggleDropdown(index: number): void {
     this.dropdownStates = this.dropdownStates.map((state, i) =>
@@ -380,104 +390,104 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
     );
   }
 
-  toggleEdit(event?: any): void {
-    if (this.editing) {
-      const workingBackup = { ...this.backupUser };
-      const sub = this.customerService
-        .updateCustomer(this.selectedUser._id, this.selectedUser)
-        .subscribe({
-          next: (res: any) => {
-            if (res.message === 'success') {
-              const index = this.users.findIndex(
-                (u) => u.SSN === this.selectedUser.SSN
-              );
-              if (index !== -1) {
-                this.users[index] = { ...this.selectedUser };
-                this.backupUser = { ...this.selectedUser };
-              }
-            } else {
-              const index = this.users.findIndex(
-                (u) => u.SSN === workingBackup.SSN
-              );
-              if (index !== -1) {
-                this.users[index] = workingBackup;
-                this.selectedUser = workingBackup;
-              }
-            }
-            this.editing = false;
-          },
-          error: (error) => {
-            this.toaster.clear();
-            this.toaster.error(error.error.message, 'Failed', {
-              timeOut: 1500,
-              positionClass: 'toast-bottom-right',
-              progressBar: true,
-              closeButton: true
-            });
-            console.error('Error updating seller info', error);
-            const index = this.users.findIndex(
-              (u) => u.SSN === workingBackup.SSN
-            );
-            if (index !== -1) {
-              this.users[index] = workingBackup;
-              this.selectedUser = workingBackup;
-            }
-            this.editing = false;
-          },
-        });
-      this.subscriptions.push(sub);
-    } else {
-      this.backupUser = { ...this.selectedUser };
-      this.editing = true;
-    }
-    if (event && event.target) event.target.blur();
-  }
+  // toggleEdit(event?: any): void {
+  //   if (this.editing) {
+  //     const workingBackup = { ...this.backupUser };
+  //     const sub = this.customerService
+  //       .updateCustomer(this.selectedUser._id, this.selectedUser)
+  //       .subscribe({
+  //         next: (res: any) => {
+  //           if (res.message === 'success') {
+  //             const index = this.users.findIndex(
+  //               (u) => u.SSN === this.selectedUser.SSN
+  //             );
+  //             if (index !== -1) {
+  //               this.users[index] = { ...this.selectedUser };
+  //               this.backupUser = { ...this.selectedUser };
+  //             }
+  //           } else {
+  //             const index = this.users.findIndex(
+  //               (u) => u.SSN === workingBackup.SSN
+  //             );
+  //             if (index !== -1) {
+  //               this.users[index] = workingBackup;
+  //               this.selectedUser = workingBackup;
+  //             }
+  //           }
+  //           this.editing = false;
+  //         },
+  //         error: (error) => {
+  //           this.toaster.clear();
+  //           this.toaster.error(error.error.message, 'Failed', {
+  //             timeOut: 1500,
+  //             positionClass: 'toast-bottom-right',
+  //             progressBar: true,
+  //             closeButton: true
+  //           });
+  //           console.error('Error updating seller info', error);
+  //           const index = this.users.findIndex(
+  //             (u) => u.SSN === workingBackup.SSN
+  //           );
+  //           if (index !== -1) {
+  //             this.users[index] = workingBackup;
+  //             this.selectedUser = workingBackup;
+  //           }
+  //           this.editing = false;
+  //         },
+  //       });
+  //     this.subscriptions.push(sub);
+  //   } else {
+  //     this.backupUser = { ...this.selectedUser };
+  //     this.editing = true;
+  //   }
+  //   if (event && event.target) event.target.blur();
+  // }
 
   triggerImageUploadSeller(): void {
     document.getElementById('imageUploadSeller')?.click();
   }
 
-  async onImageChangeSeller(event: any): Promise<void> {
-    const fileInput = event.target;
-    const file = fileInput.files[0];
-    if (file && this.selectedUser) {
-      const backupUrl = this.selectedUser.photo.url;
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        const tempUrl = e.target.result;
-        const dialogRef = this.dialog.open(ConfirmDialogImgchangeComponent);
-        const sub = dialogRef.afterClosed().subscribe(async (result) => {
-          if (result) {
-            try {
-              const response: any = await this.customerService
-                .changeImage(this.selectedUser._id, file)
-                .toPromise();
-              if (response.message === 'success') {
-                this.selectedUser.photo.url = tempUrl;
-              } else {
-                this.selectedUser.photo.url = backupUrl;
-              }
-            } catch (error) {
-              this.toaster.clear();
-              this.toaster.error((error as any).error.message, 'Failed', {
-                timeOut: 1500,
-                positionClass: 'toast-bottom-right',
-                progressBar: true,
-                closeButton: true
-              });
-              console.error('Error updating image', error);
-              this.selectedUser.photo.url = backupUrl;
-            }
-          } else {
-            this.selectedUser.photo.url = backupUrl;
-          }
-          fileInput.value = '';
-        });
-        this.subscriptions.push(sub);
-      };
-      reader.readAsDataURL(file);
-    }
-  }
+  // async onImageChangeSeller(event: any): Promise<void> {
+  //   const fileInput = event.target;
+  //   const file = fileInput.files[0];
+  //   if (file && this.selectedUser) {
+  //     const backupUrl = this.selectedUser.photo.url;
+  //     const reader = new FileReader();
+  //     reader.onload = (e: any) => {
+  //       const tempUrl = e.target.result;
+  //       const dialogRef = this.dialog.open(ConfirmDialogImgchangeComponent);
+  //       const sub = dialogRef.afterClosed().subscribe(async (result) => {
+  //         if (result) {
+  //           try {
+  //             const response: any = await this.customerService
+  //               .changeImage(this.selectedUser._id, file)
+  //               .toPromise();
+  //             if (response.message === 'success') {
+  //               this.selectedUser.photo.url = tempUrl;
+  //             } else {
+  //               this.selectedUser.photo.url = backupUrl;
+  //             }
+  //           } catch (error) {
+  //             this.toaster.clear();
+  //             this.toaster.error((error as any).error.message, 'Failed', {
+  //               timeOut: 1500,
+  //               positionClass: 'toast-bottom-right',
+  //               progressBar: true,
+  //               closeButton: true
+  //             });
+  //             console.error('Error updating image', error);
+  //             this.selectedUser.photo.url = backupUrl;
+  //           }
+  //         } else {
+  //           this.selectedUser.photo.url = backupUrl;
+  //         }
+  //         fileInput.value = '';
+  //       });
+  //       this.subscriptions.push(sub);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // }
 
   isSearchMode: boolean = false;
 
@@ -578,31 +588,31 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
       }:${this.sortDirection}`;
     }
 
-    const sub = this.customerService
-      .searchCustomers(filters, this.currentPage, this.itemsPerPage, sortParam)
-      .subscribe({
-        next: (res) => {
-          if (res.data) {
-            this.users = Array.isArray(res.data.result)
-              ? res.data.result
-              : [res.data.result];
-            this.showNoResults = this.users.length === 0;
-            this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
-            this.dropdownStates = new Array(this.users.length).fill(false);
-            this.updatePaginationState();
-          }
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Error searching sellers:', error);
-          this.users = [];
-          this.showNoResults = true;
-          this.updatePaginationState();
-          this.isLoading = false;
-        },
-      });
+    // const sub = this.customerService
+    //   .searchCustomers(filters, this.currentPage, this.itemsPerPage, sortParam)
+    //   .subscribe({
+    //     next: (res) => {
+    //       if (res.data) {
+    //         this.users = Array.isArray(res.data.result)
+    //           ? res.data.result
+    //           : [res.data.result];
+    //         this.showNoResults = this.users.length === 0;
+    //         this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
+    //         this.dropdownStates = new Array(this.users.length).fill(false);
+    //         this.updatePaginationState();
+    //       }
+    //       this.isLoading = false;
+    //     },
+    //     error: (error) => {
+    //       console.error('Error searching sellers:', error);
+    //       this.users = [];
+    //       this.showNoResults = true;
+    //       this.updatePaginationState();
+    //       this.isLoading = false;
+    //     },
+    //   });
 
-    this.subscriptions.push(sub);
+   // this.subscriptions.push(sub);
   }
 
   updateSearchPlaceholder() {

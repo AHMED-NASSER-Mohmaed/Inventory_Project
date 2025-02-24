@@ -24,7 +24,7 @@
 
             <ul class="box-info">
 
-                <li>    
+                <!-- <li>    
                     <ngx-skeleton-loader *ngIf="activeCustomersCount === null || activeCustomersCount === undefined" appearance="custom-content">
                         <div class="skeleton-container">
                           <div class="skeleton-box">
@@ -42,26 +42,8 @@
                         <h3>{{activeCustomersCount}}</h3>
                         <p>Active Customers</p>
                     </span>
-                </li>
-                <li>
-                    <ngx-skeleton-loader *ngIf="inactiveCustomersCount === null || inactiveCustomersCount === undefined" appearance="custom-content">
-                        <div class="skeleton-container">
-                          <div class="skeleton-box">
-                            <div class="skeleton-circle"></div>
-                          </div>
-                          <div class="skeleton-text">
-                            <div class="skeleton-line short"></div>
-                            <div class="skeleton-line"></div>
-                          </div>
-                        </div>
-                      </ngx-skeleton-loader>
-
-                    <i  *ngIf="inactiveCustomersCount !== null && inactiveCustomersCount !== undefined" class='bx bxs-archive-in' id="lol"></i>
-                    <span *ngIf="inactiveCustomersCount !== null && inactiveCustomersCount !== undefined" class="text">
-                        <h3>{{inactiveCustomersCount}}</h3>
-                        <p>Inactive Customers</p>
-                    </span>
-                </li>
+                </li> -->
+                
             </ul>
 
             <div class="table-data">
@@ -69,7 +51,7 @@
                     <div class="head">
                         <div class="headhead">
                         <h3>Customers</h3>
-                        <div class="items-per-page">
+                        <!-- <div class="items-per-page">
                             <label> 
                                 <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" name="itemsPerPage">
                                     <option value="5">5</option>
@@ -77,7 +59,7 @@
                                     <option value="25">25</option>
                                 </select>
                             </label>
-                        </div>
+                        </div> -->
                         </div>
                         <form (ngSubmit)="onSearch($event)">
                             <div class="form-input">
@@ -116,13 +98,19 @@
                         <thead>
                             <tr>
                                 <th (click)="toggleSort('name')" style="cursor: pointer">
-                                    Name
+                                    Order Id
                                     <i class="bx" [ngClass]="{
                                         'bx-up-arrow-alt': sortField === 'name' && sortDirection === 'asc',
                                         'bx-down-arrow-alt': sortField === 'name' && sortDirection === 'desc',
                                         'bx-sort': sortField !== 'name'
                                     }"></i>
                                 </th>
+                                <th >
+
+                                    User
+
+                                </th>
+
                                 <th (click)="toggleSort('createdAt')" style="cursor: pointer">
                                     Created At
                                     <i class="bx" [ngClass]="{
@@ -147,7 +135,7 @@
                                     No Customers Found with this {{lastSearchFilter === 'name' ? 'Name' : lastSearchFilter === 'SSN' ? 'SSN' : 'Phone Number'}}
                                 </td>
                             </tr>
-                            <tr *ngIf="!isLoading && !showNoResults && users.length === 0" class="no-results-row">
+                            <tr *ngIf="!isLoading && !showNoResults && orders.length === 0" class="no-results-row">
                                 <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
                                     No {{ currentFilter === 'active' ? 'Active' : 'Inactive' }} Customers Yet
                                 </td>
@@ -159,15 +147,15 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr *ngFor="let user of users; let i = index">
+                            <tr *ngFor="let order of orders; let i = index">
                                 <td>
-                                    <img [src]="user.photo.url">
-                                    <p>{{ user.firstName + " "+ user.lastName }}</p>
+                                    <img [src]="order.photo.url">
+                                    <p>{{ order.firstName + " "+ order.lastName }}</p>
                                 </td>
-                                <td>{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
+                                <td>{{ order.createdAt | date:'dd/MM/yyyy' }}</td>
                                 <td>
-                                    <span class="status process" [class.active]="user.isActive" [class.deactivated]="!user.isActive" [style]="{'min-width': '100px', 'display': 'inline-block', 'text-align': 'center', 'color': user.isActive ? '#2ed134' : '#e6382f'}">
-                                        {{user.isActive ? 'Active' : 'Inactive'}}
+                                    <span class="status process" [class.active]="order.isActive" [class.deactivated]="!order.isActive" [style]="{'min-width': '100px', 'display': 'inline-block', 'text-align': 'center', 'color': order.isActive ? '#2ed134' : '#e6382f'}">
+                                        {{order.isActive ? 'Active' : 'Inactive'}}
                                     </span>
                                 </td>
                                 <td>
@@ -176,11 +164,11 @@
                                             ...
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-lg" [ngClass]="{'show': dropdownStates[i]}" aria-labelledby="dropdownMenuLink" style=" cursor: pointer;">
-                                            <a class="dropdown-item p-3" (click)="showSellerInfo(user)" data-toggle="modal" data-target="#sellerInfoModal"><i class='bx bx-show'></i> Show</a>
+                                            <a class="dropdown-item p-3" (click)="showSellerInfo(order)" data-toggle="modal" data-target="#sellerInfoModal"><i class='bx bx-show'></i> Show</a>
                                             <div class="dropdown-divider"></div>
-                                            <a  class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user._id) : openConfirmDialog2(user._id)" style="cursor:pointer;">
-                                                <i class='bx' [ngClass]="{'bx-check-circle': !user.isActive, 'bx-x-circle': user.isActive}"></i>
-                                                {{user.isActive ? 'Deactivate' : 'Activate'}}
+                                            <a  class="dropdown-item p-3" style="cursor:pointer;">
+                                                <i class='bx' [ngClass]="{'bx-check-circle': !order.isActive, 'bx-x-circle': order.isActive}"></i>
+                                                {{order.isActive ? 'Deactivate' : 'Activate'}}
                                             </a>
                                         </div>
                                     </div>
@@ -206,7 +194,7 @@
           <div class="modal-body">
             <div class="seller-image-container">
                 <img [src]="selectedUser.photo ? selectedUser.photo.url : 'assets/default.png'" alt="{{selectedUser.firstName}}" class="seller-img">
-                <input type="file" id="imageUploadSeller" style="display: none;" (change)="onImageChangeSeller($event)">
+                <input type="file" id="imageUploadSeller" style="display: none;" >
                 <button class="btn change-btn" (click)="triggerImageUploadSeller()"><i class="fa fa-pencil"></i> Change</button>
             </div>
             <form #editForm="ngForm">
@@ -240,7 +228,7 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" (click)="toggleEdit($event)" id="updateBtn" [disabled]="editing && !editForm.valid" [style.opacity]="editing && !editForm.valid ? 0.5 : 1">
+            <button type="button" class="btn btn-primary"  id="updateBtn" [disabled]="editing && !editForm.valid" [style.opacity]="editing && !editForm.valid ? 0.5 : 1">
               <i class='bx' [ngClass]="{'bx-pen': !editing, 'bx-check': editing}"></i>
             </button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">
@@ -251,3 +239,4 @@
       </div>
     </div>
 </div>
+
