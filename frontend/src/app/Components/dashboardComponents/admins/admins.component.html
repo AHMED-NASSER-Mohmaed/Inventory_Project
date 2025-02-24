@@ -245,16 +245,11 @@
                       <input type="number" required pattern="^[0-9]{14}$" [(ngModel)]="selectedUser.SSN" name="SSN" #ssnInput="ngModel" [disabled]="!editing" class="value">
                       </div>
                   </div>
+
                   <div class="info-item">
                     <strong class="label">Branch:</strong>
                     <div class="input-wrapper">
-                      <mat-select [(ngModel)]="selectedUser.branch" name="branchId" 
-                        placeholder="{{ selectedUser.branch ? selectedUser.branch : 'Select Branch' }}" 
-                        [disabled]="!editing" required>
-                        <mat-option *ngFor="let branch of branches" [value]="branch.id">
-                          {{ branch.main + '\n' + branch.sub }}
-                        </mat-option>
-                      </mat-select>
+                        <input type="number" required pattern="^[0-9]{14}$" [(ngModel)]="selectedUser.branch" name="SSN" #ssnInput="ngModel" [disabled]="!editing" class="value">
                     </div>
                   </div>
                 

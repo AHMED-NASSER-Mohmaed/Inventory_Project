@@ -240,6 +240,7 @@ export class AdminsComponent implements OnInit, OnDestroy {
       branch: user.branch || '',
     };
     this.backupUser = { ...this.selectedUser };
+    console.log(this.selectedUser.SSN);
   }
 
   // Customer actions
@@ -672,22 +673,22 @@ export class AdminsComponent implements OnInit, OnDestroy {
       password: this.newAdmin.password,
       passwordConfirm: this.newAdmin.passwordConfirm,
       SSN: this.newAdmin.SSN,
-      branchId: this.newAdmin.branchId || undefined
+      branch: this.newAdmin.branchId || undefined
     };
     const sub = this.adminsService.addAdmin(payload).subscribe({
       next: (res) => {
-        const newAdminRecord = res.data;
-        this.toaster.success('Admin added successfully');
-        if (!this.isSearchMode && (this.currentFilter === 'active' || this.currentFilter === '')) {
-          this.users.unshift(newAdminRecord);
-          const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-          if (this.pageCache[cacheKey]) {
-            this.pageCache[cacheKey].result.unshift(newAdminRecord);
-            this.pageCache[cacheKey].total++;
+        if (res.message === 'success') { 
+          const newAdminRecord = res.data;
+          this.toaster.success('Admin added successfully');
+          if (!this.isSearchMode && (this.currentFilter === 'active' || this.currentFilter === '')) {
+            const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
+            if (this.pageCache[cacheKey]) {
+              this.pageCache[cacheKey].result.unshift(newAdminRecord);
+              this.pageCache[cacheKey].total++;
+            }
           }
+          this.getActiveCustomersCount();
         }
-        this.getActiveCustomersCount();
-       
         const modalElement = document.getElementById('addCategoryModal');
         if (modalElement) {
           modalElement.classList.remove('show');
