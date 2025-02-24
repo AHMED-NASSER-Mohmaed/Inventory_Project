@@ -64,7 +64,7 @@ const ProductSchema = new mongoose.Schema(
     //default false cuz i do not manage the media part , decription at add product function level 
     isActive: {
       type: Boolean,
-      default: false,
+      default: true,
     },
  
     //default is false for the seller -- for us approved in case we are the people who add this product to the system 

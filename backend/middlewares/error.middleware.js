@@ -10,7 +10,7 @@ const handleDuplicateFieldsDB = (err) => {
   try {
     
     const duplicatedFields = [];
-    // console.log(err);
+   
     for (const key in err.keyValue) {
       if (err.keyPattern.hasOwnProperty(key)) {
         duplicatedFields.push(key);

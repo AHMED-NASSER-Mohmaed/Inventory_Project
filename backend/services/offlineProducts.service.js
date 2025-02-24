@@ -7,7 +7,7 @@ module.exports.OfflineProductsService={
     addOfflineProduct:async(data)=>{
         try{
             data.status='approved'
-
+            
             let newProduct = await productService.addProduct(data);
             
             return await OfflineProductsRepo.addOfflineProduct({branch:APP_CONFIG.MAIN_BRANCH_ID,
@@ -16,9 +16,9 @@ module.exports.OfflineProductsService={
 
 
 
-        }catch(error){
-            console.log("from add of line product");
-            throw error;
+        }catch(err){
+            
+            throw err;
         }
     },
 
@@ -50,10 +50,10 @@ module.exports.OfflineProductsService={
     },
 
     getOfflineProducts:async(filters)=>{
-        try{
-
-        }catch(error){
-            throw error;
-        }
+        // try{
+        //     return await 
+        // }catch(error){
+        //     throw error;
+        // }
     }
 }

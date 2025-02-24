@@ -25,7 +25,7 @@ class OrderContainerController {
 
         this.router.patch(
           "/finalize-order-container-offline/:containerId",
-          // AuthMiddleware.protect,
+          AuthMiddleware.protect,
           catchAsync(this.createOnlineOrderContainer)
         );
 
@@ -33,7 +33,7 @@ class OrderContainerController {
         // online container orders
         this.router.post(
             "/order-container-online",
-            // AuthMiddleware.protect,
+            AuthMiddleware.protect,
             catchAsync(this.createOnlineOrderContainer)
         );
 
@@ -50,13 +50,13 @@ class OrderContainerController {
 
         this.router.get(
             "/suborder/:id",
-            // AuthMiddleware.protect,
+            AuthMiddleware.protect,
             catchAsync(this.getSubOrderById)
         );
 
         this.router.patch( // update for clerk or seller
             "/processSuborder/:orderId",
-          //  pro_res('clerk','seller'),
+           pro_res('clerk','seller'),
             catchAsync(this.processOnlineOrderForClerkOrExternalSeller)
         );
 
@@ -68,20 +68,20 @@ class OrderContainerController {
 
         this.router.get(
             "/AllSubOrdersForClerk", // same as the cashier below but it will process the suborders that are related to our company only
-            // AuthMiddleware.protect,
+            AuthMiddleware.protect,
             catchAsync(this.getAllOnlineOrdersForClerk)
         );
 
         this.router.get( // in order to change the status into compelete after the order is delivered or partially delivered
             "/AllSubOrdersForCashier", // he will get all suborders that has a cashier null so he can choose to handle that suboder if he wants
-            // AuthMiddleware.protect,
+            AuthMiddleware.protect,
             catchAsync(this.getAllOnlineOrdersForCashier) // cashier will get all suborders that has his id or null even if the suborder was not related to our company (because we need to take our rate from the external seller)
         );
 
         // seller
         this.router.get(
             "/AllSubOrdersForExternalSeller",
-            // AuthMiddleware.protect,
+            AuthMiddleware.protect,
             catchAsync(this.getAllOnlineOrdersForSeller)
         );
 
@@ -134,7 +134,8 @@ class OrderContainerController {
 
   async getAllOnlineOrdersForClerk(req, res){
 
-    if(!req.user.branch.equals(APP_CONFIG.ONLINE_BRANCH_ID) || req.user.role != "clerk"){
+    console.log(req.user,"clame");
+    if(req.user.branch!=APP_CONFIG.ONLINE_BRANCH_ID || req.user.role != "clerk"){
         throw new AppError("You are not authorized to get those orders since you are not employed in this branch.");
     }
 
@@ -143,6 +144,7 @@ class OrderContainerController {
     let status = req.body.status;
     let userType = 'clerk';
     const subOrders = await SubOrderService.getAllOnlineOrdersForClerkOrSellerBasedOnStatus(clerkId, status, userType);
+    console.log(subOrders);
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       subOrders,

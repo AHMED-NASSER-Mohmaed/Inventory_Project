@@ -12,6 +12,7 @@ module.exports.productService={
     //   and also category , brand 
     addProduct:async(data)=>{
         try{
+            console.log("from seeeeeeeeeee",data);
             
             let fields=[ "name" , "code" , "cost"  , "description" , "category" , "brand" , "supplier" ,]
     
