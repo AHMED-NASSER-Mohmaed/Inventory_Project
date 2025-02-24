@@ -96,6 +96,7 @@
                                 <button mat-icon-button type="button" [matMenuTriggerFor]="menu" style="border: none; background-color: var(--light);">
                                     <i class='bx bx-filter' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
                                 </button>
+
                                 <button mat-icon-button type="button" (click)="resetSearch()" style="border: none; background-color: var(--light);" title="Reset Search">
                                     <i class='bx bx-reset' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
                                 </button>
@@ -107,10 +108,17 @@
                                             class="matbuttongroupfilter"
                                             (change)="onFilterChange($event)">
                                             <mat-button-toggle value="name">Name</mat-button-toggle>
+                                            <mat-button-toggle value="SSN">SSN</mat-button-toggle>
                                             <mat-button-toggle value="phoneNumber">Phone#</mat-button-toggle>
                                         </mat-button-toggle-group>
                                     </button>
                                 </mat-menu>
+                                <mat-select [(ngModel)]="selectedBranch" name="branchFilter" placeholder="Filter By Branch" (selectionChange)="onBranchFilterChange()" style="margin-left: 0.5em; width: 150px;">
+                                    <mat-option value="">All Branches</mat-option>
+                                    <mat-option *ngFor="let branch of branches" [value]="branch.id">
+                                        {{ branch.main + ' ' + branch.sub }}
+                                    </mat-option>
+                                </mat-select>
                             </div>
                         </form>
                     </div>
@@ -136,7 +144,7 @@
                                 </th>
                                 <th>
                                     Status
-                                    <span id="dots-container">
+                                    <span id="dots-container" *ngIf="!selectedBranch">
                                         <span class="dot green-dot" [class.selected]="currentFilter === 'active'" (click)="setFilter('active')" title="Show Active"></span>
                                         <span class="dot red-dot"  [class.selected]="currentFilter === 'inactive'" (click)="setFilter('inactive')" title="Show Inactive"></span>
                                     </span>
@@ -179,9 +187,12 @@
                                             ...
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-lg" [ngClass]="{'show': dropdownStates[i]}" aria-labelledby="dropdownMenuLink" style=" cursor: pointer;">
-                                            <a class="dropdown-item p-3" (click)="showSellerInfo(user)" data-toggle="modal" data-target="#sellerInfoModal"><i class='bx bx-show'></i> Show</a>
+                                            <a class="dropdown-item p-3" (click)="showSellerInfo(user)" data-toggle="modal" data-target="#sellerInfoModal">
+                                                <i class='bx bx-show'></i> Show
+                                            </a>
                                             <div class="dropdown-divider"></div>
-                                            <a  class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user._id) : openConfirmDialog2(user._id)" style="cursor:pointer;">
+                                            <a class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user._id) : openActivateAdminModal(user)" 
+                                               data-toggle="modal" [attr.data-target]="!user.isActive ? '#activateAdminModal' : null" style="cursor:pointer;">
                                                 <i class='bx' [ngClass]="{'bx-check-circle': !user.isActive, 'bx-x-circle': user.isActive}"></i>
                                                 {{user.isActive ? 'Deactivate' : 'Activate'}}
                                             </a>
@@ -249,7 +260,7 @@
                   <div class="info-item">
                     <strong class="label">Branch:</strong>
                     <div class="input-wrapper">
-                        <input type="number" required pattern="^[0-9]{14}$" [(ngModel)]="selectedUser.branch" name="SSN" #ssnInput="ngModel" [disabled]="!editing" class="value">
+                        <input type="text" required [(ngModel)]="selectedUser.branch" name="branch" disabled class="value">
                     </div>
                   </div>
                 
@@ -268,7 +279,6 @@
       </div>
     </div>
 
-    <!-- Updated Add Admin Modal -->
     <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addAdminModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content custom-modal">
@@ -278,42 +288,36 @@
             <div class="modal-body">
               <form #addAdminForm="ngForm">
                 <div class="info-grid">
-                  <!-- First Name -->
                   <div class="info-item">
                     <strong class="label">First Name:</strong>
                     <div class="input-wrapper" [ngClass]="{'valid': addFirstName.touched && addFirstName.valid, 'invalid': addFirstName.touched && addFirstName.invalid}">
                       <input type="text" required minlength="3" [(ngModel)]="newAdmin.firstName" name="firstName" #addFirstName="ngModel" placeholder="Enter first name">
                     </div>
                   </div>
-                  <!-- Last Name -->
                   <div class="info-item">
                     <strong class="label">Last Name:</strong>
                     <div class="input-wrapper" [ngClass]="{'valid': addLastName.touched && addLastName.valid, 'invalid': addLastName.touched && addLastName.invalid}">
                       <input type="text" required minlength="3" [(ngModel)]="newAdmin.lastName" name="lastName" #addLastName="ngModel" placeholder="Enter last name">
                     </div>
                   </div>
-                  <!-- Email -->
                   <div class="info-item">
                     <strong class="label">Email:</strong>
                     <div class="input-wrapper" [ngClass]="{'valid': addEmail.touched && addEmail.valid, 'invalid': addEmail.touched && addEmail.invalid}">
                       <input type="email" required [(ngModel)]="newAdmin.email" name="email" #addEmail="ngModel" placeholder="Enter email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
                     </div>
                   </div>
-                  <!-- Phone Number -->
                   <div class="info-item">
                     <strong class="label">Phone Number:</strong>
                     <div class="input-wrapper" [ngClass]="{'valid': addPhone.touched && addPhone.valid, 'invalid': addPhone.touched && addPhone.invalid}">
                       <input type="text" required [(ngModel)]="newAdmin.phoneNumber" name="phoneNumber" #addPhone="ngModel" placeholder="Enter phone number" pattern="^(010|011|012|015)\d{8}$">
                     </div>
                   </div>
-                  <!-- Password -->
                   <div class="info-item">
                     <strong class="label">Password:</strong>
                     <div class="input-wrapper" [ngClass]="{'valid': addPassword.touched && addPassword.valid, 'invalid': addPassword.touched && addPassword.invalid}">
                       <input type="password" required [(ngModel)]="newAdmin.password" name="password" id="password" placeholder="Enter password" minlength="8" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" #addPassword="ngModel">
                     </div>
                   </div>
-                  <!-- Confirm Password -->
                   <div class="info-item">
                     <strong class="label">Confirm Password:</strong>
                     <div class="input-wrapper" [ngClass]="{'valid': addPasswordConfirm.touched && addPasswordConfirm.valid, 'invalid': addPasswordConfirm.touched && addPasswordConfirm.invalid}">
@@ -349,5 +353,39 @@
             </div>
           </div>
         </div>
+    </div>
+
+    <div class="modal fade" id="activateAdminModal" tabindex="-1" role="dialog" aria-labelledby="activateAdminModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="activateAdminModalLabel">Assign Branch To Admin</h5>
+          </div>
+          <div class="modal-body">
+            <form #activateAdminForm="ngForm">
+              <div class="info-grid">
+                <div class="info-item">
+                  <strong class="label">Branch:</strong>
+                  <div class="input-wrapper">
+                    <mat-select [(ngModel)]="selectedActivationBranch" name="branchId" placeholder="Select Branch" required>
+                      <mat-option *ngFor="let branch of branches" [value]="branch.id">
+                        {{ branch.main + '\n' + branch.sub }}
+                      </mat-option>
+                    </mat-select>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" (click)="activateAdminAssignment()" [disabled]="!selectedActivationBranch" title="Activate Admin">
+              <i class="bx bx-check"></i>
+            </button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+              <i class='bx bx-x'></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 </div>

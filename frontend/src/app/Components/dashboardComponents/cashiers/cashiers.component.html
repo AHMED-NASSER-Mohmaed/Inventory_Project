@@ -1,1 +1,391 @@
-<p>cashiers works!</p>
+<div class="parent3" [ngClass]="{'dark': isDarkMode}">
+    <section id="content">
+        <main>
+            <div class="head-title">
+                <div class="left">
+                    <div class="head-flex">
+                        <h1>Hi, {{tokenData.id.firstName}}!</h1>
+                        <div class="switch-container">
+                            <label class="switch-mode">
+                                <input type="checkbox" id="switch-mode" (change)="toggleDarkMode()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <ul class="breadcrumb">
+                        <li><a >Dashboard</a></li>
+                        <li><i class='bx bx-chevron-right'></i></li>
+                        <li><a >Users</a></li>
+                        <li><i class='bx bx-chevron-right'></i></li>
+                        <li><a class="active" >Cashiers</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <ul class="box-info">
+
+                <li>    
+                    <ngx-skeleton-loader *ngIf="activeCustomersCount === null || activeCustomersCount === undefined" appearance="custom-content">
+                        <div class="skeleton-container">
+                          <div class="skeleton-box">
+                            <div class="skeleton-circle"></div>
+                          </div>
+                          <div class="skeleton-text">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line"></div>
+                          </div>
+                        </div>
+                      </ngx-skeleton-loader>                      
+                      
+                    <i *ngIf="activeCustomersCount !== null && activeCustomersCount !== undefined" class='bx bxs-contact'></i>
+                    <span *ngIf="activeCustomersCount !== null && activeCustomersCount !== undefined" class="text">
+                        <h3>{{activeCustomersCount}}</h3>
+                        <p>Active Cashiers</p>
+                    </span>
+                </li>
+                <li>
+                    <ngx-skeleton-loader *ngIf="inactiveCustomersCount === null || inactiveCustomersCount === undefined" appearance="custom-content">
+                        <div class="skeleton-container">
+                          <div class="skeleton-box">
+                            <div class="skeleton-circle"></div>
+                          </div>
+                          <div class="skeleton-text">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line"></div>
+                          </div>
+                        </div>
+                      </ngx-skeleton-loader>
+
+                    <i  *ngIf="inactiveCustomersCount !== null && inactiveCustomersCount !== undefined" class='bx bxs-archive-in' id="lol"></i>
+                    <span *ngIf="inactiveCustomersCount !== null && inactiveCustomersCount !== undefined" class="text">
+                        <h3>{{inactiveCustomersCount}}</h3>
+                        <p>Inactive Cashiers</p>
+                    </span>
+                </li>
+            </ul>
+
+            <div class="table-data">
+                <div class="order">
+                    <div class="head">
+                        <div class="headhead">
+                        <h3>Cashiers</h3>
+                        <button type="button" class="btn btn-sm btn-outline-dark" data-toggle="modal" data-target="#addCategoryModal" (click)="openAddModal()" style="margin-left: 5px; margin-bottom: 5px; color: var(--dark); background-color: var(--grey);">
+                            <i class='bx bx-plus' style="padding: 3px;"></i>
+                        </button>
+                        <div class="items-per-page">
+                            <label> 
+                                <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" name="itemsPerPage">
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                </select>
+                            </label>
+                        </div>
+                        </div>
+                        <form (ngSubmit)="onSearch($event)">
+                            <div class="form-input">
+                                
+                                <input type="search" 
+                                       [(ngModel)]="searchQuery" 
+                                       name="searchQuery" 
+                                       [placeholder]="searchPlaceholder"
+                                       (keypress)="validateSearchInput($event)"
+                                       (paste)="handlePaste($event)">
+                                <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                                <div id="search-btns">
+                                <button mat-icon-button type="button" [matMenuTriggerFor]="menu" style="border: none; background-color: var(--light);">
+                                    <i class='bx bx-filter' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
+                                </button>
+
+                                <button mat-icon-button type="button" (click)="resetSearch()" style="border: none; background-color: var(--light);" title="Reset Search">
+                                    <i class='bx bx-reset' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
+                                </button>
+                                </div>
+                                <mat-menu #menu="matMenu" class="matMenu">
+                                    <button mat-menu-item class="mat-menu-item">
+                                        <mat-button-toggle-group vertical name="favoriteColor" aria-label="Favorite Color"
+                                            [hideSingleSelectionIndicator]="hideSingleSelectionIndicator()" 
+                                            class="matbuttongroupfilter"
+                                            (change)="onFilterChange($event)">
+                                            <mat-button-toggle value="name">Name</mat-button-toggle>
+                                            <mat-button-toggle value="SSN">SSN</mat-button-toggle>
+                                            <mat-button-toggle value="phoneNumber">Phone#</mat-button-toggle>
+                                        </mat-button-toggle-group>
+                                    </button>
+                                </mat-menu>
+                                <mat-select [(ngModel)]="selectedBranch" name="branchFilter" placeholder="Filter By Branch" (selectionChange)="onBranchFilterChange()" style="margin-left: 0.5em; width: 150px;">
+                                    <mat-option value="">All Branches</mat-option>
+                                    <mat-option *ngFor="let branch of branches" [value]="branch.id">
+                                        {{ branch.main + ' ' + branch.sub }}
+                                    </mat-option>
+                                </mat-select>
+                            </div>
+                        </form>
+                    </div>
+
+                    <table style="border-spacing: 15px; border-collapse: separate;">
+                        <thead>
+                            <tr>
+                                <th (click)="toggleSort('name')" style="cursor: pointer">
+                                    Name
+                                    <i class="bx" [ngClass]="{
+                                        'bx-up-arrow-alt': sortField === 'name' && sortDirection === 'asc',
+                                        'bx-down-arrow-alt': sortField === 'name' && sortDirection === 'desc',
+                                        'bx-sort': sortField !== 'name'
+                                    }"></i>
+                                </th>
+                                <th (click)="toggleSort('createdAt')" style="cursor: pointer">
+                                    Created At
+                                    <i class="bx" [ngClass]="{
+                                        'bx-up-arrow-alt': sortField === 'createdAt' && sortDirection === 'asc',
+                                        'bx-down-arrow-alt': sortField === 'createdAt' && sortDirection === 'desc',
+                                        'bx-sort': sortField !== 'createdAt'
+                                    }"></i>
+                                </th>
+                                <th>
+                                    Status
+                                    <span id="dots-container" *ngIf="!selectedBranch">
+                                        <span class="dot green-dot" [class.selected]="currentFilter === 'active'" (click)="setFilter('active')" title="Show Active"></span>
+                                        <span class="dot red-dot"  [class.selected]="currentFilter === 'inactive'" (click)="setFilter('inactive')" title="Show Inactive"></span>
+                                    </span>
+                                </th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngIf="showNoResults" class="no-results-row">
+                                <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
+                                    No Cashiers Found with this {{lastSearchFilter === 'name' ? 'Name' : lastSearchFilter === 'SSN' ? 'SSN' : 'Phone Number'}}
+                                </td>
+                            </tr>
+                            <tr *ngIf="!isLoading && !showNoResults && users.length === 0" class="no-results-row">
+                                <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
+                                    No {{ currentFilter === 'active' ? 'Active' : 'Inactive' }} Cashiers Yet
+                                </td>
+                            </tr>
+                            <tr *ngIf="isLoading" class="no-results-row">
+                                <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
+                                    <div style="display: flex; justify-content: center; align-items: center; height: 100%;" id="spinner">
+                                        <mat-spinner style="color: white;" class="mat-spinner"></mat-spinner>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr *ngFor="let user of users; let i = index">
+                                <td>
+                                    <img [src]="user.photo.url">
+                                    <p>{{ user.firstName + " "+ user.lastName }}</p>
+                                </td>
+                                <td>{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
+                                <td>
+                                    <span class="status process" [class.active]="user.isActive" [class.deactivated]="!user.isActive" [style]="{'min-width': '100px', 'display': 'inline-block', 'text-align': 'center', 'color': user.isActive ? '#2ed134' : '#e6382f'}">
+                                        {{user.isActive ? 'Active' : 'Inactive'}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="dropdown" [ngClass]="{'show': dropdownStates[i]}" (click)="toggleDropdown(i)">
+                                        <a class="btn btn-secondary dropdown-toggle btn-lg" role="button" id="dropdownMenuLink" aria-haspopup="true" aria-expanded="false" style="padding: 0px 5px; padding-left: 8px; display: flex; align-items: center;">
+                                            ...
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-lg" [ngClass]="{'show': dropdownStates[i]}" aria-labelledby="dropdownMenuLink" style=" cursor: pointer;">
+                                            <a class="dropdown-item p-3" (click)="showSellerInfo(user)" data-toggle="modal" data-target="#sellerInfoModal">
+                                                <i class='bx bx-show'></i> Show
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item p-3" (click)="user.isActive ? openConfirmDialog(user._id) : openActivateAdminModal(user)" 
+                                               data-toggle="modal" [attr.data-target]="!user.isActive ? '#activateAdminModal' : null" style="cursor:pointer;">
+                                                <i class='bx' [ngClass]="{'bx-check-circle': !user.isActive, 'bx-x-circle': user.isActive}"></i>
+                                                {{user.isActive ? 'Deactivate' : 'Activate'}}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination-controls">
+                        <button (click)="previousPage()" [disabled]="!hasPreviousPage"><i class='bx bx-chevron-left' style="font-size: 1.7em;"></i></button>
+                        <button (click)="nextPage()" [disabled]="!hasNextPage"><i class='bx bx-chevron-right' style="font-size: 1.7em;"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <div class="modal fade" id="sellerInfoModal" tabindex="-1" role="dialog" aria-labelledby="sellerInfoModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="sellerInfoModalLabel">Cashiers Details</h5>
+          </div>
+          <div class="modal-body">
+            <div class="seller-image-container">
+                <img [src]="selectedUser.photo ? selectedUser.photo.url : 'assets/default.png'" alt="{{selectedUser.firstName}}" class="seller-img">
+                <input type="file" id="imageUploadSeller" style="display: none;" (change)="onImageChangeSeller($event)">
+                <button class="btn change-btn" (click)="triggerImageUploadSeller()"><i class="fa fa-pencil"></i> Change</button>
+            </div>
+            <form #editForm="ngForm">
+              <div class="info-grid" *ngIf="selectedUser">
+              <div class="info-item">
+                <strong class="label">First Name:</strong>
+                <div class="input-wrapper" [ngClass]="{'valid': firstNameInput.touched && firstNameInput.valid, 'invalid': firstNameInput.touched && firstNameInput.invalid}">
+                <input type="text" required minlength="3" maxlength="10" [(ngModel)]="selectedUser.firstName" name="firstName" #firstNameInput="ngModel" [disabled]="!editing" class="value">
+                </div>
+              </div>
+              <div class="info-item">
+                <strong class="label">Last Name:</strong>
+                <div class="input-wrapper" [ngClass]="{'valid': lastNameInput.touched && lastNameInput.valid, 'invalid': lastNameInput.touched && lastNameInput.invalid}">
+                  <input type="text" required minlength="3" maxlength="10" [(ngModel)]="selectedUser.lastName" name="lastName" #lastNameInput="ngModel" [disabled]="!editing" class="value">
+                </div>
+                </div>
+                <div class="info-item">
+                  <strong class="label">Email:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': emailInput.touched && emailInput.valid, 'invalid': emailInput.touched && emailInput.invalid}">
+                    <input type="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" [(ngModel)]="selectedUser.email" name="email" #emailInput="ngModel" disabled class="value">
+                    </div>
+                </div>
+                <div class="info-item">
+                  <strong class="label">Phone Number:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': phoneInput.touched && phoneInput.valid, 'invalid': phoneInput.touched && phoneInput.invalid}">
+                    <input type="text" required pattern="^(010|011|012|015)\d{8}$" [(ngModel)]="selectedUser.phoneNumber" name="phoneNumber" #phoneInput="ngModel" [disabled]="!editing" class="value">
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <strong class="label">SSN:</strong>
+                      <div class="input-wrapper" [ngClass]="{'valid': ssnInput.touched && ssnInput.valid, 'invalid': ssnInput.touched && ssnInput.invalid}">
+                      <input type="number" required pattern="^[0-9]{14}$" [(ngModel)]="selectedUser.SSN" name="SSN" #ssnInput="ngModel" [disabled]="!editing" class="value">
+                      </div>
+                  </div>
+
+                  <div class="info-item">
+                    <strong class="label">Branch:</strong>
+                    <div class="input-wrapper">
+                        <input type="text" required [(ngModel)]="selectedUser.branch" name="branch" disabled class="value">
+                    </div>
+                  </div>
+                
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" (click)="toggleEdit($event)" id="updateBtn" [disabled]="editing && !editForm.valid" [style.opacity]="editing && !editForm.valid ? 0.5 : 1">
+              <i class='bx' [ngClass]="{'bx-pen': !editing, 'bx-check': editing}"></i>
+            </button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                <i class='bx bx-x'></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addAdminModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content custom-modal">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addAdminModalLabel">Add New Cashiers</h5>
+            </div>
+            <div class="modal-body">
+              <form #addAdminForm="ngForm">
+                <div class="info-grid">
+                  <div class="info-item">
+                    <strong class="label">First Name:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': addFirstName.touched && addFirstName.valid, 'invalid': addFirstName.touched && addFirstName.invalid}">
+                      <input type="text" required minlength="3" [(ngModel)]="newAdmin.firstName" name="firstName" #addFirstName="ngModel" placeholder="Enter first name">
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <strong class="label">Last Name:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': addLastName.touched && addLastName.valid, 'invalid': addLastName.touched && addLastName.invalid}">
+                      <input type="text" required minlength="3" [(ngModel)]="newAdmin.lastName" name="lastName" #addLastName="ngModel" placeholder="Enter last name">
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <strong class="label">Email:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': addEmail.touched && addEmail.valid, 'invalid': addEmail.touched && addEmail.invalid}">
+                      <input type="email" required [(ngModel)]="newAdmin.email" name="email" #addEmail="ngModel" placeholder="Enter email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <strong class="label">Phone Number:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': addPhone.touched && addPhone.valid, 'invalid': addPhone.touched && addPhone.invalid}">
+                      <input type="text" required [(ngModel)]="newAdmin.phoneNumber" name="phoneNumber" #addPhone="ngModel" placeholder="Enter phone number" pattern="^(010|011|012|015)\d{8}$">
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <strong class="label">Password:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': addPassword.touched && addPassword.valid, 'invalid': addPassword.touched && addPassword.invalid}">
+                      <input type="password" required [(ngModel)]="newAdmin.password" name="password" id="password" placeholder="Enter password" minlength="8" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" #addPassword="ngModel">
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <strong class="label">Confirm Password:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': addPasswordConfirm.touched && addPasswordConfirm.valid, 'invalid': addPasswordConfirm.touched && addPasswordConfirm.invalid}">
+                      <input type="password" required [(ngModel)]="newAdmin.passwordConfirm" name="passwordConfirm" id="passwordConfirm" placeholder="Confirm password" minlength="8" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" #addPasswordConfirm="ngModel">
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <strong class="label">SSN:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': addSSN.touched && addSSN.valid, 'invalid': addSSN.touched && addSSN.invalid}">
+                      <input type="number" required [(ngModel)]="newAdmin.SSN" name="SSN" #addSSN="ngModel" placeholder="Enter SSN" pattern="^[0-9]{14}$">
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <strong class="label">Branch:</strong>
+                    <div class="input-wrapper">
+                    <mat-select [(ngModel)]="newAdmin.branchId" name="branchId" placeholder="Select Branch" required>
+                        <mat-option *ngFor="let branch of branches" [value]="branch.id">
+                            {{ branch.main + '\n' + branch.sub }}
+                        </mat-option>
+                    </mat-select>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" (click)="addAdmin()" [disabled]="addAdminForm.invalid" title="Add Admin">
+                <i class="bx bx-check"></i>
+              </button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                <i class='bx bx-x'></i>
+              </button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="activateAdminModal" tabindex="-1" role="dialog" aria-labelledby="activateAdminModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="activateAdminModalLabel">Assign Branch To Cashiers</h5>
+          </div>
+          <div class="modal-body">
+            <form #activateAdminForm="ngForm">
+              <div class="info-grid">
+                <div class="info-item">
+                  <strong class="label">Branch:</strong>
+                  <div class="input-wrapper">
+                    <mat-select [(ngModel)]="selectedActivationBranch" name="branchId" placeholder="Select Branch" required>
+                      <mat-option *ngFor="let branch of branches" [value]="branch.id">
+                        {{ branch.main + '\n' + branch.sub }}
+                      </mat-option>
+                    </mat-select>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" (click)="activateAdminAssignment()" [disabled]="!selectedActivationBranch" title="Activate Admin">
+              <i class="bx bx-check"></i>
+            </button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+              <i class='bx bx-x'></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

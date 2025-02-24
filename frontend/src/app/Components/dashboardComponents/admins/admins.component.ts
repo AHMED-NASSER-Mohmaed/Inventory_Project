@@ -99,6 +99,11 @@ export class AdminsComponent implements OnInit, OnDestroy {
     SSN: ''
   };
 
+  selectedActivationAdmin: User = {} as User;
+  selectedActivationBranch: string = '';
+
+  selectedBranch: string = '';
+
   constructor(
     private adminsService: AdminsService,
     public dialog: MatDialog,
@@ -120,7 +125,7 @@ export class AdminsComponent implements OnInit, OnDestroy {
   hideSingleSelectionIndicator = signal(true);
 
   loadSellers(): void {
-    const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
+    const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}_${this.selectedBranch}`;
 
     if (this.pageCache[cacheKey]) {
       const cached = this.pageCache[cacheKey];
@@ -137,7 +142,10 @@ export class AdminsComponent implements OnInit, OnDestroy {
     this.users = [];
 
     let filterParam = '';
-    if (this.currentFilter === 'active') {
+    if (this.selectedBranch) {
+      // Only active admins have branch assigned
+      filterParam = `branch:${this.selectedBranch}+isActive:true`;
+    } else if (this.currentFilter === 'active') {
       filterParam = 'isActive:true';
     } else if (this.currentFilter === 'inactive') {
       filterParam = 'isActive:false';
@@ -185,6 +193,15 @@ export class AdminsComponent implements OnInit, OnDestroy {
     this.subscriptions.push(sub);
   }
 
+  onBranchFilterChange(): void {
+    this.currentPage = 1;
+    this.isSearchMode = false;
+    this.searchQuery = '';
+    this.currentFilter = ''; // clear active/inactive filter if any
+    this.updateSearchPlaceholder(); // update placeholder after branch selection
+    this.loadSellers();
+  }
+
   updatePaginationState(): void {
     this.hasNextPage = this.currentPage < this.totalPages;
     this.hasPreviousPage = this.currentPage > 1;
@@ -213,7 +230,6 @@ export class AdminsComponent implements OnInit, OnDestroy {
   }
 
   setFilter(filter: string): void {
-    // Toggle filter: if already selected, remove the filter.
     this.currentFilter = this.currentFilter === filter ? '' : filter;
     this.currentPage = 1;
     this.isSearchMode = false;
@@ -237,10 +253,9 @@ export class AdminsComponent implements OnInit, OnDestroy {
       email: user.email || '',
       phoneNumber: user.phoneNumber || '',
       SSN: user.SSN || '',
-      branch: user.branch || '',
+      branch: user.branch?.location ?? 'Not assigned yet', // changed branch assignment
     };
     this.backupUser = { ...this.selectedUser };
-    console.log(this.selectedUser.SSN);
   }
 
   // Customer actions
@@ -319,6 +334,51 @@ export class AdminsComponent implements OnInit, OnDestroy {
         this.activateCustomer(_id);
       }
     });
+    this.subscriptions.push(sub);
+  }
+
+  openActivateAdminModal(admin: User): void {
+    this.selectedActivationAdmin = admin;
+    this.selectedActivationBranch = '';
+  }
+
+  activateAdminAssignment(): void {
+    if (!this.selectedActivationBranch) {
+      this.toaster.error('Please select a branch', 'Validation Error', { timeOut: 1500 });
+      return;
+    }
+    const sub = this.adminsService.activateCustomerWithBranch(this.selectedActivationAdmin._id, this.selectedActivationBranch)
+      .subscribe({
+        next: (res) => {
+          this.toaster.success('Admin activated successfully');
+          this.pageCache = {};
+          if(this.isSearchMode) {
+            this.loadSearchResults();
+          } else {
+            this.loadSellers();
+          }
+          this.getActiveCustomersCount();
+
+          const modal = document.getElementById('activateAdminModal');
+          if (modal) {
+            modal.classList.remove('show');
+            modal.setAttribute('style', 'display:none;');
+          }
+          const backdrops = document.getElementsByClassName('modal-backdrop');
+          while (backdrops.length > 0) {
+            backdrops[0].parentNode?.removeChild(backdrops[0]);
+          }
+        },
+        error: (error) => {
+          this.toaster.clear();
+          this.toaster.error(error.error.message, 'Failed', {
+            timeOut: 1500,
+            positionClass: 'toast-bottom-right',
+            progressBar: true,
+            closeButton: true
+          });
+        }
+      });
     this.subscriptions.push(sub);
   }
 
@@ -492,6 +552,7 @@ export class AdminsComponent implements OnInit, OnDestroy {
     this.currentPage = 1;
     this.sortField = null;
     this.sortDirection = null;
+    this.selectedBranch = ''; // remove branch filter
     this.loadSellers();
     this.updateSearchPlaceholder();
   }
@@ -549,14 +610,18 @@ export class AdminsComponent implements OnInit, OnDestroy {
       searchFilter = `${this.selectedFilter}:${this.searchQuery}`;
     }
 
-    const statusFilter =
-      this.currentFilter === 'active'
-        ? '+isActive:true'
-        : this.currentFilter === 'inactive'
-        ? '+isActive:false'
-        : '';
-
-    filters = searchFilter + statusFilter;
+    if (this.selectedBranch) {
+      // Force active filter when branch filter is in use
+      filters = `${searchFilter}+branch:${this.selectedBranch}+isActive:true`;
+    } else {
+      const statusFilter =
+        this.currentFilter === 'active'
+          ? '+isActive:true'
+          : this.currentFilter === 'inactive'
+          ? '+isActive:false'
+          : '';
+      filters = searchFilter + statusFilter;
+    }
 
     let sortParam = '';
     if (this.sortField && this.sortDirection) {
@@ -599,13 +664,19 @@ export class AdminsComponent implements OnInit, OnDestroy {
         : this.selectedFilter === 'SSN'
         ? 'SSN'
         : 'Name';
-    const status =
-      this.currentFilter === 'active'
-        ? 'Active'
-        : this.currentFilter === 'inactive'
-        ? 'Inactive'
-        : 'All';
-    this.searchPlaceholder = `Search ${status} Admins By ${filterType}...`;
+    if (this.selectedBranch) {
+      const branchObj = this.branches.find(b => b.id === this.selectedBranch);
+      const branchName = branchObj ? `${branchObj.main} ${branchObj.sub}` : '';
+      this.searchPlaceholder = `Search Admins in ${branchName} by ${filterType}...`;
+    } else {
+      const status =
+        this.currentFilter === 'active'
+          ? 'Active'
+          : this.currentFilter === 'inactive'
+          ? 'Inactive'
+          : 'All';
+      this.searchPlaceholder = `Search ${status} Admins By ${filterType}...`;
+    }
   }
 
   onItemsPerPageChange(): void {
@@ -677,18 +748,24 @@ export class AdminsComponent implements OnInit, OnDestroy {
     };
     const sub = this.adminsService.addAdmin(payload).subscribe({
       next: (res) => {
-        if (res.message === 'success') { 
-          const newAdminRecord = res.data;
-          this.toaster.success('Admin added successfully');
-          if (!this.isSearchMode && (this.currentFilter === 'active' || this.currentFilter === '')) {
-            const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[cacheKey]) {
-              this.pageCache[cacheKey].result.unshift(newAdminRecord);
-              this.pageCache[cacheKey].total++;
-            }
+        const newAdminRecord = res.data;
+         if (this.newAdmin.branchId) {
+          const branchObj = this.branches.find(b => b.id === this.newAdmin.branchId);
+          if (branchObj) {
+            newAdminRecord.branch = { location: branchObj.main + ' ' + branchObj.sub };
           }
-          this.getActiveCustomersCount();
         }
+        this.toaster.success('Admin added successfully');
+        if (!this.isSearchMode && (this.currentFilter === 'active' || this.currentFilter === '')) {
+          this.users.unshift(newAdminRecord);
+          const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
+          if (this.pageCache[cacheKey]) {
+            this.pageCache[cacheKey].result.unshift(newAdminRecord);
+            this.pageCache[cacheKey].total++;
+          }
+        }
+        this.getActiveCustomersCount();
+       
         const modalElement = document.getElementById('addCategoryModal');
         if (modalElement) {
           modalElement.classList.remove('show');
@@ -722,6 +799,7 @@ export class AdminsComponent implements OnInit, OnDestroy {
             const parts = location.split('-').map(s => s.trim());
             return { id, main: parts[0], sub: parts[1] || '' };
           });
+          this.updateSearchPlaceholder(); // update placeholder now that branches are loaded
         }
       },
       error: (error) => {
@@ -733,6 +811,10 @@ export class AdminsComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  closeActivateModal(): void {
+    ($('#activateAdminModal') as any).modal('hide');
   }
 
   ngOnDestroy(): void {

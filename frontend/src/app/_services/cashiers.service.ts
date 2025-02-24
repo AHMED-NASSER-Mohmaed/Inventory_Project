@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 
-export class AdminsService {
+export class CashiersService {
 
   constructor(public http: HttpClient) { }
   private baseUrl = 'http://localhost:3000';
@@ -18,27 +18,27 @@ export class AdminsService {
 
   getPaginatedCustomersByStatus(page: number, limit: number, filters?: string, sort?: string): Observable<any> {
     const filterParam = filters ? `filters=${filters}` : '';
-    const url = `${this.baseUrl}/getAdmins?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
+    const url = `${this.baseUrl}/getCashier?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
     return this.http.get(url, { headers: this.getHeaders() });
   }
 
   deActiveCustomer(id: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/deleteAdmin/${id}`, { headers: this.getHeaders() });
+    return this.http.delete(`${this.baseUrl}/deleteCashier/${id}`, { headers: this.getHeaders() });
   }
 
   activateCustomer(id: string, branchId?: string): Observable<any> {
     const url = branchId 
-      ? `${this.baseUrl}/activeAdmin/${id}/${branchId}` 
-      : `${this.baseUrl}/activeAdmin/${id}`;
+      ? `${this.baseUrl}/activeCashier/${id}/${branchId}` 
+      : `${this.baseUrl}/activeCashier/${id}`;
     return this.http.patch(url, {}, { headers: this.getHeaders() });
   }
 
   getActiveCustomersCount(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/adminCount?filters=isActive:true`, { headers: this.getHeaders() });
+    return this.http.get(`${this.baseUrl}/cashiersCount?filters=isActive:true`, { headers: this.getHeaders() });
   }
 
   getInActiveCustomersCount(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/adminCount?filters=isActive:false`, { headers: this.getHeaders() });
+    return this.http.get(`${this.baseUrl}/cashiersCount?filters=isActive:false`, { headers: this.getHeaders() });
   }
 
   changeImage(id: string, file: File): Observable<any> {
@@ -50,16 +50,16 @@ export class AdminsService {
   }
 
   updateCustomer(id: string, data: any): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/updateAdmin/${id}`, data, { headers: this.getHeaders() });
+    return this.http.patch(`${this.baseUrl}/updateCashier/${id}`, data, { headers: this.getHeaders() });
   }
 
   searchCustomers(filters: string, page: number, limit: number, sort?: string): Observable<any> {
-    const url = `${this.baseUrl}/getAdmins?page=${page}&limit=${limit}&filters=${filters}${sort || ''}`;
+    const url = `${this.baseUrl}/getCashier?page=${page}&limit=${limit}&filters=${filters}${sort || ''}`;
     return this.http.get(url, { headers: this.getHeaders() });
   }
 
   addAdmin(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/addAdmin`, data, { headers: this.getHeaders() });
+    return this.http.post(`${this.baseUrl}/addCashier`, data, { headers: this.getHeaders() });
   }
 
   getMappedBranches(): Observable<any> {
@@ -67,6 +67,7 @@ export class AdminsService {
   }
 
   activateCustomerWithBranch(id: string, branchId: string): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/activeAdmin/${id}/${branchId}`, {}, { headers: this.getHeaders() });
+    return this.http.patch(`${this.baseUrl}/activeCashier/${id}/${branchId}`, {}, { headers: this.getHeaders() });
   }
+
 }
