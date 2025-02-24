@@ -325,14 +325,12 @@
                       <input type="password" required [(ngModel)]="newAdmin.passwordConfirm" name="passwordConfirm" id="passwordConfirm" placeholder="Confirm password" minlength="8" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" #addPasswordConfirm="ngModel">
                     </div>
                   </div>
-                  <!-- SSN -->
                   <div class="info-item">
                     <strong class="label">SSN:</strong>
                     <div class="input-wrapper" [ngClass]="{'valid': addSSN.touched && addSSN.valid, 'invalid': addSSN.touched && addSSN.invalid}">
                       <input type="number" required [(ngModel)]="newAdmin.SSN" name="SSN" #addSSN="ngModel" placeholder="Enter SSN" pattern="^[0-9]{14}$">
                     </div>
                   </div>
-                  <!-- New Branch Dropdown Field with Placeholder -->
                   <div class="info-item">
                     <strong class="label">Branch:</strong>
                     <div class="input-wrapper">
@@ -341,13 +339,6 @@
                             {{ branch.main + '\n' + branch.sub }}
                         </mat-option>
                     </mat-select>
-                    </div>
-                  </div>
-                  <!-- New Profile Image Field -->
-                  <div class="info-item">
-                    <strong class="label">Profile Image:</strong>
-                    <div class="input-wrapper">
-                      <input type="file" accept="image/*" (change)="onImageSelected($event)" required>
                     </div>
                   </div>
                 </div>

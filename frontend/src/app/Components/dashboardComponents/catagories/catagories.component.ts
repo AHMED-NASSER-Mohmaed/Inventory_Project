@@ -216,34 +216,11 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
   deActiveCustomer(id: string): void {
     const sub = this.supplierService.deActiveCustomer(id).subscribe({
       next: (res) => {
-        console.log(res);
-        const deactivatedCustomer = this.users.find((u) => u._id === id);
-        if (deactivatedCustomer) {
-          // Remove from current active list
-          this.users = this.users.filter((user) => user._id !== id);
-          deactivatedCustomer.isActive = false;
-          
-          // Remove from active cache (using "active" prefix)
-          const activeKey = `active_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-          if (this.pageCache[activeKey]) {
-            this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter((user) => user._id !== id);
-            this.pageCache[activeKey].total--;
-          }
-          
-          // Add to first page of inactive cache (using "inactive" prefix)
-          const inactiveKey = `inactive_1_${this.sortField}_${this.sortDirection}`;
-          if (this.pageCache[inactiveKey]) {
-            const inactiveCache = this.pageCache[inactiveKey];
-            inactiveCache.result.unshift(deactivatedCustomer);
-            if (inactiveCache.result.length > this.itemsPerPage) {
-              inactiveCache.result.pop();
-            }
-            inactiveCache.total++;
-          }
-          
-          this.getInActiveCustomersCount();
-          this.getActiveCustomersCount();
-        }
+        // Clear cache and reload category list
+        this.pageCache = {};
+        this.loadSellers();
+        this.getInActiveCustomersCount();
+        this.getActiveCustomersCount();
       },
       error: (error) => {
         this.toaster.clear();
@@ -262,30 +239,11 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
   activateCustomer(id: string): void {
     const sub = this.supplierService.activateCustomer(id).subscribe({
       next: (res) => {
-        console.log(res);
-        const activatedCustomer = this.users.find((u) => u._id === id);
-        if (activatedCustomer) {
-          this.users = this.users.filter((user) => user._id !== id);
-          activatedCustomer.isActive = true;
-          
-          const inactiveKey = `inactive_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-          if (this.pageCache[inactiveKey]) {
-            this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter((user) => user._id !== id);
-            this.pageCache[inactiveKey].total--;
-          }
-          
-          const activeKey = `active_1_${this.sortField}_${this.sortDirection}`;
-          if (this.pageCache[activeKey]) {
-            const activeCache = this.pageCache[activeKey];
-            activeCache.result.unshift(activatedCustomer);
-            if (activeCache.result.length > this.itemsPerPage) {
-              activeCache.result.pop();
-            }
-            activeCache.total++;
-          }
-          this.getInActiveCustomersCount();
-          this.getActiveCustomersCount();
-        }
+        // Clear cache and reload category list
+        this.pageCache = {};
+        this.loadSellers();
+        this.getInActiveCustomersCount();
+        this.getActiveCustomersCount();
       },
       error: (error) => {
         this.toaster.clear();

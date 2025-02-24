@@ -220,37 +220,15 @@ export class CustomersComponent implements OnInit, OnDestroy {
   deActiveCustomer(_id: string): void {
     const sub = this.customerService.deActiveCustomer(_id).subscribe({
       next: (res) => {
-        console.log(res);
-        const deactivatedCustomer = this.users.find(u => u._id === _id);
-        if (deactivatedCustomer) {
-          if (this.currentFilter === 'active') {
-            // In "active" view: remove from list and update caches
-            this.users = this.users.filter(user => user._id !== _id);
-            const activeKey = `active_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[activeKey]) {
-              this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter(user => user._id !== _id);
-              this.pageCache[activeKey].total--;
-            }
-            const inactiveKey = `inactive_1_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[inactiveKey]) {
-              this.pageCache[inactiveKey].result.unshift(deactivatedCustomer);
-              if (this.pageCache[inactiveKey].result.length > this.itemsPerPage) {
-                this.pageCache[inactiveKey].result.pop();
-              }
-              this.pageCache[inactiveKey].total++;
-            }
-          } else {
-            // In mixed view: only update the status
-            deactivatedCustomer.isActive = false;
-            const currentKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[currentKey]) {
-              const cachedUser = this.pageCache[currentKey].result.find(u => u._id === _id);
-              if (cachedUser) { cachedUser.isActive = false; }
-            }
-          }
-          this.getInActiveCustomersCount();
-          this.getActiveCustomersCount();
+        // Clear cache and reload updated list
+        this.pageCache = {};
+        if (this.isSearchMode) {
+          this.loadSearchResults();
+        } else {
+          this.loadSellers();
         }
+        this.getInActiveCustomersCount();
+        this.getActiveCustomersCount();
       },
       error: (error) => {
         this.toaster.clear();
@@ -269,37 +247,15 @@ export class CustomersComponent implements OnInit, OnDestroy {
   activateCustomer(_id: string): void {
     const sub = this.customerService.activateCustomer(_id).subscribe({
       next: (res) => {
-        console.log(res);
-        const activatedCustomer = this.users.find(u => u._id === _id);
-        if (activatedCustomer) {
-          if (this.currentFilter === 'inactive') {
-            // In "inactive" view: remove from list and update caches
-            this.users = this.users.filter(user => user._id !== _id);
-            const inactiveKey = `inactive_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[inactiveKey]) {
-              this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter(user => user._id !== _id);
-              this.pageCache[inactiveKey].total--;
-            }
-            const activeKey = `active_1_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[activeKey]) {
-              this.pageCache[activeKey].result.unshift(activatedCustomer);
-              if (this.pageCache[activeKey].result.length > this.itemsPerPage) {
-                this.pageCache[activeKey].result.pop();
-              }
-              this.pageCache[activeKey].total++;
-            }
-          } else {
-            // In mixed view: only update the status
-            activatedCustomer.isActive = true;
-            const currentKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[currentKey]) {
-              const cachedUser = this.pageCache[currentKey].result.find(u => u._id === _id);
-              if (cachedUser) { cachedUser.isActive = true; }
-            }
-          }
-          this.getInActiveCustomersCount();
-          this.getActiveCustomersCount();
+        // Clear cache and reload updated list
+        this.pageCache = {};
+        if (this.isSearchMode) {
+          this.loadSearchResults();
+        } else {
+          this.loadSellers();
         }
+        this.getInActiveCustomersCount();
+        this.getActiveCustomersCount();
       },
       error: (error) => {
         this.toaster.clear();

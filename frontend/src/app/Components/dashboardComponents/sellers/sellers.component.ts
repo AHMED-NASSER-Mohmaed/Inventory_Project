@@ -230,35 +230,15 @@ export class SellersComponent implements OnInit, OnDestroy {
   deActiveSeller(_id: string): void {
     const sub = this.sellerService.deActiveSeller(_id).subscribe({
       next: (res) => {
-        console.log(res);
-        const deactivatedSeller = this.users.find(u => u._id === _id);
-        if (deactivatedSeller) {
-          if (this.currentFilter === 'approved' && this.activityFilter === true) {
-            this.users = this.users.filter(user => user._id !== _id);
-            const activeKey = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:true`;
-            if (this.pageCache[activeKey]) {
-              this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter(user => user._id !== _id);
-              this.pageCache[activeKey].total--;
-            }
-            const inactiveKey = `approved_1_${this.sortField}_${this.sortDirection}_active:false`;
-            if (this.pageCache[inactiveKey]) {
-              this.pageCache[inactiveKey].result.unshift(deactivatedSeller);
-              if (this.pageCache[inactiveKey].result.length > this.itemsPerPage) {
-                this.pageCache[inactiveKey].result.pop();
-              }
-              this.pageCache[inactiveKey].total++;
-            }
-          } else {
-            deactivatedSeller.isActive = false;
-            const keyActive = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:true`;
-            if (this.pageCache[keyActive]) {
-              const cachedSeller = this.pageCache[keyActive].result.find(u => u._id === _id);
-              if (cachedSeller) { cachedSeller.isActive = false; }
-            }
-          }
-          this.getActiveSellersCount();
-          this.getDeActiveSellersCount();
+        // Clear cache and reload updated list
+        this.pageCache = {};
+        if (this.isSearchMode) {
+          this.loadSearchResults();
+        } else {
+          this.loadSellers();
         }
+        this.getActiveSellersCount();
+        this.getDeActiveSellersCount();
       },
       error: (error) => { console.log(error); }
     });
@@ -268,35 +248,15 @@ export class SellersComponent implements OnInit, OnDestroy {
   activateSeller(_id: string): void {
     const sub = this.sellerService.activateSeller(_id).subscribe({
       next: (res) => {
-        console.log(res);
-        const activatedSeller = this.users.find(u => u._id === _id);
-        if (activatedSeller) {
-          if (this.currentFilter === 'approved' && this.activityFilter === false) {
-            this.users = this.users.filter(user => user._id !== _id);
-            const inactiveKey = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:false`;
-            if (this.pageCache[inactiveKey]) {
-              this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter(user => user._id !== _id);
-              this.pageCache[inactiveKey].total--;
-            }
-            const activeKey = `approved_1_${this.sortField}_${this.sortDirection}_active:true`;
-            if (this.pageCache[activeKey]) {
-              this.pageCache[activeKey].result.unshift(activatedSeller);
-              if (this.pageCache[activeKey].result.length > this.itemsPerPage) {
-                this.pageCache[activeKey].result.pop();
-              }
-              this.pageCache[activeKey].total++;
-            }
-          } else {
-            activatedSeller.isActive = true;
-            const keyInactive = `approved_${this.currentPage}_${this.sortField}_${this.sortDirection}_active:false`;
-            if (this.pageCache[keyInactive]) {
-              const cachedSeller = this.pageCache[keyInactive].result.find(u => u._id === _id);
-              if (cachedSeller) { cachedSeller.isActive = true; }
-            }
-          }
-          this.getActiveSellersCount();
-          this.getDeActiveSellersCount();
+        // Clear cache and reload updated list
+        this.pageCache = {};
+        if (this.isSearchMode) {
+          this.loadSearchResults();
+        } else {
+          this.loadSellers();
         }
+        this.getActiveSellersCount();
+        this.getDeActiveSellersCount();
       },
       error: (error) => { console.log(error); }
     });

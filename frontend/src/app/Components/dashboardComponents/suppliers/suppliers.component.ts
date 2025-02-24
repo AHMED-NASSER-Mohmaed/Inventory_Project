@@ -213,28 +213,12 @@ export class SuppliersComponent implements OnInit, OnDestroy {
   deActiveCustomer(_id: string): void {
     const sub = this.supplierService.deActiveCustomer(_id).subscribe({
       next: (res) => {
-        const deactivatedCustomer = this.users.find((u) => u._id === _id);
-        if (deactivatedCustomer) {
-          deactivatedCustomer.isActive = false;
-          if (this.currentFilter === 'active') {
-            this.users = this.users.filter((user) => user._id !== _id);
-            const activeKey = `active_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[activeKey]) {
-              this.pageCache[activeKey].result = this.pageCache[activeKey].result.filter((user) => user._id !== _id);
-              this.pageCache[activeKey].total--;
-            }
-            const inactiveKey = `inactive_1_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[inactiveKey]) {
-              const inactiveCache = this.pageCache[inactiveKey];
-              inactiveCache.result.unshift(deactivatedCustomer);
-              if (inactiveCache.result.length > this.itemsPerPage) {
-                inactiveCache.result.pop();
-              }
-              inactiveCache.total++;
-            }
-          }
-          this.getInActiveCustomersCount();
-          this.getActiveCustomersCount();
+        // Clear cache and reload updated supplier list
+        this.pageCache = {};
+        if (this.isSearchMode) {
+          this.loadSearchResults();
+        } else {
+          this.loadSellers();
         }
       },
       error: (error) => {
@@ -254,29 +238,12 @@ export class SuppliersComponent implements OnInit, OnDestroy {
   activateCustomer(_id: string): void {
     const sub = this.supplierService.activateCustomer(_id).subscribe({
       next: (res) => {
-        const activatedCustomer = this.users.find((u) => u._id === _id);
-        if (activatedCustomer) {
-          activatedCustomer.isActive = true;
-          // Only remove from list if "inactive" filter is applied
-          if (this.currentFilter === 'inactive') {
-            this.users = this.users.filter((user) => user._id !== _id);
-            const inactiveKey = `inactive_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[inactiveKey]) {
-              this.pageCache[inactiveKey].result = this.pageCache[inactiveKey].result.filter((user) => user._id !== _id);
-              this.pageCache[inactiveKey].total--;
-            }
-            const activeKey = `active_1_${this.sortField}_${this.sortDirection}`;
-            if (this.pageCache[activeKey]) {
-              const activeCache = this.pageCache[activeKey];
-              activeCache.result.unshift(activatedCustomer);
-              if (activeCache.result.length > this.itemsPerPage) {
-                activeCache.result.pop();
-              }
-              activeCache.total++;
-            }
-          }
-          this.getInActiveCustomersCount();
-          this.getActiveCustomersCount();
+        // Clear cache and reload updated supplier list
+        this.pageCache = {};
+        if (this.isSearchMode) {
+          this.loadSearchResults();
+        } else {
+          this.loadSellers();
         }
       },
       error: (error) => {

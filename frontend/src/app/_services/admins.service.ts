@@ -62,10 +62,4 @@ export class AdminsService {
   getMappedBranches(): Observable<any> {
     return this.http.get(`${this.baseUrl}/branches/maped`, { headers: this.getHeaders() });
   }
-
-  uploadProfileImage(id: string, file: File): Observable<any> {
-    const formData = new FormData();
-    formData.append('image', file);
-    return this.http.patch(`${this.baseUrl}/uploadProfileImage/${id}`, formData, { headers: this.getHeaders() });
-  }
 }

@@ -77,10 +77,8 @@ export class AdminsComponent implements OnInit, OnDestroy {
   activeCustomersCount: any = null; 
   inactiveCustomersCount : any = null;
 
-  // Add branch related properties
   branches: { id: string, main: string, sub: string }[] = [];
 
-  // Add new admin model
   newAdmin: {
     firstName: string,
     lastName: string,
@@ -121,9 +119,7 @@ export class AdminsComponent implements OnInit, OnDestroy {
 
   hideSingleSelectionIndicator = signal(true);
 
-  // Consolidated seller loading method with caching
   loadSellers(): void {
-    // Check cache before setting loading state
     const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
 
     if (this.pageCache[cacheKey]) {
@@ -137,7 +133,6 @@ export class AdminsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Only show loading spinner when fetching from server
     this.isLoading = true;
     this.users = [];
 
@@ -484,17 +479,15 @@ export class AdminsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Don't reset filters anymore
     this.isSearchMode = true;
     this.currentPage = 1;
     this.loadSearchResults();
   }
 
-  // Add new resetSearch method
   resetSearch(): void {
     this.searchQuery = '';
     this.isSearchMode = false;
-    this.currentFilter = ''; // reset filter to show all statuses
+    this.currentFilter = ''; 
     this.currentPage = 1;
     this.sortField = null;
     this.sortDirection = null;
@@ -505,8 +498,8 @@ export class AdminsComponent implements OnInit, OnDestroy {
   validateSearchInput(event: KeyboardEvent): boolean {
     const pattern =
       this.selectedFilter === 'name'
-        ? /^[a-zA-Z\s]$/ // Only letters and spaces for names
-        : /^[0-9]$/; // Only numbers for SSN and phone
+        ? /^[a-zA-Z\s]$/ 
+        : /^[0-9]$/; 
 
     if (!pattern.test(event.key)) {
       event.preventDefault();
@@ -521,8 +514,8 @@ export class AdminsComponent implements OnInit, OnDestroy {
 
     const pattern =
       this.selectedFilter === 'name'
-        ? /^[a-zA-Z\s]*$/ // Only letters and spaces for names
-        : /^[0-9]*$/; // Only numbers for SSN and phone
+        ? /^[a-zA-Z\s]*$/ 
+        : /^[0-9]*$/; 
 
     if (pattern.test(pastedText)) {
       this.searchQuery = pastedText;
@@ -543,7 +536,6 @@ export class AdminsComponent implements OnInit, OnDestroy {
     let filters: string;
     this.lastSearchFilter = this.selectedFilter;
 
-    // Build the search filter based on current filter state
     let searchFilter = '';
     if (this.selectedFilter === 'name') {
       const nameParts = this.searchQuery.trim().split(/\s+/);
@@ -556,7 +548,6 @@ export class AdminsComponent implements OnInit, OnDestroy {
       searchFilter = `${this.selectedFilter}:${this.searchQuery}`;
     }
 
-    // Update status filter: only add filter when explicitly set to 'active' or 'inactive'
     const statusFilter =
       this.currentFilter === 'active'
         ? '+isActive:true'
@@ -617,8 +608,7 @@ export class AdminsComponent implements OnInit, OnDestroy {
   }
 
   onItemsPerPageChange(): void {
-    this.currentPage = 1; // Reset to first page when changing items per page
-    // Clear the cache when changing items per page
+    this.currentPage = 1; 
     this.pageCache = {};
     if (this.isSearchMode) {
       this.loadSearchResults();
@@ -627,18 +617,14 @@ export class AdminsComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Add sorting method
   toggleSort(field: 'name' | 'createdAt'): void {
     if (this.sortField === field) {
-      // Toggle direction if same field
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
-      // New field, start with ascending
       this.sortField = field;
       this.sortDirection = 'asc';
     }
 
-    // Reset to first page when sorting
     this.currentPage = 1;
 
     if (this.isSearchMode) {
@@ -649,7 +635,6 @@ export class AdminsComponent implements OnInit, OnDestroy {
   }
 
   openAddModal(): void {
-    // Reset newAdmin fields
     this.newAdmin = {
       firstName: '',
       lastName: '',
@@ -679,7 +664,6 @@ export class AdminsComponent implements OnInit, OnDestroy {
       });
       return;
     }
-    // Build payload excluding image
     const payload = {
       firstName: this.newAdmin.firstName,
       lastName: this.newAdmin.lastName,
@@ -703,23 +687,7 @@ export class AdminsComponent implements OnInit, OnDestroy {
           }
         }
         this.getActiveCustomersCount();
-        // Trigger separate image upload if provided
-        if (this.newAdmin.image) {
-          this.adminsService.uploadProfileImage(newAdminRecord._id, this.newAdmin.image).subscribe({
-            next: (imgRes) => {
-              // Optionally update admin record with new image url
-            },
-            error: (imgError) => {
-              this.toaster.error('Image upload failed', 'Error', {
-                timeOut: 1500,
-                positionClass: 'toast-bottom-right',
-                progressBar: true,
-                closeButton: true
-              });
-            }
-          });
-        }
-        // Close modal and clear backdrops
+       
         const modalElement = document.getElementById('addCategoryModal');
         if (modalElement) {
           modalElement.classList.remove('show');
