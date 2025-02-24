@@ -75,7 +75,7 @@ class ProductController {
         catchAsync(this.deleteProduct)
       );
 
-    
+    /*
     //site products
     this.router.get(
 
@@ -84,7 +84,7 @@ class ProductController {
       validateSortPaginationParams(this.allowedSortFileds),
       
       catchAsync(this.getProducts),
-    )
+    )*/
 
     this.router.patch(
       "/updateProductMedia/:id",
