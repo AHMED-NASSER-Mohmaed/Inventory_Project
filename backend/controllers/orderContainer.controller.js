@@ -144,7 +144,7 @@ class OrderContainerController {
     let status = req.body.status;
     let userType = 'clerk';
     const subOrders = await SubOrderService.getAllOnlineOrdersForClerkOrSellerBasedOnStatus(clerkId, status, userType);
-    console.log(subOrders);
+    // console.log(subOrders);
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       subOrders,
