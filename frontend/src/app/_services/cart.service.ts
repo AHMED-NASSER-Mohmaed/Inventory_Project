@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CartService {
-  private apiUrl = 'http://localhost:3000';
+  private apiUrl = 'http://localhost:3000/cart';
 
   constructor(private http: HttpClient) {}
 
@@ -21,19 +22,27 @@ export class CartService {
     return headers;
   }
 
-  getCart(sessionId?: string): Observable<any> {
+  getCart(sessionId?: string): Observable<any> { // sweet alert if there was no cart for the user (he should add products)
     let url = `${this.apiUrl}`;
     const options = { headers: this.getHeaders() };
 
     if (!localStorage.getItem('token') && sessionId) {
       url += `?sessionId=${sessionId}`; // for guest users
     }
-
-    return this.http.get(url, options);
+    
+    // this.addToCart("dfdf", 3, '');
+    // return this.addToCart("dfdf", 3, sessionId).pipe(
+    //   switchMap(() => this.http.get(url, options))
+    // );
+     return this.http.get(url, options);
   }
 
   addToCart(productId: string, quantity: number, sessionId?: string): Observable<any> {
     const body: any = { productId, quantity };
+    // const body: any = {productId: '67b8f7c83c7eb38260dfc804',  quantity: 2};
+    // const body: any = {productId,  quantity};
+    console.log(body);
+    console.log("hahahhahhahha");
     if (!localStorage.getItem('token')) {
       body.sessionId = sessionId; // Send sessionId if the user is not logged in or fo guest users
     }

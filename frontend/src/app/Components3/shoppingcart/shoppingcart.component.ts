@@ -5,6 +5,10 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 import { CartService } from '../../_services/cart.service';
+
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
+
 @Component({
   selector: 'app-shoppingcart',
   imports: [HeaderComponent, FooterComponent, CommonModule, RouterModule],
@@ -14,13 +18,15 @@ import { CartService } from '../../_services/cart.service';
 
 
 /**
- * // don't  forget the guard on check out and if the products.length was equal to zero to redirct user again to this page
+ * // don't  forget the guard on check out and if the products.length was equal to zero to redirect user again to this page
  */
 export class ShoppingcartComponent implements OnInit {
   products: any[] = [];
   shippingFees = 50;
   maxQuantity = 10;
   sessionId: string | null = null;
+
+  
 
   constructor(private cartService: CartService) {}
   ngOnInit(): void {
@@ -30,14 +36,43 @@ export class ShoppingcartComponent implements OnInit {
 
   loadCart() {
     this.cartService.getCart(this.sessionId!).subscribe((response) => {
+      // console.log("de7k");
+      // console.log( response.cart)
       this.products = response.cart.products;
+      console.log(this.products);
       this.getSubtotal();
       this.getTotalAmount();
       if (!this.sessionId && response.sessionId) {
         localStorage.setItem('sessionId', response.sessionId);
       }
+      // this.increase("");
     });
   }
+
+  // loadCart() {
+  //   this.cartService.getCart(this.sessionId!).pipe(
+  //     catchError(error => {
+  //       console.error('Error loading cart:', error);
+  //       // Call the increase method even if there was an error
+  //       // this.increase("");
+  //       // this.increase("");
+  //       return of(null); // Return an observable to keep the stream alive
+  //     })
+  //   ).subscribe((response) => {
+  //     if (response) {
+  //       console.log("de7k");
+  //       // console.log(response.cart);
+  //       this.products = response.cart.products;
+  //       console.log(this.products);
+  //       this.getSubtotal();
+  //       this.getTotalAmount();
+  //       if (!this.sessionId && response.sessionId) {
+  //         localStorage.setItem('sessionId', response.sessionId);
+  //       }
+  //       // this.increase("");
+  //     }
+  //   });
+  // }
 
   getSubtotal(): number {
     return this.products.reduce((acc, product) => acc + (product.onlineProduct.price * product.requiredQty), 0);
@@ -48,18 +83,27 @@ export class ShoppingcartComponent implements OnInit {
   }
 
   increase(product: any) {
-    if (product.requiredQty + 1 > this.maxQuantity) return;
-    this.cartService.addToCart(product.onlineProduct._id, 1, this.sessionId!).subscribe(() => {
+    if (product.requiredQty + 1 > product.stock) return;
+    this.cartService.addToCart(product.onlineProduct._id, 1, this.sessionId!).subscribe((response) => {
+      localStorage.setItem('sessionId', response.data.sessionId);
       product.requiredQty += 1;
       //this.loadCart(); but it takes more time
       this.getSubtotal();
       this.getTotalAmount();
     });
+    // this.cartService.addToCart("67b8f7c83c7eb38260dfc804", 12, this.sessionId!).subscribe((response) => {
+    //   localStorage.setItem('sessionId', response.data.sessionId);
+    //   product.requiredQty += 1;
+    //   // this.loadCart();// but it takes more time
+    //   this.getSubtotal();
+    //   this.getTotalAmount();
+    // });
   }
 
   decrease(product: any) {
     if (product.requiredQty - 1 < 1) return;
-    this.cartService.addToCart(product.onlineProduct._id, -1, this.sessionId!).subscribe(() => {
+    this.cartService.addToCart(product.onlineProduct._id, -1, this.sessionId!).subscribe((response) => {
+      localStorage.setItem('sessionId', response.data.sessionId);
       product.requiredQty -= 1;
       //this.loadCart();
       this.getSubtotal();
@@ -67,6 +111,8 @@ export class ShoppingcartComponent implements OnInit {
     });
   }
 
+  
+ 
   removeProduct(productId: string) {
     this.cartService.removeFromCart(productId, this.sessionId!).subscribe(() => {
       this.products = this.products.filter(p => p.onlineProduct._id !== productId);
