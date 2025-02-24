@@ -40,8 +40,6 @@ module.exports = {
         }
     },
 
-
-
     updateBranch: async (id, data) => {
         try {
 
@@ -59,7 +57,8 @@ module.exports = {
             if (!branch) {
                 throw new Error("Branch does not exist");
             }
-            return await Branch.updateOne({ _id: id }, { isAvtive: false });
+            return await Branch.updateOne({ _id: id }, { $set:{isAvtive: false , admin:null , employees:[]} });
+        
         } catch (error) {
             throw error;
         }

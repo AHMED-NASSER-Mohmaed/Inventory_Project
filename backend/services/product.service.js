@@ -51,7 +51,29 @@ module.exports.productService={
             throw error;
         }
 
-    }
+    },
+
+    isProductExist:async(productId)=>{
+
+        try{
+
+            let product= await productRepo.getProductById(productId);
+            
+            if(!product)
+                throw new AppError("product dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
+
+            if(!product['isActive'])
+                throw new AppError("product is de activated",APP_CONFIG.HTTP_BAD_REQUEST);
+
+            return product;
+
+        }catch(error){
+            throw new error;
+        }
+
+    },
+
+    
 }
 
 

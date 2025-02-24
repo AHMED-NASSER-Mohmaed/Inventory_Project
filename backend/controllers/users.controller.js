@@ -350,7 +350,7 @@ const adminOp = {
   getAdmins: async (req, res, next) => {
 
     req.validatedParams.filters["role"] = APP_CONFIG.ADMIN;
-    console.log(   req.validatedParams.filters);
+    
     const result = await staffService.getStaffByFilter(req.validatedParams);
     sendResponseToClint(
       res,
