@@ -10,11 +10,11 @@ const OfflineProductsSchema = new mongoose.Schema({
 
     stock: { type: Number, required: true, default: 0 },
 
-    // isActive:{  type:Boolean , default:true, }
-
+    
 }, { timestamps: true });
 
 
+// isActive:{  type:Boolean , default:true, }
 
   
 module.exports= mongoose.model("OfflineProducts", OfflineProductsSchema);

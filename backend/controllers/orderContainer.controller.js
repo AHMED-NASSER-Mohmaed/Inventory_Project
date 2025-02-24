@@ -5,7 +5,7 @@ const AuthMiddleware = require("../middlewares/auth.middleware");
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
 const pro_res=require("../utils/authMiddlewaresOptions");
-
+const {AppError}=require("../utils/appError")
 
 class OrderContainerController {
 
@@ -135,8 +135,9 @@ class OrderContainerController {
   async getAllOnlineOrdersForClerk(req, res){
 
     console.log(req.user,"clame");
+    //review it ya man 
     if(req.user.branch!=APP_CONFIG.ONLINE_BRANCH_ID || req.user.role != "clerk"){
-        throw new AppError("You are not authorized to get those orders since you are not employed in this branch.");
+        throw new AppError("You are not authorized to get those orders since you are not employed in this branch.",APP_CONFIG.HTTP_UNAUTHORIZED);
     }
 
     let clerkId = req.user._id; // you have to check on the online branch here which would be a static value in the app config 
