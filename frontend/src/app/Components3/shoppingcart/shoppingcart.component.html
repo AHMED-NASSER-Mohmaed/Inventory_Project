@@ -1,7 +1,7 @@
 <div class="container m-auto my-5">
     <h2 class="fs-2">Shopping Cart</h2>
-    <div class="row">
-        <div class="col-lg-8 cart ">
+    <div class="row position-relative">
+        <div class="col-lg-8 cart order-lg-1 order-2 ">
             <div class="title">
                 <div class="row">
                     <div class="col">
@@ -11,24 +11,24 @@
                 </div>
             </div>
             
-            @for (product of products; track product.name){
+            @for (product of products; track product.onlineProductId){
                 <div class="row border p-4 card">
     
                     <div class="row main align-items-center">
-                        <span class="close">&#10005;</span>
-                        <div class="col-lg-3"><img class="img-fluid" [src]="product.image" alt="{{ product.name }}"></div>
+                        <span class="close" (click)="removeProduct(product.onlineProductId)">&#10005;</span>
+                        <div class="col-lg-3"><img class="img-fluid" [src]="product.productImages[0].url" alt="{{ product.productName }}"></div>
                         <div class="col-lg-6 row p-4 px-md-4 py-md-0">
-                            <h2 class="fs-4">  {{product.name}}</h2>
-                            <div class=" text-muted description">{{ product.description }}</div>
+                            <h2 class="fs-4">  {{product.productName}}</h2>
+                            <div class=" text-muted description">{{ product.productDescription }}</div>
                             <div class="col-6 mt-3"> <span class="price fs-5">{{ product.price | currency }} </span></div>
-                            <div class="col-6 text-muted mt-3 "> <span class="seller">Sold by: {{ product.seller }}</span></div>
+                            <div class="col-6 text-muted mt-3 "> <span class="seller">Sold by: {{ product.sellerCompanyName }}</span></div>
                         </div>
                         <div class="col-lg-3  row p-4 px-md-4">
 
                             <div class="col-6 col-lg-12 text-muted "><span class="category">{{ product.category }}</span></div>
                             <div class="col-6 col-lg-12 quantity mt-lg-3">
                                 <a class="decrease" (click)="decrease(product)">-</a>
-                                <span>{{product.quantity}}</span>
+                                <span>{{product.requiredQty}}</span>
                                 <a  class="increase"  (click)="increase(product)">+</a> 
                             </div>
                         </div>
@@ -37,7 +37,7 @@
             }
             <a  [routerLink]="['/LandingPage']"  class="left-arrow"><div class="back-to-shop mt-5"><span class="text-muted"> &leftarrow; Back to shop</span></div></a>
         </div>
-        <div class="col-lg-4 summary ">
+        <div class="col-lg-4 summary sticky-lg-top order-lg-2 order-1">
             <div>
                 <h5 class="fs-4"><b>Summary</b></h5>
             </div>
