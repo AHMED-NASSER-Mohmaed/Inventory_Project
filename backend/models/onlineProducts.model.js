@@ -10,7 +10,7 @@ const OnlineProductsSchema = new mongoose.Schema(
       required: true,
     },
 
-    //reference to product
+    // reference to product
     product: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Product",
@@ -38,6 +38,19 @@ const OnlineProductsSchema = new mongoose.Schema(
     },
 
     branch: { type: mongoose.Schema.ObjectId, ref: "Branch", required: true }, //online branches only
+
+    rating: {
+      type: Number,
+      default: 0,
+      min: [0, "Rating must be at least 1"],
+      max: [5, "Rating must be at most 5"],
+      set: (val) => Math.round(val * 10) / 10,
+    },
+
+    ratingsQuantity: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

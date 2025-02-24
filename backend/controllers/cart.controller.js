@@ -38,12 +38,12 @@ class CartController {
       checkCustomerRole,
       catchAsync(this.clearCart)
     );
-    this.router.post(
-      "/cart/merge",
-      protect,
-      checkCustomerRole,
-      catchAsync(this.mergeGuestCartToCustomerCart)
-    );
+    // this.router.post(
+    //   "/cart/merge",
+    //   protect,
+    //   checkCustomerRole,
+    //   catchAsync(this.mergeGuestCartToCustomerCart)
+    // );
   }
 
   addToCart = async (req, res, next) => {
@@ -79,13 +79,14 @@ class CartController {
     let cart;
 
     if (req.user) {
-      if (req.query.sessionId)
+      if (req.query.sessionId) {
         cart = await CartService.getGuestCart(req.query.sessionId);
-      else cart = await CartService.getCustomerCart(req.user.id);
+        console.log(cart);
+      } else cart = await CartService.getCustomerCart(req.user.id);
     } else cart = await CartService.getGuestCart(req.query.sessionId);
 
     const { cart: validatedCart, messages } = await CartService.validateCart(
-      cart.id
+      cart._id
     );
     res.status(200).json({
       status: "success",
@@ -131,25 +132,25 @@ class CartController {
     });
   };
 
-  mergeGuestCartToCustomerCart = async (req, res) => {
-    if (!req.user) {
-      return res.status(400).json({
-        status: "fail",
-        message: "User must be logged in to merge carts",
-      });
-    }
-    const customerId = req.user.id;
-    const sessionId = req.body.sessionId;
+  // mergeGuestCartToCustomerCart = async (req, res) => {
+  //   if (!req.user) {
+  //     return res.status(400).json({
+  //       status: "fail",
+  //       message: "User must be logged in to merge carts",
+  //     });
+  //   }
+  //   const customerId = req.user.id;
+  //   const sessionId = req.body.sessionId;
 
-    const mergedCart = await CartService.mergeGuestCartToCustomerCart(
-      customerId,
-      sessionId
-    );
-    res.status(200).json({
-      status: "success",
-      cart: mergedCart,
-    });
-  };
+  //   const mergedCart = await CartService.mergeGuestCartToCustomerCart(
+  //     customerId,
+  //     sessionId
+  //   );
+  //   res.status(200).json({
+  //     status: "success",
+  //     cart: mergedCart,
+  //   });
+  // };
 }
 
 module.exports = new CartController().router;

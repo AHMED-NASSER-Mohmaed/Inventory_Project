@@ -164,6 +164,7 @@ class CartService {
 
   validateCart = async (cartId) => {
     const cart = await CartRepository.findCartById(cartId);
+
     if (!cart) throw new AppError("Cart not found", 404);
 
     let messages = [];
@@ -195,7 +196,44 @@ class CartService {
       ? await CartRepository.findCartById(cartId)
       : cart;
 
-    return { cart: updatedCart, messages };
+    return { cart: this.flattenCart(updatedCart), messages };
+  };
+
+  flattenCart = (cart) => {
+    // If cart is a Mongoose document, convert it to a plain object.
+    const cartObj = cart.toObject ? cart.toObject() : { ...cart };
+
+    if (Array.isArray(cartObj.products)) {
+      cartObj.products = cartObj.products.map((item) => {
+        if (item.onlineProduct) {
+          const op = item.onlineProduct;
+          const seller = op.seller || {};
+          const product = op.product || {};
+
+          return {
+            _id: item._id,
+            requiredQty: item.requiredQty,
+            onlineProductId: op._id,
+            stock: op.stock,
+            price: op.price,
+            // Flatten product details:
+            productId: product._id,
+            productName: product.name,
+            productPrice: product.price,
+            productImages: product.images,
+            productDescription: product.description,
+            productCategory: product.category,
+            // Flatten seller details:
+            sellerId: seller._id,
+            sellerFirstName: seller.firstName || seller.name,
+            sellerLastName: seller.lastName,
+          };
+        }
+        // If no onlineProduct, return the item as is.
+        return item;
+      });
+    }
+    return cartObj;
   };
 }
 
