@@ -237,8 +237,7 @@ class CartService {
             productCategory: product.category,
             // Flatten seller details:
             sellerId: seller._id,
-            sellerFirstName: seller.firstName || seller.name,
-            sellerLastName: seller.lastName,
+            sellerCompanyName: seller.companyName || seller.firstName || seller.name,
           };
         }
         // If no onlineProduct, return the item as is.
