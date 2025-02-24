@@ -19,8 +19,9 @@ const AppError = require("../utils/appError");
 const route = express.Router();
 
 const genaricFilters = {
-  searchFiledName: ["firstName", "lastName", "SSN", "phoneNumber"],
-  searchValueAcoordingNaN: [true, true, false, false],
+
+  searchFiledName: ["firstName", "lastName","branch", "SSN", "phoneNumber",],
+  searchValueAcoordingNaN: [true, true,false, false, false],
 
   searchFiledNameForCustomer: ["firstName", "lastName", "phoneNumber"],
   searchValueAcoordingNaNforCustomer: [true, true, false],
@@ -347,8 +348,9 @@ const adminOp = {
   // //paggination -->filter --- sort
   // also search by SSN , firstName , lastName , phoneNumber
   getAdmins: async (req, res, next) => {
-    req.validatedParams.filters["role"] = APP_CONFIG.ADMIN;
 
+    req.validatedParams.filters["role"] = APP_CONFIG.ADMIN;
+    
     const result = await staffService.getStaffByFilter(req.validatedParams);
     sendResponseToClint(
       res,
@@ -891,14 +893,14 @@ route
 
   //delete cashier by id
   .delete(
-    "/deleteCashier/:id/:bid",
+    "/deleteCashier/:id",
     prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
     catchAsync(cashierOp.deleteCashier)
   )
 
   //active cashier by id
   .patch(
-    "/activeCashier/:id",
+    "/activeCashier/:id/:bid",
     prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
     catchAsync(cashierOp.activeCashier)
   )

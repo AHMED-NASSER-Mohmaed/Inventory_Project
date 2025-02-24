@@ -9,7 +9,25 @@ module.exports.OfflineProductsRepo={
         }catch(error){
             throw error;
         }
-    }
+    },
 
+    getOffProductById:async(id)=>{
+        try{
+            return await OfflineProducts.findById(id);
+        }catch(error){
+            throw error;
+        }
+
+    },
+
+    updateQuantity :async (id , qty)=>{
+        try{
+            return await OfflineProducts.updateOne({_id:id},{$set:{stock:qty}});
+        }catch(error){
+            throw error;
+        }
+    },
+
+    
     
 }

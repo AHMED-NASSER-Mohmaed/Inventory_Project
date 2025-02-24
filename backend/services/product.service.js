@@ -33,25 +33,54 @@ module.exports.productService={
             
             let selectedCat=await categoryRepo.getCategoryById(data.category);
     
-    
-            if(!selectedCat || !selectedCat['isActive'])
+
+            // console.log(selectedCat,"HHHHHHHHHHHH");
+
+            if(selectedCat==null)
                 throw new AppError("sorry category dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
+
+            if(!selectedCat['isActive'])
+                throw new AppError("sorry category is deactivated",APP_CONFIG.HTTP_NOT_FOUND); 
     
-    
-            
             let selectedBrand= await brandRepo.getBrandById(data.brand);
              
 
-            if(!selectedBrand || !selectedBrand['isActive'])
+            console.log(selectedBrand,"HHHHHHHHHHHH");
+
+            if(selectedBrand==null || !selectedBrand['isActive'])
                 throw new AppError("sorry brand dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
              
             return await productRepo.addProduct(data);
 
+        }catch(err){
+            console.log(err,"errrrrrrrrr");
+            throw err;
+        }
+
+    },
+
+    isProductExist:async(productId)=>{
+
+        try{
+
+            let product= await productRepo.getProductById(productId);
+            
+            if(!product)
+                throw new AppError("product dose not exist",APP_CONFIG.HTTP_NOT_FOUND);
+
+            if(!product['isActive'])
+                throw new AppError("product is de activated",APP_CONFIG.HTTP_BAD_REQUEST);
+
+            return product;
+
         }catch(error){
+
             throw error;
         }
 
-    }
+    },
+
+    
 }
 
 

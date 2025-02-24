@@ -10,7 +10,7 @@ const handleDuplicateFieldsDB = (err) => {
   try {
     
     const duplicatedFields = [];
-    console.log(err);
+    // console.log(err);
     for (const key in err.keyValue) {
       if (err.keyPattern.hasOwnProperty(key)) {
         duplicatedFields.push(key);
@@ -30,7 +30,7 @@ const handleDuplicateFieldsDB = (err) => {
     ) {
       message += "You already have a posted a review for this product.";
     }
-
+    
     return new AppError(message, 409);
   } catch (err) {
     return new AppError("Something went wrong", 500);
