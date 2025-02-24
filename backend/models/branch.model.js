@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Counter = require("./counter.model"); 
-
 const BranchSchema = new mongoose.Schema(
     {
         _id: { type: Number },
