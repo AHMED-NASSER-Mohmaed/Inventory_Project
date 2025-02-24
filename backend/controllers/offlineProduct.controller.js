@@ -17,7 +17,17 @@ const offlineProductOp={
         
         let result= OfflineProductsService.addOfflineProduct(req.body);
         sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
-    }
+    },
+
+    updateQty:async(req,res,next)=>{
+
+        let result = await OfflineProductsService.updateQuantitiy(req.params.id,req.params.qty);
+        
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+    },
+
+
+
 }
 
 const router = express.Router();
@@ -28,6 +38,11 @@ router
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(offlineProductOp.addProduct)
     )
+    .patch("/OffProduct/updateQty/:id/:qty",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        catchAsync(offlineProductOp.updateQty)
+    )
+    
 
 
 module.exports=router;

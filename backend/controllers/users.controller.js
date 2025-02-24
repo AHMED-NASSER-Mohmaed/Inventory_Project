@@ -350,7 +350,7 @@ const adminOp = {
   getAdmins: async (req, res, next) => {
 
     req.validatedParams.filters["role"] = APP_CONFIG.ADMIN;
-    console.log(   req.validatedParams.filters);
+    
     const result = await staffService.getStaffByFilter(req.validatedParams);
     sendResponseToClint(
       res,
@@ -893,14 +893,14 @@ route
 
   //delete cashier by id
   .delete(
-    "/deleteCashier/:id/:bid",
+    "/deleteCashier/:id",
     prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
     catchAsync(cashierOp.deleteCashier)
   )
 
   //active cashier by id
   .patch(
-    "/activeCashier/:id",
+    "/activeCashier/:id/:bid",
     prot_rest(APP_CONFIG.SUPPERADMIN, APP_CONFIG.ADMIN),
     catchAsync(cashierOp.activeCashier)
   )
