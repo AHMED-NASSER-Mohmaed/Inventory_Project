@@ -59,7 +59,7 @@ class CartService {
       );
     }
 
-    // if (quantity < 0) {
+    // if (quantity - 1 <= 0) {
     //   throw new AppError(
     //     `What are you doing? Can't add negative quantity!!!!`,
     //     400
@@ -83,11 +83,11 @@ class CartService {
 
     if (existingItem) {
       const newQuantity = existingItem.requiredQty + quantity;
-      if(newQuantity <= 0) {
+      if(newQuantity < 0) {
         throw new AppError(
-              `What are you doing? Can't add negative quantity!!!!`,
-              400
-            );
+          `What are you doing? Can't add negative quantity!!!!`,
+          400
+        );
       }
       if (product.stock < newQuantity) {
         throw new AppError(
@@ -104,8 +104,8 @@ class CartService {
     } else {
       if(quantity <= 0) {
         throw new AppError(
-              `What are you doing? Can't add negative quantity!!!!`,
-              400
+          `What are you doing? Can't add negative quantity!!!!`,
+          400
         );
       }
       updatedCart = await CartRepository.addProduct(cart.id, {
@@ -237,7 +237,7 @@ class CartService {
             productCategory: product.category,
             // Flatten seller details:
             sellerId: seller._id,
-            sellerCompanyName: seller.companyName || seller.firstName || seller.name,
+            sellerCompanyName: seller.companyName || seller.firstName
           };
         }
         // If no onlineProduct, return the item as is.
