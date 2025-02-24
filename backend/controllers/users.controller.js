@@ -19,8 +19,9 @@ const AppError = require("../utils/appError");
 const route = express.Router();
 
 const genaricFilters = {
-  searchFiledName: ["firstName", "lastName", "SSN", "phoneNumber"],
-  searchValueAcoordingNaN: [true, true, false, false],
+
+  searchFiledName: ["firstName", "lastName","branch", "SSN", "phoneNumber",],
+  searchValueAcoordingNaN: [true, true,false, false, false],
 
   searchFiledNameForCustomer: ["firstName", "lastName", "phoneNumber"],
   searchValueAcoordingNaNforCustomer: [true, true, false],
@@ -347,8 +348,9 @@ const adminOp = {
   // //paggination -->filter --- sort
   // also search by SSN , firstName , lastName , phoneNumber
   getAdmins: async (req, res, next) => {
-    req.validatedParams.filters["role"] = APP_CONFIG.ADMIN;
 
+    req.validatedParams.filters["role"] = APP_CONFIG.ADMIN;
+    console.log(   req.validatedParams.filters);
     const result = await staffService.getStaffByFilter(req.validatedParams);
     sendResponseToClint(
       res,

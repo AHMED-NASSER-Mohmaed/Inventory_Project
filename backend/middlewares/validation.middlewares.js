@@ -82,9 +82,10 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
             throw new AppError(`Invalid value: ${value} for field: ${field}. Expected ${isValueNaN ? 'non-numeric' : 'numeric'} value.`, APP_CONFIG.HTTP_BAD_REQUEST);
           }
 
-
-
-          value = new RegExp(`^${value}`, 'i');
+          
+          
+          if(field!=='branch')
+            value = new RegExp(`^${value}`, 'i');
 
           // value= new RegExp(`^${value}|${value}$`, 'i');
 

@@ -38,33 +38,28 @@ module.exports.staffRepo = {
         }
     },
 
-
-
     getStaffOfTypeByFilter: async (filters, sort, page, limit) => {
 
         try {
-
+            
+            
+            
             const [results, total] = await Promise.all([
-
                 await Staff.find(filters)
                     .collation({ locale: 'en', strength: 1 })
                     .sort(sort)
                     .skip((page - 1) * limit) // (starting index = page-1)*limit
                     .limit(limit)
                     .populate({path:"branch",
-                        select:"admin -_id",
-                        populate:{
-                            path:"admin",
-                            select:"firstName lastName -_id"
-                        }
+                        select:"type governate location"
                     })
                     .select("-__v -kind")
                     .lean(),
-
+                     
                 await Staff.countDocuments(filters).collation({ locale: 'en', strength: 1 }).exec()
             ]);
 
-            // console.log("from repo" , results);
+            console.log("from repo" , results);
 
             return inboxResult(results, total, page, limit);
 
