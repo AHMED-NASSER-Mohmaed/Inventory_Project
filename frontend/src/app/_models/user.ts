@@ -15,7 +15,8 @@ export class User {
         public createdAt: string,
         public updatedAt: string,
         public status: string,
-        public isActive: Boolean
+        public isActive: Boolean,
+        public branch: any
 
     ){}
 
