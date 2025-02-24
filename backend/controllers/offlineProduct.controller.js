@@ -1,4 +1,4 @@
-const {OfflineProductsService}=require("../services/offlineProducts.service");
+const { OfflineProductsService } = require("../services/offlineProducts.service");
 const prot_rest = require("../utils/authMiddlewaresOptions");
 const express = require("express");
 const { APP_CONFIG } = require("../config/app.config");
@@ -8,20 +8,31 @@ const {
     validateSearchParams,
     validatorFilterParams,
     validateSortPaginationParams,
-  } = require("../middlewares/validation.middlewares");
+} = require("../middlewares/validation.middlewares");
 
 
-const offlineProductOp={
+const offlineProductOp = {
 
-    addProduct:async(req,res,next)=>{
-        
-        let result= OfflineProductsService.addOfflineProduct(req.body);
-        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+    addProduct: async (req, res, next) => {
+
+        let result = await OfflineProductsService.addOfflineProduct(req.body);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+
     },
 
-    increaseStock:async(req,res,next)=>{
-        let result = await OfflineProductsService.increaseStock(req.params.id,req.params.qty);
+    updateQty: async (req, res, next) => {
+
+        let result = await OfflineProductsService.updateQuantitiy(req.params.id, req.params.qty);
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
+    getProduct:async(req,res,next)=>{
+
+        // let result = await 
     }
+
+
 
 }
 
@@ -33,11 +44,11 @@ router
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(offlineProductOp.addProduct)
     )
-    .patch("/increaseStock/:id/:qty",
+    .patch("/OffProduct/updateQty/:id/:qty",
         prot_rest(APP_CONFIG.SUPPERADMIN),
-        catchAsync(offlineProductOp.increaseStock)
+        catchAsync(offlineProductOp.updateQty)
     )
-    
 
 
-module.exports=router;
+
+module.exports = router;

@@ -71,14 +71,14 @@ process.on("uncaughtException", (err) => {
         branch: "19777"
       }*/
 
-      /*
+      
       let onlineBranch = {
-        _id: '0',
+        _id: 0,
         type: "online",
         governate: 1,
         registrationNumber: "123-692",
         location: "Cairo bab-elmoneeb"
-      }*/
+      }
 
         if (!await Staff.findOne({ SSN: superAdmin.SSN })) {
 
@@ -92,13 +92,14 @@ process.on("uncaughtException", (err) => {
         
       
         
-        /*
-      await counter.create({ _id: "branch", seq: 3 })
-      await branch.create(mainBranch);
-      await WorksOn.create(worksOnObj);
-      await branch.updateOne({_id:mainBranch._id},{admin:APP_CONFIG.SUPPERADMIN_ID});
-      await branch.updateOne({_id:mainBranch._id},{isActive:true});
-      */
+        
+      // await counter.create({ _id: "branch", seq: 3 })
+      // await branch.create(mainBranch);
+      // await branch.create(onlineBranch);
+      // await WorksOn.create(worksOnObj);
+      // await branch.updateOne({_id:mainBranch._id},{admin:APP_CONFIG.SUPPERADMIN_ID});
+      // await branch.updateOne({_id:mainBranch._id},{isActive:true});
+      
     
 
        
