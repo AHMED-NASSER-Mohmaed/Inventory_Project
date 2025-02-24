@@ -290,13 +290,18 @@ const sellerOp = {
 /********************************************************************/
 
 const adminOp = {
+
   addAdmin: async (req, res, next) => {
     //attach role on data
+
     req.body.role = APP_CONFIG.ADMIN;
     req.body.managerId = req.user._id;
 
-    req.body.passwordConfirm = req.body.password;
+    // req.body.passwordConfirm = req.body.password;
+
+
     const result = await staffService.createStaff(req.body);
+
     sendResponseToClint(
       res,
       APP_CONFIG.HTTP_CREATED,
@@ -307,10 +312,12 @@ const adminOp = {
 
   //delete by id
   deleteAdmin: async (req, res, next) => {
+
     const result = await staffService.deleteStaff({
       _id: req.params.id,
       role: APP_CONFIG.ADMIN,
     });
+    
     sendResponseToClint(
       res,
       APP_CONFIG.HTTP_OK,
@@ -381,13 +388,15 @@ const adminOp = {
 /***********************************************************************/
 
 const clerkOp = {
+
   addClerk: async (req, res, next) => {
+
     //attach role on data
     req.body.role = APP_CONFIG.CLERK;
 
-    req.body.managerId = req.user._id;
+    // req.body.managerId = req.user._id;
 
-    req.body.passwordConfirm = req.body.password;
+    // req.body.passwordConfirm = req.body.password;
 
     const clerk = await staffService.createStaff(req.body);
 

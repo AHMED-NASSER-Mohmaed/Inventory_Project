@@ -2,12 +2,25 @@ const { filter, forEach } = require("lodash");
 const { staffRepo } = require("../repos/staff.repo");
 const AppError = require("../utils/appError");
 const { APP_CONFIG } = require("../config/app.config");
+const {branchService} = require("../services/branch.service");
+
+
 
 module.exports.staffService = {
 
     //done
     createStaff: async (data) => {
         try {
+
+            let fields= ['firstName','lastName','email','phoneNumber','password','passwordConfirm','branch','SSN','managerId','role']
+
+           
+
+            Object.keys(data).forEach(element => {
+                if (!fields.includes(element))
+                    throw new AppError("invalid fields!!", APP_CONFIG.HTTP_BAD_REQUEST);
+            });
+
             return await staffRepo.createStaffOfType(data);
         } catch (err) {
             throw err;
@@ -28,6 +41,8 @@ module.exports.staffService = {
             if (!ack.acknowledged) {
                 throw new AppError("user not found", APP_CONFIG.HTTP_BAD_REQUEST);
             }
+
+            
             return ack;
 
         } catch (err) {
@@ -81,7 +96,7 @@ module.exports.staffService = {
     updateStaff: async (filters, data) => {
         try {
 
-            let fields = ['SSN', 'firstName', 'lastName', 'phoneNumber'];
+            let fields = ['SSN', 'firstName', 'lastName', 'phoneNumber','email'];
 
             Object.keys(data)
                 .forEach(Element => {
