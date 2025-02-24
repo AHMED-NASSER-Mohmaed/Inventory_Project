@@ -53,7 +53,7 @@ export class SellersComponent implements OnInit, OnDestroy {
   //  cache for storing seller pages: keys are "<filter>_<page>"
   pageCache: { [key: string]: { result: User[]; total: number } } = {};
 
-  selectedFilter: string = 'name'; // Default filter
+  selectedFilter: string = 'name'; 
   searchQuery: string = '';
 
   showNoResults: boolean = false;
@@ -92,9 +92,7 @@ export class SellersComponent implements OnInit, OnDestroy {
   hideSingleSelectionIndicator = signal(true);
 
 
-  // Consolidated seller loading method with caching
   loadSellers(): void {
-    // Check cache before setting loading state
     const activityFilterKey = this.activityFilter !== null ? `_active:${this.activityFilter}` : '';
     const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}${activityFilterKey}`;
   
@@ -109,7 +107,6 @@ export class SellersComponent implements OnInit, OnDestroy {
       return;
     }
   
-    // Only show loading spinner when fetching from server
     this.isLoading = true;
     this.users = [];
   
@@ -119,11 +116,9 @@ export class SellersComponent implements OnInit, OnDestroy {
     } else if (this.currentFilter === 'rejected') {
       filterParam = 'status:-1';
     } else if (this.currentFilter === 'approved') {
-      // Always include both status and activity for approved sellers
       filterParam = `status:1${this.activityFilter !== null ? '+isActive:' + this.activityFilter : ''}`;
     }
   
-    // Add sort parameters
     let sortParam = '';
     if (this.sortField && this.sortDirection) {
       sortParam = `&sort=${this.sortField === 'name' ? 'name' : this.sortField}:${this.sortDirection}`;
@@ -230,7 +225,6 @@ export class SellersComponent implements OnInit, OnDestroy {
   deActiveSeller(_id: string): void {
     const sub = this.sellerService.deActiveSeller(_id).subscribe({
       next: (res) => {
-        // Clear cache and reload updated list
         this.pageCache = {};
         if (this.isSearchMode) {
           this.loadSearchResults();
@@ -248,7 +242,6 @@ export class SellersComponent implements OnInit, OnDestroy {
   activateSeller(_id: string): void {
     const sub = this.sellerService.activateSeller(_id).subscribe({
       next: (res) => {
-        // Clear cache and reload updated list
         this.pageCache = {};
         if (this.isSearchMode) {
           this.loadSearchResults();
@@ -271,13 +264,10 @@ export class SellersComponent implements OnInit, OnDestroy {
         const approvedSeller = this.users.find(user => user._id === _id);
         
         if (approvedSeller) {
-          // Remove from current list
           this.users = this.users.filter(user => user._id !== _id);
           
-          // Update seller status
           approvedSeller.status = '1';
 
-          // Update source cache pages
           Object.keys(this.pageCache).forEach(key => {
             if (key.startsWith(`${sourceStatus}_`)) {
               const cache = this.pageCache[key];
@@ -286,11 +276,9 @@ export class SellersComponent implements OnInit, OnDestroy {
             }
           });
 
-          // Add to first page of approved cache
           const approvedFirstPageKey = `approved_1_${this.sortField}_${this.sortDirection}`;
           if (this.pageCache[approvedFirstPageKey]) {
             const firstPageCache = this.pageCache[approvedFirstPageKey];
-            // Insert at beginning, remove last item if page is full
             firstPageCache.result.unshift(approvedSeller);
             if (firstPageCache.result.length > this.itemsPerPage) {
               firstPageCache.result.pop();
@@ -319,13 +307,10 @@ export class SellersComponent implements OnInit, OnDestroy {
         const rejectedSeller = this.users.find(user => user._id === _id);
         
         if (rejectedSeller) {
-          // Remove from current list
           this.users = this.users.filter(user => user._id !== _id);
           
-          // Update seller status
           rejectedSeller.status = '-1';
 
-          // Update waiting cache pages
           Object.keys(this.pageCache).forEach(key => {
             if (key.startsWith('waiting_')) {
               const cache = this.pageCache[key];
@@ -334,11 +319,9 @@ export class SellersComponent implements OnInit, OnDestroy {
             }
           });
 
-          // Add to first page of rejected cache
           const rejectedFirstPageKey = `rejected_1_${this.sortField}_${this.sortDirection}`;
           if (this.pageCache[rejectedFirstPageKey]) {
             const firstPageCache = this.pageCache[rejectedFirstPageKey];
-            // Insert at beginning, remove last item if page is full
             firstPageCache.result.unshift(rejectedSeller);
             if (firstPageCache.result.length > this.itemsPerPage) {
               firstPageCache.result.pop();
@@ -346,7 +329,6 @@ export class SellersComponent implements OnInit, OnDestroy {
             firstPageCache.total++;
           }
 
-          // Refresh counts
           this.getWaitingSellersCount();
           this.getRejectedSellersCount();
         }
@@ -535,13 +517,11 @@ export class SellersComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Don't reset filters anymore
     this.isSearchMode = true;
     this.currentPage = 1;
     this.loadSearchResults();
   }
 
-  // Add new resetSearch method
   resetSearch(): void {
     this.searchQuery = '';
     this.isSearchMode = false;

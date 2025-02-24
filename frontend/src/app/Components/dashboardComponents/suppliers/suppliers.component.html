@@ -69,6 +69,9 @@
                     <div class="head">
                         <div class="headhead">
                         <h3>Customers</h3>
+                        <button type="button" class="btn btn-sm btn-outline-dark" data-toggle="modal" data-target="#addCategoryModal" (click)="openAddModal()" style="margin-left: 5px; margin-bottom: 5px; color: var(--dark); background-color: var(--grey);">
+                            <i class='bx bx-plus' style="padding: 3px;"></i>
+                        </button>
                         <div class="items-per-page">
                             <label> 
                                 <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" name="itemsPerPage">
@@ -233,5 +236,59 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addAdminModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content custom-modal">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addAdminModalLabel">Add New Supplier</h5>
+            </div>
+            <div class="modal-body">
+              <form #addSupplierForm="ngForm">
+                <div class="info-grid">
+                  <div class="info-item">
+                    <strong class="label">Company Name:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': addCompanyName.touched && addCompanyName.valid, 'invalid': addCompanyName.touched && addCompanyName.invalid}">
+                      <input type="text" required minlength="3" pattern="^[a-zA-Z0-9 ]+$" [(ngModel)]="newSupplier.companyName" name="companyName" #addCompanyName="ngModel" placeholder="Enter company name">
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <strong class="label">Company Reg#:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': addRegNum.touched && addRegNum.valid, 'invalid': addRegNum.touched && addRegNum.invalid}">
+                      <input type="text" required pattern="^\d{2}-\d{2}-\d{2}$" [(ngModel)]="newSupplier.companyRegistrationNumber" name="companyRegistrationNumber" #addRegNum="ngModel" placeholder="e.g., 91-41-33">
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <strong class="label">Email:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': addEmail.touched && addEmail.valid, 'invalid': addEmail.touched && addEmail.invalid}">
+                      <input type="email" required [(ngModel)]="newSupplier.email" name="email" #addEmail="ngModel" placeholder="Enter email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <strong class="label">Phone Number:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': addPhone.touched && addPhone.valid, 'invalid': addPhone.touched && addPhone.invalid}">
+                      <input type="text" required [(ngModel)]="newSupplier.phoneNumber" name="phoneNumber" #addPhone="ngModel" placeholder="Enter phone number" pattern="^(010|011|012|015)\d{8}$">
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <strong class="label">Commission %:</strong>
+                    <div class="input-wrapper" [ngClass]="{'valid': addCommission.touched && addCommission.valid, 'invalid': addCommission.touched && addCommission.invalid}">
+                      <input type="number" required [(ngModel)]="newSupplier.commissionPercentage" name="commissionPercentage" #addCommission="ngModel" placeholder="e.g., 0.3" step="0.01" min="0" max="1">
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" (click)="addSupplier()" [disabled]="addSupplierForm.invalid" title="Add Supplier">
+                <i class="bx bx-check"></i>
+              </button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                <i class='bx bx-x'></i>
+              </button>
+            </div>
+          </div>
+        </div>
     </div>
 </div>

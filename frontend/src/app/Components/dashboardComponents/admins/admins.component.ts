@@ -143,7 +143,6 @@ export class AdminsComponent implements OnInit, OnDestroy {
 
     let filterParam = '';
     if (this.selectedBranch) {
-      // Only active admins have branch assigned
       filterParam = `branch:${this.selectedBranch}+isActive:true`;
     } else if (this.currentFilter === 'active') {
       filterParam = 'isActive:true';
@@ -151,7 +150,6 @@ export class AdminsComponent implements OnInit, OnDestroy {
       filterParam = 'isActive:false';
     }
 
-    // Add sort parameters
     let sortParam = '';
     if (this.sortField && this.sortDirection) {
       sortParam = `&sort=${
@@ -197,8 +195,8 @@ export class AdminsComponent implements OnInit, OnDestroy {
     this.currentPage = 1;
     this.isSearchMode = false;
     this.searchQuery = '';
-    this.currentFilter = ''; // clear active/inactive filter if any
-    this.updateSearchPlaceholder(); // update placeholder after branch selection
+    this.currentFilter = '';
+    this.updateSearchPlaceholder(); 
     this.loadSellers();
   }
 
@@ -253,17 +251,15 @@ export class AdminsComponent implements OnInit, OnDestroy {
       email: user.email || '',
       phoneNumber: user.phoneNumber || '',
       SSN: user.SSN || '',
-      branch: user.branch?.location ?? 'Not assigned yet', // changed branch assignment
+      branch: user.branch?.location ?? 'Not assigned yet', 
     };
     this.backupUser = { ...this.selectedUser };
   }
 
-  // Customer actions
   deActiveCustomer(_id: string): void {
     const sub = this.adminsService.deActiveCustomer(_id).subscribe({
       next: (res) => {
         console.log(res);
-        // Clear cache to avoid stale status data
         this.pageCache = {};
         if(this.isSearchMode) {
           this.loadSearchResults();
@@ -291,9 +287,7 @@ export class AdminsComponent implements OnInit, OnDestroy {
     const sub = this.adminsService.activateCustomer(_id).subscribe({
       next: (res) => {
         console.log(res);
-        // Clear cache entirely to avoid mixing statuses
         this.pageCache = {};
-        // Reload current list so that the activated admin appears in the correct cache
         if(this.isSearchMode) {
           this.loadSearchResults();
         } else {
@@ -432,8 +426,16 @@ export class AdminsComponent implements OnInit, OnDestroy {
   toggleEdit(event?: any): void {
     if (this.editing) {
       const workingBackup = { ...this.backupUser };
+      const updatePayload = {
+        SSN: this.selectedUser.SSN,
+        firstName: this.selectedUser.firstName,
+        lastName: this.selectedUser.lastName,
+        phoneNumber: this.selectedUser.phoneNumber,
+        email: this.selectedUser.email
+      };
+      console.log(updatePayload);
       const sub = this.adminsService
-        .updateCustomer(this.selectedUser._id, this.selectedUser)
+        .updateCustomer(this.selectedUser._id, updatePayload)
         .subscribe({
           next: (res: any) => {
             if (res.message === 'success') {
@@ -457,8 +459,7 @@ export class AdminsComponent implements OnInit, OnDestroy {
           },
           error: (error) => {
             this.toaster.clear();
-            console.log("admin updated with branch num: " , this.selectedUser.branch)
-
+            console.log("admin updated with branch num: ", this.selectedUser.branch);
             this.toaster.error(error.error.message, 'Failed', {
               timeOut: 1500,
               positionClass: 'toast-bottom-right',
@@ -611,7 +612,6 @@ export class AdminsComponent implements OnInit, OnDestroy {
     }
 
     if (this.selectedBranch) {
-      // Force active filter when branch filter is in use
       filters = `${searchFilter}+branch:${this.selectedBranch}+isActive:true`;
     } else {
       const statusFilter =
@@ -716,7 +716,6 @@ export class AdminsComponent implements OnInit, OnDestroy {
       passwordConfirm: '',
       SSN: ''
     };
-    // ...existing code if any...
   }
 
   onImageSelected(event: any): void {
@@ -793,13 +792,12 @@ export class AdminsComponent implements OnInit, OnDestroy {
     this.adminsService.getMappedBranches().subscribe({
       next: (res) => {
         if (res.message === 'success' && res.data) {
-          // Process response data: each key is branch id and location is a string.
           this.branches = Object.keys(res.data).map(id => {
             const location: string = res.data[id].location;
             const parts = location.split('-').map(s => s.trim());
             return { id, main: parts[0], sub: parts[1] || '' };
           });
-          this.updateSearchPlaceholder(); // update placeholder now that branches are loaded
+          this.updateSearchPlaceholder(); 
         }
       },
       error: (error) => {

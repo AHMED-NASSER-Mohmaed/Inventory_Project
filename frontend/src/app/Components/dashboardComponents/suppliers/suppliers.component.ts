@@ -213,7 +213,6 @@ export class SuppliersComponent implements OnInit, OnDestroy {
   deActiveCustomer(_id: string): void {
     const sub = this.supplierService.deActiveCustomer(_id).subscribe({
       next: (res) => {
-        // Clear cache and reload updated supplier list
         this.pageCache = {};
         if (this.isSearchMode) {
           this.loadSearchResults();
@@ -238,7 +237,6 @@ export class SuppliersComponent implements OnInit, OnDestroy {
   activateCustomer(_id: string): void {
     const sub = this.supplierService.activateCustomer(_id).subscribe({
       next: (res) => {
-        // Clear cache and reload updated supplier list
         this.pageCache = {};
         if (this.isSearchMode) {
           this.loadSearchResults();
@@ -541,6 +539,61 @@ export class SuppliersComponent implements OnInit, OnDestroy {
     } else {
       this.loadSellers();
     }
+  }
+
+  newSupplier: {
+    companyName: string,
+    email: string,
+    phoneNumber: string,
+    companyRegistrationNumber: string,
+    commissionPercentage: number
+  } = {
+    companyName: '',
+    email: '',
+    phoneNumber: '',
+    companyRegistrationNumber: '',
+    commissionPercentage: 0
+  };
+
+  openAddModal(): void {
+    this.newSupplier = {
+      companyName: '',
+      email: '',
+      phoneNumber: '',
+      companyRegistrationNumber: '',
+      commissionPercentage: 0
+    };
+  }
+
+  addSupplier(): void {
+    this.supplierService.addSupplier(this.newSupplier).subscribe({
+      next: (res) => {
+        if (res.message === 'success') {
+          this.toaster.success('Supplier added successfully', 'Success');
+          this.users.unshift(res.data);
+          const modalEl = document.getElementById('addCategoryModal');
+          if(modalEl) {
+            modalEl.classList.remove('show');
+            modalEl.style.display = 'none';
+            const backdrops = document.getElementsByClassName('modal-backdrop');
+            while(backdrops.length > 0) {
+              backdrops[0].parentNode?.removeChild(backdrops[0]);
+            }
+            document.body.classList.remove('modal-open');
+          }
+        }
+      },
+      error: (error) => {
+        this.toaster.clear();
+        this.toaster.error(error.error.message, 'Failed', {
+          timeOut: 1500,
+          positionClass: 'toast-bottom-right',
+          progressBar: true,
+          closeButton: true
+        });
+        console.error(error);
+      }
+    });
   }
 
   ngOnDestroy(): void {

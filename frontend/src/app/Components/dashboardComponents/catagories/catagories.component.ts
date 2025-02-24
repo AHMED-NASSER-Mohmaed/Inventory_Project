@@ -52,7 +52,7 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
   // New cache for storing seller pages: keys are "<filter>_<page>"
   pageCache: { [key: string]: { result: category[]; total: number } } = {};
 
-  selectedFilter: string = 'name'; // Default filter
+  selectedFilter: string = 'name'; 
   searchQuery: string = '';
 
   showNoResults: boolean = false;
@@ -72,7 +72,7 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
   inactiveCustomersCount : any = null;
 
   newCategoryName: string = '';
-  newCategoryGender: string = 'male'; // radio value: 'male' or 'female'
+  newCategoryGender: string = 'male'; 
 
   constructor(
     private supplierService: CategoryService,
@@ -92,9 +92,7 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
 
   hideSingleSelectionIndicator = signal(true);
 
-  // Consolidated seller loading method with caching
   loadSellers(): void {
-    // Check cache before setting loading state
     const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
 
     if (this.pageCache[cacheKey]) {
@@ -212,11 +210,9 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
     console.log(this.selectedUser);
   }
 
-  // Customer actions
   deActiveCustomer(id: string): void {
     const sub = this.supplierService.deActiveCustomer(id).subscribe({
       next: (res) => {
-        // Clear cache and reload category list
         this.pageCache = {};
         this.loadSellers();
         this.getInActiveCustomersCount();
@@ -239,7 +235,6 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
   activateCustomer(id: string): void {
     const sub = this.supplierService.activateCustomer(id).subscribe({
       next: (res) => {
-        // Clear cache and reload category list
         this.pageCache = {};
         this.loadSellers();
         this.getInActiveCustomersCount();

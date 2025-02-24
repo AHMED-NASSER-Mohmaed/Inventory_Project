@@ -45,4 +45,8 @@ export class SupplierService {
     const url = `${this.baseUrl}/suppliers?page=${page}&limit=${limit}&filters=${filters}${sort || ''}`;
     return this.http.get(url, { headers: this.getHeaders() });
   }
+  
+  addSupplier(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/suppliers`, data, { headers: this.getHeaders() });
+  }
 }
