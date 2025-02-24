@@ -290,13 +290,18 @@ const sellerOp = {
 /********************************************************************/
 
 const adminOp = {
+
   addAdmin: async (req, res, next) => {
     //attach role on data
+
     req.body.role = APP_CONFIG.ADMIN;
     req.body.managerId = req.user._id;
 
-    req.body.passwordConfirm = req.body.password;
+    // req.body.passwordConfirm = req.body.password;
+
+
     const result = await staffService.createStaff(req.body);
+    
     sendResponseToClint(
       res,
       APP_CONFIG.HTTP_CREATED,

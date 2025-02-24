@@ -38,7 +38,7 @@ module.exports = {
 
         try {
 
-            fields = ['registrationNumber', 'governate', 'location',]
+            let fields = ['registrationNumber', 'governate', 'location',]
 
             Object.keys(data).forEach(element => {
                 if (!fields.includes(element))

@@ -79,7 +79,7 @@ export const routes: Routes = [
     {
         // default route
         path: '',
-        redirectTo: 'signup',
+        redirectTo: 'LandingPage',
         pathMatch: 'full'
     },
     
