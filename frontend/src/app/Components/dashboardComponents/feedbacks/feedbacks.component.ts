@@ -11,6 +11,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { decodeToken } from '../../../_helpers/jwt-helper';
 import { FeedbacksService } from '../../../_services/feedbacks.service';
+import { ToastrService } from 'ngx-toastr';
 
 interface SearchResponse {
   data: {
@@ -46,10 +47,10 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
   selectedFeedback: Feedback = {} as Feedback;
 
   // Totals
-  activeFeedbacksCount: number = 0;
-  inactiveFeedbacksCount: number = 0;
-  seenFeedbacksCount: number = 0;
-  unseenFeedbacksCount: number = 0;
+  activeFeedbacksCount: any;
+  inactiveFeedbacksCount: any;
+  seenFeedbacksCount: any;
+  unseenFeedbacksCount: any;
 
   subscriptions: Subscription[] = [];
   pageCache: { [key: string]: { result: Feedback[]; total: number } } = {};
@@ -98,7 +99,11 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
     return Date.now() - timestamp < this.CACHE_DURATION;
   }
 
-  constructor(private feedbackService: FeedbacksService, public dialog: MatDialog) {
+  constructor(
+    private feedbackService: FeedbacksService, 
+    public dialog: MatDialog,
+    private toastr: ToastrService
+  ) {
     const token = localStorage.getItem('token');
     if (token) {
       this.tokenData = decodeToken(token);
@@ -113,7 +118,8 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
 
   loadFeedbacks(): void {
     this.isLoading = true;
-    this.showNoResults = false; 
+    this.showNoResults = false; // Reset at start
+    this.feedbacks = []; // Clear existing feedbacks
     
     const cacheKey = this.getCacheKey();
     
@@ -170,48 +176,81 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
     this.subscriptions.push(sub);
   }
 
-  markAsSeen(id: string): void {
-    this.feedbackService.markAsSeen(id).subscribe({
-      next: () => {
-        this.loadFeedbacks();
-        this.updateCounts();
-      },
-      error: (error) => console.error('Error marking feedback as seen:', error)
-    });
+  // markAsSeen(id: string): void {
+  //   this.feedbackService.markAsSeen(id).subscribe({
+  //     next: () => {
+  //       this.toastr.success('Feedback marked as seen successfully');
+  //       this.refreshCurrentView(); 
+  //       this.updateCounts();
+  //     },
+  //     error: (error) => {
+  //       console.error('Error marking feedback as seen:', error);
+  //       this.toastr.error('Error marking feedback as seen');
+  //     }
+  //   });
+  // }
+
+  setSelectedFeedback(feedback: Feedback): void {
+    this.selectedFeedback = { ...feedback };
   }
 
-  deleteFeedback(id: string): void {
-    this.feedbackService.deleteFeedback(id).subscribe({
+  deleteFeedback(feedback: Feedback): void {
+    this.setSelectedFeedback(feedback);
+    this.feedbackService.deleteFeedback(feedback._id).subscribe({
       next: () => {
-        this.loadFeedbacks();
+        this.toastr.success('Feedback archived successfully');
+        this.refreshCurrentView(); 
         this.updateCounts();
       },
-      error: (error) => console.error('Error deleting feedback:', error)
+      error: (error) => {
+        console.error('Error archiving feedback:', error);
+        this.toastr.error('Error archiving feedback');
+      }
     });
   }
 
   sendAutoReply(id: string): void {
     this.feedbackService.sendAutoReply(id).subscribe({
       next: () => {
+        this.toastr.success('Auto-reply sent successfully');
+        this.refreshCurrentView(); 
       },
-      error: (error) => console.error('Error sending auto reply:', error)
+      error: (error) => {
+        console.error('Error sending auto reply:', error);
+        this.toastr.error('Error sending auto-reply');
+      }
     });
   }
 
   sendReply(id: string, reply: string): void {
+    if (!reply.trim()) {
+      this.toastr.warning('Please enter a reply message');
+      return;
+    }
+
     this.feedbackService.sendReply(id, reply).subscribe({
       next: () => {
+        this.toastr.success('Reply sent successfully');
+        const modal = document.getElementById('replyModal');
+        if (modal) {
+          (modal as any).modal('hide');
+        }
+        this.replyMessage = ''; 
+        this.refreshCurrentView(); 
       },
-      error: (error) => console.error('Error sending reply:', error)
+      error: (error) => {
+        console.error('Error sending reply:', error);
+        this.toastr.error('Error sending reply');
+      }
     });
   }
 
   updateCounts(): void {
     const subs = [
-      this.feedbackService.getActiveFeedbacksCount().subscribe(res => this.activeFeedbacksCount = res.count),
-      this.feedbackService.getInactiveFeedbacksCount().subscribe(res => this.inactiveFeedbacksCount = res.count),
-      this.feedbackService.getSeenFeedbacksCount().subscribe(res => this.seenFeedbacksCount = res.count),
-      this.feedbackService.getUnseenFeedbacksCount().subscribe(res => this.unseenFeedbacksCount = res.count)
+      this.feedbackService.getActiveFeedbacksCount().subscribe(res => this.activeFeedbacksCount = res.data),
+      this.feedbackService.getInactiveFeedbacksCount().subscribe(res => this.inactiveFeedbacksCount = res.data),
+      this.feedbackService.getSeenFeedbacksCount().subscribe(res => this.seenFeedbacksCount = res.data),
+      this.feedbackService.getUnseenFeedbacksCount().subscribe(res => this.unseenFeedbacksCount = res.data)
     ];
     this.subscriptions.push(...subs);
   }
@@ -248,7 +287,8 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
     this.currentPage = 1;
     this.isSearchMode = false;
     this.searchQuery = '';
-    this.showNoResults = false;
+    this.showNoResults = false; 
+    this.feedbacks = []; 
     
     const activeState = this.selectedDot === 'active' ? 'Active' : 
                        this.selectedDot === 'inactive' ? 'Inactive' : 'All';
@@ -319,8 +359,15 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
       next: (res: FeedbackResponse) => {
         if (res.data) {
           const feedback = res.data;
-          if ((this.currentFilter === 'seen' && feedback.isSeen) || 
-              (this.currentFilter === 'pending' && !feedback.isSeen)) {
+          const matchesSeenStatus = this.currentFilter === null || 
+                                  (this.currentFilter === 'seen' && feedback.isSeen) || 
+                                  (this.currentFilter === 'pending' && !feedback.isSeen);
+          
+          const matchesActiveStatus = this.selectedDot === null ||
+                                    (this.selectedDot === 'active' && feedback.isActive) ||
+                                    (this.selectedDot === 'inactive' && !feedback.isActive);
+
+          if (matchesSeenStatus && matchesActiveStatus) {
             this.feedbacks = [feedback];
             this.showNoResults = false;
           } else {
@@ -345,7 +392,7 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
   }
 
   onItemsPerPageChange(): void {
-    this.cache = {}; // Clear cache when changing items per page
+    this.cache = {}; 
     this.currentPage = 1; 
     this.pageCache = {};
     if (this.isSearchMode) {
@@ -385,6 +432,7 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
     this.sortDirection = null;
     this.currentPage = 1;
     this.showNoResults = false;
+    this.feedbacks = []; 
     this.currentActiveStatus = true;
     this.searchPlaceholder = 'Search All Feedbacks by ID...';
     this.selectedDot = null;
@@ -396,6 +444,8 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
     this.cache = {}; 
     this.currentActiveStatus = status;
     this.selectedDot = status ? 'active' : 'inactive';
+    this.showNoResults = false; 
+    this.feedbacks = []; 
     let filters = `isActive:${status}`;
     
     if (this.currentFilter === 'seen') {
@@ -404,7 +454,7 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
       filters += '+isSeen:false';
     }
 
-    this.searchPlaceholder = `Search ${status ? 'Active' : 'Inactive'} ${this.currentFilter === 'seen' ? 'Seen' : 'Pending'} Feedback by ID...`;
+    this.searchPlaceholder = `Search ${status ? 'Existing' : 'Archived'} ${this.currentFilter === 'seen' ? 'Seen' : 'Pending'} Feedback by ID...`;
     
     this.isLoading = true;
     this.currentPage = 1;
@@ -451,6 +501,22 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
     }
 
     return `No ${parts.join(' ')} Feedbacks Yet`;
+  }
+
+  private refreshCurrentView(): void {
+    this.isLoading = true;
+    this.feedbacks = [];
+    this.showNoResults = false;
+    
+    this.cache = {};
+    
+    setTimeout(() => {
+      if (this.isSearchMode) {
+        this.loadSearchResults();
+      } else {
+        this.loadFeedbacks();
+      }
+    }, 300);
   }
 
 }

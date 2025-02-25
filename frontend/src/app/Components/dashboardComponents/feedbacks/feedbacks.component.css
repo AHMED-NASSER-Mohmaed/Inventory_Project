@@ -366,7 +366,7 @@ input:checked + .slider:before {
 }
 :host #content main .box-info li:nth-child(1) .bx {
   background: var(--custom);
-  color: var(--green);
+  color: var(--orange);
   transition: 0.3s;
 }
 :host #content main .box-info li:nth-child(1) .bx:hover {
@@ -375,7 +375,7 @@ input:checked + .slider:before {
 }
 :host #content main .box-info li:nth-child(2) .bx {
   background: var(--custom);
-  color: var(--dark-dark);
+  color: var(--red);
   transition: 0.3s;
 }
 :host #content main .box-info li:nth-child(2) .bx:hover {
@@ -384,7 +384,7 @@ input:checked + .slider:before {
 }
 :host #content main .box-info li:nth-child(3) .bx {
   background: var(--custom);
-  color: var(--orange);
+  color: var(--green);
   transition: 0.3s;
 }
 :host #content main .box-info li:nth-child(3) .bx:hover {
@@ -393,7 +393,7 @@ input:checked + .slider:before {
 }
 :host #content main .box-info li:nth-child(4) .bx {
   background: var(--custom);
-  color: var(--red);
+  color: var(--dark-dark);
   transition: 0.3s;
 }
 :host #content main .box-info li:nth-child(4) .bx:hover {
@@ -611,8 +611,8 @@ mat-button-toggle{
 }
 
 .dot {
-  width: 8px;  /* Changed from 12px */
-  height: 8px; /* Changed from 12px */
+  width: 8px;  
+  height: 8px; 
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -620,7 +620,7 @@ mat-button-toggle{
 }
 
 .dot:hover {
-  transform: scale(1.3); /* Slightly increased scale factor to make hover effect more noticeable on smaller dots */
+  transform: scale(1.3); 
   opacity: 0.8;
   box-shadow: 0 0 4px rgba(0,0,0,0.3);
 }
@@ -670,9 +670,9 @@ mat-button-toggle{
 }
 
 .skeleton-container {
-  display: flex; /* Ensures row alignment */
-  align-items: center; /* Aligns items vertically */
-  gap: 15px; /* Space between box and text */
+  display: flex; 
+  align-items: center; 
+  gap: 15px; 
   width: 100%;
 }
 
@@ -686,7 +686,7 @@ mat-button-toggle{
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-  flex-shrink: 0; /* Prevents shrinking */
+  flex-shrink: 0; 
 }
 
 .skeleton-circle {
@@ -701,8 +701,8 @@ mat-button-toggle{
 .skeleton-text {
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Ensures it takes available space */
-  min-width: 100px; /* Ensures visibility */
+  flex-grow: 1; 
+  min-width: 100px; 
 }
 
 .skeleton-line {
@@ -728,7 +728,6 @@ mat-button-toggle{
   }
 }
 
-/* Feedback status styles */
 .status {
   padding: 6px 12px;
   border-radius: 20px;
@@ -748,7 +747,6 @@ mat-button-toggle{
   color: var(--light);
 }
 
-/* Feedback details modal styles */
 .feedback-details {
   padding: 15px;
 }
@@ -772,7 +770,6 @@ mat-button-toggle{
   white-space: pre-wrap;
 }
 
-/* Dark mode adjustments */
 :host .parent3.dark .status.seen {
   background-color: var(--green);
   color: var(--light);
@@ -1195,7 +1192,6 @@ input[type="number"] {
 }
 
 @media screen and (min-width: 900px) and (max-width: 1175px) {
-  /* Override grid with flex layout so that two li items share a row */
   :host #content main .box-info {
     display: flex !important;
     flex-wrap: wrap !important;
