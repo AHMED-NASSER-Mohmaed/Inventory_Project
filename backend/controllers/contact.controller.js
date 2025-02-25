@@ -149,6 +149,7 @@ class ContactController {
   }
 
   async sendReplyToContact(req, res) {
+    await contactService.markAsSeen(req.params.id);
     await ContactService.sendReplyToContact(req.params.id, req.body.content);
     res.status(200).json({
       status: "success",
