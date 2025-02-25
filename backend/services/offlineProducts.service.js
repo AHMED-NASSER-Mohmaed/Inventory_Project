@@ -99,6 +99,8 @@ module.exports.OfflineProductsService = {
     //souce -- > destination
     exportTo: async (offProductId, sourceBranchId, destinationBranchId, qty) => {
         try {
+            if(isNaN(qty))
+                throw new AppError("invalid params.",APP_CONFIG.HTTP_BAD_REQUEST);
 
             if (sourceBranchId === destinationBranchId)
                 throw new AppError("you can not export to the same branch");
@@ -107,20 +109,19 @@ module.exports.OfflineProductsService = {
             //export to branch --> you have to cheack branch first 
             //if product is exist and avalilabe to put there a qty
             //may be the main , may be a sub one , or online bracnh
-            let sourceBranch = await branchService.isProductExist(sourceBranchId);
+            let sourceBranch = await branchService.isBrachExist(sourceBranchId);
             let destinationBranch = await branchService.isBrachExist(destinationBranchId);
             
                 //source is offline branch
                 let offProduct = await OfflineProductsRepo.getOffProductById(offProductId);
 
-                if (!offProduct)
-                    throw new AppError("product dose not exist", APP_CONFIG.HTTP_NOT_FOUND);
+                
 
 
                 //the new qty is the qty that will be decreased from the source branch
                 let newSourceQty = offProduct.stock - +qty;
 
-                if (newQty < 1)
+                if (newSourceQty < 1)
                     throw new AppError("this source branch dose not have enough quantity", APP_CONFIG.HTTP_BAD_REQUEST);
 
                 let newDestQty = qty ;
@@ -133,7 +134,7 @@ module.exports.OfflineProductsService = {
 
                 await OfflineProductsRepo.updateQuantity(offProductId, newSourceQty);
 
-                await OfflineProductsRepo.upsertProduct(offProductId, destinationBranchId, newDestQty);
+                await OfflineProductsRepo.upsertOffProduct(offProductId, destinationBranchId, newDestQty);
 
 
                 //it is the time to update our source online qty if it exist and if it is not create new one as a sellers 
@@ -147,8 +148,8 @@ module.exports.OfflineProductsService = {
                     // we have a record in online system product.
                     newQtyForSellerR=newSourceQty
                 }                
-                OnlineProductsRepository.upsertOurSellerRecord(offProduct.product,newQtyForSellerR);
-
+                 OnlineProductsRepository.upsertOurSellerRecord(offProduct.product,newQtyForSellerR);
+                return true;
 
         } catch (err) {
             throw err;
@@ -156,10 +157,6 @@ module.exports.OfflineProductsService = {
 
     },
 
-    
 
-
-
-
-
+ 
 }

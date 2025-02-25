@@ -51,8 +51,11 @@ const offlineProductOp = {
     },
 
     exportTo:async (req,res,next)=>{
- 
-        // const result = await ;
+
+        console.log(req.query);
+
+        const result = await OfflineProductsService.exportTo(req.query.id,+req.query.src,+req.query.dest,+req.query.qty);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
 
     }
 
@@ -91,7 +94,7 @@ router
     )
     .patch("/OffProduct/exportTo",
         prot_rest(APP_CONFIG.SUPPERADMIN),
-
+        catchAsync(offlineProductOp.exportTo)
     )
 
 
