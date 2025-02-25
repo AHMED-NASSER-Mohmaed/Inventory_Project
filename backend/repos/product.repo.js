@@ -23,7 +23,13 @@ module.exports.productRepo={
     }
   },
 
-   
+  updateProductQty:async(id,qty)=>{
+    try{
+      return await Product.updateOne({_id:id},{$set:qty})
+    }catch(error){
+      throw error;
+    }
+  }
 
 
 

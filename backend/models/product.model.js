@@ -25,23 +25,32 @@ const ProductSchema = new mongoose.Schema(
       default: 100,
     },
 
-    images: [
-      {
-        fileId: { type: String, default: APP_CONFIG.UDIAMGE_ID_VALUE },
-
-        url: {
-          type: String,
-          default: APP_CONFIG.PDIAMGE_URL_VALUE,
-
-          validate: {
-            validator: function (url) {
-              return validator.isURL(url);
+    images: {
+      type: [
+        {
+          fileId: { type: String, default: APP_CONFIG.UDIAMGE_ID_VALUE },
+          url: {
+            type: String,
+            default: APP_CONFIG.PDIAMGE_URL_VALUE,
+            validate: {
+              validator: function (url) {
+                return validator.isURL(url);
+              },
+              message: "Please provide valid URLs for images",
             },
-            message: "Please provide valid URLs for images",
           },
         },
+      ],
+      default: function () {
+        return [
+          {
+            fileId: APP_CONFIG.UDIAMGE_ID_VALUE,
+            url: APP_CONFIG.PDIAMGE_URL_VALUE,
+          },
+        ];
       },
-    ],
+    },
+    
 
     description: {
       type: String,
@@ -64,7 +73,7 @@ const ProductSchema = new mongoose.Schema(
     //default false cuz i do not manage the media part , decription at add product function level 
     isActive: {
       type: Boolean,
-      default: false,
+      default: true,
     },
  
     //default is false for the seller -- for us approved in case we are the people who add this product to the system 
@@ -105,7 +114,7 @@ const ProductSchema = new mongoose.Schema(
 
 // Create a compound index on Code and category to ensure uniqueness
 // for adding product also , we don't need to combine also is Active --
-ProductSchema.index({ productCode: 1, category: 1, brand: 1 }, { unique: true });
+ProductSchema.index({ code: 1, category: 1, brand: 1 }, { unique: true });
 
 
 ProductSchema.pre('save',function(){

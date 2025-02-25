@@ -3,9 +3,7 @@ const Staff = require("../models/staff.model");
 const { inboxResult } = require("../utils/apiFeatures");
 
 
-
 module.exports.staffRepo = {
-
 
     createStaffOfType: async (data) => {
 
@@ -27,7 +25,6 @@ module.exports.staffRepo = {
             throw err;
         }
     },
-
 
     activeStaffOfType: async (filters,bid) => {
         try {
@@ -79,7 +76,6 @@ module.exports.staffRepo = {
         }
     },
 
-
     getCountByFilter: async (filters) => {
         try {
 
@@ -95,7 +91,6 @@ module.exports.staffRepo = {
 
     getById:async(id)=>{
 
-        
         try{
             return await Staff.findById(id);
         }catch(err){
@@ -111,7 +106,5 @@ module.exports.staffRepo = {
             throw err;
         }
     }
-
-    
 
 }

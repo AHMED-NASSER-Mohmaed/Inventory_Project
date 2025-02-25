@@ -1,4 +1,4 @@
-const { map } = require("lodash");
+
 const orderRepository = require("../repos/order.repo");
 const orderContainerRepository = require("../repos/orderContainer.repo");
 const onlineProductRepo = require("../repos/tempOnlineProduct.repo");
@@ -205,6 +205,7 @@ class OrderService {
 
       async getAllOnlineOrdersForClerkOrSellerBasedOnStatus(clerkId, status, userType) {
         // return await orderRepository.getAllOnlineOrdersForSeller(sellerId);
+        console.log("from pending and clerk",status);
         if(status == "pending" && userType == "seller") {
           const returnedOrders =  await orderRepository.getAllOnlineOrdersForSellerPendingState(clerkId);
           const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
@@ -213,6 +214,10 @@ class OrderService {
         else if(status == "pending" && userType == "clerk") {
           const returnedOrders =  await orderRepository.getAllOnlineOrdersForOurCompanyForClerkPendingState(clerkId);
           const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+          
+          
+
+          
           return mappedOrders;
         }
         else if(status == "processing"){

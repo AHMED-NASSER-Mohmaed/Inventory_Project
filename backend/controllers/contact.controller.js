@@ -2,6 +2,9 @@ const catchAsync = require("../utils/catchAsync");
 const ContactService = require("../services/contact.service");
 const prot_rest = require("../utils/authMiddlewaresOptions");
 const { validateSearchParams, validatorFilterParams, validateSortPaginationParams } = require("../middlewares/validation.middlewares");
+const contactService = require("../services/contact.service");
+const { sendResponseToClint } = require("../utils/apiFeatures");
+const { APP_CONFIG } = require("../config/app.config");
 
 class ContactController {
   constructor() {
@@ -19,6 +22,13 @@ class ContactController {
         validateSortPaginationParams(this.allowedSort),
         validatorFilterParams(this.allowedFilters, this.allowedValues),
         catchAsync(this.getContacts));
+
+        this.router.get(
+          "/countContact",
+          prot_rest("admin", "super_admin"),
+          validatorFilterParams(this.allowedFilters, this.allowedValues),
+          catchAsync(this.getContactCount)
+        )
 
     this.router
       .route("/contact/:id")
@@ -52,6 +62,8 @@ class ContactController {
       catchAsync(this.sendReplyToContact)
     );
     // id --> review -- mail + content :[ massage:[different message] ]
+
+   
   }
 
   async createContact(req, res) {
@@ -78,6 +90,17 @@ class ContactController {
     });
 
   }
+
+  ///get count 
+  async getContactCount (req,res,next){
+
+    console.log(req.validatedParams.filters,"form controller");
+
+    let result= await contactService.getCount(req.validatedParams.filters);
+
+    sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+  }
+
 
   async getContactById(req, res) {
     const contact = await ContactService.getContactById(req.params.id);
