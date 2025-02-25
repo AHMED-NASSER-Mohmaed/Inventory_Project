@@ -2,6 +2,7 @@ const {productService}=require("../services/product.service");
 const {OfflineProductsRepo} = require("../repos/offlineProducts.repo");
 const { APP_CONFIG } = require("../config/app.config");
 const AppError = require("../utils/appError");
+const { filter } = require("lodash");
 module.exports.OfflineProductsService={
     
     addOfflineProduct:async(data)=>{
@@ -49,11 +50,19 @@ module.exports.OfflineProductsService={
         }
     },
 
-    getOfflineProducts:async(filters)=>{
-        // try{
-        //     return await 
-        // }catch(error){
-        //     throw error;
-        // }
+    getOfflineProducts:async(validatedParams)=>{
+        try{
+            let offlineFilter={} ;
+
+            if(validatedParams.filters.branch){
+                offlineFilter['branch']=validatedParams.filters.branch;
+                delete validatedParams.filters.branch;
+            }
+
+            return await OfflineProductsRepo.getOffProducts(offlineFilter,validatedParams.filters,validatedParams.sort,validatedParams.page,validatedParams.limit);
+        
+        }catch(error){
+            throw error;
+        }
     }
 }

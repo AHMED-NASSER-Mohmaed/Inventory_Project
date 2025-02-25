@@ -4,6 +4,7 @@ const express = require("express");
 const { APP_CONFIG } = require("../config/app.config");
 const catchAsync = require("../utils/catchAsync");
 const { sendResponseToClint } = require("../utils/apiFeatures");
+
 const {
     validateSearchParams,
     validatorFilterParams,
@@ -12,6 +13,13 @@ const {
 
 
 const offlineProductOp = {
+
+    allowedFilters: [["isActive", "undefined"]],
+    allowedFilterValues: [["true", "false", "undefined"]],
+
+    allowedSort: ["createdAt"],
+    searchFiledName: ["code", "brand","category",],
+    searchValueAcoordingNaN: [false, false, false],
 
     addProduct: async (req, res, next) => {
 
@@ -27,9 +35,11 @@ const offlineProductOp = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
-    getProduct:async(req,res,next)=>{
+    getProduct: async (req, res, next) => {
 
-        // let result = await 
+        let result = await OfflineProductsService.getOfflineProducts(req.validatedParams);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+
     }
 
 
@@ -48,7 +58,12 @@ router
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(offlineProductOp.updateQty)
     )
-
+    .get("/OffProduct",
+        validateSortPaginationParams(offlineProductOp.allowedSort),
+        validatorFilterParams(offlineProductOp.allowedFilters,offlineProductOp.allowedFilterValues),
+        validateSearchParams(offlineProductOp.searchFiledName,offlineProductOp.searchValueAcoordingNaN),
+        offlineProductOp.getProduct
+    )
 
 
 module.exports = router;
