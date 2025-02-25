@@ -115,6 +115,24 @@ module.exports = {
         }
     },
 
+    isBrachExist:async(id)=>{
+        try{
+
+            let bracnh= await branchRepo.getBranchById(id);
+
+            if(!bracnh)
+                throw new AppError("this bracnh dose not exist",APP_CONFIG.HTTP_BAD_REQUEST);
+
+            if(!bracnh['isActive'])
+                throw new AppError("this branch is de activated",APP_CONFIG.HTTP_BAD_REQUEST);
+
+            return bracnh;
+
+        }catch(error){
+            throw error;
+        }
+    }
+    
     
 
 
