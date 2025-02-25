@@ -16,8 +16,6 @@ const genaricFilters = {
     allowedFilters: [["isActive", "undefined"]],
     allowedFilterValues: [["true", "false","undefined"]],
 
-
-
     allowedSort: ['createdAt'],
 }
 
@@ -37,6 +35,7 @@ const branchController = {
         const result = bracnhService.updateBranch(req.params.id,req.body);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
+
     deleteBranch:async (req,res,next)=>{
 
         const result = bracnhService.deleteBranch(req.params.id);
@@ -51,7 +50,7 @@ const branchController = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
     getBranches:async (req,res,next)=>{
-        
+         
         const result = await bracnhService.getBranches(req.validatedParams);
         
         sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE, result);

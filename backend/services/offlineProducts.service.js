@@ -33,14 +33,14 @@ module.exports.OfflineProductsService = {
     updateQuantitiy: async (offProductId, qty) => {
         try {
 
-            let offProduct = await OfflineProductsRepo.getOffProductById(offProductId);
+            let offProduct = await OfflineProductsRepo.getOffProductByIdAndBrandId(offProductId,APP_CONFIG.MAIN_BRANCH_ID);
 
+            console.log("heeeeeeeee")
             if (!offProduct)
                 throw new AppError("product dose not exist", APP_CONFIG.HTTP_NOT_FOUND);
 
             if (offProduct.branch['type'] != 'main' || offProduct.branch._id != APP_CONFIG.MAIN_BRANCH_ID)
                 throw new AppError("you can update quntatiy expet main branch qty.", APP_CONFIG.HTTP_BAD_REQUEST);
-
 
             let newQty = offProduct.stock + +qty;
 
@@ -113,11 +113,11 @@ module.exports.OfflineProductsService = {
             let destinationBranch = await branchService.isBrachExist(destinationBranchId);
             
                 //source is offline branch
-                let offProduct = await OfflineProductsRepo.getOffProductById(offProductId);
+                let offProduct = await OfflineProductsRepo.getOffProductByIdAndBrandId(offProductId,sourceBranchId);
 
+                if(!offProductId)
+                    throw new AppError("the branch dose not have this product.");
                 
-
-
                 //the new qty is the qty that will be decreased from the source branch
                 let newSourceQty = offProduct.stock - +qty;
 
