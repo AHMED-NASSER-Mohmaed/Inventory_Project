@@ -13,10 +13,12 @@ module.exports.OfflineProductsRepo = {
         }
     },
 
-    getOffProductById: async (id) => {
+    getOffProductByIdAndBrandId: async (id,bracnhId) => {
         try {
-            return await OfflineProducts.findById(id).populate("branch");
+            
+            return await OfflineProducts.findOne({_id:id,branch:bracnhId}).populate("branch");
         } catch (error) {
+            console.log("helooo");
             throw error;
         }
 
@@ -116,16 +118,15 @@ module.exports.OfflineProductsRepo = {
                 { _id: productId, branch: branchId }, // Search condition
                 {
                     $inc: { stock: quantity }, // Increment stock if document exists
-                    $setOnInsert: { stock: quantity } // If inserting, set stock to quantity
+                    $setOnInsert: { _id: productId, branch: branchId } // Ensure insert does not conflict
                 },
-                { upsert: true, new: true } // Ensure upsert + return updated document
+                { upsert: true, new: true }
             );
-
         } catch (error) {
             throw error;
         }
     }
-
+    
 
 
 

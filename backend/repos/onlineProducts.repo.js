@@ -28,8 +28,8 @@ const OnlineProductsRepository ={
       return await OnlineProducts.findOneAndUpdate(
         { _id: productId, seller: APP_CONFIG.COMPANY_ID }, // Search condition
         {
-            $inc: { stock: quantity }, // Increment stock if document exists
-            $setOnInsert: { stock: quantity } // If inserting, set stock to quantity
+          $setOnInsert: { stock: quantity } ,// If inserting, set stock to quantity
+          $inc: { stock: quantity }, // Increment stock if document exists
         },
         { upsert: true, new: true } // Ensure upsert + return updated document 
     );

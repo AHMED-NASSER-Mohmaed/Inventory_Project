@@ -30,7 +30,7 @@ const validateSortPaginationParams = (allowedSort) => {
 
 
       } catch (e) {
-        throw new AppError('Invalid sort parameter format. Use "field:order"', APP_CONFIG.HTTP_BAD_REQUEST)
+        throw new AppError('Invalid sort parameter format. Use "field:type"', APP_CONFIG.HTTP_BAD_REQUEST)
       }
     }
 
@@ -66,7 +66,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
         filterObjects.forEach((element) => {
           let [field, value] = element.split(':');
 
-          console.log(field, value, "   ");
+          // console.log(field, value, "   ");
 
           // Find the index of the searchFiledName array that contains the field
           const filterIndex = searchFiledName.findIndex((element) => element.trim() === field.trim());
@@ -85,10 +85,10 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
 
           
           
-          if(field!=='branch')
-            value = new RegExp(`^${value}`, 'i');
-          else
+          if(field=='branch' ||field=="governate")
             value=Number(value)
+          else
+            value = new RegExp(`^${value}`, 'i');
              
 
           // value= new RegExp(`^${value}|${value}$`, 'i');
