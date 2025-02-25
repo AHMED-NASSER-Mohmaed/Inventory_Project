@@ -469,7 +469,7 @@ mat-button-toggle{
   margin-bottom: 24px;
 }
 :host #content main .table-data .head .headhead {
-  margin-right: 10%;
+  margin-right: 30%;
   
 }
 
@@ -1199,6 +1199,10 @@ input[type="number"] {
   .matbuttontogglegroup2 mat-button-toggle{
     font-size: 0.9em;
   }
+  :host #content main .table-data .head .headhead {
+    margin-right: 15%;
+    
+  }
 }
 
 @media screen and (max-width: 986px) {
@@ -1207,6 +1211,11 @@ input[type="number"] {
     min-width: 20%;
     max-width: 27%;
     border-radius: 20px;
+    
+  }
+  :host #content main .table-data .head .headhead {
+    margin-right: 10%;
+    
   }
 
   .items-per-page {
@@ -1224,7 +1233,6 @@ input[type="number"] {
 }
 
 @media screen and (min-width: 800px) and (max-width: 1175px) {
-  /* Override grid with flex layout so that two li items share a row */
   :host #content main .box-info {
     display: flex !important;
     flex-wrap: wrap !important;
@@ -1265,6 +1273,11 @@ input[type="number"] {
     width: 25%;
     min-width: 29%;
   }
+  /* :host #content main .table-data .head .matselect {
+    display: flex;
+    flex-wrap: wrap;
+    display: block;
+  } */
   
 
 }

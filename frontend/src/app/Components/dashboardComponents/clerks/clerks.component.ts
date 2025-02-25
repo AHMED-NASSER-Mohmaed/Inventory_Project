@@ -292,7 +292,6 @@ export class ClerksComponent implements OnInit, OnDestroy{
               } else {
                 this.loadSellers();
               }
-              // Also update counters
               this.getInActiveCustomersCount();
               this.getActiveCustomersCount();
             },

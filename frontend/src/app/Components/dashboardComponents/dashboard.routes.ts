@@ -7,6 +7,7 @@ import { CatagoriesComponent } from './catagories/catagories.component';
 import { AdminsComponent } from './admins/admins.component';
 import { CashiersComponent } from './cashiers/cashiers.component';
 import { ClerksComponent } from './clerks/clerks.component';
+import { FeedbacksComponent } from './feedbacks/feedbacks.component';
 
 export const dashRoutes: Routes = [
   {
@@ -53,6 +54,11 @@ export const dashRoutes: Routes = [
         path: 'clerks',
         component: ClerksComponent,
         title: 'Clerks'
+      },
+      {
+        path: 'feedbacks',
+        component: FeedbacksComponent,
+        title: 'Feedbacks'
       }
     ]
   }

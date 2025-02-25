@@ -113,12 +113,14 @@
                                         </mat-button-toggle-group>
                                     </button>
                                 </mat-menu>
+                                <div class="matselect">
                                 <mat-select [(ngModel)]="selectedBranch" name="branchFilter" placeholder="Filter By Branch" (selectionChange)="onBranchFilterChange()" style="margin-left: 0.5em; width: 150px;">
                                     <mat-option value="">All Branches</mat-option>
                                     <mat-option *ngFor="let branch of branches" [value]="branch.id">
                                         {{ branch.main + ' ' + branch.sub }}
                                     </mat-option>
                                 </mat-select>
+                              </div>
                             </div>
                         </form>
                     </div>
