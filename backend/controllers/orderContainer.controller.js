@@ -142,7 +142,7 @@ class OrderContainerController {
 
     let clerkId = req.user._id; // you have to check on the online branch here which would be a static value in the app config 
     // if the clerk doesn't match that branch id then throw an error
-    let status = req.body.status;
+    let status = req.query.status;
     let userType = 'clerk';
     const subOrders = await SubOrderService.getAllOnlineOrdersForClerkOrSellerBasedOnStatus(clerkId, status, userType);
     // console.log(subOrders);
@@ -158,7 +158,7 @@ class OrderContainerController {
     }
     let cashierId = req.user.id; // you have to check on the online branch here which would be a static value in the app config
     // if the cashier doesn't match that branch id then throw an error
-    let status = req.body.status;
+    let status = req.query.status;
     const subOrders = await SubOrderService.getAllOnlineOrdersForCashierBasedOnStatus(cashierId, status);
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",

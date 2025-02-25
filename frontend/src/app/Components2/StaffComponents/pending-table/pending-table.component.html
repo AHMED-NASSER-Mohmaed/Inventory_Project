@@ -12,13 +12,13 @@
                             </label>
                         </div>
                     </div>
-                    <ul class="breadcrumb">
+                    <!-- <ul class="breadcrumb">
                         <li><a >Dashboard</a></li>
                         <li><i class='bx bx-chevron-right'></i></li>
                         <li><a >Users</a></li>
                         <li><i class='bx bx-chevron-right'></i></li>
                         <li><a class="active" >Customers</a></li>
-                    </ul>
+                    </ul> -->
                 </div>
             </div>
 
@@ -149,8 +149,8 @@
                             </tr>
                             <tr *ngFor="let order of orders; let i = index">
                                 <td>
-                                    <img [src]="order.photo.url">
-                                    <p>{{ order.firstName + " "+ order.lastName }}</p>
+                                    <!-- <img [src]="order.photo.url"> -->
+                                    <p>{{ order.orderId }}</p>
                                 </td>
                                 <td>{{ order.createdAt | date:'dd/MM/yyyy' }}</td>
                                 <td>

@@ -12,19 +12,18 @@ export class ClerkDashboardService {
 
     constructor(public http: HttpClient) { }
     private baseUrl = 'http://localhost:3000';
-    
+
+
     private getHeaders(): HttpHeaders {
       const token = localStorage.getItem('token');
       return new HttpHeaders().set('Authorization', `Bearer ${token}`);
     }
 
-    getAllOrders(): Observable<any[]> {
-       return this.http.get<any[]>(`${this.baseUrl}/AllSubOrdersForClerk`, { headers: this.getHeaders() });
+    getAllOrders(status: any){
+      return this.http.get(`${this.baseUrl}/AllSubOrdersForClerk`, { params: { newStatus } ,  headers: this.getHeaders() });
 
     }
 
-
-   
 
   
     // getPaginatedCustomersByStatus(page: number, limit: number, filters?: string, sort?: string): Observable<any> {

@@ -29,8 +29,9 @@ import { ClerkDashboardService } from '../../../_services/clerk-dashboard.servic
 })
 export class PendingTableComponent  implements OnInit, OnDestroy{
 
-  orders: any[] = [];
+  orders: any = [];
 
+  newStatus: any ='pending';
 
   // Filter state and pagination
   currentFilter: string = '';
@@ -97,7 +98,7 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
 
 
   fetchOrders() {
-    this.clerkDashboardService.getAllOrders().subscribe({
+    this.clerkDashboardService.getAllOrders(this.newStatus).subscribe({
       next: (data) => {
         this.orders = data;
         this.isLoading = false;
@@ -111,6 +112,7 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
 
 
 
+  
 
 
 
