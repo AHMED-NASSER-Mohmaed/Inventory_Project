@@ -5,7 +5,7 @@ const AuthMiddleware = require("../middlewares/auth.middleware");
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
 const pro_res=require("../utils/authMiddlewaresOptions");
-const {AppError}=require("../utils/appError")
+const AppError=require("../utils/appError")
 
 class OrderContainerController {
 
@@ -134,15 +134,18 @@ class OrderContainerController {
 
   async getAllOnlineOrdersForClerk(req, res){
 
-    console.log(req.user,"clame");
+    // console.log(req.user,"clame");
     //review it ya man 
-    if(req.user.branch!=APP_CONFIG.ONLINE_BRANCH_ID || req.user.role != "clerk"){
+
+    if( req.user.branch!=APP_CONFIG.ONLINE_BRANCH_ID || req.user.role != "clerk"){
         throw new AppError("You are not authorized to get those orders since you are not employed in this branch.",APP_CONFIG.HTTP_UNAUTHORIZED);
     }
 
     let clerkId = req.user._id; // you have to check on the online branch here which would be a static value in the app config 
     // if the clerk doesn't match that branch id then throw an error
-    let status = req.query.status;
+
+    let status = req.query.status; //ahmed nasser
+
     let userType = 'clerk';
     const subOrders = await SubOrderService.getAllOnlineOrdersForClerkOrSellerBasedOnStatus(clerkId, status, userType);
     // console.log(subOrders);
@@ -153,12 +156,16 @@ class OrderContainerController {
   }
 
   async getAllOnlineOrdersForCashier(req, res){
-    if(!req.user.branch.equals(APP_CONFIG.ONLINE_BRANCH_ID) || req.user.role != "cashier"){
+
+    if(req.user.branch != APP_CONFIG.ONLINE_BRANCH_ID || req.user.role != "cashier"){
         throw new AppError("You are not authorized to get those orders since you are not employed in this branch.");
     }
+
     let cashierId = req.user.id; // you have to check on the online branch here which would be a static value in the app config
     // if the cashier doesn't match that branch id then throw an error
-    let status = req.query.status;
+
+    let status = req.params.status;
+
     const subOrders = await SubOrderService.getAllOnlineOrdersForCashierBasedOnStatus(cashierId, status);
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
@@ -172,7 +179,10 @@ class OrderContainerController {
   async getAllOnlineOrdersForSeller(req, res){
     // let sellerId = req.user._id; 
     let sellerId = '67aa455d1ea026264bf6c6b4'; // for testing
-    let status = req.body.status;
+
+
+    let status = req.params.status;
+
     // let userType = req.user.userType == 'seller';
     let userType = "seller"
     const subOrders = await SubOrderService.getAllOnlineOrdersForClerkOrSellerBasedOnStatus(sellerId, status, userType);
@@ -185,7 +195,7 @@ class OrderContainerController {
   async processOnlineOrderForClerkOrExternalSeller(req, res) {
     if(req.user.role == "clerk" ){ // becasue  admin can process the order too but it has to be admin of that branch
         // but once that order is assigned to someone the other cannot handle it (the order will be dedicated to only one person)
-        if(!req.user.branch.equals(APP_CONFIG.ONLINE_BRANCH_ID)){
+        if(req.user.branch!=APP_CONFIG.ONLINE_BRANCH_ID){
             throw new AppError("You are not authorized to process this order since you are not employed in this branch.");
         }
       req.body.clerkId = req.user.id;

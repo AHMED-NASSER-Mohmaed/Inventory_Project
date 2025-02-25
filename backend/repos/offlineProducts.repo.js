@@ -1,5 +1,5 @@
 const OfflineProducts = require("../models/offlineSchema.model");
-
+const {inboxResult}=require("../utils/apiFeatures");
 module.exports.OfflineProductsRepo = {
 
     addOfflineProduct: async (data) => {
@@ -34,7 +34,6 @@ module.exports.OfflineProductsRepo = {
     getOffProducts: async (OffFilters, ProductFilters, sort, page, limit) => {
 
         try {
-
             //OffFilters related branch
             //ProductFilters :: represent isActive 
 
