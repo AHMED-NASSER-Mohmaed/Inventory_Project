@@ -28,14 +28,13 @@ module.exports.OfflineProductsService = {
             throw err;
         }
     },
-
     //for decreasing qty with negative value.
     updateQuantitiy: async (offProductId, qty) => {
         try {
 
             let offProduct = await OfflineProductsRepo.getOffProductByIdAndBrandId(offProductId,APP_CONFIG.MAIN_BRANCH_ID);
 
-            console.log("heeeeeeeee")
+             
             if (!offProduct)
                 throw new AppError("product dose not exist", APP_CONFIG.HTTP_NOT_FOUND);
 
@@ -112,12 +111,15 @@ module.exports.OfflineProductsService = {
             let sourceBranch = await branchService.isBrachExist(sourceBranchId);
             let destinationBranch = await branchService.isBrachExist(destinationBranchId);
             
-                //source is offline branch
+                //source is offline || sub  || main --> branch
                 let offProduct = await OfflineProductsRepo.getOffProductByIdAndBrandId(offProductId,sourceBranchId);
 
-                if(!offProductId)
+                if(!offProduct)
                     throw new AppError("the branch dose not have this product.");
-                
+
+
+                console.log(offProduct);
+
                 //the new qty is the qty that will be decreased from the source branch
                 let newSourceQty = offProduct.stock - +qty;
 
@@ -134,22 +136,19 @@ module.exports.OfflineProductsService = {
 
                 await OfflineProductsRepo.updateQuantity(offProductId, newSourceQty);
 
-                await OfflineProductsRepo.upsertOffProduct(offProductId, destinationBranchId, newDestQty);
+                await OfflineProductsRepo.upsertOffProduct(offProduct.product, destinationBranchId, newDestQty);
 
 
                 //it is the time to update our source online qty if it exist and if it is not create new one as a sellers 
 
-                 
-                let newQtyForSellerR;
                 if (destinationBranch['type'] === 'online') {
                     //may be the first time to export this product to online sysytem
-                    newQtyForSellerR=qty
+                    return  OnlineProductsRepository.upsertOurSellerRecord(offProduct.product,qty);
                 }else if (sourceBranch['type']==='online'){
                     // we have a record in online system product.
-                    newQtyForSellerR=newSourceQty
+                    return  OnlineProductsRepository.upsertOurSellerRecord(offProduct.product,newSourceQty);
                 }                
-                 OnlineProductsRepository.upsertOurSellerRecord(offProduct.product,newQtyForSellerR);
-                return true;
+                 
 
         } catch (err) {
             throw err;
@@ -157,6 +156,6 @@ module.exports.OfflineProductsService = {
 
     },
 
-
+    
  
 }

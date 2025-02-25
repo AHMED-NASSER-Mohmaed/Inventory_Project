@@ -82,6 +82,7 @@ process.on("uncaughtException", (err) => {
         type: "main",
         governate: 6,
         registrationNumber: "123-69",
+        admin:APP_CONFIG.SUPPERADMIN_ID,
         location: "Elmasoura - Ahmed Maher Street"
       }
 

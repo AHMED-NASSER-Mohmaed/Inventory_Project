@@ -115,10 +115,10 @@ module.exports.OfflineProductsRepo = {
     upsertOffProduct: async (productId, branchId, quantity) => {
         try {
             return await OfflineProducts.findOneAndUpdate(
-                { _id: productId, branch: branchId }, // Search condition
+                { product: productId, branch: branchId }, // Search condition
                 {
                     $inc: { stock: quantity }, // Increment stock if document exists
-                    $setOnInsert: { _id: productId, branch: branchId } // Ensure insert does not conflict
+                    $setOnInsert: { product: productId, branch: branchId } // Ensure insert does not conflict
                 },
                 { upsert: true, new: true }
             );
