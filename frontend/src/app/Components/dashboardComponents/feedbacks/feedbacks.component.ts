@@ -12,6 +12,7 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { decodeToken } from '../../../_helpers/jwt-helper';
 import { FeedbacksService } from '../../../_services/feedbacks.service';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmDialogComponent2 } from '../../../confirm-dialog2/confirm-dialog2.component';
 
 interface SearchResponse {
   data: {
@@ -222,28 +223,40 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
 
   deleteFeedback(feedback: Feedback): void {
     this.setSelectedFeedback(feedback);
-    this.feedbackService.deleteFeedback(feedback._id).subscribe({
-      next: () => {
-        this.toastr.success('Feedback archived successfully');
-        this.refreshCurrentView(); 
-        this.updateCounts();
-      },
-      error: (error) => {
-        console.error('Error archiving feedback:', error);
-        this.toastr.error('Error archiving feedback');
+    const dialogRef = this.dialog.open(ConfirmDialogComponent2);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.feedbackService.deleteFeedback(feedback._id).subscribe({
+          next: () => {
+            this.toastr.success('Feedback archived successfully');
+            this.refreshCurrentView(); 
+            this.updateCounts();
+          },
+          error: (error) => {
+            console.error('Error archiving feedback:', error);
+            this.toastr.error('Error archiving feedback');
+          }
+        });
       }
     });
   }
 
   sendAutoReply(id: string): void {
-    this.feedbackService.sendAutoReply(id).subscribe({
-      next: () => {
-        this.toastr.success('Auto-reply sent successfully');
-        this.refreshCurrentView(); 
-      },
-      error: (error) => {
-        console.error('Error sending auto reply:', error);
-        this.toastr.error('Error sending auto-reply');
+    const dialogRef = this.dialog.open(ConfirmDialogComponent2);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.feedbackService.sendAutoReply(id).subscribe({
+          next: () => {
+            this.toastr.success('Auto-reply sent successfully');
+            this.refreshCurrentView(); 
+          },
+          error: (error) => {
+            console.error('Error sending auto reply:', error);
+            this.toastr.error('Error sending auto-reply');
+          }
+        });
       }
     });
   }
