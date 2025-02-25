@@ -57,8 +57,9 @@ module.exports = {
     deleteBranch:async (id)=>{
         try {
 
-            return await branchRepo.deleteBranch(id);
-
+            let ack= await branchRepo.deleteBranch(id);
+            await staffRepo.UpdateStaffByInjection({branch:id},{$set:{branch:null,isActive:false}})
+            return ack;
         } catch (err) {
             throw err;
         }
@@ -93,7 +94,7 @@ module.exports = {
 
             
             let branch= await branchRepo.getBranchById(id);
-            // console.log("from get bracnh amanager",id);
+            console.log("from get bracnh amanager",branch);
             
             if(!branch || !branch['isActive']){
                 throw new AppError("this branch is not exist!!", APP_CONFIG.HTTP_BAD_REQUEST);
