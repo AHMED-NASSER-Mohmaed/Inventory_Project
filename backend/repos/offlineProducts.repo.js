@@ -1,5 +1,7 @@
+const { filter } = require("lodash");
 const OfflineProducts = require("../models/offlineSchema.model");
 const {inboxResult}=require("../utils/apiFeatures");
+const { getCount } = require("./supplier.repo");
 module.exports.OfflineProductsRepo = {
 
     addOfflineProduct: async (data) => {
@@ -27,50 +29,87 @@ module.exports.OfflineProductsRepo = {
             throw error;
         }
     },
-
-
     //isActive + deactive products
-
-    getOffProducts: async (OffFilters, ProductFilters, sort, page, limit) => {
+    getOffProducts: async (filters, sort, page, limit) => {
 
         try {
-            //OffFilters related branch
-            //ProductFilters :: represent isActive 
 
-            const [results, total] = await Promise.all([
-
-                await OfflineProducts.find(OffFilters)
-                    .populate({
-                        path: "product",
-                        match: { ProductFilters, status: "approved" }
-                    })
-                    .sort(sort)
-                    .skip((page - 1) * limit) // (starting index = page-1)*limit
-                    .limit(limit)
-                    .select("-__v -kind")
-                    .lean(),
-
+            const [result, total] = await Promise.all([
 
                 await OfflineProducts.aggregate([
                     {
                         $lookup: {
-                            from: "OfflineProducts",
+                            from: "products",
                             localField: "product",
                             foreignField: "_id",
                             as: "product"
                         }
                     },
-                    { $match: { "product.isActive": ProductFilters.isActive , "product.status":"approved"  } },
-                    { $count: "total" }
-                ])
+                    { $unwind: "$product" },
+                    { 
+                        $match:{
+                             ...filters
+                        }
+                        
+                    },
+                    { $sort: sort },
+                    { $skip: (page - 1) * limit },
+                    { $limit: limit },
+                    { $project: { __v: 0, kind: 0  ,"product.isActive":0,"product.satus":0 } } 
+                ]),
+                await OfflineProducts.aggregate([
+                    {
+                        $lookup: {
+                            from: "products",
+                            localField: "product",
+                            foreignField: "_id",
+                            as: "product"
+                        }
+                    },
+                    { $unwind: "$product" },
+                    { 
+                        $match: {
+                            ...filters
+                        }
+                    },
+                    { 
+                        $count: "total" 
+                    }])
+                
                   
             ])
-            return inboxResult(results, total, page, limit);
+            return inboxResult(result,  total[0]?.total || 0 , page, limit);
         } catch (error) {
             throw error;
         }
 
-    }
+    },
 
+    getCount:async (filters)=>{
+        try{
+            return await OfflineProducts.aggregate([
+                {
+                    $lookup: {
+                        from: "products",
+                        localField: "product",
+                        foreignField: "_id",
+                        as: "product"
+                    }
+                },
+                { $unwind: "$product" },
+                { 
+                    $match: filters
+                },
+                { 
+                    $count: "total" 
+                }])
+                
+        }catch(error){
+            throw error;
+        }
+    },
+
+
+   
 
 }

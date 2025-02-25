@@ -5,8 +5,6 @@ const {staffRepo}=require("../repos/staff.repo");
 
 
 
-
-
 module.exports = {
 
     addBranch: async (data) => {
@@ -91,15 +89,17 @@ module.exports = {
 
     getBranchAdmin:async (id)=>{
         try{
-
             
             let branch= await branchRepo.getBranchById(id);
-            console.log("from get bracnh amanager",branch);
+            // console.log("from get bracnh amanager",branch);
             
             if(!branch || !branch['isActive']){
                 throw new AppError("this branch is not exist!!", APP_CONFIG.HTTP_BAD_REQUEST);
             }
 
+
+            //are you stupid ahmed why you are going to branch staff repo and get the acual admin 
+            //yu need only to know is 
             return await staffRepo.getById(branch.admin);
 
         }catch(error){
@@ -107,13 +107,15 @@ module.exports = {
         }
     },
 
-    updateStffFromBranch:async(id,query)=>{
+    updateBranchStaff:async(id,query)=>{
         try{
             return await branchRepo.updateBranchByInjextion(id,query)
         }catch(error){
             throw error;
         }
-    }
+    },
+
+    
 
 
 

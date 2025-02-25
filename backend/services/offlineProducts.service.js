@@ -2,7 +2,9 @@ const {productService}=require("../services/product.service");
 const {OfflineProductsRepo} = require("../repos/offlineProducts.repo");
 const { APP_CONFIG } = require("../config/app.config");
 const AppError = require("../utils/appError");
-const { filter } = require("lodash");
+
+require("../services/branch.service"); 
+
 module.exports.OfflineProductsService={
     
     addOfflineProduct:async(data)=>{
@@ -22,7 +24,6 @@ module.exports.OfflineProductsService={
             throw err;
         }
     },
-
 
     updateQuantitiy:async(offProductId,qty)=>{
         try{
@@ -50,19 +51,53 @@ module.exports.OfflineProductsService={
         }
     },
 
+    parseFilters:(filters)=>{
+        return  Object.fromEntries(
+
+            Object.entries(filters).map(
+                ([key, value]) =>{
+
+                    if(key==='isActive')
+                        return [`product.${key}`, value]
+
+                    return [`${key}`, value]
+                } 
+            )
+    )
+        
+    },
+
     getOfflineProducts:async(validatedParams)=>{
         try{
-            let offlineFilter={} ;
-
-            if(validatedParams.filters.branch){
-                offlineFilter['branch']=validatedParams.filters.branch;
-                delete validatedParams.filters.branch;
-            }
-
-            return await OfflineProductsRepo.getOffProducts(offlineFilter,validatedParams.filters,validatedParams.sort,validatedParams.page,validatedParams.limit);
+            
+            return await OfflineProductsRepo.getOffProducts(this.OfflineProductsService.parseFilters(validatedParams.filters),
+            validatedParams.sort,validatedParams.page,validatedParams.limit);
         
         }catch(error){
             throw error;
         }
-    }
+    },
+
+    getOffProCount:async(filters)=>{
+        try{
+            return await OfflineProductsRepo.getCount(this.OfflineProductsService.parseFilters(filters));
+        }catch(err){
+            throw err;
+        }
+    },
+
+    // exportTo:async(productId)=>{
+    //     try{
+    //         //export to branch --> you have to cheack branch first 
+    //         let loactedBranch = await 
+    //     }catch(err){
+    //         throw err;
+    //     }
+
+    // }
+
+
+
+
+    
 }

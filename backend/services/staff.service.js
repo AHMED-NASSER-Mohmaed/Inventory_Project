@@ -38,9 +38,9 @@ module.exports.staffService = {
             let res= await staffRepo.createStaffOfType(data);
 
             if(data.role==APP_CONFIG.ADMIN)
-                await branchService.updateStffFromBranch(data.branch,{$set:{admin:res._id}});
+                await branchService.updateBranchStaff(data.branch,{$set:{admin:res._id}});
             else
-                await branchService.updateStffFromBranch(data.branch,{$push:{employees:res._id}});
+                await branchService.updateBranchStaff(data.branch,{$push:{employees:res._id}});
             return res;
 
         } catch (err) {
@@ -62,9 +62,9 @@ module.exports.staffService = {
 
             if(obj.branch){
                 if(obj.role==APP_CONFIG.ADMIN)
-                    await branchService.updateStffFromBranch(obj.branch,{$set:{admin:null}});
+                    await branchService.updateBranchStaff(obj.branch,{$set:{admin:null}});
                 else 
-                    await branchService.updateStffFromBranch(obj.branch,{$pull:{employees:obj._id}});
+                    await branchService.updateBranchStaff(obj.branch,{$pull:{employees:obj._id}});
             }
 
             return await staffRepo.deleteStaffOfType(filters);
@@ -100,11 +100,11 @@ module.exports.staffService = {
                 if(admin){
                     throw new AppError("you have to delete the current admin firstly!!",APP_CONFIG.HTTP_BAD_REQUEST);
                 }
-                await branchService.updateStffFromBranch(filters.branch,{$set:{admin:filters._id}});
+                await branchService.updateBranchStaff(filters.branch,{$set:{admin:filters._id}});
                 
             }else{
                 
-                await branchService.updateStffFromBranch(filters.branch,  { $push: { employees: obj._id } });
+                await branchService.updateBranchStaff(filters.branch,  { $push: { employees: obj._id } });
                 
             }
 

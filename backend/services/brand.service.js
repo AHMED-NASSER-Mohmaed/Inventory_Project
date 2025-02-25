@@ -68,7 +68,6 @@ module.exports.brandService = {
     },
 
     activeBrand: async (id) => {
-
         try {
             let ack = await brandRepo.activeBrand(id);
 
@@ -98,7 +97,10 @@ module.exports.brandService = {
         }catch(error){
             throw error;
         }
-    }
+    },
+
+
+
 
 
 }
