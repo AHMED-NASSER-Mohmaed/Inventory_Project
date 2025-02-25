@@ -87,12 +87,33 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
 
   private getCacheKey(): string {
     const filters = [];
-    if (this.currentFilter === 'seen') filters.push('isSeen:true');
-    if (this.currentFilter === 'pending') filters.push('isSeen:false');
-    if (this.selectedDot === 'active') filters.push('isActive:true');
-    if (this.selectedDot === 'inactive') filters.push('isActive:false');
     
-    return `page_${this.currentPage}_limit_${this.itemsPerPage}_filters_${filters.join('+')}_sort_${this.sortField || 'none'}_${this.sortDirection || 'none'}`;
+    // Add active/inactive status if selected
+    if (this.selectedDot === 'active') {
+      filters.push('isActive:true');
+    } else if (this.selectedDot === 'inactive') {
+      filters.push('isActive:false');
+    }
+    
+    // Add seen/pending status if selected
+    if (this.currentFilter === 'seen') {
+      filters.push('isSeen:true');
+    } else if (this.currentFilter === 'pending') {
+      filters.push('isSeen:false');
+    }
+
+    // Sort filters for consistent cache keys
+    filters.sort();
+
+    const cacheKey = [
+      `page_${this.currentPage}`,
+      `limit_${this.itemsPerPage}`,
+      filters.length > 0 ? `filters_${filters.join('+')}` : 'no_filters',
+      `sort_${this.sortField || 'none'}_${this.sortDirection || 'none'}`
+    ].join('_');
+
+    console.log('Cache key:', cacheKey); // Debug log
+    return cacheKey;
   }
 
   private isCacheValid(timestamp: number): boolean {
@@ -122,9 +143,12 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
     this.feedbacks = []; // Clear existing feedbacks
     
     const cacheKey = this.getCacheKey();
+    console.log('Checking cache for key:', cacheKey); // Debug log
+    console.log('Current cache:', this.cache); // Debug log
     
     if (this.cache[cacheKey] && this.isCacheValid(this.cache[cacheKey].timestamp)) {
-      this.feedbacks = this.cache[cacheKey].data;
+      console.log('Cache hit!'); // Debug log
+      this.feedbacks = [...this.cache[cacheKey].data]; // Use spread to create new array
       this.showNoResults = this.feedbacks.length === 0; 
       this.totalPages = Math.ceil(this.cache[cacheKey].total / this.itemsPerPage);
       this.dropdownStates = new Array(this.feedbacks.length).fill(false);
@@ -132,6 +156,8 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
       this.isLoading = false;
       return;
     }
+
+    console.log('Cache miss - fetching from server'); // Debug log
 
     const filters = [];
     if (this.currentFilter === 'seen') filters.push('isSeen:true');
@@ -233,7 +259,12 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
         this.toastr.success('Reply sent successfully');
         const modal = document.getElementById('replyModal');
         if (modal) {
-          (modal as any).modal('hide');
+          (modal as any).style.display = 'none'; 
+          document.body.classList.remove('modal-open'); 
+          const backdrop = document.querySelector('.modal-backdrop');
+          if (backdrop) {
+            backdrop.remove(); 
+          }
         }
         this.replyMessage = ''; 
         this.refreshCurrentView(); 
@@ -441,34 +472,47 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
   }
 
   onStatusDotClick(status: boolean): void {
-    this.cache = {}; 
     this.currentActiveStatus = status;
     this.selectedDot = status ? 'active' : 'inactive';
     this.showNoResults = false; 
     this.feedbacks = []; 
-    let filters = `isActive:${status}`;
+    
+    // Build filters string
+    const filters = [];
+    filters.push(`isActive:${status}`);
     
     if (this.currentFilter === 'seen') {
-      filters += '+isSeen:true';
+      filters.push('isSeen:true');
     } else if (this.currentFilter === 'pending') {
-      filters += '+isSeen:false';
+      filters.push('isSeen:false');
     }
 
+    const filterString = filters.join('+');
     this.searchPlaceholder = `Search ${status ? 'Existing' : 'Archived'} ${this.currentFilter === 'seen' ? 'Seen' : 'Pending'} Feedback by ID...`;
     
     this.isLoading = true;
     this.currentPage = 1;
     
+    // Always store in cache after successful request
     const sub = this.feedbackService.getFeedbacks(
       this.currentPage,
       this.itemsPerPage,
-      filters,
+      filterString,
       this.sortField && this.sortDirection ? `&sort=${this.sortField}:${this.sortDirection}` : ''
     ).subscribe({
       next: (res) => {
         this.feedbacks = res.result.result;
         this.totalPages = Math.ceil(res.result.total / this.itemsPerPage);
         this.dropdownStates = new Array(this.feedbacks.length).fill(false);
+        
+        // Store in cache
+        const cacheKey = this.getCacheKey();
+        this.cache[cacheKey] = {
+          data: this.feedbacks,
+          total: res.result.total,
+          timestamp: Date.now()
+        };
+        
         this.updatePaginationState();
         this.isLoading = false;
       },
@@ -507,8 +551,7 @@ export class FeedbacksComponent implements OnInit, OnDestroy{
     this.isLoading = true;
     this.feedbacks = [];
     this.showNoResults = false;
-    
-    this.cache = {};
+    this.cache = {}; // Clear cache on refresh
     
     setTimeout(() => {
       if (this.isSearchMode) {

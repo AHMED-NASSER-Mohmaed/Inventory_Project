@@ -40,7 +40,7 @@ export class FeedbacksService {
   }
 
   sendReply(id: string, reply: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/contact/${id}/reply`, { reply }, { headers: this.getHeaders() });
+    return this.http.post(`${this.baseUrl}/contact/${id}/reply`, { "content": reply }, { headers: this.getHeaders() });
   }
 
   getActiveFeedbacksCount(): Observable<any> {

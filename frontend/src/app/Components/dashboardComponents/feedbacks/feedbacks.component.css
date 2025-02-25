@@ -980,25 +980,6 @@ input[type="number"] {
     margin-top: 10px;
 }
 
-#sellerInfoModal .modal-body .seller-image-container {
-    display: block;
-    margin: 0 auto 30px auto; 
-    text-align: center; 
-    max-width: 100px;
-    border-radius: 50%;
-}
-#sellerInfoModal .modal-body .seller-image-container .seller-img {
-  max-width: 100px;
-  min-height: 100px;
-  border-radius: 50%;
-  border: 3px solid var(--dark); 
-}
-
-:host .parent3.dark #sellerInfoModal .modal-body .seller-image-container .seller-img {
-    border: 3px solid var(--blue); 
-}
-
-
 #sellerInfoModal .modal-body .info-grid .value {
     border: none;
     background: transparent;
@@ -1314,4 +1295,151 @@ input[type="number"] {
         flex-direction: column;
         align-items: flex-start;
     }
+}
+
+.modal-dialog {
+    max-width: 500px;
+    margin: 30px auto;
+}
+
+.modal-content {
+    border-radius: 15px;
+}
+
+.modal-header {
+    background: linear-gradient(90deg, var(--dark), #eee);
+    padding: 20px;
+    border-bottom: none;
+    font-family: var(--poppins);
+}
+
+.modal-header .modal-title {
+    color: #fff;
+    font-size: 1.5em;
+    font-weight: 500;
+}
+
+.modal-header .close {
+    color: #fff;
+    font-size: 1.2em;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.modal-header .close:hover {
+    opacity: 1;
+}
+
+.modal-body {
+    padding: 25px 20px;
+    font-size: 0.95em;
+    color: var(--dark);
+    background: #fff;
+    font-family: var(--poppins);
+}
+
+.modal-body .info-grid {
+    display: grid;
+    grid-gap: 15px;
+    row-gap: 30px;
+}
+
+.modal-body .info-item {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    align-items: center;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.modal-body .info-item .label {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.modal-body .info-item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #ccc, transparent);
+    margin-top: 10px;
+}
+
+.modal-body .info-item .value {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: inherit;
+    color: inherit;
+    margin-left: 10%;
+    padding-left: 8px;
+}
+
+.message-area {
+    min-height: 100px;
+    resize: vertical;
+    font-family: var(--poppins);
+    padding: 10px;
+    border: 1px solid var(--grey);
+    border-radius: 5px;
+    width: 100%;
+    margin-left: 0 !important;
+}
+
+.modal-footer {
+    background: #f1f1f1;
+    border-top: none;
+    padding: 15px 20px;
+}
+
+.modal-footer .btn {
+    background-color: var(--dark);
+    border: none;
+    font-size: 1.2em;
+    padding: 10px 15px;
+    transition: background-color 0.3s ease;
+    color: var(--light);
+    margin-right: 1em;
+}
+
+.modal-footer .btn:hover {
+    background-color: var(--dark-grey);
+    color: var(--dark);
+}
+
+.modal-footer .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Dark mode styles */
+:host .parent3.dark .modal-content {
+    background: var(--grey);
+}
+
+:host .parent3.dark .modal-header {
+    background: linear-gradient(135deg, var(--dark), var(--grey));
+}
+
+:host .parent3.dark .modal-body {
+    background: var(--grey);
+    color: var(--dark);
+}
+
+:host .parent3.dark .modal-footer {
+    background: var(--grey);
+}
+
+:host .parent3.dark .modal-header .modal-title,
+:host .parent3.dark .modal-header .close {
+    color: var(--light);
+}
+
+:host .parent3.dark .modal-body,
+:host .parent3.dark .modal-footer {
+    color: var(--dark);
 }

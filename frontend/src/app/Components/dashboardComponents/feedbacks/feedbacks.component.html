@@ -195,7 +195,7 @@
                                                     <i class='bx bx-show'></i> Show
                                                 </a>
                                                 <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item p-3" (click)="sendAutoReply(feedback._id)">
+                                                <a class="dropdown-item p-3" *ngIf="!feedback.isSeen" (click)="sendAutoReply(feedback._id)">
                                                     <i class='bx bx-mail-send'></i> Confirm
                                                 </a>
                                                 <a class="dropdown-item p-3" (click)="setSelectedFeedback(feedback)" data-toggle="modal" data-target="#replyModal">
@@ -221,46 +221,88 @@
         </main>
     </section>
 
-    <div class="modal fade" id="feedbackModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Feedback Details</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;"></button>
+    <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="feedbackModalLabel">Feedback Details</h5>
+          </div>
+          <div class="modal-body">
+            <div class="info-grid" *ngIf="selectedFeedback">
+              <div class="info-item">
+                <strong class="label">From:</strong>
+                <div class="input-wrapper">
+                  <input type="text" [value]="selectedFeedback.name" disabled class="value">
                 </div>
-                <div class="modal-body">
-                    <div class="feedback-details">
-                        <p><strong>From:</strong> {{selectedFeedback.name}}</p>
-                        <p><strong>Email:</strong> {{selectedFeedback.email}}</p>
-                        <p><strong>Sent on:</strong> {{selectedFeedback.createdAt | date:'medium'}}</p>
-                        <p><strong>Status:</strong> {{selectedFeedback.isSeen}}</p>
-                        <div class="message-box">
-                            <strong>Message:</strong>
-                            <p>{{selectedFeedback.message}}</p>
-                        </div>
-                    </div>
+              </div>
+              <div class="info-item">
+                <strong class="label">Email:</strong>
+                <div class="input-wrapper">
+                  <input type="text" [value]="selectedFeedback.email" disabled class="value">
                 </div>
+              </div>
+              <div class="info-item">
+                <strong class="label">Sent on:</strong>
+                <div class="input-wrapper">
+                  <input type="text" [value]="selectedFeedback.createdAt | date:'medium'" disabled class="value">
+                </div>
+              </div>
+              <div class="info-item">
+                <strong class="label">Status:</strong>
+                <div class="input-wrapper">
+                  <input type="text" [value]="selectedFeedback.isSeen ? 'Seen' : 'Pending'" disabled class="value">
+                </div>
+              </div>
+              <div class="info-item message-box">
+                <strong class="label">Message:</strong>
+                <div class="input-wrapper">
+                  <textarea disabled class="value message-area">{{selectedFeedback.message}}</textarea>
+                </div>
+              </div>
             </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+              <i class='bx bx-x'></i>
+            </button>
+          </div>
         </div>
+      </div>
     </div>
 
-    <div class="modal fade" id="replyModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Reply to Feedback</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;"></button>
+    <div class="modal fade" id="replyModal" tabindex="-1" role="dialog" aria-labelledby="replyModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="replyModalLabel">Reply to Feedback</h5>
+          </div>
+          <div class="modal-body">
+            <form (ngSubmit)="sendReply(selectedFeedback._id, replyMessage)" #replyForm="ngForm">
+              <div class="info-grid">
+                <div class="info-item">
+                  <strong class="label">To:</strong>
+                  <div class="input-wrapper">
+                    <input type="text" [value]="selectedFeedback.name" disabled class="value">
+                  </div>
                 </div>
-                <div class="modal-body">
-                    <form (ngSubmit)="sendReply(selectedFeedback._id, replyMessage)">
-                        <div class="form-group">
-                            <label>Reply Message:</label>
-                            <textarea class="form-control" [(ngModel)]="replyMessage" name="replyMessage" rows="5"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Send Reply</button>
-                    </form>
+                <div class="info-item">
+                  <strong class="label">Message:</strong>
+                  <div class="input-wrapper">
+                    <textarea class="form-control value message-area" [(ngModel)]="replyMessage" name="replyMessage" rows="5" required></textarea>
+                  </div>
                 </div>
-            </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" (click)="sendReply(selectedFeedback._id, replyMessage)" [disabled]="!replyMessage">
+              <i class='bx bx-send'></i>
+            </button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+              <i class='bx bx-x'></i>
+            </button>
+          </div>
         </div>
+      </div>
     </div>
 </div>
