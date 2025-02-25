@@ -6,13 +6,46 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BranchesService {
+  private baseUrl = 'http://localhost:3000';
+  private pageCache: { [key: string]: { result: any[]; total: number } } = {};
 
   constructor(public http: HttpClient) { }
-  private baseUrl = 'http://localhost:3000';
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
+
+  getPaginatedBranches(page: number, limit: number, governate?: number, sort?: string, filters?: string): Observable<any> {
+    let filterStr = filters || '';
+    if (governate) {
+      filterStr += filterStr ? `+governate:${governate}` : `governate:${governate}`;
+    }
+    const sortParam = sort ? `&sort=${sort}` : '';
+    const cacheKey = `${filterStr}_${page}_${sortParam}_${limit}`;
+
+    if (this.pageCache[cacheKey]) {
+      return new Observable(observer => {
+        observer.next({ data: this.pageCache[cacheKey] });
+        observer.complete();
+      });
+    }
+
+    const url = `${this.baseUrl}/branches?filters=${filterStr}${sortParam}&page=${page}&limit=${limit}`;
+    return new Observable(observer => {
+      this.http.get(url, { headers: this.getHeaders() }).subscribe({
+        next: (response: any) => {
+          this.pageCache[cacheKey] = response.data;
+          observer.next(response);
+          observer.complete();
+        },
+        error: (error) => observer.error(error)
+      });
+    });
+  }
+
+  clearCache(): void {
+    this.pageCache = {};
   }
 
   getPaginatedCustomersByStatus(page: number, limit: number, filters?: string, sort?: string): Observable<any> {
@@ -22,13 +55,11 @@ export class BranchesService {
   }
 
   deActiveCustomer(id: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/deleteClerk/${id}`, { headers: this.getHeaders() });
+    return this.http.delete(`${this.baseUrl}/branches/delete/${id}`, { headers: this.getHeaders() });
   }
 
   activateCustomer(id: string, branchId?: string): Observable<any> {
-    const url = branchId 
-      ? `${this.baseUrl}/activeClerk/${id}/${branchId}` 
-      : `${this.baseUrl}/activeClerk/${id}`;
+    const url = branchId = `${this.baseUrl}/branches/active/${id}`;
     return this.http.patch(url, {}, { headers: this.getHeaders() });
   }
 
@@ -49,7 +80,7 @@ export class BranchesService {
   }
 
   updateCustomer(id: string, data: any): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/updateClerk/${id}`, data, { headers: this.getHeaders() });
+    return this.http.patch(`${this.baseUrl}/branches/update/${id}`, data, { headers: this.getHeaders() });
   }
 
   searchCustomers(filters: string, page: number, limit: number, sort?: string): Observable<any> {
@@ -67,6 +98,10 @@ export class BranchesService {
 
   activateCustomerWithBranch(id: string, branchId: string): Observable<any> {
     return this.http.patch(`${this.baseUrl}/activeClerk/${id}/${branchId}`, {}, { headers: this.getHeaders() });
+  }
+
+  addBranch(data: { governate: number; location: string; registrationNumber: string }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/branches`, data, { headers: this.getHeaders() });
   }
   
 }

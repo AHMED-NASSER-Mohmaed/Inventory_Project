@@ -66,6 +66,7 @@
     display: inline-block;
     width: 50px;
     height: 25px;
+    margin-left: 2em;
 }
 
 .switch-mode input {
@@ -336,7 +337,7 @@ input:checked + .slider:before {
 }
 :host #content main .box-info li:nth-child(2) .bx {
   background: var(--custom);
-  color: var(--dark-dark);
+  color: var (--dark-dark);
   transition: 0.3s;
 }
 :host #content main .box-info li:nth-child(2) .bx:hover {
@@ -825,7 +826,7 @@ mat-button-toggle{
     font-size: 0.95em;
     color: var(--dark);
     background: #fff;
-    font-family: var(--poppins);
+    font-family: var (--poppins);
 }
 
 #sellerInfoModal .modal-body .info-grid {
@@ -1119,7 +1120,7 @@ input[type="number"] {
     padding-bottom: 10px;
     margin-top: 7.5%;
 }
-#addCategoryModal .modal-body .info-grid .info-item:not(:last-child)::after {
+#addCategoryModal .modal-body .info-grid .info-item:not:last-child::after {
     content: "";
     position: absolute;
     left: 0;
@@ -1185,6 +1186,222 @@ input[type="number"] {
 #activateAdminModal .modal-footer .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+:host ::ng-deep .mat-select-panel {
+  max-height: 350px !important;
+  min-width: 200px !important;
+}
+
+:host ::ng-deep .mat-select-panel mat-option {
+  line-height: 2em;
+  height: auto;
+  padding: 8px 16px;
+  white-space: normal;
+  font-family: var(--poppins);
+}
+
+:host ::ng-deep .mat-select {
+  width: 200px !important;
+}
+
+:host ::ng-deep .mat-select-value {
+  max-width: 100%;
+  width: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:host ::ng-deep .mat-select {
+  width: 200px !important;
+}
+
+.dropdown-menu.show {
+  display: block;
+  position: absolute;
+  z-index: 1000;
+  background-color: var(--light);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border: 1px solid var(--grey);
+}
+
+.dropdown {
+  position: relative;
+}
+
+#branchInfoModal .modal-dialog,
+#addBranchModal .modal-dialog {
+    max-width: 500px;
+    margin: 30px auto;
+}
+
+#branchInfoModal .modal-content,
+#addBranchModal .modal-content {
+    border-radius: 15px;
+}
+
+#branchInfoModal .modal-header,
+#addBranchModal .modal-header {
+    background: linear-gradient(90deg, var(--dark), #eee);
+    padding: 20px;
+    border-bottom: none;
+    font-family: var(--poppins);
+}
+
+#branchInfoModal .modal-header .modal-title,
+#addBranchModal .modal-header .modal-title {
+    color: #fff;
+    font-size: 1.5em;
+    font-weight: 500;
+}
+
+#branchInfoModal .modal-body,
+#addBranchModal .modal-body {
+    padding: 25px 20px;
+    font-size: 0.95em;
+    color: var(--dark);
+    background: #fff;
+    font-family: var(--poppins);
+}
+
+#branchInfoModal .modal-footer,
+#addBranchModal .modal-footer {
+    background: #f1f1f1;
+    border-top: none;
+    padding: 15px 20px;
+    font-family: var(--poppins);
+}
+
+#branchInfoModal .modal-footer .btn,
+#addBranchModal .modal-footer .btn {
+    background-color: var(--dark);
+    border: none;
+    font-size: 1.2em;
+    padding: 10px 15px;
+    transition: background-color 0.3s ease;
+    color: var(--light);
+    margin-right: 1em;
+}
+
+#branchInfoModal .modal-footer .btn:hover,
+#addBranchModal .modal-footer .btn:hover {
+    background-color: var(--dark-grey);
+    color: var(--dark);
+}
+
+#branchInfoModal .modal-footer .btn:disabled,
+#addBranchModal .modal-footer .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Dark mode styles for branch modals */
+:host .parent3.dark #branchInfoModal .modal-content,
+:host .parent3.dark #addBranchModal .modal-content {
+    background: var(--grey);
+}
+
+:host .parent3.dark #branchInfoModal .modal-header,
+:host .parent3.dark #addBranchModal .modal-header {
+    background: linear-gradient(135deg, var(--dark), var(--grey));
+}
+
+:host .parent3.dark #branchInfoModal .modal-body,
+:host .parent3.dark #addBranchModal .modal-body {
+    background: var(--grey);
+    color: var(--dark);
+}
+
+:host .parent3.dark #branchInfoModal .modal-footer,
+:host .parent3.dark #addBranchModal .modal-footer {
+    background: var(--grey);
+}
+
+/* Branch Modal Styles */
+#branchInfoModal .modal-body .info-grid,
+#addBranchModal .modal-body .info-grid {
+    display: grid;
+    grid-gap: 15px;
+    row-gap: 30px;
+}
+
+#branchInfoModal .modal-body .info-item,
+#addBranchModal .modal-body .info-item {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    align-items: center;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+#branchInfoModal .modal-body .info-item .label,
+#addBranchModal .modal-body .info-item .label {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+#branchInfoModal .modal-body .info-item:not(:last-child)::after,
+#addBranchModal .modal-body .info-item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #ccc, transparent);
+    margin-top: 10px;
+}
+
+#branchInfoModal .modal-body .info-grid .value,
+#branchInfoModal .modal-body .info-grid input,
+#branchInfoModal .modal-body .info-grid select,
+#addBranchModal .modal-body .info-grid input,
+#addBranchModal .modal-body .info-grid select {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: inherit;
+    color: inherit;
+    margin-left: 10%;
+    padding-left: 8px;
+    position: relative;
+}
+
+.input-wrapper {
+    position: relative;
+    margin-left: 5em;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+    border: none !important;
+    background: transparent !important;
+    &:focus {
+        outline: none !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+}
+
+#addBranchModal .input-wrapper mat-select {
+    width: 100% !important;
+    margin-left: 0;
+}
+
+#addBranchModal .input-wrapper ::ng-deep .mat-select-trigger {
+    height: 36px;
+    padding-left: 8px;
+}
+
+#addBranchModal .input-wrapper ::ng-deep .mat-select-value {
+    color: var(--dark);
+    font-family: var(--poppins);
+}
+
+#addBranchModal .input-wrapper ::ng-deep .mat-select-arrow {
+    color: var(--dark);
 }
 
 @media screen and (max-width: 1215px) {
