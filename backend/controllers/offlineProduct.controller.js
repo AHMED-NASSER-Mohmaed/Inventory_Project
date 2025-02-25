@@ -50,10 +50,11 @@ const offlineProductOp = {
         sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
     },
 
-    // exportTo:async (req,res,next)=>{
+    exportTo:async (req,res,next)=>{
+ 
+        // const result = await ;
 
-    //     // const result = await 
-    // }
+    }
 
 
 

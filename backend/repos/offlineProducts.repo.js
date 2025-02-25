@@ -1,13 +1,13 @@
-const { filter } = require("lodash");
+
 const OfflineProducts = require("../models/offlineSchema.model");
-const {inboxResult}=require("../utils/apiFeatures");
-const { getCount } = require("./supplier.repo");
+const { inboxResult } = require("../utils/apiFeatures");
+
+const Product = require("../models/product.model");
 module.exports.OfflineProductsRepo = {
 
     addOfflineProduct: async (data) => {
         try {
             return await OfflineProducts.create(data);
-
         } catch (error) {
             throw error;
         }
@@ -15,7 +15,7 @@ module.exports.OfflineProductsRepo = {
 
     getOffProductById: async (id) => {
         try {
-            return await OfflineProducts.findById(id);
+            return await OfflineProducts.findById(id).populate("branch");
         } catch (error) {
             throw error;
         }
@@ -46,16 +46,16 @@ module.exports.OfflineProductsRepo = {
                         }
                     },
                     { $unwind: "$product" },
-                    { 
-                        $match:{
-                             ...filters
+                    {
+                        $match: {
+                            ...filters
                         }
-                        
+
                     },
                     { $sort: sort },
                     { $skip: (page - 1) * limit },
                     { $limit: limit },
-                    { $project: { __v: 0, kind: 0  ,"product.isActive":0,"product.satus":0 } } 
+                    { $project: { __v: 0, kind: 0, "product.isActive": 0, "product.satus": 0 } }
                 ]),
                 await OfflineProducts.aggregate([
                     {
@@ -67,26 +67,26 @@ module.exports.OfflineProductsRepo = {
                         }
                     },
                     { $unwind: "$product" },
-                    { 
+                    {
                         $match: {
                             ...filters
                         }
                     },
-                    { 
-                        $count: "total" 
+                    {
+                        $count: "total"
                     }])
-                
-                  
+
+
             ])
-            return inboxResult(result,  total[0]?.total || 0 , page, limit);
+            return inboxResult(result, total[0]?.total || 0, page, limit);
         } catch (error) {
             throw error;
         }
 
     },
 
-    getCount:async (filters)=>{
-        try{
+    getCount: async (filters) => {
+        try {
             return await OfflineProducts.aggregate([
                 {
                     $lookup: {
@@ -97,19 +97,36 @@ module.exports.OfflineProductsRepo = {
                     }
                 },
                 { $unwind: "$product" },
-                { 
+                {
                     $match: filters
                 },
-                { 
-                    $count: "total" 
+                {
+                    $count: "total"
                 }])
-                
-        }catch(error){
+
+        } catch (error) {
             throw error;
         }
     },
 
+    //for exporting a new product
+    upsertOffProduct: async (productId, branchId, quantity) => {
+        try {
+            return await OfflineProducts.findOneAndUpdate(
+                { _id: productId, branch: branchId }, // Search condition
+                {
+                    $inc: { stock: quantity }, // Increment stock if document exists
+                    $setOnInsert: { stock: quantity } // If inserting, set stock to quantity
+                },
+                { upsert: true, new: true } // Ensure upsert + return updated document
+            );
 
-   
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
+
 
 }

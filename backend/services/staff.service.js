@@ -41,6 +41,7 @@ module.exports.staffService = {
                 await branchService.updateBranchStaff(data.branch,{$set:{admin:res._id}});
             else
                 await branchService.updateBranchStaff(data.branch,{$push:{employees:res._id}});
+            
             return res;
 
         } catch (err) {

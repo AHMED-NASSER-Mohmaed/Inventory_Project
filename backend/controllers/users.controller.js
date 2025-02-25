@@ -402,7 +402,6 @@ const clerkOp = {
     // req.body.managerId = req.user._id;
 
     // req.body.passwordConfirm = req.body.password;
-
     const clerk = await staffService.createStaff(req.body);
 
     sendResponseToClint(
