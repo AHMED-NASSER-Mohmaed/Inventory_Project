@@ -17,7 +17,7 @@ class OrderContainerService {
 
     for (const item of cart.products) {
       
-      const OnlineProduct = await onlineProductRepo.getOnlineProductById(item.onlineProduct);
+      const OnlineProduct = await onlineProductRepo.getOnlineProductById(item.onlineProduct._id);
 
       // get the seller ID as a string (after populating, seller is an object)
       const sellerId = OnlineProduct.seller._id.toString();
@@ -46,7 +46,7 @@ class OrderContainerService {
       address: cart.address, // address (for online orders)
       phone1: cart.phone1, // primary phone number
       phone2: cart.phone2 , // secondary phone number
-      branch: cart.branch, // Branch (for offline orders)
+      branch: APP_CONFIG.COMPANY_ID, // Branch (for offline orders)
       status: "pending",
     };// if it's offline, there's no need to use any other status than "Completed" as the order is already completed and delivered dircetly to the customer
 

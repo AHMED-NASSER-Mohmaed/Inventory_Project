@@ -26,14 +26,10 @@ export class CartService {
     let url = `${this.apiUrl}`;
     const options = { headers: this.getHeaders() };
 
-    if (!localStorage.getItem('token') && sessionId) {
+    if ( sessionId) {
       url += `?sessionId=${sessionId}`; // for guest users
     }
     
-    // this.addToCart("dfdf", 3, '');
-    // return this.addToCart("dfdf", 3, sessionId).pipe(
-    //   switchMap(() => this.http.get(url, options))
-    // );
      return this.http.get(url, options);
   }
 
@@ -46,7 +42,6 @@ export class CartService {
     if (!localStorage.getItem('token')) {
       body.sessionId = sessionId; // Send sessionId if the user is not logged in or fo guest users
     }
-
     return this.http.post(`${this.apiUrl}/add`, body, { headers: this.getHeaders() });
   }
 
@@ -71,4 +66,9 @@ export class CartService {
   mergeGuestCart(sessionId: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/merge`, { sessionId }, { headers: this.getHeaders() });
   }
+
+  placeOrder(form: any): Observable<any> {
+    return this.http.post('http://localhost:3000/order-container-online', {form}, { headers: this.getHeaders() });
+  }
+  
 }

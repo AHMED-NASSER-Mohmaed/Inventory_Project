@@ -5,7 +5,7 @@ const AuthMiddleware = require("../middlewares/auth.middleware");
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
 const pro_res=require("../utils/authMiddlewaresOptions");
-
+const CartService = require("../services/cart.service");
 
 class OrderContainerController {
 
@@ -33,7 +33,7 @@ class OrderContainerController {
         // online container orders
         this.router.post(
             "/order-container-online",
-            // AuthMiddleware.protect,
+            AuthMiddleware.protect,
             catchAsync(this.createOnlineOrderContainer)
         );
 
@@ -88,9 +88,22 @@ class OrderContainerController {
       }
 //   Create an order container from cart
   async createOnlineOrderContainer(req, res) {
-      const cart = req.body;
+      const customerId = req.user.id;
+      const cart = await CartService.getCustomerCart(customerId);
+      // console.log(cart);
+      const form = req.body.form;
+      // console.log(form)
+      // cart.products.forEach((product) => console.log(product.onlineProduct));
         // cart.customerId = req.user._id; // in case of online cart, the customer id is the user id
-      const orderContainer = await OrderContainerService.createOnlineOrderContainerFromCart(cart);
+      // const  mergedCartWithFormData =  { ...cart, ...form };
+      // mergedCartWithFormData.customerId = customerId;
+      cart.customerId = customerId;
+      cart.gov = form.gov;
+      cart.phone1 = form.phone1;
+      cart.phone2 = form.phone2;
+      cart.address = form.address;
+     const orderContainer = await OrderContainerService.createOnlineOrderContainerFromCart(cart);
+      await CartService.clearCartForCustomer(customerId);
       res.status(APP_CONFIG.HTTP_CREATED).json({
         message: "success",
         orderContainer,
@@ -138,7 +151,7 @@ class OrderContainerController {
         throw new AppError("You are not authorized to get those orders since you are not employed in this branch.");
     }
 
-    let clerkId = req.user._id; // you have to check on the online branch here which would be a static value in the app config 
+    let clerkId = req.user.id; // you have to check on the online branch here which would be a static value in the app config 
     // if the clerk doesn't match that branch id then throw an error
     let status = req.body.status;
     let userType = 'clerk';

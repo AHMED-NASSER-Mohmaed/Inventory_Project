@@ -47,8 +47,7 @@ class CartService {
   addToCart = async ({ customerId, sessionId, productId, quantity = 1 }) => {
     // find if product exists
     const product = await isProductExist(productId);
-
-    if (!product || !product.isActive || product.satus !== "approved") {
+    if (!product || !product.isActive || product.status !== "approved") {
       throw new AppError("Product not found", 404);
     }
 
@@ -174,6 +173,15 @@ class CartService {
     }
   };
 
+  clearCartForCustomer = async (customerId) => {
+    if (customerId) {
+      return await CartRepository.deleteCartByCustomerId(customerId);
+    } 
+    else{
+      throw new AppError("No identifier provided to clear cart", 400);
+    }
+  };
+
   validateCart = async (cartId) => {
     const cart = await CartRepository.findCartById(cartId);
 
@@ -184,7 +192,7 @@ class CartService {
 
     for (const item of cart.products) {
       const product = await isProductExist(item.onlineProduct);
-      if (!product || !product.isActive || product.satus !== "approved") {
+      if (!product || !product.isActive || product.status !== "approved") {
         messages.push(
           `Product (id: ${item.onlineProduct}) is no longer available.`
         );

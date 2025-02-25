@@ -201,10 +201,10 @@ export const routes: Routes = [
 {path: "maincart", component: CartMainComponent,
     children: [
         {path: "", component: ShoppingcartComponent},
-        // {path: "checkout", component: CheckoutDetailsComponent,  canActivate: [authGuardForCartGuard]},
-        // {path: "completeorder", component: OrderCompeleteComponent,  canActivate: [authGuardForCartGuard]},
-        {path: "checkout", component: CheckoutDetailsComponent},
-        {path: "completeorder", component: OrderCompeleteComponent},
+        {path: "checkout", component: CheckoutDetailsComponent,  canActivate: [authGuardForCartGuard]},
+        {path: "completeorder", component: OrderCompeleteComponent,  canActivate: [authGuardForCartGuard]},
+        // {path: "checkout", component: CheckoutDetailsComponent},
+        // {path: "completeorder", component: OrderCompeleteComponent},
     ]
 },
 
