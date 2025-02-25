@@ -1,9 +1,9 @@
 const { APP_CONFIG } = require("../config/app.config");
 const OnlineProducts = require("../models/onlineProducts.model");
 
-const OnlineProductsRepository ={
+const OnlineProductsRepository = {
 
-   isProductExist:async(productId)=> {
+  isProductExist: async (productId) => {
     try {
       return await OnlineProducts.findById(productId);
     } catch (err) {
@@ -11,34 +11,35 @@ const OnlineProductsRepository ={
     }
   },
 
-  updateOurSellerRecordQty:async(productId,sellerId,newQty)=>{
-    try{
+  updateOurSellerRecordQty: async (productId, sellerId, newQty) => {
+    try {
 
-      return await OnlineProducts.updateOne({product:productId,sellerId},{$set:{stock:newQty}})
+      return await OnlineProducts.updateOne({ product: productId, sellerId }, { $set: { stock: newQty } })
 
-    }catch(error){
+    } catch (error) {
       throw error;
     }
   },
 
   //for online bracnh usage
-  upsertOurSellerRecord:async(productId,newQty)=>{
-    try{
-
+  upsertOurSellerRecord: async (productId, newQty) => {
+    try {
       return await OnlineProducts.findOneAndUpdate(
         { _id: productId, seller: APP_CONFIG.COMPANY_ID }, // Search condition
         {
-          $setOnInsert: { stock: quantity } ,// If inserting, set stock to quantity
-          $inc: { stock: quantity }, // Increment stock if document exists
+          $inc: { stock: newQty }, // Only increment stock if the document exists
+          $setOnInsert: { product: productId, seller: APP_CONFIG.COMPANY_ID } // Ensure new document can be created without conflicting stock updates
         },
-        { upsert: true, new: true } // Ensure upsert + return updated document 
-    );
-    }catch(error){
+        { upsert: true, new: true } // Ensure upsert + return updated document
+      );
+    } catch (error) {
       throw error;
     }
   }
 
-    
+  
+
+
 
 }
 
