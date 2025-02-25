@@ -28,7 +28,6 @@ module.exports.OfflineProductsService = {
             throw err;
         }
     },
-
     //for decreasing qty with negative value.
     updateQuantitiy: async (offProductId, qty) => {
         try {
@@ -115,8 +114,11 @@ module.exports.OfflineProductsService = {
                 //source is offline || sub  || main --> branch
                 let offProduct = await OfflineProductsRepo.getOffProductByIdAndBrandId(offProductId,sourceBranchId);
 
-                if(!offProductId)
+                if(!offProduct)
                     throw new AppError("the branch dose not have this product.");
+
+
+                console.log(offProduct);
 
                 //the new qty is the qty that will be decreased from the source branch
                 let newSourceQty = offProduct.stock - +qty;
@@ -134,13 +136,11 @@ module.exports.OfflineProductsService = {
 
                 await OfflineProductsRepo.updateQuantity(offProductId, newSourceQty);
 
-                await OfflineProductsRepo.upsertOffProduct(offProductId.product, destinationBranchId, newDestQty);
+                await OfflineProductsRepo.upsertOffProduct(offProduct.product, destinationBranchId, newDestQty);
 
 
                 //it is the time to update our source online qty if it exist and if it is not create new one as a sellers 
 
-                 
-                 
                 if (destinationBranch['type'] === 'online') {
                     //may be the first time to export this product to online sysytem
                     return  OnlineProductsRepository.upsertOurSellerRecord(offProduct.product,qty);
@@ -156,6 +156,6 @@ module.exports.OfflineProductsService = {
 
     },
 
-
+    
  
 }

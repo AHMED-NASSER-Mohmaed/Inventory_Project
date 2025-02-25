@@ -37,12 +37,8 @@ const offlineProductOp = {
     },
 
     getProducts: async (req, res, next) => {
-
-        console.log(req.validatedParams);
-
         let result = await OfflineProductsService.getOfflineProducts(req.validatedParams);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
-
     },
 
     getCount:async (req,res,next)=>{
@@ -57,13 +53,7 @@ const offlineProductOp = {
         const result = await OfflineProductsService.exportTo(req.query.id,+req.query.src,+req.query.dest,+req.query.qty);
         sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
 
-    }
-
-
-
-
-
-
+    },
 
 }
 

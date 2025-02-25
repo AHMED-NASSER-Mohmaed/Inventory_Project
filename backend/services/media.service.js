@@ -20,6 +20,8 @@ var imagekit = new imageKit({
 
  /**
    * Uploads an image to ImageKit and returns its URL and id .
+   * @param {Array} Of IMAGES 
+   * @returns {Array} OF IDS AND URLS
    */
 
  async function upload(files, folder) {

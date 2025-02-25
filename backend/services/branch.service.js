@@ -117,9 +117,9 @@ module.exports = {
 
     isBrachExist:async(id)=>{
         try{
-
+            console.log(id);
             let bracnh= await branchRepo.getBranchById(id);
-
+            console.log(bracnh);
             if(!bracnh)
                 throw new AppError("this bracnh dose not exist",APP_CONFIG.HTTP_BAD_REQUEST);
 
