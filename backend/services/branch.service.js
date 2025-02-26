@@ -56,7 +56,9 @@ module.exports = {
         try {
 
             let ack= await branchRepo.deleteBranch(id);
+            
             await staffRepo.UpdateStaffByInjection({branch:id},{$set:{branch:null,isActive:false}})
+
             return ack;
         } catch (err) {
             throw err;

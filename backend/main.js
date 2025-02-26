@@ -149,6 +149,7 @@ process.on("uncaughtException", (err) => {
       }
       /*******************************************************************************************/
       let cat1 = {
+        "_id":APP_CONFIG.MALE_CAT_ID,
         "Cname": "male",
       }
       await Category.findOneAndUpdate(
@@ -159,6 +160,7 @@ process.on("uncaughtException", (err) => {
       /*******************************************************************************************/
 
       let cat2 = {
+        "_id":APP_CONFIG.FEMALE_CAT_ID,
         "Cname": "female"
       }
       await Category.findOneAndUpdate(

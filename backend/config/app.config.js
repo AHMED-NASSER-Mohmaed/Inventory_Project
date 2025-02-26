@@ -58,6 +58,9 @@ module.exports.APP_CONFIG = {
 
   SUCCESS_MESSAGE: "success",
 
+  MALE_CAT_ID:"67be5efb0d6e71ed0ea5b3de",
+  FEMALE_CAT_ID:"67be5efb0d6e71ed0ea5b3df",
+
  
 
 
