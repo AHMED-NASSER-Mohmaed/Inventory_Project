@@ -61,7 +61,6 @@ module.exports.productService={
 
     },
 
- 
     isProductExist:async(productId)=>{
         try{
             let product= await productRepo.getProductById(productId);
@@ -124,6 +123,8 @@ module.exports.productService={
 
             if (result.matchedCount === 0) 
                 throw new AppError("❌ Product not found!",APP_CONFIG.HTTP_NOT_FOUND);
+            else if(result.modifiedCount===0)
+                throw new AppError("❌ Product already de-activated!",APP_CONFIG.HTTP_BAD_REQUEST);
             
 
             return result;
@@ -131,7 +132,62 @@ module.exports.productService={
         }catch(error){
             throw error;
         }
-    }
+    },
+
+    activeProduct:async(productId)=>{
+        
+        try{
+            let result=await productRepo.activeProduct(productId);
+
+            if (result.matchedCount === 0) 
+                throw new AppError("❌ Product not found!",APP_CONFIG.HTTP_NOT_FOUND);
+            else if (result.modifiedCount===0)
+                throw new AppError("❌ Product already active!",APP_CONFIG.HTTP_BAD_REQUEST);
+                
+
+            return result;
+
+        }catch(error){
+            throw error;
+        }
+    },
+
+    approveProduct:async(productId)=>{
+        try{
+
+            let ack= await productRepo.approveProduct(productId);
+            
+            if (ack.matchedCount === 0) 
+                throw new AppError("❌ Product not found!",APP_CONFIG.HTTP_NOT_FOUND);
+            else if (ack.modifiedCount===0)
+                throw new AppError("❌ Product already approved!",APP_CONFIG.HTTP_BAD_REQUEST);
+
+           return ack;
+        }catch(error){
+            throw error;
+        }
+    },
+
+    rejectProduct:async(productId)=>{
+        try{
+
+            let ack= await productRepo.changeStatus(productId,APP_CONFIG.REJECT_STATUS);
+
+            if (result.matchedCount === 0) 
+                throw new AppError("❌ Product not found!",APP_CONFIG.HTTP_NOT_FOUND);
+            else if (result.modifiedCount===0)
+                throw new AppError("❌ Product already rejected!",APP_CONFIG.HTTP_BAD_REQUEST);
+
+             return ack;
+        }catch(error){
+            throw error;
+        }
+    },
+
+
+
+
+
     
 
     
