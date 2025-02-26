@@ -103,6 +103,14 @@ class SupplierService {
             throw err;
         }
     }
+    
+    async getAllSuppliersActiveIdAndNames(){
+        try{
+            return await SupplierRepository.getAllSuppliersActiveIdAndNames();
+        }catch(error){
+            throw error;
+        }
+    }
 
 
 }

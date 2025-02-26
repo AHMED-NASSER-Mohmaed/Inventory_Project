@@ -3,8 +3,6 @@ const AppError = require("../utils/appError");
 const APP_CONFIG = require("../config/app.config");
 const {staffRepo}=require("../repos/staff.repo");
 
-
-
 module.exports = {
 
     addBranch: async (data) => {
@@ -133,11 +131,16 @@ module.exports = {
         }catch(error){
             throw error;
         }
+    },
+
+    getAllBrandsActiveIdsAndNames : async () => {
+        try {
+            return await branchRepo.getAllBrandsActiveIdsAndNames();
+        } catch (error) {
+            throw error;
+        }
     }
     
-    
-
-
 
 }
 

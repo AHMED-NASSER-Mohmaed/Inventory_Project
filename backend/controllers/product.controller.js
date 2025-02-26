@@ -108,6 +108,19 @@ const ProductController = {
     deleteProduct:async(req,res,next)=>{
         let result= await productService.deleteProduct(req.params.productId);
         sendResponseToClint(res,APP_CONFIG.HTTP_NOT_FOUND,APP_CONFIG.SUCCESS_MESSAGE,result);
+    },
+    activeProduct:async(req,res,next)=>{
+        let result=await productService.activeProduct(req.params.productId);
+        sendResponseToClint(res,APP_CONFIG.HTTP_NOT_FOUND,APP_CONFIG.SUCCESS_MESSAGE,result);
+    },
+    approveOnProduct:async(req,res,next)=>{
+        let result = await productService.approveProduct(req.params.productId);
+        sendResponseToClint(res,APP_CONFIG.HTTP_NOT_FOUND,APP_CONFIG.SUCCESS_MESSAGE,result);
+    },
+    
+    rejectProduct:async(req,res,next)=>{
+        let result = await productService.rejectProduct(req.params.productId);
+        sendResponseToClint(res,APP_CONFIG.HTTP_NOT_FOUND,APP_CONFIG.SUCCESS_MESSAGE,result);
     }
 
 }
@@ -133,11 +146,18 @@ router
         pro_res(APP_CONFIG.SUPPERADMIN),
         catchAsync(ProductController.deleteProduct)
     )
-    /*
     .patch("/product/active/:productId",
         pro_res(APP_CONFIG.SUPPERADMIN),
         catchAsync(ProductController.activeProduct)
-    )*/
+    )
+    .patch("/product/approve/:productId",
+        pro_res(APP_CONFIG.SUPPERADMIN),
+        catchAsync(ProductController.approveOnProduct)
+    )
+    .patch("/product/reject/:productId",
+        pro_res(APP_CONFIG.SUPPERADMIN),
+        catchAsync(ProductController.rejectProduct)
+    )
 
 
 module.exports=router;

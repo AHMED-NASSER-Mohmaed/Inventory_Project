@@ -131,6 +131,14 @@ module.exports = {
         }catch(error){
             throw error;
         }
+    },
+
+    getAllBrandsActiveIdsAndNames : async () => {
+        try {
+            return await Brand.find({isActive:true}, "_id Bname"); // Select only _id and Bname
+        } catch (error) {
+            throw error
+        }
     }
 
 

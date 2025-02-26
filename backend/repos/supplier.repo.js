@@ -49,13 +49,13 @@ class SupplierRepository {
     }
   }
 
- 
+
 
   //reviewed
   async updateSupplier(supplierId, updateData) {
     try {
 
-      return await supplierModel.updateOne({ _id: supplierId }, {$set:updateData}, { runValidators: true })
+      return await supplierModel.updateOne({ _id: supplierId }, { $set: updateData }, { runValidators: true })
         .select('-createdAt -updatedAt -__v');
 
     } catch (err) {
@@ -67,8 +67,8 @@ class SupplierRepository {
   async deleteSupplierById(supplierId) { // soft delete
     try {
 
-      return await supplierModel.updateOne({ _id: supplierId }, {$set:{ isActive: false}}, )
-        
+      return await supplierModel.updateOne({ _id: supplierId }, { $set: { isActive: false } },)
+
 
     } catch (err) {
       throw err;
@@ -80,25 +80,31 @@ class SupplierRepository {
   //reviewed
   async activateSupplier(supplierId) {
     try {
-      return await supplierModel.updateOne({_id:supplierId},{ isActive: true });
+      return await supplierModel.updateOne({ _id: supplierId }, { isActive: true });
     } catch (err) {
       throw err;
     }
   }
-
 
   //reviewed
   async getSupplierById(supplierId) {
     try {
-      console.log(supplierId,"from repoo");
-     return await supplierModel.findById(supplierId);
+      console.log(supplierId, "from repoo");
+      return await supplierModel.findById(supplierId);
     } catch (err) {
       throw err;
     }
   }
 
+  getAllSuppliersActiveIdAndNames = async () => {
+    try {
+      return await supplierModel.find({isActive:true}, "_id companyName"); // Select only _id and companyName
+    } catch (error) {
+      throw error;
+    }
+  };
 
- 
+
 }
 
 module.exports = new SupplierRepository();
