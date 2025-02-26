@@ -132,14 +132,7 @@ module.exports = {
             throw error;
         }
     },
-
-    getAllBrandsActiveIdsAndNames : async () => {
-        try {
-            return await branchRepo.getAllBrandsActiveIdsAndNames();
-        } catch (error) {
-            throw error;
-        }
-    }
+    
     
 
 }
