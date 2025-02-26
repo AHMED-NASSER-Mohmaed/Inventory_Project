@@ -47,7 +47,6 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
   // }; 
 
   
-  // Filter state and pagination
   currentFilter: string = '';
   currentPage: number = 1;
   itemsPerPage: number = 10;
@@ -64,7 +63,6 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
 
   subscriptions: Subscription[] = [];
 
-  // New cache for storing seller pages: keys are "<filter>_<page>"
   pageCache: { [key: string]: { result: User[]; total: number } } = {};
 
   selectedFilter: string = 'orderId'; 
@@ -134,13 +132,13 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
     }
   
     this.selectedSuborder = {
-      orderId: order.orderId, // Ensure this is set
+      orderId: order.orderId, 
       sellerName: order.sellerName,
       orderStatus: order.orderStatus,
       orderTotalQty: order.orderTotalQty,
       products: order.products,
     };
-    console.log('Selected Suborder:', this.selectedSuborder); // Debugging
+    console.log('Selected Suborder:', this.selectedSuborder);
   }
 
 
@@ -157,7 +155,6 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
     }
   }
 
-  // Method to decrement the fulfilled quantity
   decrementQuantity(): void {
     if (this.selectedSuborder?.products?.length > 0) {
       const product = this.selectedSuborder.products[0];
@@ -168,7 +165,6 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
     }
   }
 
-  // Method to validate the fulfilled quantity
   validateFulfilledQuantity(): boolean {
     if (this.selectedSuborder?.products?.length > 0) {
       const product = this.selectedSuborder.products[0];
@@ -177,7 +173,7 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
         return false;
       }
     }
-    this.validationError = null; // Clear validation error if valid
+    this.validationError = null; 
     return true;
   }
 
@@ -211,83 +207,96 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
 
 
 
-  toggleEdit(event?: any): void {
-    console.log('Selected Suborder before editing:', this.selectedSuborder); // Debugging
+
+ 
+  toggleEdit(): void {
+    console.log('Selected Suborder before editing:', this.selectedSuborder); 
   
     if (this.editing) {
-      console.log('Selected Suborder:', this.selectedSuborder); // Debugging
-  
+      console.log('Selected Suborder:', this.selectedSuborder); 
       if (!this.selectedSuborder?.orderId) {
         console.error('Order ID is undefined or invalid.');
         return;
       }
   
-      // Validate the fulfilled quantity before proceeding
       if (!this.validateFulfilledQuantity()) {
         this.toaster.error('Fulfilled quantity cannot exceed available stock.', 'Validation Error');
-        return; // Stop if validation fails
+        return; 
       }
   
-      // Backup current state before editing
+      if (!this.selectedSuborder.products?.length) {
+        console.error('Products array is missing or empty.');
+        this.toaster.error('No products found in this suborder.', 'Error');
+        return;
+      }
+  
+      const newStatus = this.selectedSuborder.orderStatus ?? 'PENDING';
+  
+      const fulfilledQuantities: { [key: string]: number } = {};
+  
+      this.selectedSuborder.products.forEach((product: any) => {
+        if (product.productId && product.productFulfilledQuantity !== undefined) {
+          fulfilledQuantities[product.productId] = product.productFulfilledQuantity;
+        }
+      });
+  
       const workingBackup = {
-        status: this.selectedSuborder.orderStatus,
-        fulfilledQuantity: this.selectedSuborder.products[0].productFulfilledQuantity,
+        status: newStatus, 
+        fulfilledQuantities: { ...fulfilledQuantities }, 
       };
   
-      // Attempt to update the suborder
       const sub = this.clerkDashboardService
-        .updateSuborder(this.selectedSuborder.orderId, {
-          orderStatus: this.selectedSuborder.orderStatus,
-          productFulfilledQuantity: this.selectedSuborder.products[0].productFulfilledQuantity,
-        })
+        .updateSuborder(this.selectedSuborder.orderId,
+          {
+            newStatus,
+            fulfilledQuantities,
+          }
+         )
         .subscribe({
           next: (res: any) => {
             if (res.message === 'success') {
-              // Successfully updated, sync the UI with the server response
               this.selectedSuborder = { ...this.selectedSuborder, ...res.updatedSuborder };
               this.toaster.success('Order updated successfully!', 'Success');
             } else {
-              // If update failed, restore the backup
               this.selectedSuborder.orderStatus = workingBackup.status;
-              this.selectedSuborder.products[0].productFulfilledQuantity = workingBackup.fulfilledQuantity;
+              this.selectedSuborder.products.forEach((product: any) => {
+                if (product.productId in workingBackup.fulfilledQuantities) {
+                  product.productFulfilledQuantity = workingBackup.fulfilledQuantities[product.productId];
+                }
+              });
               this.toaster.error('Failed to update order.', 'Error');
             }
             this.editing = false;
           },
           error: (error) => {
-            // Handle error, show error message, restore backup
             console.error('Error updating suborder', error);
             this.selectedSuborder.orderStatus = workingBackup.status;
-            this.selectedSuborder.products[0].productFulfilledQuantity = workingBackup.fulfilledQuantity;
+            this.selectedSuborder.products.forEach((product: any) => {
+              if (product.productId in workingBackup.fulfilledQuantities) {
+                product.productFulfilledQuantity = workingBackup.fulfilledQuantities[product.productId];
+              }
+            });
             this.toaster.error('An error occurred while updating the order.', 'Error');
             this.editing = false;
           },
         });
   
-      this.subscriptions.push(sub); // Track the subscription
+      this.subscriptions.push(sub); 
     } else {
-      // Enable editing
       this.editing = true;
     }
   
-    if (event && event.target) event.target.blur(); // Remove focus from the button
+    if (event?.target) (event.target as HTMLElement).blur(); 
   }
-  
-
- 
 
 
-
-
- 
-  
 
  
   validateSearchInput(event: KeyboardEvent): boolean {
     const pattern =
       this.selectedFilter === 'orderId'
-        ? /^[a-zA-Z\s]$/ // Only letters and spaces for orderIds
-        : /^[0-9]$/; // Only numbers for SSN and phone
+        ? /^[a-zA-Z\s]$/ 
+        : /^[0-9]$/; 
 
     if (!pattern.test(event.key)) {
       event.preventDefault();

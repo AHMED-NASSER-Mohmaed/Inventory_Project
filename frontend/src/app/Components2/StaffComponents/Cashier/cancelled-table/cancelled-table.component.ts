@@ -9,12 +9,13 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { ToastrService } from 'ngx-toastr';
-import { User } from '../../../_models/user';
-import { decodeToken } from '../../../_helper/jwt-helper';
+import { User } from '../../../../_models/user';
+import { decodeToken } from '../../../../_helper/jwt-helper';
 
-import { ClerkDashboardService } from '../../../_services/clerk-dashboard.service';
+import { ClerkDashboardService } from '../../../../_services/clerk-dashboard.service';
+
 @Component({
-  selector: 'app-processing-table',
+  selector: 'app-cancelled-table',
   imports: [
     CommonModule,
     FormsModule,
@@ -23,10 +24,11 @@ import { ClerkDashboardService } from '../../../_services/clerk-dashboard.servic
     MatMenuModule,
     MatProgressSpinnerModule,
     NgxSkeletonLoaderModule,
-  ],   templateUrl: './processing-table.component.html',
-  styleUrl: './processing-table.component.css'
+  ], 
+    templateUrl: './cancelled-table.component.html',
+  styleUrl: './cancelled-table.component.css'
 })
-export class ProcessingTableComponent {
+export class CancelledTableComponent {
 
     validationError: string | null = null;
   
@@ -47,7 +49,6 @@ export class ProcessingTableComponent {
     // }; 
   
     
-    // Filter state and pagination
     currentFilter: string = '';
     currentPage: number = 1;
     itemsPerPage: number = 10;
@@ -64,7 +65,6 @@ export class ProcessingTableComponent {
   
     subscriptions: Subscription[] = [];
   
-    // New cache for storing seller pages: keys are "<filter>_<page>"
     pageCache: { [key: string]: { result: User[]; total: number } } = {};
   
     selectedFilter: string = 'orderId'; 
@@ -101,9 +101,10 @@ export class ProcessingTableComponent {
         this.tokenData = decodeToken(token);
       }
     
-      this.status = 'processing'; 
+      this.status = 'shipped'; 
       this.fetchOrders(this.status); 
     }
+    
     
     fetchOrders(status: string) {
       this.isLoading = true;
@@ -124,8 +125,8 @@ export class ProcessingTableComponent {
     }
     
   
-  
 
+  
   
     selectOrder(order: any): void {
       if (!order || !order.orderId) {
@@ -175,7 +176,7 @@ export class ProcessingTableComponent {
           return false;
         }
       }
-      this.validationError = null;
+      this.validationError = null; 
       return true;
     }
   
@@ -214,7 +215,6 @@ export class ProcessingTableComponent {
     
       if (this.editing) {
         console.log('Selected Suborder:', this.selectedSuborder); 
-    
         if (!this.selectedSuborder?.orderId) {
           console.error('Order ID is undefined or invalid.');
           return;
@@ -242,8 +242,8 @@ export class ProcessingTableComponent {
         });
     
         const workingBackup = {
-          status: newStatus, 
-          fulfilledQuantities: { ...fulfilledQuantities }, 
+          status: newStatus,
+          fulfilledQuantities: { ...fulfilledQuantities },
         };
     
         const sub = this.clerkDashboardService
@@ -282,10 +282,11 @@ export class ProcessingTableComponent {
     
         this.subscriptions.push(sub); 
       } else {
+       
         this.editing = true;
       }
     
-      if (event?.target) event.target.blur();
+      if (event?.target) event.target.blur(); 
     }
   
    
@@ -318,6 +319,3 @@ export class ProcessingTableComponent {
     }
   }
   
-
-
-

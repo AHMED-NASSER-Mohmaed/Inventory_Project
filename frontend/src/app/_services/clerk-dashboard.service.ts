@@ -26,12 +26,12 @@ export class ClerkDashboardService {
 
     }
     
-    updateSuborder(orderId: string, updateData: { orderStatus: string; productFulfilledQuantity: number }): Observable<any> {
-      const url = `${this.baseUrl}/suborder/${orderId}`;
+    updateSuborder(orderId: string, updateData: { newStatus: string; fulfilledQuantities: object }): Observable<any> {
+      const url = `${this.baseUrl}/processSuborder/${orderId}`;
       console.log('Request URL:', url); 
       const headers = this.getHeaders(); 
     
-      return this.http.put(url, updateData, { headers });
+      return this.http.patch(url, updateData, { headers });
     }
 
 

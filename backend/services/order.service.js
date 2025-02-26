@@ -1,4 +1,4 @@
-
+const { APP_CONFIG } = require("../config/app.config");
 const orderRepository = require("../repos/order.repo");
 const orderContainerRepository = require("../repos/orderContainer.repo");
 const onlineProductRepo = require("../repos/tempOnlineProduct.repo");
@@ -13,17 +13,16 @@ class OrderService {
     
         // assign clerk if it's the first time updating the order
         if (!order.clerk && clerkId && order.seller.equals(APP_CONFIG.COMPANY_ID)) {
-            order.clerk = clerkId;
-        }
+          order.clerk = clerkId;
+      }
 
-        if(order.clerk && !clerkId.equals(order.clerk)){
-          if(order.seller.equals(APP_CONFIG.COMPANY_ID)) { // if the order belongs to the company and there's already a clerk assigned to it
-              throw new AppError("Another clerk is already assigned to this order");
-          }else{ // if the order belongs to an external seller he's already handling his own orders // cannot update the clerk here bc it's eqaul to the seller
-            throw new AppError("Sorry, you are not allowed to update this order since it belongs to another seller");
-          }
-        }  
-        
+      if(order.clerk && !order.clerk.equals(clerkId)){
+        if(order.seller.equals(APP_CONFIG.COMPANY_ID)) { // if the order belongs to the company and there's already a clerk assigned to it
+            throw new AppError("Another clerk is already assigned to this order");
+        }else{ // if the order belongs to an external seller he's already handling his own orders // cannot update the clerk here bc it's eqaul to the seller
+          throw new AppError("Sorry, you are not allowed to update this order since it belongs to another seller");
+        }
+      }
     
         let newTotalPrice = 0;
         let newTotalQty = 0;

@@ -14,7 +14,7 @@ import { decodeToken } from '../../../_helper/jwt-helper';
 
 import { ClerkDashboardService } from '../../../_services/clerk-dashboard.service';
 @Component({
-  selector: 'app-processing-table',
+  selector: 'app-delivered-table',
   imports: [
     CommonModule,
     FormsModule,
@@ -23,10 +23,10 @@ import { ClerkDashboardService } from '../../../_services/clerk-dashboard.servic
     MatMenuModule,
     MatProgressSpinnerModule,
     NgxSkeletonLoaderModule,
-  ],   templateUrl: './processing-table.component.html',
-  styleUrl: './processing-table.component.css'
+  ],   templateUrl: './delivered-table.component.html',
+  styleUrl: './delivered-table.component.css'
 })
-export class ProcessingTableComponent {
+export class DeliveredTableComponent {
 
     validationError: string | null = null;
   
@@ -101,7 +101,7 @@ export class ProcessingTableComponent {
         this.tokenData = decodeToken(token);
       }
     
-      this.status = 'processing'; 
+      this.status = 'delivered'; 
       this.fetchOrders(this.status); 
     }
     
@@ -318,6 +318,4 @@ export class ProcessingTableComponent {
     }
   }
   
-
-
 

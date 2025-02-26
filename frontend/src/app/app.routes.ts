@@ -35,9 +35,10 @@ import { SpringCollectionComponent } from './Components2/HomePage/spring-collect
 import { SuperadminprofileComponent } from './Components/superadminprofile/superadminprofile.component';
 import { auth6Guard } from './_guards/auth6.guard';
 import { SAprofiledetailsComponent } from './Components/saprofiledetails/saprofiledetails.component';
-import { ClerkDashboardComponent } from './Components2/StaffComponents/clerk-dashboard/clerk-dashboard.component';
+import { ClerkDashboardComponent } from './Components2/StaffComponents/cahsier-dashboard/clerk-dashboard.component';
 import { Routes } from '@angular/router';
 import { PendingTableComponent } from './Components2/StaffComponents/pending-table/pending-table.component';
+import { CashierDashboardComponent } from './Components2/StaffComponents/Cashier/cashier-dashboard/cashier-dashboard.component';
 
 
 export const routes: Routes = [
@@ -142,6 +143,11 @@ export const routes: Routes = [
         title: 'Product Details'
     },
 
+
+
+
+//////////////////////////////////////////
+
     {
 
         path:'clerk-dashboard',
@@ -153,17 +159,29 @@ export const routes: Routes = [
                 loadChildren: () => import('./Components2/StaffComponents/staff.routes').then(s => s.dashRoutes),
             },
 
-            {
-                path:'',
-                loadChildren: () => import('./Components2/StaffComponents/staff.routes').then(s => s.dashRoutes),
-            }
+           
         ]
         
     },
 
+/////////////////////////////////////////////////
 
 
-//////////////////////////////////////////
+{
+    path:'cashier-dashboard',
+    component: CashierDashboardComponent,
+    title: 'cashier Dashboard',
+    children: [
+        {
+            path:'',
+            loadChildren:() => import('./Components2/StaffComponents/staff.routes').then(s => s.dashRoutes),
+        },
+
+       
+    ]
+},
+
+///////////////////////////////////////////////////
     
     {
         path: '',
