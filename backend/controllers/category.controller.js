@@ -23,6 +23,7 @@ const categoryOp = {
     },
 
     updateCategory: async (req, res, next) => {
+         console.log(req.body,"boddyyyy");
         let result = await categoryService.updateCategory(req.params.id, req.body);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
@@ -75,7 +76,7 @@ router
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(categoryOp.updateCategory)
     )
-    .patch("/categories/:id/activate",
+    .patch("/categories/activate/:id",
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(categoryOp.activateCategory)
     )

@@ -90,22 +90,6 @@ const ProductSchema = new mongoose.Schema(
     // Array of supplier product references
     supplier: { type: mongoose.Schema.Types.ObjectId, ref: "SupplierProduct" },
 
-    
-
-
-    // rating: {
-    //   type: Number,
-    //   default: 0,
-    //   min: [0, "Rating must be at least 1"],
-    //   max: [5, "Rating must be at most 5"],
-    //   set: (val) => Math.round(val * 10) / 10,
-    // },
-
-    // ratingsQuantity: {
-    //   type: Number,
-    //   default: 0,
-    // },
-
   },
   {
     timestamps: true,
@@ -121,6 +105,18 @@ ProductSchema.pre('save',function(){
   if(this.cost)
     this.price=this.cost*this.markupPercentage;
 })
+
+ProductSchema.pre('updateOne', function (next) {
+  const update = this.getUpdate();
+
+  if (update.cost) {
+    update.$set = update.$set || {};
+    update.$set.price = update.cost * update.markupPercentage;
+  }
+
+  next();
+});
+
 
 
 const Product = mongoose.model("Product", ProductSchema);

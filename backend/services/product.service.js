@@ -4,7 +4,8 @@ const supplierRepo=require("../repos/supplier.repo");
 const AppError = require('../utils/appError');
 
 const {categoryRepo} = require("../repos/category.repo")
-const {brandRepo} = require("../repos/brand.repo")
+const {brandRepo} = require("../repos/brand.repo");
+
 
 module.exports.productService={
 
@@ -61,9 +62,7 @@ module.exports.productService={
     },
 
     isProductExist:async(productId)=>{
-
         try{
-
             let product= await productRepo.getProductById(productId);
             
             if(!product)
@@ -81,15 +80,118 @@ module.exports.productService={
 
     },
 
+    //you have to cheack firstly if product exist or not , i donot grantee any thing for u if this fucntion throws an exception 
+    deleteImagesFromProduct:async(productId, deleteImageIds)=>{
+        try{
+            return await productRepo.deleteImagesFromProduct(productId,deleteImageIds);
+        }catch(error){
+            throw error;
+        }
+    },
+     
+    updateProduct:async(productId,data)=>{
+        try{
+            console.log(productId);
+
+            let fields=['name',"code","markupPercentage","cost","description","category","brand",]
+
+            Object.keys(data).forEach(element=>{
+                if (!fields.includes(element)){
+                   
+                    throw new AppError("invalid fields!!", APP_CONFIG.HTTP_BAD_REQUEST);
+                }
+            })
+            
+            let product = await this.productService.isProductExist(productId);
+
+            Object.keys(data).forEach(key=>{
+              product[key]=data[key];
+            })
+             
+            return await product.save();
+
+
+        }catch(error){
+            throw error;
+        }
+    },
+
+    deleteProduct:async(productId)=>{
+        try{
+            
+            let result=await productRepo.deleteProduct(productId);
+
+            if (result.matchedCount === 0) 
+                throw new AppError("❌ Product not found!",APP_CONFIG.HTTP_NOT_FOUND);
+            else if(result.modifiedCount===0)
+                throw new AppError("❌ Product already de-activated!",APP_CONFIG.HTTP_BAD_REQUEST);
+            
+
+            return result;
+
+        }catch(error){
+            throw error;
+        }
+    },
+
+    activeProduct:async(productId)=>{
+        
+        try{
+            let result=await productRepo.activeProduct(productId);
+
+            if (result.matchedCount === 0) 
+                throw new AppError("❌ Product not found!",APP_CONFIG.HTTP_NOT_FOUND);
+            else if (result.modifiedCount===0)
+                throw new AppError("❌ Product already active!",APP_CONFIG.HTTP_BAD_REQUEST);
+                
+
+            return result;
+
+        }catch(error){
+            throw error;
+        }
+    },
+
+    approveProduct:async(productId)=>{
+        try{
+
+            let ack= await productRepo.approveProduct(productId);
+            
+            if (ack.matchedCount === 0) 
+                throw new AppError("❌ Product not found!",APP_CONFIG.HTTP_NOT_FOUND);
+            else if (ack.modifiedCount===0)
+                throw new AppError("❌ Product already approved!",APP_CONFIG.HTTP_BAD_REQUEST);
+
+           return ack;
+        }catch(error){
+            throw error;
+        }
+    },
+
+    rejectProduct:async(productId)=>{
+        try{
+
+            let ack= await productRepo.changeStatus(productId,APP_CONFIG.REJECT_STATUS);
+
+            if (result.matchedCount === 0) 
+                throw new AppError("❌ Product not found!",APP_CONFIG.HTTP_NOT_FOUND);
+            else if (result.modifiedCount===0)
+                throw new AppError("❌ Product already rejected!",APP_CONFIG.HTTP_BAD_REQUEST);
+
+             return ack;
+        }catch(error){
+            throw error;
+        }
+    },
+
+
+
+
+
+    
+
     
 }
-
-
-
-
-
-
-
 
 
 
