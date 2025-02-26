@@ -3,6 +3,8 @@ const orderRepository = require("../repos/order.repo");
 const orderContainerRepository = require("../repos/orderContainer.repo");
 const onlineProductRepo = require("../repos/tempOnlineProduct.repo");
 const AppError = require("../utils/appError");
+const APP_CONFIG = require("../config/app.config");
+
 class OrderService {
 // need to check on the user comming to update the order if he is the clerk or the cashier or the external seller
 // cahier is the one who takes the rate of the order from the external seller by confirming the order by status completed
@@ -12,11 +14,11 @@ class OrderService {
         if (!order) throw new AppError("Order not found");
     
         // assign clerk if it's the first time updating the order
-        if (!order.clerk && clerkId && order.seller.equals(APP_CONFIG.COMPANY_ID)) {
+        if (!order.clerk && clerkId && order.seller==APP_CONFIG.COMPANY_ID) {
             order.clerk = clerkId;
         }
 
-        if(order.clerk && !clerkId.equals(order.clerk)){
+        if(order.clerk && !clerkId==order.clerk){
           if(order.seller.equals(APP_CONFIG.COMPANY_ID)) { // if the order belongs to the company and there's already a clerk assigned to it
               throw new AppError("Another clerk is already assigned to this order");
           }else{ // if the order belongs to an external seller he's already handling his own orders // cannot update the clerk here bc it's eqaul to the seller

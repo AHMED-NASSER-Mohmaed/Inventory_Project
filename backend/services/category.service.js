@@ -90,6 +90,13 @@ module.exports.categoryService = {
         } catch (error) {
             throw error;
         }
+    },
+    getCount:async(filters)=>{
+        try{
+            return await categoryRepo.getCount(filters);
+        }catch(error){
+            throw error;
+        }
     }
 
 };

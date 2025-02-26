@@ -37,13 +37,9 @@ const branchController = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
-    deleteBranch:async (req,res,next)=>{
-
-        console.log("iddddddddddd",req.params.id)
+    deleteBranch:async (req,res,next)=>{ 
         const result = bracnhService.deleteBranch(+req.params.id);
-
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
-
     },
     activeBranch:async (req,res,next)=>{
 
