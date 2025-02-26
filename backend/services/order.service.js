@@ -23,7 +23,7 @@ class OrderService {
             throw new AppError("Sorry, you are not allowed to update this order since it belongs to another seller");
           }
         }  
-        
+        console.log(order);
     
         let newTotalPrice = 0;
         let newTotalQty = 0;
@@ -32,9 +32,9 @@ class OrderService {
         // update fulfilled and canceled quantities
         if (fulfilledQuantities) {
             await Promise.all(order.products.map(async prod => {
-                if (fulfilledQuantities[prod.product._id]) { // product here refers to the id of each product within products array
+                if (fulfilledQuantities[prod.onlineProduct._id]) { // product here refers to the id of each product within products array
                     // const OnlineProduct = await onlineProductRepo.getOnlineProductById(prod.onlineProduct); // only to check on the stock before updating and to reduce the stock after
-                    let fulfilledQty = fulfilledQuantities[prod.product._id];
+                    let fulfilledQty = fulfilledQuantities[prod.onlineProduct._id];
                     if(fulfilledQty < 0 ) throw new AppError("Invalid quantity");
                     if(prod.fulfilledQuantity > 0){
                       await onlineProductRepo.updateOnlineProduct(prod.onlineProduct._id, { // you to return the fulfilled quantity back to the stock before updating the new filfulled quantity to avoid decreasing the stock infinitely if you try to fulfill the the product more than once
