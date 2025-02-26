@@ -3,6 +3,7 @@ const orderRepository = require("../repos/order.repo");
 const orderContainerRepository = require("../repos/orderContainer.repo");
 const onlineProductRepo = require("../repos/tempOnlineProduct.repo");
 const AppError = require("../utils/appError");
+const { APP_CONFIG } = require("../config/app.config");
 class OrderService {
 // need to check on the user comming to update the order if he is the clerk or the cashier or the external seller
 // cahier is the one who takes the rate of the order from the external seller by confirming the order by status completed
@@ -12,27 +13,31 @@ class OrderService {
         if (!order) throw new AppError("Order not found");
     
         // assign clerk if it's the first time updating the order
-        if (!order.clerk && clerkId && order.seller.equals(APP_CONFIG.COMPANY_ID)) {
-          order.clerk = clerkId;
-      }
-
-      if(order.clerk && !order.clerk.equals(clerkId)){
-        if(order.seller.equals(APP_CONFIG.COMPANY_ID)) { // if the order belongs to the company and there's already a clerk assigned to it
-            throw new AppError("Another clerk is already assigned to this order");
-        }else{ // if the order belongs to an external seller he's already handling his own orders // cannot update the clerk here bc it's eqaul to the seller
-          throw new AppError("Sorry, you are not allowed to update this order since it belongs to another seller");
+        if (!order.clerk && clerkId && order.seller._id.equals(APP_CONFIG.COMPANY_ID)) {
+            order.clerk = clerkId;
         }
-      }
+
+        if(order.clerk && !order.clerk.equals(clerkId)){
+          if(order.seller.equals(APP_CONFIG.COMPANY_ID)) { // if the order belongs to the company and there's already a clerk assigned to it
+              throw new AppError("Another clerk is already assigned to this order");
+          }else{ // if the order belongs to an external seller he's already handling his own orders // cannot update the clerk here bc it's eqaul to the seller
+            throw new AppError("Sorry, you are not allowed to update this order since it belongs to another seller");
+          }
+        }  
+        
     
         let newTotalPrice = 0;
         let newTotalQty = 0;
-    
+        console.log(order);
         if(order.status == "shipped" && !fulfilledQuantities) throw new AppError("You have to fulfill the order first before updating the status to shipped");
         // update fulfilled and canceled quantities
         if (fulfilledQuantities) {
             await Promise.all(order.products.map(async prod => {
+              console.log(" hahahh " + prod.onlineProduct._id);
                 if (fulfilledQuantities[prod.product._id]) { // product here refers to the id of each product within products array
-                    // const OnlineProduct = await onlineProductRepo.getOnlineProductById(prod.onlineProduct); // only to check on the stock before updating and to reduce the stock after
+              console.log(" hahahh " + prod.onlineProduct._id);
+                    
+                  // const OnlineProduct = await onlineProductRepo.getOnlineProductById(prod.onlineProduct); // only to check on the stock before updating and to reduce the stock after
                     let fulfilledQty = fulfilledQuantities[prod.product._id];
                     if(fulfilledQty < 0 ) throw new AppError("Invalid quantity");
                     if(prod.fulfilledQuantity > 0){
@@ -173,19 +178,20 @@ class OrderService {
       }
 
       async mapOrderData(orderData) { // helper function
+        console.log(orderData.products);
         const { _id: orderId, products, updatedAt, createdAt } = orderData;
         return {
             orderId,
             orderStatus: orderData.status,
-            customerName: `${orderData.orderContainer.customer?.firstName} ${orderData.orderContainer.customer?.lastName}`,
+            customerName: `${orderData.orderContainer?.customer?.firstName} ${orderData.orderContainer?.customer?.lastName}`,
             sellerName: `${orderData.seller.firstName} ${orderData.seller.lastName}`,
             products: products.map(({ product, onlineProduct, requestedQuantity: productRequestedQuantity, fulfilledQuantity: productFulfilledQuantity, canceledQuantity: productCanceledQuantity }) => ({
-                productId: product._id,
-                productName: product.name,
-                productUrlImage: product.images?.length > 0 ? product.images[0].url : null,
-                productCode: product.code,
-                productPrice: onlineProduct.price,
-                productStock: onlineProduct.stock,
+                productId: product?._id,
+                productName: product?.name,
+                productUrlImage: product?.images?.length > 0 ? product.images[0].url : null,
+                productCode: product?.code,
+                productPrice: onlineProduct?.price,
+                productStock: onlineProduct?.stock,
                 productRequestedQuantity,
                 productFulfilledQuantity,
                 productCanceledQuantity,
@@ -207,7 +213,7 @@ class OrderService {
         console.log("from pending and clerk",status);
         if(status == "pending" && userType == "seller") {
           const returnedOrders =  await orderRepository.getAllOnlineOrdersForSellerPendingState(clerkId);
-          const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+          const mappedOrders = await Promise.all(returnedOrders.map(order => {this.mapOrderData(order); console.log(order._id)}));
           return mappedOrders;
         }
         else if(status == "pending" && userType == "clerk") {
@@ -250,6 +256,19 @@ class OrderService {
         const returnedOrders =  await orderRepository.getAllOnlineOrdersByStatusForCashierInDeliverStateToHandleTheDeliveredOrders(cashierId);
         const mappedOrders = await Promise.all(returnedOrders.map(order => mapOrderData(order)));
         return mappedOrders;
+    }
+
+    async getAllOnlineSubOrdersForSuperAdmin(){
+      const returnedOrders = await orderRepository.getAllOnlineSubOrdersForSuperAdmin();
+      // return returnedOrders;
+      // console.log(returnedOrders)
+      const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+      return mappedOrders;
+    }
+    async getAllOfflineSubOrdersForSuperAdmin(){
+      const returnedOrders = await orderRepository.getAllOfflineSubOrdersForSuperAdmin();
+      const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+      return mappedOrders;
     }
 }
 

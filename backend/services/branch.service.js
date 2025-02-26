@@ -3,8 +3,6 @@ const AppError = require("../utils/appError");
 const APP_CONFIG = require("../config/app.config");
 const {staffRepo}=require("../repos/staff.repo");
 
-
-
 module.exports = {
 
     addBranch: async (data) => {
@@ -56,7 +54,9 @@ module.exports = {
         try {
 
             let ack= await branchRepo.deleteBranch(id);
+            
             await staffRepo.UpdateStaffByInjection({branch:id},{$set:{branch:null,isActive:false}})
+
             return ack;
         } catch (err) {
             throw err;
@@ -131,11 +131,9 @@ module.exports = {
         }catch(error){
             throw error;
         }
-    }
+    },
     
     
-
-
 
 }
 

@@ -5,7 +5,8 @@ const AuthMiddleware = require("../middlewares/auth.middleware");
 const catchAsync = require("../utils/catchAsync");
 const { APP_CONFIG } = require("../config/app.config");
 const pro_res=require("../utils/authMiddlewaresOptions");
-const AppError=require("../utils/appError")
+const AppError=require("../utils/appError");
+const orderService = require("../services/order.service");
 
 class OrderContainerController {
 
@@ -15,6 +16,22 @@ class OrderContainerController {
       }
 
       initializeRoutes() {
+
+        // superAdmin
+
+        this.router.get(
+          "/allSuborders/online",
+          pro_res('super_admin'),
+          catchAsync(this.getAllOnlineSubordersForSuperAdmin)
+
+        )
+
+        this.router.get(
+          "/allSuborders/offline",
+          pro_res('super_admin'),
+          catchAsync(this.getAllOfflineSubordersForSuperAdmin)
+
+        )
 
         // offline container orders
         this.router.post(
@@ -118,7 +135,7 @@ class OrderContainerController {
   async cashierFinalisOnlineOrderByCompleteStatus(req, res) {
     if(req.user.role == "cashier" ){ // becasue  admin can process the order too but it has to be admin of that branch
         // but once that order is assigned to someone the other cannot handle it (the order will be dedicated to only one person)
-        if(!req.user.branch.equals(APP_CONFIG.ONLINE_BRANCH_ID)){
+        if(!req.user.branch!=APP_CONFIG.ONLINE_BRANCH_ID){
             throw new AppError("You are not authorized to process this order since you are not employed in this branch.");
         }
     }
@@ -229,6 +246,22 @@ class OrderContainerController {
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       orderContainer,
+    });
+  }
+
+  async getAllOfflineSubordersForSuperAdmin(req, res){
+    const allOfflineSuborders= await orderService.getAllOfflineSubOrdersForSuperAdmin();
+    res.status(APP_CONFIG.HTTP_OK).json({
+      message: "success",
+      allOfflineSuborders,
+    });
+  }
+
+  async getAllOnlineSubordersForSuperAdmin(req, res){
+    const allOnlineSuborders= await orderService.getAllOnlineSubOrdersForSuperAdmin();
+    res.status(APP_CONFIG.HTTP_OK).json({
+      message: "success",
+      allOnlineSuborders,
     });
   }
 }

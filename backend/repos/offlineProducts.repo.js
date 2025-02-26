@@ -34,7 +34,8 @@ module.exports.OfflineProductsRepo = {
     //isActive + deactive products
     getOffProducts: async (filters, sort, page, limit) => {
 
-        try {
+        try {   
+            console.log(filters,"from repoo");
 
             const [result, total] = await Promise.all([
 
@@ -57,7 +58,7 @@ module.exports.OfflineProductsRepo = {
                     { $sort: sort },
                     { $skip: (page - 1) * limit },
                     { $limit: limit },
-                    { $project: { __v: 0, kind: 0, "product.isActive": 0, "product.satus": 0 } }
+                    { $project: { __v: 0, kind: 0,"product.satus": 0 , "product.createdAt":0 , "product.updatedAt":0 , } }
                 ]),
                 await OfflineProducts.aggregate([
                     {
@@ -114,6 +115,9 @@ module.exports.OfflineProductsRepo = {
     //for exporting a new product
     upsertOffProduct: async (productId, branchId, quantity) => {
         try {
+
+            console.log(branchId,"llllllllll");
+            
             return await OfflineProducts.findOneAndUpdate(
                 { product: productId, branch: branchId }, // Search condition
                 {

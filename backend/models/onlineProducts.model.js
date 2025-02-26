@@ -17,6 +17,13 @@ const OnlineProductsSchema = new mongoose.Schema(
     // Product availability from this seller (managed by admins)
     isActive: { type: Boolean, default: true },
 
+    //default is false for the seller -- for us approved in case we are the people who add this product to the system 
+    status: {                                    // "pending", "approved", or "rejected"
+      type: String,
+      enum: ["pending", "approved", "rejected" ],
+    },
+
+
     // // Default is "pending" for the seller
     // status: {
     //   type: String,
@@ -25,7 +32,7 @@ const OnlineProductsSchema = new mongoose.Schema(
     // },
 
     // Online branches only
-    branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", required: true },
+    branch: { type: Number, ref: "Branch", required: true },
   },
   { timestamps: true }
 );
@@ -34,7 +41,7 @@ const OnlineProductsSchema = new mongoose.Schema(
 OnlineProductsSchema.index({ isActive: 1 });
 
 
-OnlineProductsSchema.index({ seller: 1, product: 1 },{unique:true});
+OnlineProductsSchema.index({ seller: 1, product: 1 }, { unique: true });
 
 const OnlineProducts = mongoose.model("OnlineProducts", OnlineProductsSchema);
 

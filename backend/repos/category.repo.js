@@ -1,4 +1,5 @@
 
+const categoryModel = require('../models/category.model');
 const Category = require('../models/category.model');
 
 
@@ -7,7 +8,7 @@ module.exports.categoryRepo = {
     // done
     addCategory: async (data) => {
         try {
-          console.log("from repooo");
+          
             return await Category.create(data);
         } catch (error) {
             throw error;
@@ -17,7 +18,8 @@ module.exports.categoryRepo = {
     // done 
     updateCategory: async (id, data) => {
         try {
-            return await Category.updateOne(id, { $set: data });
+          
+            return await Category.updateOne({_id:id}, { $set: data });
         } catch (error) {
             throw error;
         }
@@ -26,7 +28,7 @@ module.exports.categoryRepo = {
     //done 
     deleteCategory: async (id) => {
         try {
-            return await Category.updateOne(id, { $set: { isActive: false } });
+            return await Category.updateOne({_id:id}, { $set: { isActive: false } });
         } catch (error) {
             throw error;
         }
@@ -35,7 +37,7 @@ module.exports.categoryRepo = {
     //done 
     activateCategory: async (id) => {
         try {
-            return await Category.updateOne(id, { $set: { isActive: true } } );
+            return await Category.updateOne({_id:id}, { $set: { isActive: true } } );
         } catch (error) {
             throw error;
         }
@@ -46,12 +48,12 @@ module.exports.categoryRepo = {
         try {
             //is active or not 
             const [results, total] = await Promise.all([
-                Category.find(filters)
+                await Category.find(filters)
                     .sort(sort)
                     .skip((page - 1) * limit)
                     .limit(limit)
                     .lean(),
-                Category.countDocuments(filters).exec(),
+                await Category.countDocuments(filters).exec(),
             ]);
 
             return { results, total, page, limit };
@@ -77,7 +79,25 @@ module.exports.categoryRepo = {
       } catch (error) {
           throw error;
       }
-  }
+  },
+
+  getCount:async(filters)=>{
+    try{
+      return await Category.countDocuments(filters).exec();
+    }catch(error){
+      return error;
+    }
+  },
+
+  getAllActiveCategoryIdsNames:async()=>{
+    try{
+      return await categoryModel.find({isActive:true},"_id Cname");
+    }catch(error){
+      throw error;
+    }
+  },
+
+  
 
 };
 

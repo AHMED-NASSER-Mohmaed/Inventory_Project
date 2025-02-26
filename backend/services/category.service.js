@@ -90,6 +90,21 @@ module.exports.categoryService = {
         } catch (error) {
             throw error;
         }
+    },
+    getCount:async(filters)=>{
+        try{
+            return await categoryRepo.getCount(filters);
+        }catch(error){
+            throw error;
+        }
+    },
+
+    getAllActiveCategoryIdsNames:async()=>{
+        try{
+            return await categoryRepo.getAllActiveCategoryIdsNames();
+        }catch(error){
+            throw error;
+        }
     }
 
 };

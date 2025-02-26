@@ -61,12 +61,15 @@ module.exports.OfflineProductsService = {
     },
 
     parseFilters: (filters) => {
+
+        let fielters=["code" , "brand", "category" ,"name" , "isActive"]
+
         return Object.fromEntries(
 
             Object.entries(filters).map(
                 ([key, value]) => {
 
-                    if (key === 'isActive')
+                    if (fielters.includes(key))
                         return [`product.${key}`, value]
 
                     return [`${key}`, value]
@@ -78,7 +81,7 @@ module.exports.OfflineProductsService = {
 
     getOfflineProducts: async (validatedParams) => {
         try {
-
+            
             return await OfflineProductsRepo.getOffProducts(this.OfflineProductsService.parseFilters(validatedParams.filters),
                 validatedParams.sort, validatedParams.page, validatedParams.limit);
 
@@ -138,11 +141,11 @@ module.exports.OfflineProductsService = {
 
                 await OfflineProductsRepo.upsertOffProduct(offProduct.product, destinationBranchId, newDestQty);
 
-
                 //it is the time to update our source online qty if it exist and if it is not create new one as a sellers 
-
+                
                 if (destinationBranch['type'] === 'online') {
                     //may be the first time to export this product to online sysytem
+                    console.log("hhhhhhhhhhhhhhhhhh");
                     return  OnlineProductsRepository.upsertOurSellerRecord(offProduct.product,qty);
                 }else if (sourceBranch['type']==='online'){
                     // we have a record in online system product.
