@@ -249,11 +249,11 @@ class OrderService {
       async getAllOnlineOrdersForCashierBasedOnStatus(cashierId, status) {
         if(status == "completed") {
           const returnedOrders =  await orderRepository.getAllOnlineOrdersByStatusCompletedForCashier(cashierId);
-          const mappedOrders = await Promise.all(returnedOrders.map(order => mapOrderData(order)));
+          const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
           return mappedOrders;
         }
         const returnedOrders =  await orderRepository.getAllOnlineOrdersByStatusForCashierInDeliverStateToHandleTheDeliveredOrders(cashierId);
-        const mappedOrders = await Promise.all(returnedOrders.map(order => mapOrderData(order)));
+        const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
         return mappedOrders;
     }
 
