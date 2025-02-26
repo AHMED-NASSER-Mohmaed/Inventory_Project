@@ -178,19 +178,20 @@ class OrderService {
       }
 
       async mapOrderData(orderData) { // helper function
+        console.log(orderData.products);
         const { _id: orderId, products, updatedAt, createdAt } = orderData;
         return {
             orderId,
             orderStatus: orderData.status,
-            customerName: `${orderData.orderContainer.customer?.firstName} ${orderData.orderContainer.customer?.lastName}`,
+            customerName: `${orderData.orderContainer?.customer?.firstName} ${orderData.orderContainer?.customer?.lastName}`,
             sellerName: `${orderData.seller.firstName} ${orderData.seller.lastName}`,
             products: products.map(({ product, onlineProduct, requestedQuantity: productRequestedQuantity, fulfilledQuantity: productFulfilledQuantity, canceledQuantity: productCanceledQuantity }) => ({
-                productId: product._id,
-                productName: product.name,
-                productUrlImage: product.images?.length > 0 ? product.images[0].url : null,
-                productCode: product.code,
-                productPrice: onlineProduct.price,
-                productStock: onlineProduct.stock,
+                productId: product?._id,
+                productName: product?.name,
+                productUrlImage: product?.images?.length > 0 ? product.images[0].url : null,
+                productCode: product?.code,
+                productPrice: onlineProduct?.price,
+                productStock: onlineProduct?.stock,
                 productRequestedQuantity,
                 productFulfilledQuantity,
                 productCanceledQuantity,
@@ -212,7 +213,7 @@ class OrderService {
         console.log("from pending and clerk",status);
         if(status == "pending" && userType == "seller") {
           const returnedOrders =  await orderRepository.getAllOnlineOrdersForSellerPendingState(clerkId);
-          const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+          const mappedOrders = await Promise.all(returnedOrders.map(order => {this.mapOrderData(order); console.log(order._id)}));
           return mappedOrders;
         }
         else if(status == "pending" && userType == "clerk") {
@@ -259,6 +260,8 @@ class OrderService {
 
     async getAllOnlineSubOrdersForSuperAdmin(){
       const returnedOrders = await orderRepository.getAllOnlineSubOrdersForSuperAdmin();
+      // return returnedOrders;
+      // console.log(returnedOrders)
       const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
       return mappedOrders;
     }
