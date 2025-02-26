@@ -1,29 +1,97 @@
+const { reject } = require('lodash');
 const Product = require('../models/product.model');
-const { inboxResult } = require("../utils/apiFeatures")
+const { APP_CONFIG } = require('../config/app.config');
+// const { inboxResult } = require("../utils/apiFeatures")
 
-module.exports.productRepo={
+module.exports.productRepo = {
 
 
-  addProduct:async(data)=>{
-    try{
-       
+  addProduct: async (data) => {
+    try {
+
       return await Product.create(data);
-      
-    }catch(error){
+
+    } catch (error) {
 
       throw error;
     }
   },
 
-  getProductById:async(id)=>{
-    try{
-      return await  Product.findById(id);
-    }catch(error){
-      throw new error;
+  getProductById: async (id) => {
+    try {
+      return await Product.findById(id);
+    } catch (error) {
+      throw  error;
     }
   },
 
-   
+  updateProductQty: async (id, qty) => {
+    try {
+      return await Product.updateOne({ _id: id }, { $set: qty })
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  //provide acual product id and array of deleted images ids
+  deleteImagesFromProduct: async (productId, deleteImageIds) => {
+    try {
+      return await Product.findByIdAndUpdate(
+        productId,
+        { $pull: { images: { fileId: { $in: deleteImageIds } } } }, // we can use only partial fields for removing
+        { new: true }
+      );
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  updateProduct:async(productId,data)=>{
+    try{
+      return await Product.updateOne({_id:id},{$set:data});
+    }catch(error){
+      throw error;
+    }
+  },
+
+  deleteProduct:async(productId)=>{
+    try{
+      return await  Product.updateOne({_id:productId},{$set:{isActive:true}});
+    }catch(error){
+      throw error;
+    }
+  },
+  activeProduct:async(productId)=>{
+    try{
+      return await Product.updateOne({_id:productId},{$set:{isActive:false}});
+    }catch(error){
+      throw error;
+    }
+  },
+
+  rejectProduct:async(productId)=>{
+    try{
+
+      return await Product.updateOne({_id:productId,status:APP_CONFIG.PENDING_STATUS},
+          {$set:{status:APP_CONFIG.REJECT_STATUS}});
+
+    }catch(error){
+      throw error;
+    }
+  },
+
+  approveProduct:async(productId)=>{
+    try{
+
+      return await Product.updateOne({_id:productId,status:APP_CONFIG.PENDING_STATUS},
+          {$set:{status:APP_CONFIG.APPROVED_STATUS}});
+
+    }catch(error){
+      throw error;
+    }
+  }
+
+
 
 
 

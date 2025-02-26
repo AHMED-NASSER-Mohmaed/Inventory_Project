@@ -20,6 +20,8 @@ var imagekit = new imageKit({
 
  /**
    * Uploads an image to ImageKit and returns its URL and id .
+   * @param {Array} Of IMAGES 
+   * @returns {Array} OF IDS AND URLS
    */
 
  async function upload(files, folder) {
@@ -89,6 +91,22 @@ async function uploadToImageKit({ files }) {
 }//end of upload to image kit 
 
 
+async function deleteFiles(fileIds) {
+  try {
+    // Delete all files in parallel and wait for completion
+    await Promise.all(
+      fileIds.map(async (fileId) => {
+        const result = await imagekit.deleteFile(fileId);
+         
+      })
+    );
+    return true; // Return true only if all deletions succeed
+  } catch (error) {
+    // Throw a custom error with the original message
+    throw new AppError(error.message, APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
+  }
+}
+
 /**
  * Downloads a file from the given URL and saves it locally.
  * @param {string} fileUrl - The URL of the file to download.
@@ -140,22 +158,6 @@ async function deleteFile(fileId) {
   }
 }*/
 
-
-async function deleteFiles(fileIds) {
-  try {
-    // Delete all files in parallel and wait for completion
-    await Promise.all(
-      fileIds.map(async (fileId) => {
-        const result = await imagekit.deleteFile(fileId);
-         
-      })
-    );
-    return true; // Return true only if all deletions succeed
-  } catch (error) {
-    // Throw a custom error with the original message
-    throw new AppError(error.message, APP_CONFIG.HTTP_INTERNAL_SERVER_ERROR);
-  }
-}
 
 module.exports = {
   upload,

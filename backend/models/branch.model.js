@@ -69,4 +69,5 @@ BranchSchema.pre("updateOne", async function (next) {
 */
 BranchSchema.index({ governate: 1, registrationNumber: 1 }, { unique: true });
 
+ 
 module.exports = mongoose.model("Branch", BranchSchema);

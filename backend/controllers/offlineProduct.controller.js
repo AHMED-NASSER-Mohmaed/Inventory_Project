@@ -1,32 +1,60 @@
-const {OfflineProductsService}=require("../services/offlineProducts.service");
+const { OfflineProductsService } = require("../services/offlineProducts.service");
 const prot_rest = require("../utils/authMiddlewaresOptions");
 const express = require("express");
 const { APP_CONFIG } = require("../config/app.config");
 const catchAsync = require("../utils/catchAsync");
 const { sendResponseToClint } = require("../utils/apiFeatures");
+
 const {
     validateSearchParams,
     validatorFilterParams,
     validateSortPaginationParams,
-  } = require("../middlewares/validation.middlewares");
+} = require("../middlewares/validation.middlewares");
 
 
-const offlineProductOp={
+const offlineProductOp = {
 
-    addProduct:async(req,res,next)=>{
-        
-        let result= OfflineProductsService.addOfflineProduct(req.body);
+    allowedFilters: [["isActive", "undefined"]],
+    allowedFilterValues: [["true", "false", "undefined"]],
+
+    allowedSort: ["createdAt","price"],
+    searchFiledName: [ "code" , "brand","category","branch","name"],
+    searchValueAcoordingNaN: [ true, true , true , false ,true],
+
+
+    addProduct: async (req, res, next) => {
+
+        let result = await OfflineProductsService.addOfflineProduct(req.body);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+
+    },
+
+    updateQty: async (req, res, next) => {
+
+        let result = await OfflineProductsService.updateQuantitiy(req.params.id, req.params.qty);
+
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
+    getProducts: async (req, res, next) => {
+        console.log(req.validatedParams);
+        let result = await OfflineProductsService.getOfflineProducts(req.validatedParams);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
+    getCount:async (req,res,next)=>{
+        let result = await OfflineProductsService.getOffProCount(req.validatedParams.filters);
         sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
     },
 
-    updateQty:async(req,res,next)=>{
+    exportTo:async (req,res,next)=>{
 
-        let result = await OfflineProductsService.updateQuantitiy(req.params.id,req.params.qty);
-        
+        console.log(req.query);
+
+        const result = await OfflineProductsService.exportTo(req.query.id,+req.query.src,+req.query.dest,+req.query.qty);
         sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+
     },
-
-
 
 }
 
@@ -42,7 +70,24 @@ router
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(offlineProductOp.updateQty)
     )
-    
+    .get("/OffProduct",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        validateSortPaginationParams(offlineProductOp.allowedSort),
+        validatorFilterParams(offlineProductOp.allowedFilters,offlineProductOp.allowedFilterValues),
+        validateSearchParams(offlineProductOp.searchFiledName,offlineProductOp.searchValueAcoordingNaN),
+        catchAsync(offlineProductOp.getProducts)
+    )
+    .get("/OffProduct/count",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        validatorFilterParams(offlineProductOp.allowedFilters,offlineProductOp.allowedFilterValues),
+        validateSearchParams(offlineProductOp.searchFiledName,offlineProductOp.searchValueAcoordingNaN),
+        catchAsync(offlineProductOp.getCount)
+    )
+    .patch("/OffProduct/exportTo",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        catchAsync(offlineProductOp.exportTo)
+    )
 
 
-module.exports=router;
+
+module.exports = router;

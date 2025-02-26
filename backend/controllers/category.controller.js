@@ -3,7 +3,8 @@ const { categoryService } = require("../services/category.service");
 const { sendResponseToClint } = require("../utils/apiFeatures");
 const prot_rest = require("../utils/authMiddlewaresOptions");
 const { validateSearchParams, validatorFilterParams, validateSortPaginationParams } = require("../middlewares/validation.middlewares");
-const catchAsync = require("../utils/catchAsync")
+const catchAsync = require("../utils/catchAsync");
+const { get } = require("lodash");
 
 const genaricFilters = {
     searchFiledName: ["Cname"],
@@ -23,6 +24,7 @@ const categoryOp = {
     },
 
     updateCategory: async (req, res, next) => {
+         console.log(req.body,"boddyyyy");
         let result = await categoryService.updateCategory(req.params.id, req.body);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
@@ -44,6 +46,11 @@ const categoryOp = {
 
     getCount: async (req, res, next) => {
         let result = await categoryService.getCount(req.validatedParams.filters);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
+    getAllActiveCategoryIdsNames:async(req,res,next)=>{
+        let result = await categoryService.getAllActiveCategoryIdsNames()
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     }
 }
@@ -75,9 +82,13 @@ router
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(categoryOp.updateCategory)
     )
-    .patch("/categories/:id/activate",
+    .patch("/categories/activate/:id",
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(categoryOp.activateCategory)
+    )
+    .get("/categories/AllActive/idN",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        catchAsync(categoryOp.getAllActiveCategoryIdsNames),
     )
 
 module.exports = router;

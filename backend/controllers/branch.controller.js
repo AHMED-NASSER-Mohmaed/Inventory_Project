@@ -4,6 +4,7 @@ const catchAsync = require("../utils/catchAsync");
 const pro_res = require("../utils/authMiddlewaresOptions");
 const { sendResponseToClint } = require("../utils/apiFeatures");
 const { validateSearchParams, validatorFilterParams, validateSortPaginationParams } = require("../middlewares/validation.middlewares");
+const branchService = require("../services/branch.service");
 
 
 const genaricFilters = {
@@ -15,8 +16,6 @@ const genaricFilters = {
 
     allowedFilters: [["isActive", "undefined"]],
     allowedFilterValues: [["true", "false","undefined"]],
-
-
 
     allowedSort: ['createdAt'],
 }
@@ -37,24 +36,26 @@ const branchController = {
         const result = bracnhService.updateBranch(req.params.id,req.body);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
-    deleteBranch:async (req,res,next)=>{
 
-        const result = bracnhService.deleteBranch(req.params.id);
-
+    deleteBranch:async (req,res,next)=>{ 
+        const result = bracnhService.deleteBranch(+req.params.id);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
-
     },
     activeBranch:async (req,res,next)=>{
 
-        const result = bracnhService.activeBranch(req.params.id);
+        const result = bracnhService.activeBranch(+req.params.id);
 
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
     getBranches:async (req,res,next)=>{
-        
+         
         const result = await bracnhService.getBranches(req.validatedParams);
         
         sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+    getCount:async (req,res,next)=>{
+        const result = await branchService.getCountByFilter(req.validatedParams.filters);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
     }
 
 
@@ -88,6 +89,11 @@ router.post("/branches",pro_res(APP_CONFIG.SUPPERADMIN),
     .patch("/branches/active/:id",
         pro_res(APP_CONFIG.SUPPERADMIN),
         catchAsync(branchController.activeBranch)
+    )
+    .get("/branches/count",
+        pro_res(APP_CONFIG.SUPPERADMIN),
+        validatorFilterParams(genaricFilters.allowedFilters,genaricFilters.allowedFilterValues),
+        catchAsync(branchController.getCount)
     )
 
 module.exports = router;

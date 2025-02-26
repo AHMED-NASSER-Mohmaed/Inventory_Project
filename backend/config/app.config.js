@@ -46,17 +46,20 @@ module.exports.APP_CONFIG = {
   CUSTOMER: "customer",
   SELLER: "seller",
 
-  MAIN_BRANCH_ID:"19777",
+  MAIN_BRANCH_ID:19777,
 
   COMPANY_ID: "67aa438c2823142f438539c4",
   COMPANY_NAME: "inventory system",
 
-  ONLINE_BRANCH_ID: "",
+  ONLINE_BRANCH_ID: 10,
 
 
   SUPPERADMIN_ID:"67aa438c2823142f438539c1",
 
   SUCCESS_MESSAGE: "success",
+
+  MALE_CAT_ID:"67be5efb0d6e71ed0ea5b3de",
+  FEMALE_CAT_ID:"67be5efb0d6e71ed0ea5b3df",
 
  
 
@@ -95,6 +98,9 @@ module.exports.APP_CONFIG = {
   MAX_IMAGE_COUNT:4,
   /************************************************************************************************/
 
+  APPROVED_STATUS:'approved',
+  REJECT_STATUS:'rejected',
+  PENDING_STATUS:'pending',
 
   COMPANYNAME:"Watchly"
 };

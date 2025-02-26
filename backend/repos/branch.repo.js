@@ -57,8 +57,12 @@ module.exports = {
             if (!branch) {
                 throw new Error("Branch does not exist");
             }
-            return await Branch.updateOne({ _id: id }, { $set:{isAvtive: false , admin:null , employees:[]} });
-        
+            
+            return await Branch.updateOne(
+                { _id: id },
+                { $set: { isActive: false, admin: null, employees: [] } }
+            );
+            
         } catch (error) {
             throw error;
         }
@@ -127,7 +131,7 @@ module.exports = {
         }catch(error){
             throw error;
         }
-    }
+    },
 
 
 

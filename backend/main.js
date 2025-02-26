@@ -18,7 +18,7 @@ const branch = require("./models/branch.model");
 const counter = require("./models/counter.model");
 const WorksOn = require("./models/worksOn.model");
 
- 
+
 const { compareSync } = require("bcryptjs");
 const port = APP_CONFIG.HTTP_PORT || 5000;
 
@@ -41,95 +41,135 @@ process.on("uncaughtException", (err) => {
       url: APP_CONFIG.MONGO_DEV_URI,
       databaseName: APP_CONFIG.MONGO_DATABASE_NAME,
     },
+
+
     callback: async () => {
 
-      let superAdmin = {
-        _id:APP_CONFIG.SUPPERADMIN_ID,
-        firstName: "ahmed",
-        lastName: "nasser",
-        email: "AhmedNasser@gmail.com",
-        phoneNumber: "01062303884",
-        password: "onlyonewhocanregister",
-        passwordConfirm: "onlyonewhocanregister",
-        userType: "staff",
-        SSN: "30101101206161",
-        role: "super_admin",
+      
+      
+      /*
+      let worksOnObj = {
+        employee: APP_CONFIG.SUPPERADMIN_ID,
+        type: APP_CONFIG.SUPPERADMIN,
+        branch: "19777"
+        }*/
+       
+       
+       /****************************************************************************************** */   
+       let superAdmin = {
+         _id: APP_CONFIG.SUPPERADMIN_ID,
+         firstName: "ahmed",
+         lastName: "nasser",
+         email: "AhmedNasser@gmail.com",
+         phoneNumber: "01062303884",
+         password: "onlyonewhocanregister",
+         passwordConfirm: "onlyonewhocanregister",
+         userType: "staff",
+         SSN: "30101101206161",
+         role: "super_admin",
+       }
+      if (!await Staff.findOne({ SSN: superAdmin.SSN })) {
+
+        // await Staff.deleteOne({SSN:superAdmin.SSN});
+        console.log("super admin created");
+        await Staff.create(superAdmin);
+
       }
+       /****************************************************************************************** */ 
 
       let mainBranch = {
         _id: '19777',
         type: "main",
         governate: 6,
         registrationNumber: "123-69",
+        admin:APP_CONFIG.SUPPERADMIN_ID,
         location: "Elmasoura - Ahmed Maher Street"
       }
 
-      /*
-      let worksOnObj = {
-        employee: APP_CONFIG.SUPPERADMIN_ID,
-        type: APP_CONFIG.SUPPERADMIN,
-        branch: "19777"
-      }*/
-
-      /*
+      await branch.findOneAndUpdate(
+        { _id: APP_CONFIG.MAIN_BRANCH_ID }, // Search condition
+        { $setOnInsert: mainBranch }, // Insert only if not found
+        { upsert: true, new: true }
+      );
+      /*******************************************************************************************/
       let onlineBranch = {
-        _id: '0',
+        _id: 0,
         type: "online",
         governate: 1,
         registrationNumber: "123-692",
         location: "Cairo bab-elmoneeb"
-      }*/
+      }
 
-        if (!await Staff.findOne({ SSN: superAdmin.SSN })) {
+      await branch.findOneAndUpdate(
 
-          // await Staff.deleteOne({SSN:superAdmin.SSN});
-          console.log("super admin created");
-          await Staff.create(superAdmin);
-  
-        }
-
+        { _id: APP_CONFIG.ONLINE_BRANCH_ID }, // Search condition
+        { $setOnInsert: onlineBranch }, // Insert only if not found
+        { upsert: true, new: true }
+      );
       
-        
-      
-        
-        /*
-      await counter.create({ _id: "branch", seq: 3 })
-      await branch.create(mainBranch);
-      await WorksOn.create(worksOnObj);
-      await branch.updateOne({_id:mainBranch._id},{admin:APP_CONFIG.SUPPERADMIN_ID});
-      await branch.updateOne({_id:mainBranch._id},{isActive:true});
-      */
-    
+      /*******************************************************************************************/
 
-       
+
+
+      // await counter.create({ _id: "branch", seq: 3 })
+      // await branch.create(mainBranch);
+      // await branch.create(onlineBranch);
+      // await WorksOn.create(worksOnObj);
+      // await branch.updateOne({_id:mainBranch._id},{admin:APP_CONFIG.SUPPERADMIN_ID});
+      // await branch.updateOne({_id:mainBranch._id},{isActive:true});
+
+
+
+
       // console.log("delete all",await User.find({userType:"customer"}));
       // console.log("delete all",await User.find({userType:"staff"}));
       // console.log("delete all",await User.find({userType:"seller"}));
 
-
-      let seller={
+      /*******************************************************************************************/
+      let seller = {
+        "_id": APP_CONFIG.COMPANY_ID,
         "firstName": "ahmed",
         "lastName": "nasser",
         "email": "ahmed664422@gmail.com",
         "phoneNumber": "01118208958",
 
-        "password":"admin123",
-        "passwordConfirm":"admin123",
+        "password": "admin123",
+        "passwordConfirm": "admin123",
 
         "userType": "seller",
         "SSN": "30101101206152",
-        "companyName": "inentory system",
+        "companyName": APP_CONFIG.COMPANYNAME,
         "companyRegistrationNumber": "30-10-15",
         "status": true,
       }
+      
+      if (!await Seller.findOne({ SSN: seller.SSN })) {
+        await Seller.create(seller);
+        console.log("our seller record inserted");
+      }
+      /*******************************************************************************************/
+      // let cat1 = {
+      //   "_id":APP_CONFIG.MALE_CAT_ID,
+      //   "Cname": "male",
+      // }
+      // await Category.findOneAndUpdate(
+      //     { Cname: cat1.Cname }, // Search condition
+      //     { $setOnInsert: cat1 }, // Insert only if not found
+      //     { upsert: true, new: true }
+      // );
+      /*******************************************************************************************/
 
-     
-      let cat1={ 
-        "Cname":"male",
-      }
-      let cat2={
-        "Cname":"female"
-      }
+      // let cat2 = {
+      //   "_id":APP_CONFIG.FEMALE_CAT_ID,
+      //   "Cname": "female"
+      // }
+      // await Category.findOneAndUpdate(
+      //     { Cname: cat2.Cname }, // Search condition
+      //     { $setOnInsert: cat2 }, // Insert only if not found
+      //     { upsert: true, new: true }
+      // );
+      
+      /*******************************************************************************************/
 
       /*
 
@@ -154,13 +194,17 @@ process.on("uncaughtException", (err) => {
       if(!await Supplier.findOne({email:Dawoodsupplier.email})){
         console.log(await Supplier.create(Dawoodsupplier));
       }
-        */ /*
-       if(!await Category.findOne({name:cat1.Cname})){
-          console.log(await Category.create(cat1));
-       }
-       if(!await Category.findOne({name:cat2.Cname})){
-        console.log(await Category.create(cat2));
-     }*/
+        
+
+
+
+
+
+
+
+
+ 
+     }
         /*
        
 
@@ -179,15 +223,11 @@ process.on("uncaughtException", (err) => {
 
       // console.log(await Product.collection.drop());
 */
-     
-      
-              if(!await Seller.findOne({SSN:seller.SSN})){
-                await Seller.create(seller);
-                console.log("our seller record inserted");
-              }
-      
-              // console.log(await Seller.updateMany({ photo: APP_CONFIG.DU_IMAGE_DEFALUT_OBG }));
-         
+
+
+
+      // console.log(await Seller.updateMany({ photo: APP_CONFIG.DU_IMAGE_DEFALUT_OBG }));
+
       console.log("App database has connected successfully");
       app.listen(APP_CONFIG.HTTP_PORT, "0.0.0.0", () => {
         console.log(`App is up and running on port ${APP_CONFIG.HTTP_PORT}`);

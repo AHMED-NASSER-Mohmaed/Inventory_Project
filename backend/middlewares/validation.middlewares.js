@@ -1,4 +1,6 @@
+const { values } = require("lodash");
 const { APP_CONFIG } = require("../config/app.config");
+const mongoose=require("mongoose")
 
 const AppError = require("../utils/appError");
 
@@ -10,7 +12,7 @@ const validateSortPaginationParams = (allowedSort) => {
 
     let sort = { createdAt: -1 }; // Default sort
 
-    
+
 
     if (req.query.sort) {
       try {
@@ -29,7 +31,7 @@ const validateSortPaginationParams = (allowedSort) => {
 
 
       } catch (e) {
-        throw new AppError('Invalid sort parameter format. Use "field:order"', APP_CONFIG.HTTP_BAD_REQUEST)
+        throw new AppError('Invalid sort parameter format. Use "field:type"', APP_CONFIG.HTTP_BAD_REQUEST)
       }
     }
 
@@ -63,9 +65,10 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
 
 
         filterObjects.forEach((element) => {
+
           let [field, value] = element.split(':');
 
-          console.log(field, value, "   ");
+          // console.log(field, value, "   ");
 
           // Find the index of the searchFiledName array that contains the field
           const filterIndex = searchFiledName.findIndex((element) => element.trim() === field.trim());
@@ -74,22 +77,37 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
             throw new AppError(`Invalid filter field: ${field}`, APP_CONFIG.HTTP_BAD_REQUEST);
           }
 
-          // Check if the value is valid based on searchValueAcoordingNaN
-          const isValueNaN = searchValueAcoordingNaN[filterIndex]; // true or false
-          const isValueValid = isValueNaN ? isNaN(value) : !isNaN(value);
+          // // Check if the value is valid based on searchValueAcoordingNaN
+          // const isValueNaN = searchValueAcoordingNaN[filterIndex]; // true or false
+          // const isValueValid = isValueNaN ? isNaN(value) : !isNaN(value);
 
-          if (!isValueValid) {
-            throw new AppError(`Invalid value: ${value} for field: ${field}. Expected ${isValueNaN ? 'non-numeric' : 'numeric'} value.`, APP_CONFIG.HTTP_BAD_REQUEST);
+          // if (!isValueValid) {
+          //   throw new AppError(`Invalid value: ${value} for field: ${field}. Expected ${isValueNaN ? 'non-numeric' : 'numeric'} value.`, APP_CONFIG.HTTP_BAD_REQUEST);
+          // }
+
+
+          const isValueNaN = searchValueAcoordingNaN[filterIndex];
+
+          if (isValueNaN) {
+            if (!['branch', 'brand', 'category'].includes(field))
+              value = { $regex: `^${value}`, $options: 'i' }
+            else
+              value = new mongoose.Types.ObjectId("67be7a05f8d783308fc3a8e3");
+          }
+          else {
+            value = Number(value)
+            if (!value)
+              throw new AppError(`Invalid value: ${value} for field: ${field}. Expected ${isValueNaN ? 'non-numeric' : 'numeric'} value.`, APP_CONFIG.HTTP_BAD_REQUEST);
           }
 
-          
-          
-          if(field!=='branch')
-            value = new RegExp(`^${value}`, 'i');
+          // if (!isValueNaN) {
+          // } else if (isValueNaN && !['branch', 'brand', 'category'].includes(field))
 
-          // value= new RegExp(`^${value}|${value}$`, 'i');
 
-          filters[field] = value; // Insert filter objects
+            // value = { $regex: `^${value}`, $options: 'i' }
+            // value= new RegExp(`^${value}|${value}$`, 'i');
+
+            filters[field] = value; // Insert filter objects
         });
 
 
@@ -97,7 +115,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
         return res.status(400).json({ error: e.message || 'Invalid filter parameter format. Use "field:value"' });
       }
     }
- 
+
     //  be genaric fucntion
     // console.log(req.validatedParams, "after");
 
@@ -109,7 +127,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
       req.validatedParams.filters[key] = filters[key];
     });
 
-    // console.log("from search : ", req.validatedParams);
+    console.log("from search : ", req.validatedParams);
 
     next(); // Proceed to the next middleware/controller
   };
@@ -122,7 +140,7 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
 
     let filters = {}
 
-    // console.log("from filter:", req.query.filters);
+
 
     if (req.query.filters) {
       try {
@@ -131,9 +149,10 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
         req.query.filters = Array.from(filterObjects);
 
         let deletedOne = 0;
+        // console.log("from filter:", req.query.filters);
 
         filterObjects.forEach((element) => {
-          const [field, value] = element.split(":");
+          let [field, value] = element.split(":");
 
           // Find the index of the allowedFilters array that contains the field
           const filterIndex = allowedFilters.findIndex(allowedFilter => allowedFilter.includes(field));
@@ -144,10 +163,16 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
           }
 
           if (!allowedFilterValues[filterIndex].includes(value)) {
-          
             throw new AppError("Invalid filter fields", APP_CONFIG.HTTP_BAD_REQUEST)
           }
+          // console.log(value);
 
+
+
+          if (value === 'true')
+            value = true;
+          else if (value === 'false')
+            value = false;
 
           filters[field] = value; // insert filter objects
           req.query.filters.splice(deletedOne, 1);
@@ -155,14 +180,14 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
         });
 
       } catch (e) {
-       
+
         throw new AppError(`"Invalid filter parameter format. Use "field:value"`, APP_CONFIG.HTTP_BAD_REQUEST)
       }
     }
 
     // Attach validated params to request object
 
-    if(!req.validatedParams)
+    if (!req.validatedParams)
       req.validatedParams = {};
 
 
@@ -176,7 +201,7 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
     //   });
 
 
-    // console.log("from filter..", req.validatedParams);
+    console.log("from filter.cccccc.", req.validatedParams);
 
     next();
   }
