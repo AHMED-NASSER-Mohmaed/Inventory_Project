@@ -11,6 +11,8 @@ import { FeedbacksComponent } from './feedbacks/feedbacks.component';
 import { BranchesComponent } from './branches/branches.component';
 import { BrandsComponent } from './brands/brands.component';
 import { OrdersComponent } from './orders/orders.component';
+import { OffproductComponent } from './offproduct/offproduct.component';
+import { OnproductComponent } from './onproduct/onproduct.component';
 
 export const dashRoutes: Routes = [
   {
@@ -77,6 +79,16 @@ export const dashRoutes: Routes = [
         path: 'orders',
         component: OrdersComponent,
         title: 'Orders'
+      },
+      {
+        path: 'online-products',
+        component: OnproductComponent,
+        title: 'Online Product'
+      },
+      {
+        path: 'offline-products',
+        component: OffproductComponent,
+        title: 'Offline Product'
       }
     ]
   }

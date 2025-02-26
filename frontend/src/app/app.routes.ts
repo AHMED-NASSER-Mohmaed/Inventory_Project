@@ -13,7 +13,6 @@ import { FeaturedProductsComponent } from './Components2/HomePage/featured-produ
 import { SaleComponent } from './Components2/HomePage/sale/sale.component';
 import { CategoryComponent } from './Components2/HomePage/category/category.component';
 import { FooterComponent } from './core/footer/footer.component';
-import { ProductsComponent } from './Components/dashboardComponents/products/products.component';
 import { ProductsListComponent } from './Components2/products-list/products-list.component';
 import { LandingPageComponent } from './Components2/HomePage/landing-page/landing-page.component';
 import { ProductdetailsComponent } from './Components/productdetails/productdetails.component';

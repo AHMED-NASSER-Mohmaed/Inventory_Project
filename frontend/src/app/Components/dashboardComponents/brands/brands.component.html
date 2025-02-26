@@ -235,7 +235,7 @@
                     <form #addCategoryForm="ngForm">
                         <div class="info-grid">
                             <div class="info-item">
-                                <strong class="label">Category Name:</strong>
+                                <strong class="label">Brand Name:</strong>
                                 <div class="input-wrapper" [ngClass]="{'valid': addCategoryName.touched && addCategoryName.valid, 'invalid': addCategoryName.touched && addCategoryName.invalid}">
                                     <input type="text" 
                                            required 
@@ -243,7 +243,7 @@
                                            [(ngModel)]="newCategoryName" 
                                            name="categoryName" 
                                            #addCategoryName="ngModel" 
-                                           placeholder="Enter category name"
+                                           placeholder="Enter brand name"
                                            pattern="^[a-zA-Z]+(?: [a-zA-Z]+)*$">
                                 </div>
                             </div>
