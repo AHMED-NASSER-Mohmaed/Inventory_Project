@@ -1,4 +1,5 @@
 
+const categoryModel = require('../models/category.model');
 const Category = require('../models/category.model');
 
 
@@ -86,7 +87,17 @@ module.exports.categoryRepo = {
     }catch(error){
       return error;
     }
-  }
+  },
+
+  getAllActiveCategoryIdsNames:async()=>{
+    try{
+      return await categoryModel.find({isActive:true},"_id Cname");
+    }catch(error){
+      throw error;
+    }
+  },
+
+  
 
 };
 

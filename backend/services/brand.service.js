@@ -1,4 +1,4 @@
-const {brandRepo} = require("../repos/brand.repo");
+const { brandRepo } = require("../repos/brand.repo");
 const AppError = require("../utils/appError");
 const { APP_CONFIG } = require("../config/app.config");
 
@@ -13,7 +13,7 @@ module.exports.brandService = {
             Object.keys(data).forEach(element => {
 
                 if (!fields.includes(element))
-                    throw new AppError("invalid fileds",APP_CONFIG.HTTP_NOT_FOUND)
+                    throw new AppError("invalid fileds", APP_CONFIG.HTTP_NOT_FOUND)
             });
 
             return await brandRepo.addBrand(data);
@@ -35,7 +35,7 @@ module.exports.brandService = {
                     throw new AppError("invalid fileds",)
             });
 
-            let ack = await brandRepo.updateBrand(id,data);
+            let ack = await brandRepo.updateBrand(id, data);
 
             if (!ack) {
                 throw new AppError('brand not found', APP_CONFIG.HTTP_NOT_FOUND);
@@ -91,13 +91,21 @@ module.exports.brandService = {
 
     //isActive or not only
 
-    getCount: async (filters)=>{
-        try{
+    getCount: async (filters) => {
+        try {
             return await brandRepo.getCountByFilter(filters);
-        }catch(error){
+        } catch (error) {
             throw error;
         }
     },
+
+    getAllActiveBrandsIdsName: async () => {
+        try {
+            return await brandRepo.getAllActiveBrandsIdsName();
+        } catch (error) {
+            throw new error;
+        }
+    }
 
 
 

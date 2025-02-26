@@ -71,7 +71,16 @@ module.exports.brandRepo = {
         }catch(error){
             throw error;
         }
+    },
+
+    getAllActiveBrandsIdsName:async()=>{
+        try{
+            return await Brand.find({isActive:true},"_id Bname")
+        }catch(error){
+            throw new error;
+        }
     }
+
 
 
 }

@@ -34,7 +34,8 @@ module.exports.OfflineProductsRepo = {
     //isActive + deactive products
     getOffProducts: async (filters, sort, page, limit) => {
 
-        try {
+        try {   
+            console.log(filters,"from repoo");
 
             const [result, total] = await Promise.all([
 
@@ -114,6 +115,9 @@ module.exports.OfflineProductsRepo = {
     //for exporting a new product
     upsertOffProduct: async (productId, branchId, quantity) => {
         try {
+
+            console.log(branchId,"llllllllll");
+            
             return await OfflineProducts.findOneAndUpdate(
                 { product: productId, branch: branchId }, // Search condition
                 {

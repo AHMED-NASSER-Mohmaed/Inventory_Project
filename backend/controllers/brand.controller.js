@@ -55,6 +55,10 @@ const brandOp = {
     getCount: async (req, res, next) => {
         let result = await brandService.getCount(req.validatedParams.filters);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+    getAllActiveBrandsIdsName: async (req,res,next) => {
+         let result= await brandService.getAllActiveBrandsIdsName();
+         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     }
 }
 
@@ -89,6 +93,11 @@ router
     .patch("/brands/active/:id",
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(brandOp.activeBrand)
+    )
+
+    .get("/brands/Allactive/idN",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        catchAsync(brandOp.getAllActiveBrandsIdsName)
     )
 
 

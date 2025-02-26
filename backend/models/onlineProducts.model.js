@@ -33,7 +33,7 @@ const OnlineProductsSchema = new mongoose.Schema(
     // },
 
     // Online branches only
-    branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", required: true },
+    branch: { type: Number, ref: "Branch", required: true },
   },
   { timestamps: true }
 );
