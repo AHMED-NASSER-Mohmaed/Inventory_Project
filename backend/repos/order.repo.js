@@ -157,6 +157,30 @@ class OrderRepository {
     })
     .exec();
   }
+
+  async getAllOnlineSubOrdersForSuperAdmin() {
+    return await Order.find({
+      subOrderType: "online",
+    }).populate("products.onlineProduct products.product seller").populate({
+      path: "orderContainer", // Populate the orderContainer field
+      populate: {
+        path: "customer", // Nested population: populate the customer inside orderContainer
+      },
+    })
+    .exec();
+  }
+
+  async getAllOfflineSubOrdersForSuperAdmin() {
+    return await Order.find({
+      $or: [{ subOrderType: null }, { subOrderType: "offline" }]
+    }).populate("products.onlineProduct products.product seller").populate({
+      path: "orderContainer", // Populate the orderContainer field
+      populate: {
+        path: "customer", // Nested population: populate the customer inside orderContainer
+      },
+    })
+    .exec();
+  }
     
 }
   

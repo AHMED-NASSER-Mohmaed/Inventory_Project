@@ -18,7 +18,7 @@ const OrderSchema = new mongoose.Schema(
       ],
       default: "pending",
     },
-    subOrderType: { type: String, default: null, select: false }, // added in order to return the suborders dirctlty related to the online store bc if it doesn't exist i cannot return all online suborders directly without the container order if the cashier was null 
+    subOrderType: { type: String, default: null}, // added in order to return the suborders dirctlty related to the online store bc if it doesn't exist i cannot return all online suborders directly without the container order if the cashier was null 
     products: [
       {
         product: {
