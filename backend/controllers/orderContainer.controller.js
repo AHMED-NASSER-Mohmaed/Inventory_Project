@@ -78,7 +78,7 @@ class OrderContainerController {
         );
 
         this.router.patch( // update for cashier
-            "/finilizeSuborder",
+            "/finilizeSuborder/:orderId",
            pro_res('cashier'),
             catchAsync(this.cashierFinalisOnlineOrderByCompleteStatus)
         );
