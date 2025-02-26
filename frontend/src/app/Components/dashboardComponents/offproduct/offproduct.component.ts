@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, signal, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
@@ -9,28 +9,33 @@ import { ConfirmDialogComponent2 } from '../../../confirm-dialog2/confirm-dialog
 import { ConfirmDialogImgchangeComponent } from '../../../confirm-dialog-imgchange/confirm-dialog-imgchange.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDividerModule } from '@angular/material/divider';
-import { ConfirmDialogApprovesellerComponent } from '../../../confirm-dialog-approveseller/confirm-dialog-approveseller.component';
-import { ConfirmDialogRejectsellerComponent } from '../../../confirm-dialog-rejectseller/confirm-dialog-rejectseller.component';
-import { ConfirmDialogApproveseller2Component } from '../../../confirm-dialog-approveseller2/confirm-dialog-approveseller2.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
-import { SellerService } from '../../../_services/seller.service';
 import { decodeToken } from '../../../_helpers/jwt-helper';
-import { OffproductService } from '../../../_services/offproduct.service';
+import { ToastrService } from 'ngx-toastr';
+import { MatSelectModule } from '@angular/material/select';
+import { ClerksService } from '../../../_services/clerks.service';
+import { OffProduct } from '../../../_models/offproduct';
 
 @Component({
   selector: 'app-offproduct',
-  imports: [CommonModule, FormsModule, MatButtonToggleModule, MatDividerModule , MatMenuModule , MatProgressSpinnerModule , NgxSkeletonLoaderModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatButtonToggleModule,
+    MatDividerModule,
+    MatMenuModule,
+    MatProgressSpinnerModule,
+    NgxSkeletonLoaderModule,
+    MatSelectModule,
+  ],
   templateUrl: './offproduct.component.html',
-  styleUrl: './offproduct.component.css'
+  styleUrl: './offproduct.component.css',
 })
-
-export class OffproductComponent implements OnInit, OnDestroy{
-
-
-    // Filter state and pagination
-  currentFilter: 'active' | 'waiting' | 'rejected' | 'approved' = 'active';
+export class OffproductComponent implements OnInit, OnDestroy {
+  // Filter state and pagination
+  currentFilter: string = '';
   currentPage: number = 1;
   itemsPerPage: number = 10;
   totalPages: number = 1;
@@ -44,18 +49,12 @@ export class OffproductComponent implements OnInit, OnDestroy{
   backupUser: User = {} as User;
   editing: boolean = false;
 
-  // Totals
-  activeSellersCount: any;
-  deActiveSellersCount: any;
-  waitingSellersCount: any;
-  rejectedSellersCount: any;
-
   subscriptions: Subscription[] = [];
 
-  //  cache for storing seller pages: keys are "<filter>_<page>"
+  // New cache for storing seller pages: keys are "<filter>_<page>"
   pageCache: { [key: string]: { result: User[]; total: number } } = {};
 
-  selectedFilter: string = 'name'; 
+  selectedFilter: string = 'name'; // Default filter
   searchQuery: string = '';
 
   showNoResults: boolean = false;
@@ -67,24 +66,52 @@ export class OffproductComponent implements OnInit, OnDestroy{
   sortField: 'name' | 'createdAt' | null = null;
   sortDirection: 'asc' | 'desc' | null = null;
 
-  showingActive: boolean | null = null;
-  activityFilter: boolean | null = null;
-
   searchPlaceholder: string = ' Search By Name...';
 
   tokenData: any = null;
 
+  activeCustomersCount: any = null;
+  inactiveCustomersCount: any = null;
 
-  constructor(private offProductService: OffproductService, public dialog: MatDialog) {}
+  branches: { id: string; main: string; sub: string }[] = [];
+
+  newAdmin: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    password: string;
+    passwordConfirm: string;
+    SSN: string;
+    branchId?: string;
+    image?: File;
+  } = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phoneNumber: '',
+    password: '',
+    passwordConfirm: '',
+    SSN: '',
+  };
+
+  selectedActivationAdmin: User = {} as User;
+  selectedActivationBranch: string = '';
+
+  selectedBranch: string = '';
+
+  constructor(
+    private clerkService: ClerksService,
+    public dialog: MatDialog,
+    public toaster: ToastrService
+  ) {}
 
   ngOnInit(): void {
     this.updateSearchPlaceholder();
     this.loadSellers();
-    this.getDeActiveSellersCount();
-    this.getActiveSellersCount();
-    this.getWaitingSellersCount();
-    this.getRejectedSellersCount();
-
+    this.getInActiveCustomersCount();
+    this.getActiveCustomersCount();
+    this.loadBranches();
     const token = localStorage.getItem('token');
     if (token) {
       this.tokenData = decodeToken(token);
@@ -93,11 +120,9 @@ export class OffproductComponent implements OnInit, OnDestroy{
 
   hideSingleSelectionIndicator = signal(true);
 
-
   loadSellers(): void {
-    const activityFilterKey = this.activityFilter !== null ? `_active:${this.activityFilter}` : '';
-    const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}${activityFilterKey}`;
-  
+    const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}_${this.selectedBranch}`;
+
     if (this.pageCache[cacheKey]) {
       const cached = this.pageCache[cacheKey];
       this.users = cached.result;
@@ -108,31 +133,33 @@ export class OffproductComponent implements OnInit, OnDestroy{
       this.isLoading = false;
       return;
     }
-  
+
     this.isLoading = true;
     this.users = [];
-  
+
     let filterParam = '';
-    if (this.currentFilter === 'waiting') {
-      filterParam = 'status:0';
-    } else if (this.currentFilter === 'rejected') {
-      filterParam = 'status:-1';
-    } else if (this.currentFilter === 'approved') {
-      filterParam = `status:1${this.activityFilter !== null ? '+isActive:' + this.activityFilter : ''}`;
+    if (this.selectedBranch) {
+      filterParam = `branch:${this.selectedBranch}+isActive:true`;
+    } else if (this.currentFilter === 'active') {
+      filterParam = 'isActive:true';
+    } else if (this.currentFilter === 'inactive') {
+      filterParam = 'isActive:false';
     }
-  
+
     let sortParam = '';
     if (this.sortField && this.sortDirection) {
-      sortParam = `&sort=${this.sortField === 'name' ? 'name' : this.sortField}:${this.sortDirection}`;
+      sortParam = `&sort=${
+        this.sortField === 'name' ? 'name' : this.sortField
+      }:${this.sortDirection}`;
     }
-  
-    const obs = this.offProductService.getPaginatedSellersByStatus(
-      this.currentPage, 
-      this.itemsPerPage, 
+
+    const obs = this.clerkService.getPaginatedCustomersByStatus(
+      this.currentPage,
+      this.itemsPerPage,
       filterParam,
       sortParam
     );
-    
+
     const sub = obs.subscribe({
       next: (res) => {
         this.users = res.data.result;
@@ -146,11 +173,27 @@ export class OffproductComponent implements OnInit, OnDestroy{
         console.log(res);
       },
       error: (error) => {
+        this.toaster.clear();
+        this.toaster.error(error.error.message, 'Failed', {
+          timeOut: 1500,
+          positionClass: 'toast-bottom-right',
+          progressBar: true,
+          closeButton: true,
+        });
         console.log(error);
         this.isLoading = false;
-      }
+      },
     });
     this.subscriptions.push(sub);
+  }
+
+  onBranchFilterChange(): void {
+    this.currentPage = 1;
+    this.isSearchMode = false;
+    this.searchQuery = '';
+    this.currentFilter = '';
+    this.updateSearchPlaceholder();
+    this.loadSellers();
   }
 
   updatePaginationState(): void {
@@ -180,29 +223,13 @@ export class OffproductComponent implements OnInit, OnDestroy{
     }
   }
 
-  setFilter(filter: 'active' | 'waiting' | 'rejected' | 'approved'): void {
-    this.currentFilter = filter;
+  setFilter(filter: string): void {
+    this.currentFilter = this.currentFilter === filter ? '' : filter;
     this.currentPage = 1;
     this.isSearchMode = false;
     this.searchQuery = '';
     this.showNoResults = false;
-    
-    if (filter === 'approved') {
-      this.activityFilter = null;
-      this.showingActive = null;
-    }
-    
-    this.updateSearchPlaceholder();
-    this.loadSellers();
-  }
 
-  filterByActivity(isActive: boolean): void {
-    if (this.showingActive === isActive) return;
-    
-    this.showingActive = isActive;
-    this.activityFilter = isActive;
-    this.currentPage = 1;
-    
     this.updateSearchPlaceholder();
     this.loadSellers();
   }
@@ -212,139 +239,83 @@ export class OffproductComponent implements OnInit, OnDestroy{
   }
 
   showSellerInfo(user: User): void {
-    this.selectedUser = { 
+    this.selectedUser = {
       ...user,
       firstName: user.firstName || '',
       lastName: user.lastName || '',
       companyName: user.companyName || '',
       email: user.email || '',
-      phoneNumber: user.phoneNumber || ''
+      phoneNumber: user.phoneNumber || '',
+      SSN: user.SSN || '',
+      branch:
+        user.branch && user.branch.location
+          ? user.branch.location
+          : 'Not Assigned Yet',
     };
     this.backupUser = { ...this.selectedUser };
   }
 
-  // Seller actions
-  deActiveSeller(_id: string): void {
-    const sub = this.offProductService.deActiveSeller(_id).subscribe({
+  // Customer actions
+  deActiveCustomer(_id: string): void {
+    const sub = this.clerkService.deActiveCustomer(_id).subscribe({
       next: (res) => {
+        console.log(res);
+        // Clear cache to avoid stale status data
         this.pageCache = {};
         if (this.isSearchMode) {
           this.loadSearchResults();
         } else {
           this.loadSellers();
         }
-        this.getActiveSellersCount();
-        this.getDeActiveSellersCount();
+        this.getInActiveCustomersCount();
+        this.getActiveCustomersCount();
       },
-      error: (error) => { console.log(error); }
+      error: (error) => {
+        this.toaster.clear();
+        this.toaster.error(error.error.message, 'Failed', {
+          timeOut: 1500,
+          positionClass: 'toast-bottom-right',
+          progressBar: true,
+          closeButton: true,
+        });
+        console.log(error);
+      },
     });
     this.subscriptions.push(sub);
   }
 
-  activateSeller(_id: string): void {
-    const sub = this.offProductService.activateSeller(_id).subscribe({
+  activateCustomer(_id: string): void {
+    const sub = this.clerkService.activateCustomer(_id).subscribe({
       next: (res) => {
+        console.log(res);
         this.pageCache = {};
         if (this.isSearchMode) {
           this.loadSearchResults();
         } else {
           this.loadSellers();
         }
-        this.getActiveSellersCount();
-        this.getDeActiveSellersCount();
+        this.getInActiveCustomersCount();
+        this.getActiveCustomersCount();
       },
-      error: (error) => { console.log(error); }
-    });
-    this.subscriptions.push(sub);
-  }
-
-  approveSeller(_id: string, source: 'pending' | 'rejected' = 'pending'): void {
-    const sub = this.offProductService.approveSeller(_id).subscribe({
-      next: (res) => {
-        console.log(res);
-        const sourceStatus = source === 'pending' ? 'waiting' : 'rejected';
-        const approvedSeller = this.users.find(user => user._id === _id);
-        
-        if (approvedSeller) {
-          this.users = this.users.filter(user => user._id !== _id);
-          
-          approvedSeller.status = '1';
-
-          Object.keys(this.pageCache).forEach(key => {
-            if (key.startsWith(`${sourceStatus}_`)) {
-              const cache = this.pageCache[key];
-              cache.result = cache.result.filter(user => user._id !== _id);
-              cache.total--;
-            }
-          });
-
-          const approvedFirstPageKey = `approved_1_${this.sortField}_${this.sortDirection}`;
-          if (this.pageCache[approvedFirstPageKey]) {
-            const firstPageCache = this.pageCache[approvedFirstPageKey];
-            firstPageCache.result.unshift(approvedSeller);
-            if (firstPageCache.result.length > this.itemsPerPage) {
-              firstPageCache.result.pop();
-            }
-            firstPageCache.total++;
-          }
-
-          // Refresh counts
-          this.getActiveSellersCount();
-          if (source === 'pending') {
-            this.getWaitingSellersCount();
-          } else {
-            this.getRejectedSellersCount();
-          }
-        }
+      error: (error) => {
+        this.toaster.clear();
+        this.toaster.error(error.error.message, 'Failed', {
+          timeOut: 1500,
+          positionClass: 'toast-bottom-right',
+          progressBar: true,
+          closeButton: true,
+        });
+        console.log(error);
       },
-      error: (error) => console.log(error)
-    });
-    this.subscriptions.push(sub);
-  }
-
-  rejectSeller(_id: string): void {
-    const sub = this.offProductService.rejectSeller(_id).subscribe({
-      next: (res) => {
-        console.log(res);
-        const rejectedSeller = this.users.find(user => user._id === _id);
-        
-        if (rejectedSeller) {
-          this.users = this.users.filter(user => user._id !== _id);
-          
-          rejectedSeller.status = '-1';
-
-          Object.keys(this.pageCache).forEach(key => {
-            if (key.startsWith('waiting_')) {
-              const cache = this.pageCache[key];
-              cache.result = cache.result.filter(user => user._id !== _id);
-              cache.total--;
-            }
-          });
-
-          const rejectedFirstPageKey = `rejected_1_${this.sortField}_${this.sortDirection}`;
-          if (this.pageCache[rejectedFirstPageKey]) {
-            const firstPageCache = this.pageCache[rejectedFirstPageKey];
-            firstPageCache.result.unshift(rejectedSeller);
-            if (firstPageCache.result.length > this.itemsPerPage) {
-              firstPageCache.result.pop();
-            }
-            firstPageCache.total++;
-          }
-
-          this.getWaitingSellersCount();
-          this.getRejectedSellersCount();
-        }
-      },
-      error: (error) => console.log(error)
     });
     this.subscriptions.push(sub);
   }
 
   openConfirmDialog(_id: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
-    const sub = dialogRef.afterClosed().subscribe(result => {
+    const sub = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.deActiveSeller(_id);
+        this.deActiveCustomer(_id);
       }
     });
     this.subscriptions.push(sub);
@@ -352,85 +323,169 @@ export class OffproductComponent implements OnInit, OnDestroy{
 
   openConfirmDialog2(_id: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent2);
-    const sub = dialogRef.afterClosed().subscribe(result => {
+    const sub = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.activateSeller(_id);
+        this.activateCustomer(_id);
       }
     });
     this.subscriptions.push(sub);
   }
 
-  openConfirmDialog3(_id: string): void {
-    const dialogRef = this.dialog.open(ConfirmDialogApprovesellerComponent);
-    const sub = dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.approveSeller(_id, 'pending');
-      }
-    });
-    this.subscriptions.push(sub);
+  openActivateAdminModal(admin: User): void {
+    this.selectedActivationAdmin = admin;
+    this.selectedActivationBranch = '';
   }
 
-  openConfirmDialog5(_id: string): void {
-    const dialogRef = this.dialog.open(ConfirmDialogApproveseller2Component);
-    const sub = dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.approveSeller(_id, 'rejected');
-      }
-    });
-    this.subscriptions.push(sub);
-  }
+  activateAdminAssignment(): void {
+    if (!this.selectedActivationBranch) {
+      this.toaster.error('Please select a branch', 'Validation Error', {
+        timeOut: 1500,
+      });
+      return;
+    }
+    const sub = this.clerkService
+      .activateCustomerWithBranch(
+        this.selectedActivationAdmin._id,
+        this.selectedActivationBranch
+      )
+      .subscribe({
+        next: (res) => {
+          this.toaster.success('Admin activated successfully');
+          this.pageCache = {};
+          if (this.isSearchMode) {
+            this.loadSearchResults();
+          } else {
+            this.loadSellers();
+          }
+          this.getActiveCustomersCount();
 
-  openConfirmDialog4(_id: string): void {
-    const dialogRef = this.dialog.open(ConfirmDialogRejectsellerComponent);
-    const sub = dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.rejectSeller(_id);
-      }
-    });
+          const modal = document.getElementById('activateAdminModal');
+          if (modal) {
+            modal.classList.remove('show');
+            modal.setAttribute('style', 'display:none;');
+          }
+          const backdrops = document.getElementsByClassName('modal-backdrop');
+          while (backdrops.length > 0) {
+            backdrops[0].parentNode?.removeChild(backdrops[0]);
+          }
+        },
+        error: (error) => {
+          this.toaster.clear();
+          this.toaster.error(error.error.message, 'Failed', {
+            timeOut: 1500,
+            positionClass: 'toast-bottom-right',
+            progressBar: true,
+            closeButton: true,
+          });
+        },
+      });
     this.subscriptions.push(sub);
   }
 
   updateUserActivity(_id: string, isActive: boolean): void {
-    const user = this.users.find(u => u._id === _id);
+    const user = this.users.find((u) => u._id === _id);
     if (user) {
       user.isActive = isActive;
     }
   }
 
+  getActiveCustomersCount(): void {
+    const sub = this.clerkService.getActiveCustomersCount().subscribe({
+      next: (res) => {
+        this.activeCustomersCount = res.data;
+      },
+      error: (error) => {
+        this.toaster.clear();
+        this.toaster.error(error.error.message, 'Failed', {
+          timeOut: 1500,
+          positionClass: 'toast-bottom-right',
+          progressBar: true,
+          closeButton: true,
+        });
+        console.error('Error getting active sellers count', error);
+      },
+    });
+    this.subscriptions.push(sub);
+  }
+
+  getInActiveCustomersCount(): void {
+    const sub = this.clerkService.getInActiveCustomersCount().subscribe({
+      next: (res) => {
+        this.inactiveCustomersCount = res.data;
+      },
+      error: (error) => {
+        this.toaster.clear();
+        this.toaster.error(error.error.message, 'Failed', {
+          timeOut: 1500,
+          positionClass: 'toast-bottom-right',
+          progressBar: true,
+          closeButton: true,
+        });
+        console.error('Error getting deactive sellers count', error);
+      },
+    });
+    this.subscriptions.push(sub);
+  }
+
   toggleDropdown(index: number): void {
-    this.dropdownStates = this.dropdownStates.map((state, i) => i === index ? !state : false);
+    this.dropdownStates = this.dropdownStates.map((state, i) =>
+      i === index ? !state : false
+    );
   }
 
   toggleEdit(event?: any): void {
     if (this.editing) {
       const workingBackup = { ...this.backupUser };
-      const sub = this.offProductService.updateSeller(this.selectedUser._id, this.selectedUser).subscribe({
-        next: (res: any) => {
-          if (res.message === 'success') {
-            const index = this.users.findIndex(u => u.SSN === this.selectedUser.SSN);
-            if (index !== -1) {
-              this.users[index] = { ...this.selectedUser };
-              this.backupUser = { ...this.selectedUser };
+      const updatePayload = {
+        SSN: this.selectedUser.SSN,
+        firstName: this.selectedUser.firstName,
+        lastName: this.selectedUser.lastName,
+        phoneNumber: this.selectedUser.phoneNumber,
+        email: this.selectedUser.email,
+      };
+      const sub = this.clerkService
+        .updateCustomer(this.selectedUser._id, updatePayload)
+        .subscribe({
+          next: (res: any) => {
+            if (res.message === 'success') {
+              const index = this.users.findIndex(
+                (u) => u.SSN === this.selectedUser.SSN
+              );
+              if (index !== -1) {
+                this.users[index] = { ...this.selectedUser };
+                this.backupUser = { ...this.selectedUser };
+              }
+            } else {
+              const index = this.users.findIndex(
+                (u) => u.SSN === workingBackup.SSN
+              );
+              if (index !== -1) {
+                this.users[index] = workingBackup;
+                this.selectedUser = workingBackup;
+              }
             }
-          } else {
-            const index = this.users.findIndex(u => u.SSN === workingBackup.SSN);
+            this.editing = false;
+          },
+          error: (error) => {
+            this.toaster.clear();
+            console.log('cashier update, branch:', this.selectedUser.branch);
+            this.toaster.error(error.error.message, 'Failed', {
+              timeOut: 1500,
+              positionClass: 'toast-bottom-right',
+              progressBar: true,
+              closeButton: true,
+            });
+            console.error('Error updating cashier info', error);
+            const index = this.users.findIndex(
+              (u) => u.SSN === workingBackup.SSN
+            );
             if (index !== -1) {
               this.users[index] = workingBackup;
               this.selectedUser = workingBackup;
             }
-          }
-          this.editing = false;
-        },
-        error: (error) => {
-          console.error('Error updating seller info', error);
-          const index = this.users.findIndex(u => u.SSN === workingBackup.SSN);
-          if (index !== -1) {
-            this.users[index] = workingBackup;
-            this.selectedUser = workingBackup;
-          }
-          this.editing = false;
-        }
-      });
+            this.editing = false;
+          },
+        });
       this.subscriptions.push(sub);
     } else {
       this.backupUser = { ...this.selectedUser };
@@ -452,16 +507,25 @@ export class OffproductComponent implements OnInit, OnDestroy{
       reader.onload = (e: any) => {
         const tempUrl = e.target.result;
         const dialogRef = this.dialog.open(ConfirmDialogImgchangeComponent);
-        const sub = dialogRef.afterClosed().subscribe(async result => {
+        const sub = dialogRef.afterClosed().subscribe(async (result) => {
           if (result) {
             try {
-              const response: any = await this.offProductService.changeImage(this.selectedUser._id, file).toPromise();
-              if (response.message  === 'success') {
+              const response: any = await this.clerkService
+                .changeImage(this.selectedUser._id, file)
+                .toPromise();
+              if (response.message === 'success') {
                 this.selectedUser.photo.url = tempUrl;
               } else {
                 this.selectedUser.photo.url = backupUrl;
               }
             } catch (error) {
+              this.toaster.clear();
+              this.toaster.error((error as any).error.message, 'Failed', {
+                timeOut: 1500,
+                positionClass: 'toast-bottom-right',
+                progressBar: true,
+                closeButton: true,
+              });
               console.error('Error updating image', error);
               this.selectedUser.photo.url = backupUrl;
             }
@@ -476,41 +540,8 @@ export class OffproductComponent implements OnInit, OnDestroy{
     }
   }
 
-  // Totals fetching
-  getActiveSellersCount(): void {
-    const sub = this.offProductService.getActiveSellersCount().subscribe({
-      next: (res) => { this.activeSellersCount = res.data; },
-      error: (error) => console.error('Error getting active sellers count', error)
-    });
-    this.subscriptions.push(sub);
-  }
-
-  getDeActiveSellersCount(): void {
-    const sub = this.offProductService.getDeActiveSellersCount().subscribe({
-      next: (res) => { this.deActiveSellersCount = res.data; },
-      error: (error) => console.error('Error getting deactive sellers count', error)
-    });
-    this.subscriptions.push(sub);
-  }
-
-  getWaitingSellersCount(): void {
-    const sub = this.offProductService.getWaitingSellersCount().subscribe({
-      next: (res) => { this.waitingSellersCount = res.data; },
-      error: (error) => console.error('Error getting waiting sellers count', error)
-    });
-    this.subscriptions.push(sub);
-  }
-
-  getRejectedSellersCount(): void {
-    const sub = this.offProductService.getRejectedSellersCount().subscribe({
-      next: (res) => { this.rejectedSellersCount = res.data; },
-      error: (error) => console.error('Error getting rejected sellers count', error)
-    });
-    this.subscriptions.push(sub);
-  }
-
   isSearchMode: boolean = false;
-  
+
   onSearch(event: Event) {
     event.preventDefault();
     if (!this.searchQuery.trim()) {
@@ -527,20 +558,17 @@ export class OffproductComponent implements OnInit, OnDestroy{
   resetSearch(): void {
     this.searchQuery = '';
     this.isSearchMode = false;
-    this.currentFilter = 'active';
-    this.showingActive = null;
-    this.activityFilter = null;
+    this.currentFilter = '';
     this.currentPage = 1;
     this.sortField = null;
     this.sortDirection = null;
+    this.selectedBranch = '';
     this.loadSellers();
     this.updateSearchPlaceholder();
   }
 
   validateSearchInput(event: KeyboardEvent): boolean {
-    const pattern = this.selectedFilter === 'name' 
-      ? /^[a-zA-Z\s]$/  
-      : /^[0-9]$/;      
+    const pattern = this.selectedFilter === 'name' ? /^[a-zA-Z\s]$/ : /^[0-9]$/;
 
     if (!pattern.test(event.key)) {
       event.preventDefault();
@@ -552,10 +580,9 @@ export class OffproductComponent implements OnInit, OnDestroy{
   handlePaste(event: ClipboardEvent): void {
     event.preventDefault();
     const pastedText = event.clipboardData?.getData('text') || '';
-    
-    const pattern = this.selectedFilter === 'name'
-      ? /^[a-zA-Z\s]*$/  
-      : /^[0-9]*$/;      
+
+    const pattern =
+      this.selectedFilter === 'name' ? /^[a-zA-Z\s]*$/ : /^[0-9]*$/;
 
     if (pattern.test(pastedText)) {
       this.searchQuery = pastedText;
@@ -572,10 +599,10 @@ export class OffproductComponent implements OnInit, OnDestroy{
     this.isLoading = true;
     this.showNoResults = false;
     this.users = [];
-    
+
     let filters: string;
     this.lastSearchFilter = this.selectedFilter;
-    
+
     let searchFilter = '';
     if (this.selectedFilter === 'name') {
       const nameParts = this.searchQuery.trim().split(/\s+/);
@@ -588,72 +615,76 @@ export class OffproductComponent implements OnInit, OnDestroy{
       searchFilter = `${this.selectedFilter}:${this.searchQuery}`;
     }
 
-    let statusFilter = '';
-    if (this.currentFilter === 'approved') {
-      statusFilter = '+status:1';
-      if (this.activityFilter !== null) {
-        statusFilter += `+isActive:${this.activityFilter}`;
-      }
-    } else if (this.currentFilter === 'waiting') {
-      statusFilter = '+status:0';
-    } else if (this.currentFilter === 'rejected') {
-      statusFilter = '+status:-1';
+    if (this.selectedBranch) {
+      filters = `${searchFilter}+branch:${this.selectedBranch}+isActive:true`;
+    } else {
+      const statusFilter =
+        this.currentFilter === 'active'
+          ? '+isActive:true'
+          : this.currentFilter === 'inactive'
+          ? '+isActive:false'
+          : '';
+      filters = searchFilter + statusFilter;
     }
-
-    filters = searchFilter + statusFilter;
 
     let sortParam = '';
     if (this.sortField && this.sortDirection) {
-      sortParam = `&sort=${this.sortField === 'name' ? 'name' : this.sortField}:${this.sortDirection}`;
+      sortParam = `&sort=${
+        this.sortField === 'name' ? 'name' : this.sortField
+      }:${this.sortDirection}`;
     }
 
-    const sub = this.offProductService.searchSellers(
-      filters,
-      this.currentPage,
-      this.itemsPerPage,
-      sortParam
-    ).subscribe({
-      next: (res) => {
-        if (res.data) {
-          this.users = Array.isArray(res.data.result) ? res.data.result : [res.data.result];
-          this.showNoResults = this.users.length === 0;
-          this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
-          this.dropdownStates = new Array(this.users.length).fill(false);
+    const sub = this.clerkService
+      .searchCustomers(filters, this.currentPage, this.itemsPerPage, sortParam)
+      .subscribe({
+        next: (res) => {
+          if (res.data) {
+            this.users = Array.isArray(res.data.result)
+              ? res.data.result
+              : [res.data.result];
+            this.showNoResults = this.users.length === 0;
+            this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
+            this.dropdownStates = new Array(this.users.length).fill(false);
+            this.updatePaginationState();
+          }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error searching sellers:', error);
+          this.users = [];
+          this.showNoResults = true;
           this.updatePaginationState();
-        }
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error searching sellers:', error);
-        this.users = [];
-        this.showNoResults = true;
-        this.updatePaginationState();
-        this.isLoading = false;
-      }
-    });
-    
+          this.isLoading = false;
+        },
+      });
+
     this.subscriptions.push(sub);
   }
 
   updateSearchPlaceholder() {
-    const filterType = this.selectedFilter === 'phoneNumber' ? 'Phone Number' : 
-                      this.selectedFilter === 'SSN' ? 'SSN' : 'Name';
-    
-    let status = '';
-    if (this.currentFilter === 'approved') {
-      status = this.showingActive === true ? ' Active' : 
-               this.showingActive === false ? ' Inactive' : ' Approved';
-    } else if (this.currentFilter === 'waiting') {
-      status = ' Pending';
-    } else if (this.currentFilter === 'rejected') {
-      status = ' Rejected';
+    const filterType =
+      this.selectedFilter === 'phoneNumber'
+        ? 'Phone Number'
+        : this.selectedFilter === 'SSN'
+        ? 'SSN'
+        : 'Name';
+    if (this.selectedBranch) {
+      const branchObj = this.branches.find((b) => b.id === this.selectedBranch);
+      const branchName = branchObj ? `${branchObj.main} ${branchObj.sub}` : '';
+      this.searchPlaceholder = `Search Clerks in ${branchName} by ${filterType}...`;
+    } else {
+      const status =
+        this.currentFilter === 'active'
+          ? 'Active'
+          : this.currentFilter === 'inactive'
+          ? 'Inactive'
+          : 'All';
+      this.searchPlaceholder = `Search ${status} Clerks By ${filterType}...`;
     }
-
-    this.searchPlaceholder = `Search${status} Sellers By ${filterType}...`;
   }
 
   onItemsPerPageChange(): void {
-    this.currentPage = 1; 
+    this.currentPage = 1;
     this.pageCache = {};
     if (this.isSearchMode) {
       this.loadSearchResults();
@@ -671,7 +702,7 @@ export class OffproductComponent implements OnInit, OnDestroy{
     }
 
     this.currentPage = 1;
-    
+
     if (this.isSearchMode) {
       this.loadSearchResults();
     } else {
@@ -679,9 +710,123 @@ export class OffproductComponent implements OnInit, OnDestroy{
     }
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+  openAddModal(): void {
+    this.newAdmin = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phoneNumber: '',
+      password: '',
+      passwordConfirm: '',
+      SSN: '',
+    };
   }
 
+  onImageSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.newAdmin.image = file;
+    }
+  }
 
+  addAdmin(): void {
+    if (this.newAdmin.password !== this.newAdmin.passwordConfirm) {
+      this.toaster.error('Passwords do not match', 'Validation Error', {
+        timeOut: 1500,
+        positionClass: 'toast-bottom-right',
+        progressBar: true,
+        closeButton: true,
+      });
+      return;
+    }
+    const payload = {
+      firstName: this.newAdmin.firstName,
+      lastName: this.newAdmin.lastName,
+      email: this.newAdmin.email,
+      phoneNumber: this.newAdmin.phoneNumber,
+      password: this.newAdmin.password,
+      passwordConfirm: this.newAdmin.passwordConfirm,
+      SSN: this.newAdmin.SSN,
+      branch: this.newAdmin.branchId || undefined,
+    };
+    const sub = this.clerkService.addAdmin(payload).subscribe({
+      next: (res) => {
+        const newAdminRecord = res.data;
+        if (this.newAdmin.branchId) {
+          const branchObj = this.branches.find(
+            (b) => b.id === this.newAdmin.branchId
+          );
+          if (branchObj) {
+            newAdminRecord.branch = {
+              location: branchObj.main + ' ' + branchObj.sub,
+            };
+          }
+        }
+        this.toaster.success('Cashier added successfully');
+        if (
+          !this.isSearchMode &&
+          (this.currentFilter === 'active' || this.currentFilter === '')
+        ) {
+          this.users.unshift(newAdminRecord);
+          const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}`;
+          if (this.pageCache[cacheKey]) {
+            this.pageCache[cacheKey].result.unshift(newAdminRecord);
+            this.pageCache[cacheKey].total++;
+          }
+        }
+        this.getActiveCustomersCount();
+
+        const modalElement = document.getElementById('addCategoryModal');
+        if (modalElement) {
+          modalElement.classList.remove('show');
+          modalElement.style.display = 'none';
+        }
+        const backdrops = document.getElementsByClassName('modal-backdrop');
+        while (backdrops.length > 0) {
+          backdrops[0].parentNode?.removeChild(backdrops[0]);
+        }
+      },
+      error: (error) => {
+        this.toaster.clear();
+        this.toaster.error(error.error.message, 'Failed', {
+          timeOut: 1500,
+          positionClass: 'toast-bottom-right',
+          progressBar: true,
+          closeButton: true,
+        });
+      },
+    });
+    this.subscriptions.push(sub);
+  }
+
+  loadBranches(): void {
+    this.clerkService.getMappedBranches().subscribe({
+      next: (res) => {
+        if (res.message === 'success' && res.data) {
+          this.branches = Object.keys(res.data).map((id) => {
+            const location: string = res.data[id].location;
+            const parts = location.split('-').map((s) => s.trim());
+            return { id, main: parts[0], sub: parts[1] || '' };
+          });
+          this.updateSearchPlaceholder();
+        }
+      },
+      error: (error) => {
+        this.toaster.error('Failed to load branches', 'Error', {
+          timeOut: 1500,
+          positionClass: 'toast-bottom-right',
+          progressBar: true,
+          closeButton: true,
+        });
+      },
+    });
+  }
+
+  closeActivateModal(): void {
+    ($('#activateAdminModal') as any).modal('hide');
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+  }
 }

@@ -1,29 +1,32 @@
 export interface ProductImage {
-  _id: string;
-  fileId: string;
-  url: string;
+  _id: any;
+  fileId: any;
+  url: any;
 }
 
 export interface Product {
-  _id: string;
-  name: string;
-  code: string;
-  markupPercentage: string;
-  cost: string;
-  price: string;
-  description: string;
-  category: string;
-  brand: string;
-  status: string;
-  supplier: string;
+  _id: any;
+  name: any;
+  code: any;
+  markupPercentage: any;
+  cost: any;
+  price: any;
+  description: any;
+  category: any;
+  brand: any;
+  isActive: boolean;
+  status: any;
+  sellers: any[];
+  supplier: any;
   images: ProductImage[];
+  __v: number;
 }
 
 export interface OffProduct {
-  _id: string;
-  branch: string;
+  _id: any;
+  branch: any;
   product: Product;
-  createdAt: string;
-  stock: string;
-  updatedAt: string;
+  stock: any;
+  createdAt: any;
+  updatedAt: any;
 }
