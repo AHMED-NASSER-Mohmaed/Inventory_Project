@@ -68,6 +68,8 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
     activeCustomersCount: any = null; 
     inactiveCustomersCount : any = null;
   
+    selectedCategory: category | null = null;
+    newCategoryName: string = '';
   
     constructor(
       private categoryService: CategoryService,
@@ -195,11 +197,9 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
       this.isDarkMode = !this.isDarkMode;
     }
   
-    // Customer actions
     deActiveCustomer(_id: string): void {
       const sub = this.categoryService.deactivateCategory(_id).subscribe({
         next: (res) => {
-          // Clear cache and reload updated list
           this.pageCache = {};
           if (this.isSearchMode) {
             this.loadSearchResults();
@@ -226,7 +226,6 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
     activateCustomer(_id: string): void {
       const sub = this.categoryService.activateCategory(_id).subscribe({
         next: (res) => {
-          // Clear cache and reload updated list
           this.pageCache = {};
           if (this.isSearchMode) {
             this.loadSearchResults();
@@ -457,6 +456,87 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
       } else {
         this.loadSellers();
       }
+    }
+  
+    showCategoryInfo(category: category): void {
+      this.selectedCategory = { ...category };
+      this.editing = false;
+    }
+  
+    toggleEdit(event: Event): void {
+      event.preventDefault();
+      if (this.editing && this.selectedCategory) {
+          // Save changes
+          const sub = this.categoryService.updateCategory(this.selectedCategory._id, {
+              Cname: this.selectedCategory.Cname
+          }).subscribe({
+              next: (res) => {
+                  this.toaster.success('Category updated successfully', 'Success', {
+                      timeOut: 1500,
+                      positionClass: 'toast-top-right',
+                      progressBar: true,
+                      closeButton: true
+                  });
+                  this.pageCache = {};
+                  this.loadSellers();
+                  this.editing = false;
+              },
+              error: (error) => {
+                  this.toaster.error(error.error.message, 'Failed', {
+                      timeOut: 1500,
+                      positionClass: 'toast-top-right',
+                      progressBar: true,
+                      closeButton: true
+                  });
+              }
+          });
+          this.subscriptions.push(sub);
+      } else {
+          this.editing = true;
+      }
+    }
+  
+    openAddModal(): void {
+      this.newCategoryName = '';
+    }
+  
+    addCategory(): void {
+      if (!this.newCategoryName.trim()) return;
+  
+      const sub = this.categoryService.createCategory({
+          Cname: this.newCategoryName.trim()
+      }).subscribe({
+          next: (res) => {
+              this.toaster.success('Category added successfully', 'Success', {
+                  timeOut: 1500,
+                  positionClass: 'toast-top-right',
+                  progressBar: true,
+                  closeButton: true
+              });
+              this.pageCache = {};
+              this.loadSellers();
+              
+              // Clean up modal
+              const modal = document.getElementById('addCategoryModal');
+              if (modal) {
+                (modal as any).style.display = 'none';
+                document.body.classList.remove('modal-open');
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                  backdrop.remove();
+                }
+              }
+          },
+          error: (error) => {
+              this.toaster.error(error.error.message, 'Failed', {
+                  timeOut: 1500,
+                  positionClass: 'toast-top-right',
+                  progressBar: true,
+                  closeButton: true
+              });
+          }
+      });
+      this.subscriptions.push(sub);
     }
   
     ngOnDestroy(): void {

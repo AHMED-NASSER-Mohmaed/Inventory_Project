@@ -1,6 +1,6 @@
-export interface category {
+export interface Brand {
     _id: string;
-    Cname: string;
+    Bname: string;
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
