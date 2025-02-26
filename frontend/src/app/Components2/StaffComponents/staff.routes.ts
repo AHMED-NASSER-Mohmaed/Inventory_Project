@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { ClerkDashboardComponent } from './cahsier-dashboard/clerk-dashboard.component';
+import { ClerkDashboardComponent } from './clerk-dashboard/clerk-dashboard.component';
 import { PendingTableComponent } from './pending-table/pending-table.component';
 import { CancelledTableComponent } from './cancelled-table/cancelled-table.component';
 import { ProcessingTableComponent } from './processing-table/processing-table.component';

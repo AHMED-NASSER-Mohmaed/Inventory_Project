@@ -102,7 +102,7 @@ export class CompletedTableComponent {
         this.tokenData = decodeToken(token);
       }
     
-      this.status = 'processing'; 
+      this.status = 'completed'; 
       this.fetchOrders(this.status); 
     }
     
@@ -248,10 +248,7 @@ export class CompletedTableComponent {
         };
     
         const sub = this.cashierservice
-          .updateSuborder(this.selectedSuborder.orderId, {
-            newStatus: newStatus, 
-            fulfilledQuantities: fulfilledQuantities, 
-          })
+          .updateSuborder(this.selectedSuborder.orderId)
           .subscribe({
             next: (res: any) => {
               if (res.message === 'success') {

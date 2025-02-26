@@ -35,7 +35,7 @@ import { SpringCollectionComponent } from './Components2/HomePage/spring-collect
 import { SuperadminprofileComponent } from './Components/superadminprofile/superadminprofile.component';
 import { auth6Guard } from './_guards/auth6.guard';
 import { SAprofiledetailsComponent } from './Components/saprofiledetails/saprofiledetails.component';
-import { ClerkDashboardComponent } from './Components2/StaffComponents/cahsier-dashboard/clerk-dashboard.component';
+import { ClerkDashboardComponent } from './Components2/StaffComponents/clerk-dashboard/clerk-dashboard.component';
 import { Routes } from '@angular/router';
 import { PendingTableComponent } from './Components2/StaffComponents/pending-table/pending-table.component';
 import { CashierDashboardComponent } from './Components2/StaffComponents/Cashier/cashier-dashboard/cashier-dashboard.component';

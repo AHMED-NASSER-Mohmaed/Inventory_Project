@@ -248,10 +248,7 @@ export class DeliveredTableComponent {
         };
     
         const sub = this.cashierservice
-          .updateSuborder(this.selectedSuborder.orderId, {
-            newStatus: newStatus, 
-            fulfilledQuantities: fulfilledQuantities, 
-          })
+          .updateSuborder(this.selectedSuborder.orderId)
           .subscribe({
             next: (res: any) => {
               if (res.message === 'success') {

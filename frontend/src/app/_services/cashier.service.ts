@@ -16,18 +16,19 @@ export class CashierService {
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
+
   getAllOrders(status: any){
 
     return this.http.get(`${this.baseUrl}/AllSubOrdersForCashier`, { params: { status } ,  headers: this.getHeaders() });
 
   }
   
-  updateSuborder(orderId: string, updateData: { newStatus: string; fulfilledQuantities: object }): Observable<any> {
-    const url = `${this.baseUrl}/processSuborder/${orderId}`;
+  updateSuborder(orderId: string ): Observable<any> {
+    const url = `${this.baseUrl}/finilizeSuborder/${orderId}`;
     console.log('Request URL:', url); 
     const headers = this.getHeaders(); 
   
-    return this.http.patch(url, updateData, { headers });
+    return this.http.patch(url, { headers });
   }
 }
 
