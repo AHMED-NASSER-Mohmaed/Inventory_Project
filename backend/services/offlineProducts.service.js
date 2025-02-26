@@ -62,7 +62,7 @@ module.exports.OfflineProductsService = {
 
     parseFilters: (filters) => {
 
-        let fielters=["code" , "brand", "category" ,"name"]
+        let fielters=["code" , "brand", "category" ,"name" , "isActive"]
 
         return Object.fromEntries(
 
