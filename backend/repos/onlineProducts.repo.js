@@ -1,6 +1,8 @@
 const { APP_CONFIG } = require("../config/app.config");
 const OnlineProducts = require("../models/onlineProducts.model");
 
+const productRepo=require("../repos/product.repo");
+
 const OnlineProductsRepository = {
 
   isProductExist: async (productId) => {
@@ -46,14 +48,18 @@ const OnlineProductsRepository = {
     }
   },
 
+
+  //fix that 
   //isActive + deactive products
   getOffProducts: async (filters, sort, page, limit) => {
 
     try {
 
+
+
       const [result, total] = await Promise.all([
 
-        await OfflineProducts.aggregate([
+        await OnlineProducts.aggregate([
           {
             $lookup: {
               from: "products",
@@ -74,7 +80,7 @@ const OnlineProductsRepository = {
           { $limit: limit },
           { $project: { __v: 0, kind: 0, "product.satus": 0 } }
         ]),
-        await OfflineProducts.aggregate([
+        await OnlineProducts.aggregate([
           {
             $lookup: {
               from: "products",
@@ -126,6 +132,8 @@ const OnlineProductsRepository = {
     }
   },
 
+
+  
 
 }
 
