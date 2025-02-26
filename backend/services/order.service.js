@@ -13,7 +13,7 @@ class OrderService {
         if (!order) throw new AppError("Order not found");
     
         // assign clerk if it's the first time updating the order
-        if (!order.clerk && clerkId && order.seller==APP_CONFIG.COMPANY_ID) {
+        if (!order.clerk && clerkId && order.seller._id.equals(APP_CONFIG.COMPANY_ID)) {
             order.clerk = clerkId;
         }
 
