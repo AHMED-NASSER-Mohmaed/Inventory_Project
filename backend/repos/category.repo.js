@@ -7,7 +7,7 @@ module.exports.categoryRepo = {
     // done
     addCategory: async (data) => {
         try {
-          console.log("from repooo");
+          
             return await Category.create(data);
         } catch (error) {
             throw error;

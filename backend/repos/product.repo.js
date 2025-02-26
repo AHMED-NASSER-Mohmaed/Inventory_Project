@@ -1,35 +1,49 @@
 const Product = require('../models/product.model');
 const { inboxResult } = require("../utils/apiFeatures")
 
-module.exports.productRepo={
+module.exports.productRepo = {
 
 
-  addProduct:async(data)=>{
-    try{
-       
+  addProduct: async (data) => {
+    try {
+
       return await Product.create(data);
-      
-    }catch(error){
+
+    } catch (error) {
 
       throw error;
     }
   },
 
-  getProductById:async(id)=>{
-    try{
-      return await  Product.findById(id);
-    }catch(error){
+  getProductById: async (id) => {
+    try {
+      return await Product.findById(id);
+    } catch (error) {
       throw new error;
     }
   },
 
-  updateProductQty:async(id,qty)=>{
-    try{
-      return await Product.updateOne({_id:id},{$set:qty})
-    }catch(error){
+  updateProductQty: async (id, qty) => {
+    try {
+      return await Product.updateOne({ _id: id }, { $set: qty })
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  //provide acual product id and array of deleted images ids
+  deleteImagesFromProduct: async (productId, deleteImageIds) => {
+    try {
+      return await Product.findByIdAndUpdate(
+        productId,
+        { $pull: { images: { fileId: { $in: deleteImageIds } } } }, // we can use only partial fields for removing
+        { new: true }
+      );
+    } catch (error) {
       throw error;
     }
   }
+
 
 
 
