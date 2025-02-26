@@ -4,7 +4,8 @@ const supplierRepo=require("../repos/supplier.repo");
 const AppError = require('../utils/appError');
 
 const {categoryRepo} = require("../repos/category.repo")
-const {brandRepo} = require("../repos/brand.repo")
+const {brandRepo} = require("../repos/brand.repo");
+
 
 module.exports.productService={
 
@@ -60,10 +61,9 @@ module.exports.productService={
 
     },
 
+ 
     isProductExist:async(productId)=>{
-
         try{
-
             let product= await productRepo.getProductById(productId);
             
             if(!product)
@@ -81,15 +81,17 @@ module.exports.productService={
 
     },
 
+    //you have to cheack firstly if product exist or not , i donot grantee any thing for u if this fucntion throws an exception 
+    deleteImagesFromProduct:async(productId, deleteImageIds)=>{
+        try{
+            return await productRepo.deleteImagesFromProduct(productId,deleteImageIds);
+        }catch(error){
+            throw error;
+        }
+    }
+
     
 }
-
-
-
-
-
-
-
 
 
 

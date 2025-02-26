@@ -9,8 +9,8 @@ const genaricFilters = {
     searchFiledName: ["Bname"],
     searchValueAcoordingNaN: [true],
 
-    allowedFilterFileds: [['isActive','undefined']],
-    allowedFiltervalues: [['true',"false",'undefined']],
+    allowedFilterFileds: [['isActive', 'undefined']],
+    allowedFiltervalues: [['true', "false", 'undefined']],
 
     allowedSort: ['createdAt'],
 }
@@ -28,7 +28,7 @@ const brandOp = {
         let result = await brandService.updateBrand(req.params.id, req.body);
 
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
-        
+
     },
 
     deleteBrand: async (req, res, next) => {
@@ -73,18 +73,22 @@ router
     .get("/brands",
         prot_rest(APP_CONFIG.SUPPERADMIN),
         validateSortPaginationParams(genaricFilters.allowedSort),
-        validatorFilterParams(genaricFilters.allowedFilterFileds,genaricFilters.allowedFiltervalues),
-        validateSearchParams(genaricFilters.searchFiledName,genaricFilters.searchValueAcoordingNaN),
+        validatorFilterParams(genaricFilters.allowedFilterFileds, genaricFilters.allowedFiltervalues),
+        validateSearchParams(genaricFilters.searchFiledName, genaricFilters.searchValueAcoordingNaN),
         catchAsync(brandOp.getBrands)
     )
     .get("/brands/count",
         prot_rest(APP_CONFIG.SUPPERADMIN),
-        validatorFilterParams(genaricFilters.allowedFilterFileds,genaricFilters.allowedFiltervalues),
+        validatorFilterParams(genaricFilters.allowedFilterFileds, genaricFilters.allowedFiltervalues),
         catchAsync(brandOp.getCount)
     )
     .patch("/brands/:id",
         prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(brandOp.updateBrand)
+    )
+    .patch("/brands/active/:id",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        catchAsync(brandOp.activeBrand)
     )
 
 
