@@ -1,3 +1,4 @@
+const { constant } = require("lodash");
 const Contact = require("../models/contact.model");
 const ContactRepository = require("../repos/contact.repo");
 const AppError = require("../utils/appError");
@@ -14,6 +15,7 @@ class ContactService {
     return contact;
   }
 
+  //pagination
   async getContacts(validatedParams) {
 
     try {
@@ -26,6 +28,16 @@ class ContactService {
     }
 
   }
+
+  //get contact count  
+  async getCount(filters){
+    try{
+      return await ContactRepository.getCount(filters);
+    }catch(error){
+      throw error;
+    }
+  }
+
 
   async getContactById(id) {
     const contact = await ContactRepository.getContactById(id);

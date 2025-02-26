@@ -1,20 +1,24 @@
+
 const OfflineProducts = require("../models/offlineSchema.model");
-const {inboxResult}=require("../utils/apiFeatures");
+const { inboxResult } = require("../utils/apiFeatures");
+
+const Product = require("../models/product.model");
 module.exports.OfflineProductsRepo = {
 
     addOfflineProduct: async (data) => {
         try {
             return await OfflineProducts.create(data);
-
         } catch (error) {
             throw error;
         }
     },
 
-    getOffProductById: async (id) => {
+    getOffProductByIdAndBrandId: async (id,bracnhId) => {
         try {
-            return await OfflineProducts.findById(id);
+            
+            return await OfflineProducts.findOne({_id:id,branch:bracnhId}).populate("branch");
         } catch (error) {
+            console.log("helooo");
             throw error;
         }
 
@@ -27,50 +31,103 @@ module.exports.OfflineProductsRepo = {
             throw error;
         }
     },
-
-
     //isActive + deactive products
-
-    getOffProducts: async (OffFilters, ProductFilters, sort, page, limit) => {
+    getOffProducts: async (filters, sort, page, limit) => {
 
         try {
-            //OffFilters related branch
-            //ProductFilters :: represent isActive 
 
-            const [results, total] = await Promise.all([
-
-                await OfflineProducts.find(OffFilters)
-                    .populate({
-                        path: "product",
-                        match: { ProductFilters, status: "approved" }
-                    })
-                    .sort(sort)
-                    .skip((page - 1) * limit) // (starting index = page-1)*limit
-                    .limit(limit)
-                    .select("-__v -kind")
-                    .lean(),
-
+            const [result, total] = await Promise.all([
 
                 await OfflineProducts.aggregate([
                     {
                         $lookup: {
-                            from: "OfflineProducts",
+                            from: "products",
                             localField: "product",
                             foreignField: "_id",
                             as: "product"
                         }
                     },
-                    { $match: { "product.isActive": ProductFilters.isActive , "product.status":"approved"  } },
-                    { $count: "total" }
-                ])
-                  
+                    { $unwind: "$product" },
+                    {
+                        $match: {
+                            ...filters
+                        }
+
+                    },
+                    { $sort: sort },
+                    { $skip: (page - 1) * limit },
+                    { $limit: limit },
+                    { $project: { __v: 0, kind: 0, "product.isActive": 0, "product.satus": 0 } }
+                ]),
+                await OfflineProducts.aggregate([
+                    {
+                        $lookup: {
+                            from: "products",
+                            localField: "product",
+                            foreignField: "_id",
+                            as: "product"
+                        }
+                    },
+                    { $unwind: "$product" },
+                    {
+                        $match: {
+                            ...filters
+                        }
+                    },
+                    {
+                        $count: "total"
+                    }])
+
+
             ])
-            return inboxResult(results, total, page, limit);
+            return inboxResult(result, total[0]?.total || 0, page, limit);
         } catch (error) {
             throw error;
         }
 
+    },
+
+    getCount: async (filters) => {
+        try {
+            return await OfflineProducts.aggregate([
+                {
+                    $lookup: {
+                        from: "products",
+                        localField: "product",
+                        foreignField: "_id",
+                        as: "product"
+                    }
+                },
+                { $unwind: "$product" },
+                {
+                    $match: filters
+                },
+                {
+                    $count: "total"
+                }])
+
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    //for exporting a new product
+    upsertOffProduct: async (productId, branchId, quantity) => {
+        try {
+            return await OfflineProducts.findOneAndUpdate(
+                { product: productId, branch: branchId }, // Search condition
+                {
+                    $inc: { stock: quantity }, // Increment stock if document exists
+                    $setOnInsert: { product: productId, branch: branchId } // Ensure insert does not conflict
+                },
+                { upsert: true, new: true }
+            );
+        } catch (error) {
+            throw error;
+        }
     }
+    
+
 
 
 }

@@ -1,3 +1,4 @@
+const { values } = require("lodash");
 const { APP_CONFIG } = require("../config/app.config");
 
 const AppError = require("../utils/appError");
@@ -29,7 +30,7 @@ const validateSortPaginationParams = (allowedSort) => {
 
 
       } catch (e) {
-        throw new AppError('Invalid sort parameter format. Use "field:order"', APP_CONFIG.HTTP_BAD_REQUEST)
+        throw new AppError('Invalid sort parameter format. Use "field:type"', APP_CONFIG.HTTP_BAD_REQUEST)
       }
     }
 
@@ -65,7 +66,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
         filterObjects.forEach((element) => {
           let [field, value] = element.split(':');
 
-          console.log(field, value, "   ");
+          // console.log(field, value, "   ");
 
           // Find the index of the searchFiledName array that contains the field
           const filterIndex = searchFiledName.findIndex((element) => element.trim() === field.trim());
@@ -84,8 +85,11 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
 
           
           
-          if(field!=='branch')
+          if(field=='branch' ||field=="governate")
+            value=Number(value)
+          else
             value = new RegExp(`^${value}`, 'i');
+             
 
           // value= new RegExp(`^${value}|${value}$`, 'i');
 
@@ -122,7 +126,7 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
 
     let filters = {}
 
-    // console.log("from filter:", req.query.filters);
+   
 
     if (req.query.filters) {
       try {
@@ -131,9 +135,10 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
         req.query.filters = Array.from(filterObjects);
 
         let deletedOne = 0;
+        // console.log("from filter:", req.query.filters);
 
         filterObjects.forEach((element) => {
-          const [field, value] = element.split(":");
+          let [field, value] = element.split(":");
 
           // Find the index of the allowedFilters array that contains the field
           const filterIndex = allowedFilters.findIndex(allowedFilter => allowedFilter.includes(field));
@@ -144,10 +149,16 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
           }
 
           if (!allowedFilterValues[filterIndex].includes(value)) {
-          
             throw new AppError("Invalid filter fields", APP_CONFIG.HTTP_BAD_REQUEST)
           }
+          // console.log(value);
 
+
+          
+          if(value==='true')
+            value=true;
+          else if(value==='false')
+            value=false;
 
           filters[field] = value; // insert filter objects
           req.query.filters.splice(deletedOne, 1);
@@ -176,7 +187,7 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
     //   });
 
 
-    // console.log("from filter..", req.validatedParams);
+    console.log("from filter.cccccc.", req.validatedParams);
 
     next();
   }

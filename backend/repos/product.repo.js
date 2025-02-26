@@ -6,13 +6,12 @@ module.exports.productRepo={
 
   addProduct:async(data)=>{
     try{
-        
+       
       return await Product.create(data);
       
     }catch(error){
 
       throw error;
-
     }
   },
 
@@ -24,7 +23,13 @@ module.exports.productRepo={
     }
   },
 
-   
+  updateProductQty:async(id,qty)=>{
+    try{
+      return await Product.updateOne({_id:id},{$set:qty})
+    }catch(error){
+      throw error;
+    }
+  }
 
 
 

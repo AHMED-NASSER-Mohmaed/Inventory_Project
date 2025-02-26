@@ -24,7 +24,7 @@ class ContactRepository {
           .select("-__v")
           .lean(),
 
-        await Contact.countDocuments(filters).collation({ locale: 'en', strength: 1 }).exec()
+        await Contact.countDocuments(filters).exec()
       ]);
 
       // console.log("from repo" , results);
@@ -38,6 +38,14 @@ class ContactRepository {
 
 
 
+  }
+
+  async getCount(filters) {
+    try {
+      return await Contact.countDocuments(filters).exec();
+    } catch (err) {
+      throw err;
+    }
   }
 
   async getContactById(id) {

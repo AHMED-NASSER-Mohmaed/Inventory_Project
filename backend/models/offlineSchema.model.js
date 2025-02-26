@@ -13,6 +13,7 @@ const OfflineProductsSchema = new mongoose.Schema({
     
 }, { timestamps: true });
 
+OfflineProductsSchema.index({ branch: 1, product: 1 }, { unique: true });
 
 // isActive:{  type:Boolean , default:true, }
 

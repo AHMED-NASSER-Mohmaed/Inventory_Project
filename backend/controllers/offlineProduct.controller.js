@@ -17,9 +17,10 @@ const offlineProductOp = {
     allowedFilters: [["isActive", "undefined"]],
     allowedFilterValues: [["true", "false", "undefined"]],
 
-    allowedSort: ["createdAt"],
-    searchFiledName: ["code", "brand","category",],
-    searchValueAcoordingNaN: [false, false, false],
+    allowedSort: ["createdAt","price"],
+    searchFiledName: ["code", "brand","category","branch","name"],
+    searchValueAcoordingNaN: [false, false, false,false,true],
+
 
     addProduct: async (req, res, next) => {
 
@@ -35,14 +36,24 @@ const offlineProductOp = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
-    getProduct: async (req, res, next) => {
-
+    getProducts: async (req, res, next) => {
         let result = await OfflineProductsService.getOfflineProducts(req.validatedParams);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
 
-    }
+    getCount:async (req,res,next)=>{
+        let result = await OfflineProductsService.getOffProCount(req.validatedParams.filters);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+    },
 
+    exportTo:async (req,res,next)=>{
 
+        console.log(req.query);
+
+        const result = await OfflineProductsService.exportTo(req.query.id,+req.query.src,+req.query.dest,+req.query.qty);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+
+    },
 
 }
 
@@ -59,11 +70,23 @@ router
         catchAsync(offlineProductOp.updateQty)
     )
     .get("/OffProduct",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
         validateSortPaginationParams(offlineProductOp.allowedSort),
         validatorFilterParams(offlineProductOp.allowedFilters,offlineProductOp.allowedFilterValues),
         validateSearchParams(offlineProductOp.searchFiledName,offlineProductOp.searchValueAcoordingNaN),
-        offlineProductOp.getProduct
+        catchAsync(offlineProductOp.getProducts)
     )
+    .get("/OffProduct/count",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        validatorFilterParams(offlineProductOp.allowedFilters,offlineProductOp.allowedFilterValues),
+        validateSearchParams(offlineProductOp.searchFiledName,offlineProductOp.searchValueAcoordingNaN),
+        catchAsync(offlineProductOp.getCount)
+    )
+    .patch("/OffProduct/exportTo",
+        prot_rest(APP_CONFIG.SUPPERADMIN),
+        catchAsync(offlineProductOp.exportTo)
+    )
+
 
 
 module.exports = router;
