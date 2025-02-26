@@ -37,9 +37,18 @@ import { auth6Guard } from './_guards/auth6.guard';
 import { SAprofiledetailsComponent } from './Components/saprofiledetails/saprofiledetails.component';
 import { ClerkDashboardComponent } from './Components2/StaffComponents/clerk-dashboard/clerk-dashboard.component';
 import { Routes } from '@angular/router';
+import { PendingTableComponent } from './Components2/StaffComponents/pending-table/pending-table.component';
 
 
 export const routes: Routes = [
+
+//     { 
+//          path:'clerk-dashboard/pending-orders',
+//          component: PendingTableComponent ,
+//      }
+
+//   ,
+
 
     {
         path: 'LandingPage',
@@ -105,6 +114,8 @@ export const routes: Routes = [
    component:ClerkDashboardComponent,
  },
 
+
+
  
     {
         // default route
@@ -132,6 +143,7 @@ export const routes: Routes = [
     },
 
     {
+
         path:'clerk-dashboard',
         component: ClerkDashboardComponent,
         title: 'Clerk Dashboard',
@@ -139,8 +151,14 @@ export const routes: Routes = [
             {
                 path:'',
                 loadChildren: () => import('./Components2/StaffComponents/staff.routes').then(s => s.dashRoutes),
+            },
+
+            {
+                path:'',
+                loadChildren: () => import('./Components2/StaffComponents/staff.routes').then(s => s.dashRoutes),
             }
         ]
+        
     },
 
 

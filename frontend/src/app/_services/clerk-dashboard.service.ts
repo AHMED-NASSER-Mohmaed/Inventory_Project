@@ -10,6 +10,7 @@ import { Observable } from 'rxjs';
 
 export class ClerkDashboardService {
 
+  
     constructor(public http: HttpClient) { }
     private baseUrl = 'http://localhost:3000';
 
@@ -20,10 +21,33 @@ export class ClerkDashboardService {
     }
 
     getAllOrders(status: any){
-      return this.http.get(`${this.baseUrl}/AllSubOrdersForClerk`, { params: { newStatus } ,  headers: this.getHeaders() });
+
+      return this.http.get(`${this.baseUrl}/AllSubOrdersForClerk`, { params: { status } ,  headers: this.getHeaders() });
 
     }
+    
+    updateSuborder(orderId: string, updateData: { orderStatus: string; productFulfilledQuantity: number }): Observable<any> {
+      const url = `${this.baseUrl}/suborder/${orderId}`;
+      console.log('Request URL:', url); 
+      const headers = this.getHeaders(); 
+    
+      return this.http.put(url, updateData, { headers });
+    }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
   
     // getPaginatedCustomersByStatus(page: number, limit: number, filters?: string, sort?: string): Observable<any> {

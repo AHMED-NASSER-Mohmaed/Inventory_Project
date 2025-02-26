@@ -44,6 +44,12 @@ dropdownStates: { [key: string]: boolean } = {};
   }
   
   ngOnInit(): void {
+
+
+    // this.loadPendingOrders();
+
+
+
     const token = localStorage.getItem('token');
     if (token) {
       this.tokenData = decodeToken(token);
@@ -125,6 +131,12 @@ dropdownStates: { [key: string]: boolean } = {};
     }
     
   }
+
+
+  // loadPendingOrders() {
+  //   // Logic to fetch the pending orders or ensure the pending orders component is loaded
+  //   this.router.navigate(['/clerk-dashboard/pending-orders']); // Adjust the route as per your app's routing
+  // }
 
   ngOnDestroy(): void {
     // if(this.sub){
