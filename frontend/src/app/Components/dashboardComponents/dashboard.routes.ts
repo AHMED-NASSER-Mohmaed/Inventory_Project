@@ -9,6 +9,8 @@ import { CashiersComponent } from './cashiers/cashiers.component';
 import { ClerksComponent } from './clerks/clerks.component';
 import { FeedbacksComponent } from './feedbacks/feedbacks.component';
 import { BranchesComponent } from './branches/branches.component';
+import { BrandsComponent } from './brands/brands.component';
+import { OrdersComponent } from './orders/orders.component';
 
 export const dashRoutes: Routes = [
   {
@@ -65,6 +67,16 @@ export const dashRoutes: Routes = [
         path: 'branches',
         component: BranchesComponent,
         title: 'Branches'
+      },
+      {
+        path:'brands',
+        component: BrandsComponent,
+        title: 'Brands'
+      },
+      {
+        path: 'orders',
+        component: OrdersComponent,
+        title: 'Orders'
       }
     ]
   }

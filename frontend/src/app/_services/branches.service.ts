@@ -64,11 +64,11 @@ export class BranchesService {
   }
 
   getActiveCustomersCount(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/clerkCount?filters=isActive:true`, { headers: this.getHeaders() });
+    return this.http.get(`${this.baseUrl}/branches/count?filters=isActive:true`, { headers: this.getHeaders() });
   }
 
   getInActiveCustomersCount(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/clerkCount?filters=isActive:false`, { headers: this.getHeaders() });
+    return this.http.get(`${this.baseUrl}/branches/count?filters=isActive:false`, { headers: this.getHeaders() });
   }
 
   changeImage(id: string, file: File): Observable<any> {

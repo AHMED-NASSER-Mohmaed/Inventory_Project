@@ -114,6 +114,7 @@ export class BranchesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadBranches();
+    this.loadCounts();
     const token = localStorage.getItem('token');
     if (token) {
       this.tokenData = decodeToken(token);
@@ -152,6 +153,27 @@ export class BranchesComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.toaster.error(error.error.message, 'Error');
         this.isLoading = false;
+      }
+    });
+  }
+
+  loadCounts(): void {
+    this.branchService.getActiveCustomersCount().subscribe({
+      next: (res) => {
+        this.activeCustomersCount = res.data;
+        console.log('Active customers count:', this.activeCustomersCount);
+      },
+      error: (error) => {
+        this.toaster.error('Error loading active branches count');
+      }
+    });
+
+    this.branchService.getInActiveCustomersCount().subscribe({
+      next: (res) => {
+        this.inactiveCustomersCount = res.data;
+      },
+      error: (error) => {
+        this.toaster.error('Error loading inactive branches count');
       }
     });
   }
@@ -375,6 +397,7 @@ export class BranchesComponent implements OnInit, OnDestroy {
     this.currentFilter = this.currentFilter === filter ? '' : filter;
     this.currentPage = 1; 
     this.loadBranches();
+    this.loadCounts(); // Add this line
   }
 
   triggerImageUploadSeller(): void {

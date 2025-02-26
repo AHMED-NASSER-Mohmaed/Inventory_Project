@@ -35,7 +35,7 @@
                         </div>
                       </ngx-skeleton-loader>                      
                       
-                    <i *ngIf="activeCustomersCount !== null && activeCustomersCount !== undefined" class='bx bxs-contact'></i>
+                    <i *ngIf="activeCustomersCount !== null && activeCustomersCount !== undefined" class='bx bxs-toggle-right'></i>
                     <span *ngIf="activeCustomersCount !== null && activeCustomersCount !== undefined" class="text">
                         <h3>{{activeCustomersCount}}</h3>
                         <p>Active Branches</p>
@@ -54,7 +54,7 @@
                         </div>
                       </ngx-skeleton-loader>
 
-                    <i  *ngIf="inactiveCustomersCount !== null && inactiveCustomersCount !== undefined" class='bx bxs-archive-in' id="lol"></i>
+                    <i  *ngIf="inactiveCustomersCount !== null && inactiveCustomersCount !== undefined" class='bx bx-toggle-left' id="lol"></i>
                     <span *ngIf="inactiveCustomersCount !== null && inactiveCustomersCount !== undefined" class="text">
                         <h3>{{inactiveCustomersCount}}</h3>
                         <p>Inactive Branches</p>
