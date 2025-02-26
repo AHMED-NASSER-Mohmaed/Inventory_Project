@@ -3,7 +3,6 @@ const orderRepository = require("../repos/order.repo");
 const orderContainerRepository = require("../repos/orderContainer.repo");
 const onlineProductRepo = require("../repos/tempOnlineProduct.repo");
 const AppError = require("../utils/appError");
-const { APP_CONFIG } = require("../config/app.config");
 class OrderService {
 // need to check on the user comming to update the order if he is the clerk or the cashier or the external seller
 // cahier is the one who takes the rate of the order from the external seller by confirming the order by status completed

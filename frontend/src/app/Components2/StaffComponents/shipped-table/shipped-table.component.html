@@ -178,7 +178,7 @@
             <p><strong>Available Stock:</strong> {{ selectedSuborder.products[0].productStock }}</p>
 
             <!-- Counter Input for Fulfilled Quantity -->
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label for="fulfilledQuantity"><strong>Fulfilled Quantity:</strong></label>
               <div class="input-group">
                 <button
@@ -206,17 +206,16 @@
                   <i class='bx bx-plus'></i>
                 </button>
               </div>
-              <!-- Validation Error Message -->
               <div *ngIf="validationError" class="text-danger mt-2">
                 {{ validationError }}
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
 
       <div class="modal-footer">
-        <!-- <button
+        <button
           type="button"
           class="btn btn-primary"
           id="updateBtn"
@@ -225,7 +224,7 @@
         >
           <i class='bx' [ngClass]="{'bx-pen': !editing, 'bx-check': editing}"></i>
           {{ editing ? 'Save' : 'Edit' }}
-        </button> -->
+        </button>
 
         <button type="button" class="btn btn-secondary" data-dismiss="modal">
           <i class='bx bx-x'></i> Close
