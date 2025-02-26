@@ -181,7 +181,7 @@ class OrderContainerController {
     let cashierId = req.user.id; // you have to check on the online branch here which would be a static value in the app config
     // if the cashier doesn't match that branch id then throw an error
 
-    let status = req.params.status;
+    let status = req.query.status;
 
     const subOrders = await SubOrderService.getAllOnlineOrdersForCashierBasedOnStatus(cashierId, status);
     res.status(APP_CONFIG.HTTP_OK).json({

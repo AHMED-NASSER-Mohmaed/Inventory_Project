@@ -146,37 +146,37 @@ export class ShippedTableComponent {
   
   
   
-    incrementQuantity(): void {
-      if (this.selectedSuborder?.products?.length > 0) {
-        const product = this.selectedSuborder.products[0];
-        if (product.productFulfilledQuantity < product.productStock) {
-          product.productFulfilledQuantity++;
-          this.validateFulfilledQuantity();
-        }
-      }
-    }
+    // incrementQuantity(): void {
+    //   if (this.selectedSuborder?.products?.length > 0) {
+    //     const product = this.selectedSuborder.products[0];
+    //     if (product.productFulfilledQuantity < product.productStock) {
+    //       product.productFulfilledQuantity++;
+    //       this.validateFulfilledQuantity();
+    //     }
+    //   }
+    // }
   
-    decrementQuantity(): void {
-      if (this.selectedSuborder?.products?.length > 0) {
-        const product = this.selectedSuborder.products[0];
-        if (product.productFulfilledQuantity > 0) {
-          product.productFulfilledQuantity--;
-          this.validateFulfilledQuantity();
-        }
-      }
-    }
+    // decrementQuantity(): void {
+    //   if (this.selectedSuborder?.products?.length > 0) {
+    //     const product = this.selectedSuborder.products[0];
+    //     if (product.productFulfilledQuantity > 0) {
+    //       product.productFulfilledQuantity--;
+    //       this.validateFulfilledQuantity();
+    //     }
+    //   }
+    // }
   
-    validateFulfilledQuantity(): boolean {
-      if (this.selectedSuborder?.products?.length > 0) {
-        const product = this.selectedSuborder.products[0];
-        if (product.productFulfilledQuantity > product.productStock) {
-          this.validationError = `Fulfilled quantity cannot exceed available stock (${product.productStock}).`;
-          return false;
-        }
-      }
-      this.validationError = null; 
-      return true;
-    }
+    // validateFulfilledQuantity(): boolean {
+    //   if (this.selectedSuborder?.products?.length > 0) {
+    //     const product = this.selectedSuborder.products[0];
+    //     if (product.productFulfilledQuantity > product.productStock) {
+    //       this.validationError = `Fulfilled quantity cannot exceed available stock (${product.productStock}).`;
+    //       return false;
+    //     }
+    //   }
+    //   this.validationError = null; 
+    //   return true;
+    // }
   
   
     hideSingleSelectionIndicator = signal(true);
@@ -218,10 +218,10 @@ export class ShippedTableComponent {
           return;
         }
     
-        if (!this.validateFulfilledQuantity()) {
-          this.toaster.error('Fulfilled quantity cannot exceed available stock.', 'Validation Error');
-          return; 
-        }
+        // if (!this.validateFulfilledQuantity()) {
+        //   this.toaster.error('Fulfilled quantity cannot exceed available stock.', 'Validation Error');
+        //   return; 
+        // }
     
         if (!this.selectedSuborder.products?.length) {
           console.error('Products array is missing or empty.');

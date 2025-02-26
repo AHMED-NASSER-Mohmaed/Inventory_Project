@@ -16,29 +16,7 @@ export const dashRoutes: Routes = [
         component:PendingTableComponent,
     }
     ,
-    {
-        path: 'pending-orders',
-        title: 'Pending orders',
-        component:PendingTableComponent,
-    },
-    
-    {
-        path: 'processing-orders',
-        title: 'processing orders',
-        component:ProcessingTableComponent,
-    }
-    ,
-
-    {
-        path: 'cancelled-orders',
-        title: 'cancelled orders',
-        component: CancelledTableComponent,
-    },
-    {
-        path: 'shipped-orders',
-        title: 'Shipped orders',
-        component: ShippedTableComponent,
-    },
+  
     {
         path: 'delivered-orders',
         title: 'Delivered orders',

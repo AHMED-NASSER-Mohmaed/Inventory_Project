@@ -11,11 +11,11 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { ToastrService } from 'ngx-toastr';
 import { User } from '../../../../_models/user';
 import { decodeToken } from '../../../../_helper/jwt-helper';
-
 import { ClerkDashboardService } from '../../../../_services/clerk-dashboard.service';
+import { CashierService } from '../../../../_services/cashier.service';
 
 @Component({
-  selector: 'app-cancelled-table',
+  selector: 'app-delivered-table',
   imports: [
     CommonModule,
     FormsModule,
@@ -24,11 +24,10 @@ import { ClerkDashboardService } from '../../../../_services/clerk-dashboard.ser
     MatMenuModule,
     MatProgressSpinnerModule,
     NgxSkeletonLoaderModule,
-  ], 
-    templateUrl: './cancelled-table.component.html',
-  styleUrl: './cancelled-table.component.css'
+  ],   templateUrl: './delivered-table.component.html',
+  styleUrl: './delivered-table.component.css'
 })
-export class CancelledTableComponent {
+export class DeliveredTableComponent {
 
     validationError: string | null = null;
   
@@ -49,6 +48,7 @@ export class CancelledTableComponent {
     // }; 
   
     
+    // Filter state and pagination
     currentFilter: string = '';
     currentPage: number = 1;
     itemsPerPage: number = 10;
@@ -65,6 +65,7 @@ export class CancelledTableComponent {
   
     subscriptions: Subscription[] = [];
   
+    // New cache for storing seller pages: keys are "<filter>_<page>"
     pageCache: { [key: string]: { result: User[]; total: number } } = {};
   
     selectedFilter: string = 'orderId'; 
@@ -90,7 +91,7 @@ export class CancelledTableComponent {
       public dialog: MatDialog,
       public toaster: ToastrService,
   
-      private clerkDashboardService: ClerkDashboardService
+      private cashierservice: CashierService,
     ) {}
 
 
@@ -101,14 +102,13 @@ export class CancelledTableComponent {
         this.tokenData = decodeToken(token);
       }
     
-      this.status = 'shipped'; 
+      this.status = 'delivered'; 
       this.fetchOrders(this.status); 
     }
     
-    
     fetchOrders(status: string) {
       this.isLoading = true;
-      this.clerkDashboardService.getAllOrders(status).subscribe({
+      this.cashierservice.getAllOrders(status).subscribe({
         next: (data) => {
           console.log('Fetched orders:', data);
           this.orders = data;
@@ -125,8 +125,8 @@ export class CancelledTableComponent {
     }
     
   
-
   
+
   
     selectOrder(order: any): void {
       if (!order || !order.orderId) {
@@ -148,37 +148,37 @@ export class CancelledTableComponent {
   
   
   
-    incrementQuantity(): void {
-      if (this.selectedSuborder?.products?.length > 0) {
-        const product = this.selectedSuborder.products[0];
-        if (product.productFulfilledQuantity < product.productStock) {
-          product.productFulfilledQuantity++;
-          this.validateFulfilledQuantity();
-        }
-      }
-    }
+    // incrementQuantity(): void {
+    //   if (this.selectedSuborder?.products?.length > 0) {
+    //     const product = this.selectedSuborder.products[0];
+    //     if (product.productFulfilledQuantity < product.productStock) {
+    //       product.productFulfilledQuantity++;
+    //       this.validateFulfilledQuantity();
+    //     }
+    //   }
+    // }
   
-    decrementQuantity(): void {
-      if (this.selectedSuborder?.products?.length > 0) {
-        const product = this.selectedSuborder.products[0];
-        if (product.productFulfilledQuantity > 0) {
-          product.productFulfilledQuantity--;
-          this.validateFulfilledQuantity();
-        }
-      }
-    }
+    // decrementQuantity(): void {
+    //   if (this.selectedSuborder?.products?.length > 0) {
+    //     const product = this.selectedSuborder.products[0];
+    //     if (product.productFulfilledQuantity > 0) {
+    //       product.productFulfilledQuantity--;
+    //       this.validateFulfilledQuantity();
+    //     }
+    //   }
+    // }
   
-    validateFulfilledQuantity(): boolean {
-      if (this.selectedSuborder?.products?.length > 0) {
-        const product = this.selectedSuborder.products[0];
-        if (product.productFulfilledQuantity > product.productStock) {
-          this.validationError = `Fulfilled quantity cannot exceed available stock (${product.productStock}).`;
-          return false;
-        }
-      }
-      this.validationError = null; 
-      return true;
-    }
+    // validateFulfilledQuantity(): boolean {
+    //   if (this.selectedSuborder?.products?.length > 0) {
+    //     const product = this.selectedSuborder.products[0];
+    //     if (product.productFulfilledQuantity > product.productStock) {
+    //       this.validationError = `Fulfilled quantity cannot exceed available stock (${product.productStock}).`;
+    //       return false;
+    //     }
+    //   }
+    //   this.validationError = null;
+    //   return true;
+    // }
   
   
     hideSingleSelectionIndicator = signal(true);
@@ -215,15 +215,16 @@ export class CancelledTableComponent {
     
       if (this.editing) {
         console.log('Selected Suborder:', this.selectedSuborder); 
+    
         if (!this.selectedSuborder?.orderId) {
           console.error('Order ID is undefined or invalid.');
           return;
         }
     
-        if (!this.validateFulfilledQuantity()) {
-          this.toaster.error('Fulfilled quantity cannot exceed available stock.', 'Validation Error');
-          return; 
-        }
+        // if (!this.validateFulfilledQuantity()) {
+        //   this.toaster.error('Fulfilled quantity cannot exceed available stock.', 'Validation Error');
+        //   return; 
+        // }
     
         if (!this.selectedSuborder.products?.length) {
           console.error('Products array is missing or empty.');
@@ -242,11 +243,11 @@ export class CancelledTableComponent {
         });
     
         const workingBackup = {
-          status: newStatus,
-          fulfilledQuantities: { ...fulfilledQuantities },
+          status: newStatus, 
+          fulfilledQuantities: { ...fulfilledQuantities }, 
         };
     
-        const sub = this.clerkDashboardService
+        const sub = this.cashierservice
           .updateSuborder(this.selectedSuborder.orderId, {
             newStatus: newStatus, 
             fulfilledQuantities: fulfilledQuantities, 
@@ -282,11 +283,10 @@ export class CancelledTableComponent {
     
         this.subscriptions.push(sub); 
       } else {
-       
         this.editing = true;
       }
     
-      if (event?.target) event.target.blur(); 
+      if (event?.target) event.target.blur();
     }
   
    
@@ -318,4 +318,4 @@ export class CancelledTableComponent {
       this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
   }
-  
+

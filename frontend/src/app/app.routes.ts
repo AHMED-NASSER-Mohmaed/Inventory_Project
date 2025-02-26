@@ -174,7 +174,8 @@ export const routes: Routes = [
     children: [
         {
             path:'',
-            loadChildren:() => import('./Components2/StaffComponents/staff.routes').then(s => s.dashRoutes),
+            loadChildren:() => import('./Components2/StaffComponents/cashier.routes').then(s => s.dashRoutes),
+            
         },
 
        

@@ -85,12 +85,12 @@
                         <tbody>
                             <tr *ngIf="showNoResults" class="no-results-row">
                                 <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
-                                    No Customers Found with this {{lastSearchFilter === 'name' ? 'Name' : lastSearchFilter === 'SSN' ? 'SSN' : 'Phone Number'}}
+                                    No Orders Found with this {{lastSearchFilter === 'name' ? 'Name' : lastSearchFilter === 'SSN' ? 'SSN' : 'Phone Number'}}
                                 </td>
                             </tr>
                             <tr *ngIf="!isLoading && !showNoResults && orders.length === 0" class="no-results-row">
                                 <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
-                                    No {{ currentFilter === 'active' ? 'Active' : 'Inactive' }} Customers Yet
+                                    No {{ currentFilter === 'active' ? 'Active' : 'Inactive' }} Orders Yet
                                 </td>
                             </tr>
                             <tr *ngIf="isLoading" class="no-results-row">
@@ -151,9 +151,10 @@
       <div class="modal-body">
         <div *ngIf="selectedSuborder">
           <p><strong>Seller Name:</strong> {{ selectedSuborder.sellerName }}</p>
+          <p><strong>Order Status:</strong> {{ selectedSuborder.orderStatus }}</p>
 
           <!-- Dropdown for Order Status -->
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="orderStatus"><strong>Order Status:</strong></label>
             <select
               id="orderStatus"
@@ -167,7 +168,7 @@
               <option value="delivered">Delivered</option>
               <option value="cancelled">Cancelled</option>
             </select>
-          </div>
+          </div> -->
 
           <p><strong>Total Quantity:</strong> {{ selectedSuborder.orderTotalQty }}</p>
 
@@ -175,10 +176,12 @@
             <p><strong>Product Name:</strong> {{ selectedSuborder.products[0].productName }}</p>
             <p><strong>Product ID:</strong> {{ selectedSuborder.products[0].productId }}</p>
             <p><strong>Requested Quantity:</strong> {{ selectedSuborder.products[0].productRequestedQuantity }}</p>
+            <p><strong>Fulfilled Quantity:</strong> {{ selectedSuborder.products[0].productFulfilledQuantity }}</p>
+
             <p><strong>Available Stock:</strong> {{ selectedSuborder.products[0].productStock }}</p>
 
             <!-- Counter Input for Fulfilled Quantity -->
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label for="fulfilledQuantity"><strong>Fulfilled Quantity:</strong></label>
               <div class="input-group">
                 <button
@@ -206,16 +209,16 @@
                   <i class='bx bx-plus'></i>
                 </button>
               </div>
-              <!-- Validation Error Message -->
               <div *ngIf="validationError" class="text-danger mt-2">
                 {{ validationError }}
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
 
       <div class="modal-footer">
+        <!-- Update Button -->
         <!-- <button
           type="button"
           class="btn btn-primary"
