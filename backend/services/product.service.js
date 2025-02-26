@@ -123,9 +123,6 @@ module.exports.productService={
 
             if (result.matchedCount === 0) 
                 throw new AppError("❌ Product not found!",APP_CONFIG.HTTP_NOT_FOUND);
-            else if(result.modifiedCount===0)
-                throw new AppError("❌ Product already de-activated!",APP_CONFIG.HTTP_BAD_REQUEST);
-            
 
             return result;
 
@@ -141,10 +138,7 @@ module.exports.productService={
 
             if (result.matchedCount === 0) 
                 throw new AppError("❌ Product not found!",APP_CONFIG.HTTP_NOT_FOUND);
-            else if (result.modifiedCount===0)
-                throw new AppError("❌ Product already active!",APP_CONFIG.HTTP_BAD_REQUEST);
-                
-
+            
             return result;
 
         }catch(error){
@@ -171,11 +165,11 @@ module.exports.productService={
     rejectProduct:async(productId)=>{
         try{
 
-            let ack= await productRepo.changeStatus(productId,APP_CONFIG.REJECT_STATUS);
+            let ack= await productRepo.rejectProduct(productId,APP_CONFIG.REJECT_STATUS);
 
-            if (result.matchedCount === 0) 
+            if (ack.matchedCount === 0) 
                 throw new AppError("❌ Product not found!",APP_CONFIG.HTTP_NOT_FOUND);
-            else if (result.modifiedCount===0)
+            else if (ack.modifiedCount===0)
                 throw new AppError("❌ Product already rejected!",APP_CONFIG.HTTP_BAD_REQUEST);
 
              return ack;

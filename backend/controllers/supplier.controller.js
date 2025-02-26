@@ -65,6 +65,12 @@ class SupplierController {
             catchAsync(this.deleteSupplierById)
         );
 
+        this.router.get(
+            "/suppliers/IdsNames",
+            pro_res(APP_CONFIG.SUPPERADMIN),
+            catchAsync(this.getAllSuppliersActiveIdAndNames)
+        );
+
 
     }
 
@@ -118,8 +124,6 @@ class SupplierController {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     }
 
-
-
     //reviewed
     async activateSupplier(req, res, next) {
          
@@ -127,8 +131,6 @@ class SupplierController {
 
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     }
-
-
 
     //reviewing...
     async updateSupplier(req, res, next) {
@@ -140,6 +142,12 @@ class SupplierController {
             supplier,
         });
     }
+
+    async getAllSuppliersActiveIdAndNames(req,res,next){
+        let result=await supplierService.getAllSuppliersActiveIdAndNames();
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    }
+
 }
 
 module.exports = new SupplierController().router;

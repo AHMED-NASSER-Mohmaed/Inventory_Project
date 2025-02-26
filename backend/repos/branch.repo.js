@@ -131,7 +131,7 @@ module.exports = {
         }catch(error){
             throw error;
         }
-    }
+    },
 
 
 

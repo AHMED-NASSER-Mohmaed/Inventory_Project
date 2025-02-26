@@ -148,26 +148,26 @@ process.on("uncaughtException", (err) => {
         console.log("our seller record inserted");
       }
       /*******************************************************************************************/
-      let cat1 = {
-        "_id":APP_CONFIG.MALE_CAT_ID,
-        "Cname": "male",
-      }
-      await Category.findOneAndUpdate(
-          { Cname: cat1.Cname }, // Search condition
-          { $setOnInsert: cat1 }, // Insert only if not found
-          { upsert: true, new: true }
-      );
+      // let cat1 = {
+      //   "_id":APP_CONFIG.MALE_CAT_ID,
+      //   "Cname": "male",
+      // }
+      // await Category.findOneAndUpdate(
+      //     { Cname: cat1.Cname }, // Search condition
+      //     { $setOnInsert: cat1 }, // Insert only if not found
+      //     { upsert: true, new: true }
+      // );
       /*******************************************************************************************/
 
-      let cat2 = {
-        "_id":APP_CONFIG.FEMALE_CAT_ID,
-        "Cname": "female"
-      }
-      await Category.findOneAndUpdate(
-          { Cname: cat2.Cname }, // Search condition
-          { $setOnInsert: cat2 }, // Insert only if not found
-          { upsert: true, new: true }
-      );
+      // let cat2 = {
+      //   "_id":APP_CONFIG.FEMALE_CAT_ID,
+      //   "Cname": "female"
+      // }
+      // await Category.findOneAndUpdate(
+      //     { Cname: cat2.Cname }, // Search condition
+      //     { $setOnInsert: cat2 }, // Insert only if not found
+      //     { upsert: true, new: true }
+      // );
       
       /*******************************************************************************************/
 

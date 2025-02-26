@@ -18,8 +18,8 @@ const offlineProductOp = {
     allowedFilterValues: [["true", "false", "undefined"]],
 
     allowedSort: ["createdAt","price"],
-    searchFiledName: ["code", "brand","category","branch","name"],
-    searchValueAcoordingNaN: [true, false, false,false,true],
+    searchFiledName: [ "code" , "brand","category","branch","name"],
+    searchValueAcoordingNaN: [ true, true , true , false ,true],
 
 
     addProduct: async (req, res, next) => {
@@ -37,6 +37,7 @@ const offlineProductOp = {
     },
 
     getProducts: async (req, res, next) => {
+        console.log(req.validatedParams);
         let result = await OfflineProductsService.getOfflineProducts(req.validatedParams);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
