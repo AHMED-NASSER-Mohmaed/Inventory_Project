@@ -19,7 +19,7 @@ const offlineProductOp = {
 
     allowedSort: ["createdAt","price"],
     searchFiledName: ["code", "brand","category","branch","name"],
-    searchValueAcoordingNaN: [false, false, false,false,true],
+    searchValueAcoordingNaN: [true, false, false,false,true],
 
 
     addProduct: async (req, res, next) => {

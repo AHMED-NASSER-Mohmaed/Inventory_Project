@@ -35,7 +35,95 @@ const OnlineProductsRepository = {
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+  getSellerProduct: async (productId, newQty) => {
+    try {
+      return OnlineProducts
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  //isActive + deactive products
+  getOffProducts: async (filters, sort, page, limit) => {
+
+    try {
+
+      const [result, total] = await Promise.all([
+
+        await OfflineProducts.aggregate([
+          {
+            $lookup: {
+              from: "products",
+              localField: "product",
+              foreignField: "_id",
+              as: "product"
+            }
+          },
+          { $unwind: "$product" },
+          {
+            $match: {
+              ...filters
+            }
+
+          },
+          { $sort: sort },
+          { $skip: (page - 1) * limit },
+          { $limit: limit },
+          { $project: { __v: 0, kind: 0, "product.satus": 0 } }
+        ]),
+        await OfflineProducts.aggregate([
+          {
+            $lookup: {
+              from: "products",
+              localField: "product",
+              foreignField: "_id",
+              as: "product"
+            }
+          },
+          { $unwind: "$product" },
+          {
+            $match: {
+              ...filters
+            }
+          },
+          {
+            $count: "total"
+          }])
+
+
+      ])
+      return inboxResult(result, total[0]?.total || 0, page, limit);
+    } catch (error) {
+      throw error;
+    }
+
+  },
+
+  getCount: async (filters) => {
+    try {
+      return await OfflineProducts.aggregate([
+        {
+          $lookup: {
+            from: "products",
+            localField: "product",
+            foreignField: "_id",
+            as: "product"
+          }
+        },
+        { $unwind: "$product" },
+        {
+          $match: filters
+        },
+        {
+          $count: "total"
+        }])
+
+    } catch (error) {
+      throw error;
+    }
+  },
 
 
 }
