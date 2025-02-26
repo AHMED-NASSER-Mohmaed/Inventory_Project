@@ -57,7 +57,7 @@ module.exports.OfflineProductsRepo = {
                     { $sort: sort },
                     { $skip: (page - 1) * limit },
                     { $limit: limit },
-                    { $project: { __v: 0, kind: 0,"product.satus": 0 } }
+                    { $project: { __v: 0, kind: 0,"product.satus": 0 , "product.createdAt":0 , "product.updatedAt":0 , } }
                 ]),
                 await OfflineProducts.aggregate([
                     {
