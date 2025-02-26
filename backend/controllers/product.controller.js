@@ -1,21 +1,17 @@
-const { deleteFiles, upload } = require("./media.service");
-
-const { productService } = require("./product.service");
+const { deleteFiles, upload } = require("../services/media.service");
+const { productService } = require("../services/product.service");
 const AppError = require("../utils/appError");
+const { sendResponseToClint } = require("../utils/apiFeatures");
+const { APP_CONFIG } = require("../config/app.config");
+const pro_res  = require("../utils/authMiddlewaresOptions");
+const router = require("express").Router();
 
+const ProductController = {
 
-/**
- * Updates product images: Deletes old images, uploads new ones, and updates the product in DB.
- * @param {Request} req - Express request object
- * @param {Response} res - Express response object
- */
-
-//return the updated product
-
-const updateProductImages = async (req, res) => {
-
-    try {
-
+    //return the updated product   
+    updateProductImages: async (req, res, next) => {
+        console.log("from update");
+        
         const { productId } = req.params;
         const { deleteImageIds } = req.body; // Array of ImageKit file IDs to delete
         const newImages = req.files; // New images sent in the request
@@ -59,26 +55,12 @@ const updateProductImages = async (req, res) => {
         // Step 3: Save updated product
         await product.save();
 
-        return product;
-        
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, product);
 
-    } catch (error) {
+    },
 
-        throw error;
-    }
-};
-
-/**
- * Deletes images from ImageKit and removes them from a product.
- * @param {Request} req - Express request object
- * @param {Response} res - Express response object
- */
-
-
-//for deleting images ,,,, u have to send for me array of ides in body 
-const deleteProductImages = async (req, res) => {
-
-    try {
+    //for deleting images ,,,, u have to send for me array of ides in body 
+    deleteProductImages: async (req, res, next) => {
 
         const { productId } = req.params;
         const { deleteImageIds } = req.body; // Array of ImageKit file IDs to delete
@@ -92,18 +74,30 @@ const deleteProductImages = async (req, res) => {
 
 
         //check if product exist before deleting 
-        const product =await productService.isProductExist(productId);
+        const product = await productService.isProductExist(productId);
 
-        
+
         // Step 2: Remove deleted image references from the database
-        return  await productService.deleteImagesFromProduct(productId, deleteImageIds);
+        await productService.deleteImagesFromProduct(productId, deleteImageIds);
 
-    } catch (error) {
-        throw new AppError();
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, product);
+
     }
-};
 
-module.exports = {
-    updateProductImages,
-    deleteProductImages
-};
+}
+
+
+
+router
+    .patch("/product/Images/update",
+        pro_res(APP_CONFIG.SUPPERADMIN),
+        ProductController.updateProductImages
+    )
+
+    .delete("/product/Images/delete",
+        pro_res(APP_CONFIG.SUPPERADMIN),
+        ProductController.deleteProductImages
+    )
+
+
+module.exports=router;
