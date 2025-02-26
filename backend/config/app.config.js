@@ -98,6 +98,9 @@ module.exports.APP_CONFIG = {
   MAX_IMAGE_COUNT:4,
   /************************************************************************************************/
 
+  APPROVED_STATUS:'approved',
+  REJECT_STATUS:'rejected',
+  PENDING_STATUS:'pending',
 
   COMPANYNAME:"Watchly"
 };

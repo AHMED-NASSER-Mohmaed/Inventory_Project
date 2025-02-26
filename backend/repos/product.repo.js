@@ -1,5 +1,7 @@
+const { reject } = require('lodash');
 const Product = require('../models/product.model');
-const { inboxResult } = require("../utils/apiFeatures")
+const { APP_CONFIG } = require('../config/app.config');
+// const { inboxResult } = require("../utils/apiFeatures")
 
 module.exports.productRepo = {
 
@@ -19,7 +21,7 @@ module.exports.productRepo = {
     try {
       return await Product.findById(id);
     } catch (error) {
-      throw new error;
+      throw  error;
     }
   },
 
@@ -42,7 +44,53 @@ module.exports.productRepo = {
     } catch (error) {
       throw error;
     }
+  },
+
+  updateProduct:async(productId,data)=>{
+    try{
+      return await Product.updateOne({_id:id},{$set:data});
+    }catch(error){
+      throw error;
+    }
+  },
+
+  deleteProduct:async(productId)=>{
+    try{
+      return await  Product.updateOne({_id:productId},{$set:{isActive:true}});
+    }catch(error){
+      throw error;
+    }
+  },
+  activeProduct:async(productId)=>{
+    try{
+      return await Product.updateOne({_id:productId},{$set:{isActive:false}});
+    }catch(error){
+      throw error;
+    }
+  },
+
+  rejectProduct:async(productId)=>{
+    try{
+
+      return await Product.updateOne({_id:productId,status:APP_CONFIG.PENDING_STATUS},
+          {$set:{status:APP_CONFIG.REJECT_STATUS}});
+
+    }catch(error){
+      throw error;
+    }
+  },
+
+  approveProduct:async(productId)=>{
+    try{
+
+      return await Product.updateOne({_id:productId,status:APP_CONFIG.PENDING_STATUS},
+          {$set:{status:APP_CONFIG.APPROVED_STATUS}});
+
+    }catch(error){
+      throw error;
+    }
   }
+
 
 
 

@@ -9,7 +9,7 @@ const ReviewSchema = new mongoose.Schema(
       required: [true, "Review must belong to a customer."],
     },
     productId: {
-      type: mongoose.Schema.ObjectId,
+      type: mongoose.Schema.ObjectId, // why fairooze
       required: [true, "Review must belong to a product."],
     },
     content: {
