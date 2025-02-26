@@ -27,12 +27,13 @@ class OrderContainerService {
         sellerOrders[sellerId] = { seller: OnlineProduct.seller._id, products: [] }; // why is that bc it's going to be populated with the seller id
       }
 
+      const productPrice = Number(OnlineProduct.price) || Number(OnlineProduct.product.price) ;
       // add product details to the seller's order
       sellerOrders[sellerId].products.push({
         product: OnlineProduct.product._id, // reference to the main product itself so we can retrieve the related data like images         quantity: item.requiredQty,
-        price: OnlineProduct.price,
+        price: productPrice ,
         requestedQuantity: item.requiredQty,
-        totalPrice: item.requiredQty * OnlineProduct.price,
+        totalPrice: item.requiredQty * productPrice,
         onlineProduct: OnlineProduct._id, // reference to the online product so we can retrieve the stock
       });
     }
@@ -51,8 +52,9 @@ class OrderContainerService {
     };// if it's offline, there's no need to use any other status than "Completed" as the order is already completed and delivered dircetly to the customer
 
     // save the orderContainer to the database
+    console.log(orderContainerData)
     const orderContainer = await orderContainerRepository.createOrderContainer(orderContainerData);
-
+    console.log(orderContainer)
     // create orders for each seller and link them to the orderContainer
     const orderPromises = Object.values(sellerOrders).map(async ({ seller, products }) => {
       // calculate total quantity and total price for whole order not for each product

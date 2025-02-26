@@ -106,7 +106,7 @@ class OrderContainerController {
 //   Create an order container from cart
   async createOnlineOrderContainer(req, res) {
       const cart = req.body;
-        // cart.customerId = req.user._id; // in case of online cart, the customer id is the user id
+        cart.customerId = req.user.id; // in case of online cart, the customer id is the user id
       const orderContainer = await OrderContainerService.createOnlineOrderContainerFromCart(cart);
       res.status(APP_CONFIG.HTTP_CREATED).json({
         message: "success",
