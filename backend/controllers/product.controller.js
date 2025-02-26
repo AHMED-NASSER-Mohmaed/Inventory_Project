@@ -4,8 +4,9 @@ const AppError = require("../utils/appError");
 const { sendResponseToClint } = require("../utils/apiFeatures");
 const { APP_CONFIG } = require("../config/app.config");
 const pro_res  = require("../utils/authMiddlewaresOptions");
-const router = require("express").Router();
+const catchAsync = require("../utils/catchAsync");
 
+const router = require("express").Router();
 const ProductController = {
 
     //return the updated product   
@@ -63,13 +64,28 @@ const ProductController = {
     deleteProductImages: async (req, res, next) => {
 
         const { productId } = req.params;
-        const { deleteImageIds } = req.body; // Array of ImageKit file IDs to delete
+        const { deleteImageIds } = req.body; // rrray of file ids to delete
 
-        if (!productId || !deleteImageIds || deleteImageIds.length === 0) {
-            return res.status(400).json({ success: false, message: "Product ID and image IDs are required." });
+        if (!productId || !deleteImageIds || deleteImageIds.length === 0) 
+            sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,"Product ID and image IDs are required.")
+
+        // console.log(deleteImageIds);
+
+        console.log(deleteImageIds)
+
+        let index=deleteImageIds.indexOf(APP_CONFIG.PDIAMGE_ID_KEY);
+
+        if(index!==-1){
+            deleteImageIds.splice(index,1);
+            if(deleteImageIds.length === 0)
+                throw new AppError("you do not have the rights to delete this image",APP_CONFIG.HTTP_BAD_REQUEST);
         }
 
-        // Step 1: Delete images from ImageKit
+           
+
+
+        
+        //  relete images from ImageKit
         await deleteFiles(deleteImageIds);
 
 
@@ -77,11 +93,21 @@ const ProductController = {
         const product = await productService.isProductExist(productId);
 
 
-        // Step 2: Remove deleted image references from the database
+        //   remove deleted image references from the database
         await productService.deleteImagesFromProduct(productId, deleteImageIds);
 
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, product);
 
+    },
+
+    updateProduct:async(req,res,next)=>{
+        let result= await productService.updateProduct(req.params.productId,req.body);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+
+    },
+    deleteProduct:async(req,res,next)=>{
+        let result= await productService.deleteProduct(req.params.productId);
+        sendResponseToClint(res,APP_CONFIG.HTTP_NOT_FOUND,APP_CONFIG.SUCCESS_MESSAGE,result);
     }
 
 }
@@ -89,15 +115,29 @@ const ProductController = {
 
 
 router
-    .patch("/product/Images/update",
+    .patch("/product/Images/update/:productId",
         pro_res(APP_CONFIG.SUPPERADMIN),
-        ProductController.updateProductImages
+        catchAsync(ProductController.updateProductImages)
     )
 
-    .delete("/product/Images/delete",
+    .delete("/product/Images/delete/:productId",
         pro_res(APP_CONFIG.SUPPERADMIN),
-        ProductController.deleteProductImages
+        catchAsync(ProductController.deleteProductImages)
     )
+
+    .patch("/product/data/update/:productId",
+        pro_res(APP_CONFIG.SUPPERADMIN),
+        catchAsync(ProductController.updateProduct)
+    )
+    .delete("/product/delete/:productId",
+        pro_res(APP_CONFIG.SUPPERADMIN),
+        catchAsync(ProductController.deleteProduct)
+    )
+    /*
+    .patch("/product/active/:productId",
+        pro_res(APP_CONFIG.SUPPERADMIN),
+        catchAsync(ProductController.activeProduct)
+    )*/
 
 
 module.exports=router;

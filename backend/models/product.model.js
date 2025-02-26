@@ -122,6 +122,18 @@ ProductSchema.pre('save',function(){
     this.price=this.cost*this.markupPercentage;
 })
 
+ProductSchema.pre('updateOne', function (next) {
+  const update = this.getUpdate();
+
+  if (update.cost) {
+    update.$set = update.$set || {};
+    update.$set.price = update.cost * update.markupPercentage;
+  }
+
+  next();
+});
+
+
 
 const Product = mongoose.model("Product", ProductSchema);
 module.exports = Product;

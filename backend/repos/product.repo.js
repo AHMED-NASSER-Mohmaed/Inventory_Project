@@ -1,5 +1,5 @@
 const Product = require('../models/product.model');
-const { inboxResult } = require("../utils/apiFeatures")
+// const { inboxResult } = require("../utils/apiFeatures")
 
 module.exports.productRepo = {
 
@@ -19,7 +19,7 @@ module.exports.productRepo = {
     try {
       return await Product.findById(id);
     } catch (error) {
-      throw new error;
+      throw  error;
     }
   },
 
@@ -42,10 +42,23 @@ module.exports.productRepo = {
     } catch (error) {
       throw error;
     }
+  },
+
+  updateProduct:async(productId,data)=>{
+    try{
+      return await Product.updateOne({_id:id},{$set:data});
+    }catch(error){
+      throw error;
+    }
+  },
+
+  deleteProduct:async(productId)=>{
+    try{
+      return await  Product.updateOne({_id:productId},{$set:{isActive:true}});
+    }catch(error){
+      throw error;
+    }
   }
-
-
-
 
 
 }

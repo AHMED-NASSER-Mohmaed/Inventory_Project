@@ -88,7 +88,51 @@ module.exports.productService={
         }catch(error){
             throw error;
         }
+    },
+     
+    updateProduct:async(productId,data)=>{
+        try{
+            console.log(productId);
+
+            let fields=['name',"code","markupPercentage","cost","description","category","brand",]
+
+            Object.keys(data).forEach(element=>{
+                if (!fields.includes(element)){
+                   
+                    throw new AppError("invalid fields!!", APP_CONFIG.HTTP_BAD_REQUEST);
+                }
+            })
+            
+            let product = await this.productService.isProductExist(productId);
+
+            Object.keys(data).forEach(key=>{
+              product[key]=data[key];
+            })
+             
+            return await product.save();
+
+
+        }catch(error){
+            throw error;
+        }
+    },
+
+    deleteProduct:async(productId)=>{
+        try{
+            
+            let result=await productRepo.deleteProduct(productId);
+
+            if (result.matchedCount === 0) 
+                throw new AppError("❌ Product not found!",APP_CONFIG.HTTP_NOT_FOUND);
+            
+
+            return result;
+
+        }catch(error){
+            throw error;
+        }
     }
+    
 
     
 }
