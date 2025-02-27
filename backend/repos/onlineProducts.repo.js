@@ -32,7 +32,7 @@ const OnlineProductsRepository = {
         { _id: productId, seller: APP_CONFIG.COMPANY_ID }, // Search condition
         {
           $inc: { stock: newQty }, // Only increment stock if the document exists
-          $setOnInsert: { product: productId, seller: new mongoose.Types.ObjectId(APP_CONFIG.COMPANY_ID), branch: APP_CONFIG.ONLINE_BRANCH_ID, price: newPrice } // Ensure new document can be created without conflicting stock updates
+          $setOnInsert: { product: productId, seller: new mongoose.Types.ObjectId(APP_CONFIG.COMPANY_ID), branch: APP_CONFIG.ONLINE_BRANCH_ID, price: newPrice,status:APP_CONFIG.APPROVED_STATUS } // Ensure new document can be created without conflicting stock updates
         },
         { upsert: true, new: true } // Ensure upsert + return updated document
       );
@@ -135,7 +135,7 @@ const OnlineProductsRepository = {
     }
   },
 
-  
+
 
   // getCount: async (filters) => {
   //   try {
