@@ -1,4 +1,5 @@
 export class category {
+Cname: any;
 
 
     constructor(

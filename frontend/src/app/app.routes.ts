@@ -1,4 +1,3 @@
-import { Routes } from '@angular/router';
 import { LoginComponent } from './Components/login/login.component';
 import { LayoutComponent } from './Components/layout/layout.component';
 import { SignupComponent } from './Components/signup/signup.component';
@@ -35,8 +34,21 @@ import { SpringCollectionComponent } from './Components2/HomePage/spring-collect
 import { SuperadminprofileComponent } from './Components/superadminprofile/superadminprofile.component';
 import { auth6Guard } from './_guards/auth6.guard';
 import { SAprofiledetailsComponent } from './Components/saprofiledetails/saprofiledetails.component';
+import { ClerkDashboardComponent } from './Components2/StaffComponents/clerk-dashboard/clerk-dashboard.component';
+import { Routes } from '@angular/router';
+import { PendingTableComponent } from './Components2/StaffComponents/pending-table/pending-table.component';
+import { CashierDashboardComponent } from './Components2/StaffComponents/Cashier/cashier-dashboard/cashier-dashboard.component';
+
 
 export const routes: Routes = [
+
+//     { 
+//          path:'clerk-dashboard/pending-orders',
+//          component: PendingTableComponent ,
+//      }
+
+//   ,
+
 
     {
         path: 'LandingPage',
@@ -97,6 +109,13 @@ export const routes: Routes = [
     component:AboutComponent,
  },
 
+ {  
+     path:'clerk-dashboard',
+   component:ClerkDashboardComponent,
+ },
+
+
+
  
     {
         // default route
@@ -104,6 +123,7 @@ export const routes: Routes = [
         redirectTo:'LandingPage',
         pathMatch:'full'
     },
+
     {
         path: 'signup',
         component: SignupComponent,
@@ -121,6 +141,48 @@ export const routes: Routes = [
         component: ProductdetailsComponent,
         title: 'Product Details'
     },
+
+
+
+
+//////////////////////////////////////////
+
+    {
+
+        path:'clerk-dashboard',
+        component: ClerkDashboardComponent,
+        title: 'Clerk Dashboard',
+        children: [
+            {
+                path:'',
+                loadChildren: () => import('./Components2/StaffComponents/staff.routes').then(s => s.dashRoutes),
+            },
+
+           
+        ]
+        
+    },
+
+/////////////////////////////////////////////////
+
+
+{
+    path:'cashier-dashboard',
+    component: CashierDashboardComponent,
+    title: 'cashier Dashboard',
+    children: [
+        {
+            path:'',
+            loadChildren:() => import('./Components2/StaffComponents/cashier.routes').then(s => s.dashRoutes),
+            
+        },
+
+       
+    ]
+},
+
+///////////////////////////////////////////////////
+    
     {
         path: '',
         component: LayoutComponent,

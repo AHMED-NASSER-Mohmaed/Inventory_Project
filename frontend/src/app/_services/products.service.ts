@@ -8,38 +8,35 @@ import { category } from '../_models/category';
   providedIn: 'root'
 })
 export class ProductsService {
+  private baseUrl = 'http://localhost:3000';
 
   constructor(private http: HttpClient) { }
-
-  private CatUrl: string = "http://localhost:3000/categories/active";
-  private baseUrl = 'http://localhost:3000';
-  
-
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  getAllcategories(): Observable<category[]> {
-    return this.http.get<category[]>(this.CatUrl);
+  // Updated method to include id and name parameters
+  getAllCategories(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/categories/AllActive/idN`, { headers: this.getHeaders() });
   }
 
-  getFeaturedProducts(): Observable<any> {
-    return this.http.get<Product[]>(`${this.baseUrl}/getProducts?limit=3`, { headers: this.getHeaders() })
-    ;
+  getAllBrands(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/brands/Allactive/idN`, { headers: this.getHeaders() });
   }
- 
-getPaginatedProducts(page: number, itemsPerPage: number, sort: string, categoryId: string) {
+  getFeaturedProducts(): Observable<Product[]> {
+    return this.http.get<Product[]>(`${this.baseUrl}/getProducts?limit=3`, { headers: this.getHeaders() });
+  }
+
+  getPaginatedProducts(page: number, itemsPerPage: number, sort: string, category: string, brand: string): Observable<any> {
     const params = {
-        page: page,
-        limit: itemsPerPage,
-        sort: sort,
-        catId: categoryId,
+      page: page.toString(),
+      limit: itemsPerPage.toString(),
+      sort: sort,
+      category: category,
+      brand: brand
     };
-    return this.http.get(`${this.baseUrl}/getProducts`, { params });
+    return this.http.get(`${this.baseUrl}/OnlineProducts`, { params, headers: this.getHeaders() });
+  }
 }
-}  
-
-
-

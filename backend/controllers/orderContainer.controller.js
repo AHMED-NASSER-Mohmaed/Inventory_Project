@@ -143,6 +143,7 @@ class OrderContainerController {
     console.log(orderId);
     let cashierId = req.user.id;
     const subOrder = await SubOrderService.cashierFinalisOnlineOrderByCompleteStatus({orderId, cashierId});
+    console.log(subOrder);
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       subOrder,
