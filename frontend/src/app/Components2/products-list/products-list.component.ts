@@ -52,11 +52,18 @@ export class ProductsListComponent implements OnInit {
   loadCategories(): void {
     this.productsService.getAllCategories().subscribe({
       next: (response) => {
-        this.categories = response; 
-        console.log('Categories loaded:', this.categories);
+        // Access the data array from the response
+        if (response && response.data && Array.isArray(response.data)) {
+          this.categories = response.data;
+          console.log('Categories loaded:', this.categories);
+        } else {
+          console.error('Unexpected categories response format:', response);
+          this.categories = [];
+        }
       },
       error: (error) => {
         console.error('Error fetching categories', error);
+        this.categories = [];
       }
     });
   }

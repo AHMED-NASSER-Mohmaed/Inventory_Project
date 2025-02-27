@@ -1,0 +1,34 @@
+import { Product } from './products';
+import { category } from './category';
+
+export interface ProductResponse {
+  message: string;
+  data: {
+    result: ProductItem[];
+    total: number;
+  };
+}
+
+export interface CategoryResponse {
+  message: string;
+  data: category[];
+}
+
+export interface ProductItem {
+  _id: string;
+  seller: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  };
+  product: {
+    _id: string;
+    name: string;
+    price: number;
+    images: {
+      _id: string;
+      fileId: string;
+      url: string;
+    }[];
+  };
+}

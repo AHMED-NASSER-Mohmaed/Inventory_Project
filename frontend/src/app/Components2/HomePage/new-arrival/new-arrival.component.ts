@@ -4,6 +4,7 @@ import { Product } from '../../../_models/products';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { QuickviewComponent } from '../quickview/quickview.component';
+import { ProductItem } from '../../../_models/api-responses';
 
 @Component({
   selector: 'app-new-arrival',
@@ -12,11 +13,10 @@ import { QuickviewComponent } from '../quickview/quickview.component';
   templateUrl: './new-arrival.component.html',
   styleUrl: './new-arrival.component.css'
 })
-export class NewArrivalComponent {
-
-products: Product[] = []; 
+export class NewArrivalComponent implements OnInit {
+  products: any[] = []; 
   showQuickView: boolean = false;
-  selectedProduct: Product | null = null;
+  selectedProduct: any | null = null;
 
   constructor(private productsService: ProductsService) { }
 
@@ -26,10 +26,16 @@ products: Product[] = [];
 
   getFeaturedProducts(): void {
     this.productsService.getFeaturedProducts().subscribe({
-      next: (res) => {
-        console.log(res.result)
-        this.products = res.result.result;
-
+      next: (response) => {
+        console.log(response.data);
+        this.products = response.data.result.map((item: ProductItem) => ({
+          _id: item.product._id,
+          name: item.product.name,
+          price: item.product.price,
+          images: item.product.images,
+          sellerName: `${item.seller.firstName} ${item.seller.lastName}`,
+          sellerId: item.seller._id
+        }));
         console.log('Featured Products:', this.products);
       },
       error: (error) => {
@@ -38,7 +44,7 @@ products: Product[] = [];
     });
   }
 
-  openQuickView(product: Product) {
+  openQuickView(product: any) {
     this.selectedProduct = product;
     this.showQuickView = true;
   }

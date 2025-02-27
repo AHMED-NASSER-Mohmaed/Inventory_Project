@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product } from '../_models/products';
 import { category } from '../_models/category';
+import { CategoryResponse, ProductResponse } from '../_models/api-responses';
 
 @Injectable({
   providedIn: 'root'
@@ -17,16 +18,16 @@ export class ProductsService {
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  // Updated method to include id and name parameters
-  getAllCategories(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/categories/AllActive/idN`, { headers: this.getHeaders() });
+  getAllCategories(): Observable<CategoryResponse> {
+    return this.http.get<CategoryResponse>(`${this.baseUrl}/categories/AllActive/idN`, { headers: this.getHeaders() });
   }
 
   getAllBrands(): Observable<any> {
     return this.http.get(`${this.baseUrl}/brands/Allactive/idN`, { headers: this.getHeaders() });
   }
-  getFeaturedProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.baseUrl}/getProducts?limit=3`, { headers: this.getHeaders() });
+
+  getFeaturedProducts(): Observable<ProductResponse> {
+    return this.http.get<ProductResponse>(`${this.baseUrl}/getProducts?limit=3`, { headers: this.getHeaders() });
   }
 
   getPaginatedProducts(page: number, itemsPerPage: number, sort: string, category: string, brand: string): Observable<any> {

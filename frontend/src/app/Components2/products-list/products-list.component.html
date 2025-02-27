@@ -18,13 +18,18 @@
                 <!-- Filter by Categories -->
                 <div class="mb-3">
                     <label class="form-label">Categories</label>
-                    <div *ngFor="let category of categories" class="form-check">
-                        <input class="form-check-input" type="radio" name="category" [value]="category._id"
-                               (change)="onCategoryChange(category._id)" [id]="'category' + category._id"
-                               [checked]="selectedCategoryId === category._id">
-                        <label class="form-check-label" [for]="'category' + category._id">
-                          {{ category.Cname }}
-                        </label>
+                    <div *ngIf="categories && categories.length > 0">
+                        <div *ngFor="let category of categories" class="form-check">
+                            <input class="form-check-input" type="radio" name="category" [value]="category._id"
+                                   (change)="onCategoryChange(category._id)" [id]="'category' + category._id"
+                                   [checked]="selectedCategoryId === category._id">
+                            <label class="form-check-label" [for]="'category' + category._id">
+                              {{ category.Cname }}
+                            </label>
+                        </div>
+                    </div>
+                    <div *ngIf="!categories || categories.length === 0">
+                        <p>No categories available</p>
                     </div>
                     <hr>
                 </div>
