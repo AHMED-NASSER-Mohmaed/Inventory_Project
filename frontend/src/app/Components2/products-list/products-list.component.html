@@ -81,19 +81,19 @@
             </div>
 
             <div class="row productRow">
-                <div *ngFor="let product of products" class="product-card col-md-4 mb-4">
+                <div *ngFor="let product of products" class="product-card col-md-4 mb-4" [routerLink]="['/LandingPage/Product', product._id]" style="cursor: pointer;">
                     <div class="image-container position-relative">
                         <img [src]="product.images[0].url" class="card-img-top product-img" alt="{{ product.name }}">
                         <div class="overlay-icons">
-                            <a class="product-item product-link product-icon" href="#"><i class="fas fa-heart"></i></a>
-                            <a class="product-item product-link product-icon" (click)="openQuickView(product)"><i class="fas fa-eye"></i></a>
+                            <a class="product-item product-link product-icon" href="#" (click)="$event.stopPropagation()"><i class="fas fa-heart"></i></a>
+                            <a class="product-item product-link product-icon" (click)="openQuickView(product); $event.stopPropagation()"><i class="fas fa-eye"></i></a>
                         </div>
                     </div>
                     <div class="img-body">
                         <h5 class="card-title">{{ product.name }}</h5>
                         <p class="card-price">{{ product.price }} le</p>
                         <p class="card-seller">Sold by: {{ product.sellerName }}</p>
-                        <button class="btn add-to-cart-btn">Add to Cart</button>
+                        <button class="btn add-to-cart-btn" (click)="$event.stopPropagation()">Add to Cart</button>
                     </div>
                 </div>
             </div>

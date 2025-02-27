@@ -7,14 +7,14 @@ import { Subscription } from 'rxjs';
 import { HeaderComponent } from "../../core/header/header.component";
 import { FooterComponent } from "../../core/footer/footer.component";
 import { QuickviewComponent } from '../HomePage/quickview/quickview.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { category } from '../../_models/category';
 import { Brand } from '../../_models/api-responses';
 
 @Component({
   selector: 'app-products-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, QuickviewComponent, HeaderComponent, FooterComponent],
+  imports: [CommonModule, FormsModule, QuickviewComponent, HeaderComponent, FooterComponent, RouterLink],
   templateUrl: './products-list.component.html',
   styleUrls: ['./products-list.component.css']
 })

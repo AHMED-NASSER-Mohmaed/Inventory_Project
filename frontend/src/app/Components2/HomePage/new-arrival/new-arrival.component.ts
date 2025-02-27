@@ -5,11 +5,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { QuickviewComponent } from '../quickview/quickview.component';
 import { ProductItem } from '../../../_models/api-responses';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-new-arrival',
   standalone: true,
-  imports: [CommonModule, FormsModule, QuickviewComponent],
+  imports: [CommonModule, FormsModule, QuickviewComponent, RouterLink],
   templateUrl: './new-arrival.component.html',
   styleUrl: './new-arrival.component.css'
 })
