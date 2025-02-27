@@ -60,7 +60,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
       try {
 
         //beacause it's splited from validator fields
-        let filterObjects = req.query.filters;
+        let filterObjects = [req.query.filters].flat();
 
 
         filterObjects.forEach((element) => {
