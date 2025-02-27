@@ -1,5 +1,6 @@
 const { APP_CONFIG } = require("../config/app.config");
 const OnlineProducts = require("../models/onlineProducts.model");
+const { inboxResult } = require("../utils/apiFeatures");
 
 const productRepo = require("../repos/product.repo");
 
@@ -144,10 +145,21 @@ const OnlineProductsRepository = {
           { $limit: limit },
           {
             $project: {
-              __v: 0,
-              kind: 0,
-              "product.status": 0,
-              "product.isActive": 0,
+              "_id": 1,
+              "product._id":1,
+              "product.markupPercentage":1,
+              "product.price":1,
+              "description":1,
+              
+
+              // __v: 0,
+              // kind: 0,
+              // "product.status": 0,
+              // "product.isActive": 0,
+              // "createdAt": 0,
+              // "isActive": 0,
+              // ""markupPercentage"
+
             }
           }
         ]),

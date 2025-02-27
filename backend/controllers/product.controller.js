@@ -94,7 +94,6 @@ const ProductController = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, product);
 
     },
-
     updateProduct:async(req,res,next)=>{
         let result= await productService.updateProduct(req.params.productId,req.body);
         sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
@@ -111,8 +110,7 @@ const ProductController = {
     approveOnProduct:async(req,res,next)=>{
         let result = await productService.approveProduct(req.params.productId);
         sendResponseToClint(res,APP_CONFIG.HTTP_NOT_FOUND,APP_CONFIG.SUCCESS_MESSAGE,result);
-    },
-    
+    }, 
     rejectProduct:async(req,res,next)=>{
         let result = await productService.rejectProduct(req.params.productId);
         sendResponseToClint(res,APP_CONFIG.HTTP_NOT_FOUND,APP_CONFIG.SUCCESS_MESSAGE,result);
