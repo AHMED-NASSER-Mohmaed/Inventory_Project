@@ -136,6 +136,7 @@ const OnlineProductsRepository = {
                   "seller._id":1,
                   "seller.firstName": 1, // Ensure seller's first name is included
                   "seller.lastName":1,
+                  "seller.companyName":1,
               }
           }
         ]),

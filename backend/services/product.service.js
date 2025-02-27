@@ -122,8 +122,9 @@ module.exports.productService={
             let result=await productRepo.deleteProduct(productId);
 
             if (result.matchedCount === 0) 
-                throw new AppError("❌ Product not found!",APP_CONFIG.HTTP_NOT_FOUND);
+                throw new AppError("❌ Product not found!⚪💖🎶",APP_CONFIG.HTTP_NOT_FOUND);
 
+            console.log(result,"this res from service.");
             return result;
 
         }catch(error){

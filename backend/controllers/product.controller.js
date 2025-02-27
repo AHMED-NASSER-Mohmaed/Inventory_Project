@@ -101,11 +101,11 @@ const ProductController = {
     },
     deleteProduct:async(req,res,next)=>{
         let result= await productService.deleteProduct(req.params.productId);
-        sendResponseToClint(res,APP_CONFIG.HTTP_NOT_FOUND,APP_CONFIG.SUCCESS_MESSAGE,result);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
     },
     activeProduct:async(req,res,next)=>{
         let result=await productService.activeProduct(req.params.productId);
-        sendResponseToClint(res,APP_CONFIG.HTTP_NOT_FOUND,APP_CONFIG.SUCCESS_MESSAGE,result);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
     },
     approveOnProduct:async(req,res,next)=>{
         let result = await productService.approveProduct(req.params.productId);
