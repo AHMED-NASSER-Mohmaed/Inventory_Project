@@ -35,7 +35,14 @@ module.exports.OfflineProductsRepo = {
     getOffProducts: async (filters, sort, page, limit) => {
 
         try {   
-            console.log(filters,"from repoo");
+            if(sort && sort.price){
+
+                let value= sort.price;
+                delete sort.price;
+                sort['product.price']=value;
+                
+            }
+
 
             const [result, total] = await Promise.all([
 
