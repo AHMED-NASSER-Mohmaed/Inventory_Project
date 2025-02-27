@@ -118,22 +118,23 @@ class OrderService {
     }
 
     async cashierFinalisOnlineOrderByCompleteStatus({orderId, cashierId}) {
-
+      // const order = await orderRepository.getOrderById(orderId);
+      const order = await orderRepository.getOrderById(orderId);
+      console.log(order);
         // update cashier if provided
         if (!order.cashier && cashierId) {// the one who takes the rate of the order from the external seller
           order.cashier = cashierId;
         }
 
-        if(order.cashier && !cashierId.equals(order.cashier)){
+        if(order.cashier && !order.cashier.equals(cashierId)){
           throw new AppError("Another cashier is already assigned to this order");
         }
       
-        const order = await orderRepository.getOrderById(orderId);
         if (!order) throw new AppError("Order not found");
         
         if(order.status == "completed") throw new AppError("Order is already completed");
 
-        if (order.status != "delivered" || order.status != "partially delivered") throw new AppError("Cannot finalize order if it wasn't delivered or partially delivered yet!");
+        if (order.status != "delivered" && order.status != "partially delivered") throw new AppError("Cannot finalize order if it wasn't delivered or partially delivered yet!");
     
         order.status = "completed";
         await orderRepository.updateOrder(orderId, order);
@@ -250,11 +251,11 @@ class OrderService {
       async getAllOnlineOrdersForCashierBasedOnStatus(cashierId, status) {
         if(status == "completed") {
           const returnedOrders =  await orderRepository.getAllOnlineOrdersByStatusCompletedForCashier(cashierId);
-          const mappedOrders = await Promise.all(returnedOrders.map(order => mapOrderData(order)));
+          const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
           return mappedOrders;
         }
         const returnedOrders =  await orderRepository.getAllOnlineOrdersByStatusForCashierInDeliverStateToHandleTheDeliveredOrders(cashierId);
-        const mappedOrders = await Promise.all(returnedOrders.map(order => mapOrderData(order)));
+        const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
         return mappedOrders;
     }
 
