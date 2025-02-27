@@ -271,6 +271,12 @@ picture {
    box-shadow: var(--shadow-medium);
 }
 
+.btn:disabled {
+   opacity: 0.5;
+   cursor: not-allowed;
+   background-color: var(--color-white-300);
+}
+
 .header {
    position: fixed;
    top: 0;
@@ -645,15 +651,16 @@ picture {
 
 .wrapper-detail {
    display: flex;
-   align-items: center;
    justify-content: space-between;
+   align-items: flex-start;
+   flex-wrap: wrap;
+   gap: 1rem;
 }
 
 .wrapper-action {
    display: flex;
    align-items: center;
-   column-gap: 1rem;
-   margin-top: 1rem;
+   margin-top: 1.5rem;
 }
 
 .wrapper-action .btn-neutral {
@@ -737,6 +744,104 @@ picture {
  .wrapper-bgimage::before {
     scale: 0.8;
  }
+}
+
+/* Category and Brand styling */
+.category-brand {
+   display: flex;
+   flex-direction: column;
+   gap: 0.5rem;
+   margin-bottom: 1rem;
+   padding-bottom: 0.75rem;
+   border-bottom: 1px solid var(--color-white-300);
+}
+
+.product-meta {
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+}
+
+.meta-label {
+   font-size: var(--text-small);
+   font-weight: 600;
+   color: var(--color-black-400);
+   min-width: 5rem;
+}
+
+.badge-category {
+   background-color: var(--color-brown-400);
+   color: var(--color-white-100);
+   text-transform: capitalize;
+}
+
+.badge-brand {
+   background-color: var(--color-black-300);
+   color: var(--color-white-100);
+   font-weight: 500;
+}
+
+.brand-name {
+   font-size: var(--text-tiny);
+   font-weight: 500;
+   color: var(--color-black-300);
+   margin-left: 0.25rem;
+}
+
+/* Stock indicator styling */
+.stock-indicator {
+   display: flex;
+   flex-direction: column;
+   align-items: flex-end;
+}
+
+.stock-status {
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+}
+
+.stock-dot {
+   display: inline-block;
+   width: 12px;
+   height: 12px;
+   border-radius: 50%;
+}
+
+.in-stock {
+   background-color: #4CAF50; /* Green */
+}
+
+.out-of-stock {
+   background-color: #F44336; /* Red */
+}
+
+.text-success {
+   color: #4CAF50;
+   font-weight: 600;
+}
+
+.text-danger {
+   color: #F44336;
+   font-weight: 600;
+}
+
+.stock-count {
+   font-size: var(--text-small);
+   color: var(--color-black-300);
+   margin-left: 1rem;
+}
+
+@media screen and (max-width: 480px) {
+   .wrapper-detail {
+      flex-direction: column;
+      align-items: flex-start;
+   }
+   
+   .stock-indicator {
+      align-items: flex-start;
+      margin-top: 0.5rem;
+   }
 }
 
 

@@ -2,20 +2,16 @@
 <div class="div1">
   <div class="div2">
     <main class="main">
-      <!-- Wrapper Section -->
       <section class="section wrapper wrapper-section">
         <div class="container wrapper-column">
-          <!-- Loading indicator -->
           <div *ngIf="isLoading" class="center" style="grid-column: span 2; padding: 2rem;">
             <p>Loading product details...</p>
           </div>
           
-          <!-- Error message -->
           <div *ngIf="errorMessage" class="center" style="grid-column: span 2; padding: 2rem;">
             <p style="color: red;">{{ errorMessage }}</p>
           </div>
           
-          <!-- Product images carousel -->
           <p-carousel *ngIf="!isLoading && product" class="larger-carousel" [value]="images" [numVisible]="1" [numScroll]="1" [circular]="true" [autoplayInterval]="3000"
               [showIndicators]="true">
               <ng-template pTemplate="item" let-image >
@@ -25,10 +21,18 @@
               </ng-template>
           </p-carousel>
           
-          <!-- Product details -->
           <div *ngIf="!isLoading && product" class="wrapper-content">
             <div class="wrapper-inform">
-              <span class="badge badge-darken">{{ product.categoryName || 'Product Category' }}</span>
+              <div class="category-brand">
+                <div class="product-meta" *ngIf="product.brand">
+                  <span class="meta-label">Brand:</span>
+                  <span class="badge badge-brand">{{ product.brand.Bname }}</span>
+                </div>
+                <div class="product-meta">
+                  <span class="meta-label">Section:</span>
+                  <span class="badge badge-category">{{ product.category?.Cname || 'Product Category' }}</span>
+                </div>
+              </div>
               <h1 class="display-medium font-bold" style="letter-spacing: 2px; font-weight: 750;">
                 {{ product.name }}
               </h1>
@@ -41,9 +45,21 @@
                 <span class="text-base font-medium">Price:</span>
                 <h3 class="text-large font-semi">${{ product.price }}.00</h3>
               </div>
+              <div class="stock-indicator">
+                <span class="text-base font-medium">Availability:</span>
+                <div class="stock-status">
+                  <span class="stock-dot" [ngClass]="{'in-stock': stockCount > 0, 'out-of-stock': stockCount <= 0}"></span>
+                  <span class="stock-text" [ngClass]="{'text-success': stockCount > 0, 'text-danger': stockCount <= 0}">
+                    {{ stockCount > 0 ? 'In Stock' : 'Out of Stock' }}
+                  </span>
+                </div>
+              </div>
             </div>
             <div class="wrapper-action">
-              <button class="btn btn-darken">Add to Cart</button>
+              <button class="btn btn-darken" [disabled]="stockCount <= 0" (click)="addToCart()">
+                Add to Cart
+              </button>
+              <span *ngIf="stockCount > 0" class="stock-count">{{ stockCount }} items left</span>
             </div>
           </div>
         </div>

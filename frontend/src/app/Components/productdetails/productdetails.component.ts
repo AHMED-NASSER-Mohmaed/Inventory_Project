@@ -15,13 +15,23 @@ interface ProductImage {
   url: string;
 }
 
+interface CategoryDetails {
+  _id: string;
+  Cname: string;
+}
+
+interface BrandDetails {
+  _id: string;
+  Bname: string;
+}
+
 interface ProductDetails {
   _id: string;
   name: string;
   description: string;
   price: number;
-  category: string;
-  categoryName?: string;
+  category: CategoryDetails;
+  brand: BrandDetails;
   images: ProductImage[];
 }
 
@@ -38,6 +48,7 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
   images: any[] = [];
   isLoading: boolean = true;
   errorMessage: string = '';
+  stockCount: number = 0;
 
   // New responsive carousel data
   products: any[] = [];
@@ -72,15 +83,22 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
     this.reviewsService.getProductDetails(this.productId).subscribe({
       next: (response) => {
         if (response && response.data) {
-          const productData = response.data.product;
+          // Handle the new response structure
+          const responseData = response.data;
+          const productData = responseData.product;
+          
           this.product = {
             _id: productData._id,
             name: productData.name,
             description: productData.description,
             price: productData.price,
             category: productData.category,
+            brand: productData.brand,
             images: productData.images
           };
+          
+          // Set stock count from response
+          this.stockCount = responseData.stock || 0;
           
           // Filter out the default image and prepare carousel images
           const defaultImageUrl = "https://ik.imagekit.io/ysypur5vc/Untitled_azZLiI3tg.jpg";
@@ -104,6 +122,19 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
         this.isLoading = false;
       }
     });
+  }
+
+  addToCart(): void {
+    if (this.stockCount > 0) {
+      // Decrement stock count
+      this.stockCount--;
+      
+      console.log('Added product to cart. Remaining stock:', this.stockCount);
+      
+      if (this.stockCount === 0) {
+        console.log('Product is now out of stock');
+      }
+    }
   }
 
   ngAfterViewInit(): void {

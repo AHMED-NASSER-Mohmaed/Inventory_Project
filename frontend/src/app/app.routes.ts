@@ -38,6 +38,10 @@ import { ClerkDashboardComponent } from './Components2/StaffComponents/clerk-das
 import { Routes } from '@angular/router';
 import { PendingTableComponent } from './Components2/StaffComponents/pending-table/pending-table.component';
 import { CashierDashboardComponent } from './Components2/StaffComponents/Cashier/cashier-dashboard/cashier-dashboard.component';
+import { ClerkProfileComponent } from './Components/clerk-profile/clerk-profile.component';
+import { CashierProfileComponent } from './Components/cashier-profile/cashier-profile.component';
+import { auth7Guard } from './auth7.guard';
+import { auth8Guard } from './auth8.guard';
 
 
 export const routes: Routes = [
@@ -256,6 +260,18 @@ export const routes: Routes = [
                 title: 'Reset Password'
             }
         ]
+    },
+    {
+        path: 'CLprofile',
+        component: ClerkProfileComponent,
+        title: 'Profile',
+        canActivate: [auth7Guard],
+    },
+    {
+        path: 'CAprofile',
+        component: CashierProfileComponent,
+        title: 'Profile',
+        canActivate: [auth8Guard],
     },
  
 
