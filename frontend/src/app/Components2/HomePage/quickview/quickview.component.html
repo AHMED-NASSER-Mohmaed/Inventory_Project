@@ -13,9 +13,9 @@
                 <p class="description">{{ selectedProduct?.description }}</p>
 
                 <div class="quantity-control">
-                    <button (click)="decreaseQuantity()">-</button>
+                    <button (click)="decrease(selectedProduct)">-</button>
                     <span>{{ quantity }}</span>
-                    <button (click)="increaseQuantity()">+</button>
+                    <button (click)="increase(selectedProduct)">+</button>
                 </div>
                 <button class="add-to-cart-btn">Add to Cart</button>
             </div>

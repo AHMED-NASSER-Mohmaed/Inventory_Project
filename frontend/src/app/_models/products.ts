@@ -14,6 +14,7 @@ export class Product {
             public isActive: boolean = false, 
             public status: boolean = false,
             public description?: string,
+            public stock?: number,
             public _id?: string,
             public createdAt?: Date,
             public updatedAt?: Date,

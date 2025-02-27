@@ -39,7 +39,7 @@ export class CartService {
     // const body: any = {productId,  quantity};
     console.log(body);
     console.log("hahahhahhahha");
-    if (!localStorage.getItem('token')) {
+    if ( sessionId) {
       body.sessionId = sessionId; // Send sessionId if the user is not logged in or fo guest users
     }
     return this.http.post(`${this.apiUrl}/add`, body, { headers: this.getHeaders() });

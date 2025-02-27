@@ -100,9 +100,11 @@ const OnlineProductsRepository = {
                   "product.price": 1,
                   "product.images":1,
                   "product.description": 1,
+                  "product.stock": 1,
                   "seller._id":1,
                   "seller.firstName": 1, // Ensure seller's first name is included
                   "seller.lastName":1,
+                  "seller.companyName": 1
               }
           }
         ]),
