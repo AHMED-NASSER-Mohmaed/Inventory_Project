@@ -11,12 +11,12 @@ class ReviewController {
 
   initializeRoutes() {
     
-    this.router.route("/") 
-      .get(catchAsync(this.getProductReviews))
-      .post(prot_rest("customer"), catchAsync(this.createReview));
+    this.router
+      .get("/reviews/:productId",catchAsync(this.getProductReviews))
+      .post("/reviews/:productId",prot_rest("customer"), catchAsync(this.createReview));
 
     this.router
-      .route("/:reviewId")
+      .route("/reviews/:reviewId")
       .patch(prot_rest("customer"), catchAsync(this.updateReview))
       .delete(
         prot_rest("customer", "admin", "super_admin"),
