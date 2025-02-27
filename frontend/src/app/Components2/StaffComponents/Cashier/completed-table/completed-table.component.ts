@@ -27,7 +27,7 @@ import { CashierService } from '../../../../_services/cashier.service';
   ],   templateUrl: './completed-table.component.html',
   styleUrl: './completed-table.component.css'
 })
-export class CompletedTableComponent {
+export class CompletedTableComponent implements OnInit, OnDestroy{
 
     validationError: string | null = null;
   
