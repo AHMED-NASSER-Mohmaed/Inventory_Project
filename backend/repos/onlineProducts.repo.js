@@ -1,7 +1,7 @@
 const { APP_CONFIG } = require("../config/app.config");
 const OnlineProducts = require("../models/onlineProducts.model");
 const { inboxResult } = require("../utils/apiFeatures");
-
+const mongoose = require("mongoose");
 const productRepo = require("../repos/product.repo");
 
 const OnlineProductsRepository = {
@@ -32,7 +32,7 @@ const OnlineProductsRepository = {
         { _id: productId, seller: APP_CONFIG.COMPANY_ID }, // Search condition
         {
           $inc: { stock: newQty }, // Only increment stock if the document exists
-          $setOnInsert: { product: productId, seller: APP_CONFIG.COMPANY_ID, branch: APP_CONFIG.ONLINE_BRANCH_ID, price: newPrice } // Ensure new document can be created without conflicting stock updates
+          $setOnInsert: { product: productId, seller: new mongoose.Types.ObjectId(APP_CONFIG.COMPANY_ID), branch: APP_CONFIG.ONLINE_BRANCH_ID, price: newPrice } // Ensure new document can be created without conflicting stock updates
         },
         { upsert: true, new: true } // Ensure upsert + return updated document
       );
@@ -113,6 +113,13 @@ const OnlineProductsRepository = {
   getONProducts: async (filters, sort, page, limit) => {
 
     try {
+      if (sort && sort.price) {
+
+        let value = sort.price;
+        delete sort.price;
+        sort['product.price'] = value;
+
+      }
 
       const [result, total] = await Promise.all([
 
@@ -128,13 +135,13 @@ const OnlineProductsRepository = {
           { $unwind: "$product" },
           {
             $lookup: {
-              from: "sellers",  // Lookup from the sellers collection
-              localField: "seller", // Reference field in OnlineProducts
+              from: "users",
+              localField: "seller",
               foreignField: "_id",
               as: "seller"
             }
           },
-          { $unwind: { path: "$seller", preserveNullAndEmptyArrays: true } }, // Unwind but keep nulls
+          { $unwind: { path: "$seller", preserveNullAndEmptyArrays: true } }, // Preserve null sellers
           {
             $match: {
               ...filters
@@ -144,26 +151,23 @@ const OnlineProductsRepository = {
           { $skip: (page - 1) * limit },
           { $limit: limit },
           {
-            $project: {
-              "_id": 1,
-              "product._id":1,
-              "product.markupPercentage":1,
-              "product.price":1,
-              "description":1,
-              
+              $project: {
+                  "_id": 1,
+                  "product._id": 1,
+                  "product.name":1,
+                  "product.price": 1,
+                  "product.images":1,
+                  
+                  "description": 1,
+                  "seller._id":1,
+                  "seller.firstName": 1, // Ensure seller's first name is included
+                  "seller.lastName":1,
+                  
 
-              // __v: 0,
-              // kind: 0,
-              // "product.status": 0,
-              // "product.isActive": 0,
-              // "createdAt": 0,
-              // "isActive": 0,
-              // ""markupPercentage"
 
-            }
+              }
           }
         ]),
-
 
         await OnlineProducts.aggregate([
           {
@@ -185,6 +189,7 @@ const OnlineProductsRepository = {
           }
         ])
       ]);
+
 
       return inboxResult(result, total[0]?.total || 0, page, limit);
     } catch (error) {
