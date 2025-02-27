@@ -1,4 +1,5 @@
-<div class="container my-5">
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-scale-multiple"></ngx-spinner>
+<div *ngIf="!loading" class="container my-5">
     <div class="row position-relative">
 
         <!-- Checkout Form -->
@@ -39,7 +40,7 @@
                 }
             }
             <div class="form-group d-flex">
-                <select name="city"  #region="ngModel" [(ngModel)]="checkoutData.region" required>
+                <select name="city"  #gov="ngModel" [(ngModel)]="checkoutData.gov" required>
                     <option value="">Select City *</option>
                     <option value="Cairo">Cairo</option>
                     <option value="Alexandria">Alexandria</option>
@@ -69,7 +70,7 @@
                 
                 <input type="text" name="postcode" #postcode="ngModel" pattern="^\d{6}$" required [(ngModel)]="checkoutData.postcode" placeholder="Postcode / ZIP">
             </div>
-            @if(region.invalid && region.touched){
+            @if(gov.invalid && gov.touched){
                 <div class="error">
                     Country is required
                 </div>

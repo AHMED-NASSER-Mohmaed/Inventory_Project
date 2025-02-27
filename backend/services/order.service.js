@@ -23,7 +23,7 @@ class OrderService {
             throw new AppError("Sorry, you are not allowed to update this order since it belongs to another seller");
           }
         }  
-        
+        console.log(order);
     
         let newTotalPrice = 0;
         let newTotalQty = 0;

@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '../../core/header/header.component';
 import { FooterComponent } from '../../core/footer/footer.component';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { NavigationCancel, NavigationError, NavigationStart, RouterModule, RouterOutlet } from '@angular/router';
 import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 
 import {MatTabsModule} from '@angular/material/tabs';
 
-
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 @Component({
   selector: 'app-cart-main',
-  imports: [RouterOutlet,HeaderComponent, FooterComponent, CommonModule, RouterModule, MatTabsModule],
+  imports: [RouterOutlet,HeaderComponent, FooterComponent, CommonModule, RouterModule, MatTabsModule, NgxSpinnerModule],
   templateUrl: './cart-main.component.html',
   styleUrl: './cart-main.component.css'
 })
@@ -21,9 +21,17 @@ export class CartMainComponent implements OnInit {
   currentRoute: string = '';
   subscription!: Subscription;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private spinner: NgxSpinnerService) {}
 
   ngOnInit(): void {
+    // this.router.events.subscribe(event => {
+    //   if (event instanceof NavigationStart) {
+    //     this.spinner.show(); // ✅ Show spinner when navigation starts
+    //   } 
+    //   else if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
+    //     this.spinner.hide(); // ✅ Hide spinner when navigation ends
+    //   }
+    // });
     this.subscription = this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.currentRoute = event.url; 
