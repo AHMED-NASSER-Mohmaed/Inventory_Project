@@ -84,18 +84,19 @@ export class ProductsService {
     return this.http.get<category[]>(this.BrandsUrl, { headers: this.getHeaders(), params: params });
   }
 
-  getFeaturedProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.baseUrl}/getProducts?limit=3`, { headers: this.getHeaders() });
-  }
+  // getFeaturedProducts(): Observable<Product[]> {
+  //   return this.http.get<Product[]>(`${this.baseUrl}/getProducts?limit=3`, { headers: this.getHeaders() });
+  // }
 
   getPaginatedProducts(page: number, itemsPerPage: number, sort: string, category: string, brand:string): Observable<any> {
     const params = {
       page: page,
       limit: itemsPerPage,
       sort: sort,
-      catId: categoryId,
+      category: category,
+      brand: brand
     };
-    return this.http.get(`${this.baseUrl}/getProducts`, { params, headers: this.getHeaders() });
+    return this.http.get(`${this.baseUrl}/OnlineProducts`, { params, headers: this.getHeaders() });
   }
 }
 

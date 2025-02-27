@@ -62,32 +62,31 @@ export class ProductsListComponent implements OnInit {
   }
 
   loadCategories(): void {
-    this.productsService.getAllCategories('_id', 'Cname').subscribe({
+    this.productsService.getAllCategories('id', 'Cname').subscribe({
       next: (data) => {
+        console.log('Categories:', data);
         this.categories = data;
-        // this.categories2 = this.categories.categories;
-        // this.activeCategory = this.categories2.filter((obj: { parentCatId: any }) => obj.parentCatId === null);
+        // this.activeCategory = this.categories.filter((category: any) => !category.parentCatId);
       },
       error: (error) => {
         console.error('Error fetching categories', error);
       }
     });
   }
+  
 
-
-
-  loadBrands(): void {
-    this.productsService.getAllBrands('_id', 'Bname').subscribe({
+  loadBrands(categoryId: string): void {
+    this.productsService.getAllBrands('id', 'Bname').subscribe({
       next: (data) => {
-        this.categories = data;
-        // this.categories2 = this.categories.categories;
-        // this.activeCategory = this.categories2.filter((obj: { parentCatId: any }) => obj.parentCatId === null);
+        
+        this.brandsByCategory = data.filter((brand: any) => brand.categoryId === categoryId);
       },
       error: (error) => {
-        console.error('Error fetching categories', error);
+        console.error('Error fetching brands', error);
       }
     });
-  } 
+  }
+  
 
   onSortChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement; 
@@ -120,7 +119,7 @@ getProducts(pageNumber: number = 1): void {
   }); 
 
   this.sub = this.productsService.getPaginatedProducts(
-      this.currentPage, this.itemsPerPage, this.sort, this.selectedBrandId)
+      this.currentPage, this.itemsPerPage, this.sort, this.selectedBrandId,this.selectedCategoryId)
       .subscribe({
           next: (res: any) => {
               console.log('API Response:', res);
@@ -170,15 +169,18 @@ getProducts(pageNumber: number = 1): void {
       this.getProducts(this.currentPage);
     }
   }
+
+
   onCategoryChange(value: string | null): void {
     console.log('Selected Category ID:', value); 
     if (value !== null) {
-        this.selectedCategoryId = value;
-        this.brandsByCategory = this.categories2.filter((obj: { parentCatId: any }) => obj.parentCatId === this.selectedCategoryId);
-      this.selectedBrandId=this.selectedCategoryId;
-        this.getProducts(1); 
+      this.selectedCategoryId = value;
+      this.loadBrands(value); // Load brands based on the selected category
+      this.selectedBrandId = '';
+      this.getProducts(1); 
     }
-}
+  }
+  
    onBrandChange(value: string | null): void {
   console.log('Selected Brand ID:', value); 
   if (value !== null) {
