@@ -269,7 +269,6 @@ export class OffproductComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.brands = res.data;
         
-        // Update tree nodes with brands
         const brandNode = this.filterNodes.find(node => node.name === 'Brand');
         if (brandNode) {
           brandNode.children = this.brands.map(brand => ({
@@ -504,7 +503,6 @@ export class OffproductComponent implements OnInit, OnDestroy {
               this.toaster.success('Product updated successfully');
               this.backupProduct = { ...this.selectedProduct };
               
-              // Refresh data to ensure consistency with server
               this.refreshProductData();
             } else {
               this.selectedProduct = { ...workingBackup };
@@ -532,7 +530,6 @@ export class OffproductComponent implements OnInit, OnDestroy {
     if (event && event.target) event.target.blur();
   }
 
-  // Direct deletion of an image from the server
   deleteImageDirectly(imageId: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent2);
     const sub = dialogRef.afterClosed().subscribe((result) => {
@@ -541,13 +538,11 @@ export class OffproductComponent implements OnInit, OnDestroy {
           next: (res) => {
             this.toaster.success('Image deleted successfully');
             
-            // Remove the image from the UI
             if (this.selectedProduct && this.selectedProduct.product && this.selectedProduct.product.images) {
               this.selectedProduct.product.images = this.selectedProduct.product.images.filter(
                 (img: ProductImage) => img._id !== imageId && img.fileId !== imageId
               );
               
-              // Update the product in the list
               const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
               if (index !== -1) {
                 this.products[index].product.images = [...this.selectedProduct.product.images];
@@ -564,7 +559,6 @@ export class OffproductComponent implements OnInit, OnDestroy {
     this.subscriptions.push(sub);
   }
 
-  // Keep the original method for batch deletion
   deleteImage(imageId: string): void {
     if (this.selectedImageIds.includes(imageId)) {
       this.selectedImageIds = this.selectedImageIds.filter(id => id !== imageId);
@@ -600,10 +594,8 @@ export class OffproductComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (res) => {
         this.toaster.success('Images updated successfully');
-        // Update the product images in the UI
         if (res.data && res.data.images) {
           this.selectedProduct.product.images = res.data.images;
-          // Also update in the products array
           const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
           if (index !== -1) {
             this.products[index].product.images = res.data.images;
@@ -641,7 +633,6 @@ export class OffproductComponent implements OnInit, OnDestroy {
           this.products[index].stock = this.selectedProduct.stock;
         }
         
-        // Close modal with pure JavaScript
         const modalElement = document.getElementById('stockUpdateModal');
         if (modalElement) {
           modalElement.classList.remove('show');
@@ -651,16 +642,15 @@ export class OffproductComponent implements OnInit, OnDestroy {
         while (backdrops.length > 0) {
           backdrops[0].parentNode?.removeChild(backdrops[0]);
         }
-        // Remove modal-open class from body
         document.body.classList.remove('modal-open');
         document.body.style.removeProperty('padding-right');
         
         this.stockUpdateQuantity = 0;
         
-        // Refresh data
         this.refreshProductData();
       },
       error: (error) => {
+        console.log(error);
         this.toaster.error(error.error.message || 'Failed to update stock');
       }
     });
@@ -683,7 +673,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
     }
 
     this.offproductService.exportProduct(
-      this.selectedProduct.product._id,
+      this.selectedProduct._id,
       this.selectedProduct.branch.toString(),
       this.exportDestinationBranch,
       this.exportQuantity
@@ -989,7 +979,6 @@ export class OffproductComponent implements OnInit, OnDestroy {
             return { id, main: parts[0], sub: parts[1] || '' };
           });
           
-          // Update tree nodes with branches
           const branchNode = this.filterNodes.find(node => node.name === 'Branch');
           if (branchNode) {
             branchNode.children = this.branches.map(branch => ({
@@ -1044,22 +1033,18 @@ export class OffproductComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
-  // New method to refresh data while preserving filters
   refreshProductData(): void {
-    // Clear cache for current view to ensure fresh data
     const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}_${this.selectedBranch}_${this.selectedCategory}_${this.selectedBrand}`;
     if (this.pageCache[cacheKey]) {
       delete this.pageCache[cacheKey];
     }
     
-    // Reload data based on current mode
     if (this.isSearchMode) {
       this.loadSearchResults();
     } else {
       this.loadProducts();
     }
     
-    // Also refresh counts
     this.getActiveProductsCount();
     this.getInActiveProductsCount();
   }
@@ -1100,36 +1085,27 @@ export class OffproductComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Add property to track expanded filter section
   expandedSection: 'branch' | 'category' | 'brand' | null = null;
 
-  // Toggle filter section visibility
   toggleFilterSection(section: 'branch' | 'category' | 'brand'): void {
     this.expandedSection = this.expandedSection === section ? null : section;
   }
 
-  // Select branch filter
   selectBranch(branchId: string): void {
-    // Toggle if already selected
     this.selectedBranch = this.selectedBranch === branchId ? '' : branchId;
     this.onBranchFilterChange();
   }
 
-  // Select category filter
   selectCategory(categoryId: string): void {
-    // Toggle if already selected
     this.selectedCategory = this.selectedCategory === categoryId ? '' : categoryId;
     this.onCategoryFilterChange();
   }
 
-  // Select brand filter
   selectBrand(brandId: string): void {
-    // Toggle if already selected
     this.selectedBrand = this.selectedBrand === brandId ? '' : brandId;
     this.onBrandFilterChange();
   }
 
-  // Clear specific filter
   clearFilter(filterType: 'branch' | 'category' | 'brand'): void {
     if (filterType === 'branch') {
       this.selectedBranch = '';
@@ -1143,7 +1119,6 @@ export class OffproductComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Reset all filters - use existing method but expand functionality
   resetFilters(): void {
     this.selectedBranch = '';
     this.selectedCategory = '';
@@ -1151,7 +1126,6 @@ export class OffproductComponent implements OnInit, OnDestroy {
     this.currentPage = 1;
     this.loadProducts();
     this.updateSearchPlaceholder();
-    // Close any expanded section
     this.expandedSection = null;
   }
 }

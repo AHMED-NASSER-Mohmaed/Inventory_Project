@@ -111,19 +111,15 @@
                                     </button>
                                 </mat-menu>
                                 
-                                <!-- Single Filter Button -->
                                 <button mat-icon-button type="button" [matMenuTriggerFor]="filterMenu" style="border: none; background-color: var(--light);">
                                     <i class='bx bx-filter-alt' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
-                                    <!-- Show indicator if any filter is selected -->
                                     <span *ngIf="selectedBranch || selectedCategory || selectedBrand" class="filter-badge"></span>
                                 </button>
                                 
-                                <!-- Consolidated Filter Menu -->
                                 <mat-menu #filterMenu="matMenu" class="filters-menu">
                                     <div class="consolidated-filter-container" (click)="$event.stopPropagation()">
                                         <h4 class="filter-section-header">Filters</h4>
                                         
-                                        <!-- Branch Filter Section -->
                                         <div class="filter-section">
                                             <div class="filter-category" (click)="toggleFilterSection('branch'); $event.stopPropagation()">
                                                 <span>Branch</span>
@@ -144,7 +140,6 @@
                                         
                                         <div class="filter-divider"></div>
                                         
-                                        <!-- Category Filter Section -->
                                         <div class="filter-section">
                                             <div class="filter-category" (click)="toggleFilterSection('category'); $event.stopPropagation()">
                                                 <span>Category</span>
@@ -165,7 +160,6 @@
                                         
                                         <div class="filter-divider"></div>
                                         
-                                        <!-- Brand Filter Section -->
                                         <div class="filter-section">
                                             <div class="filter-category" (click)="toggleFilterSection('brand'); $event.stopPropagation()">
                                                 <span>Brand</span>
@@ -186,7 +180,6 @@
                                         
                                         <div class="filter-divider"></div>
                                         
-                                        <!-- Reset All Filters Button -->
                                         <div class="filter-actions">
                                             <button type="button" class="btn btn-outline-secondary" 
                                                     (click)="resetFilters(); $event.stopPropagation()"
@@ -198,7 +191,6 @@
                                     </div>
                                 </mat-menu>
                                 
-                                <!-- Remove the old individual MatSelect dropdowns -->
                             </div>
                         </form>
                     </div>
@@ -284,7 +276,7 @@
                                                 <i class='bx bx-transfer-alt'></i> Export
                                             </a>
                                             <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item p-3" (click)="product.product.isActive ? openConfirmDialog(product._id) : openConfirmDialog2(product._id)" style="cursor:pointer;">
+                                            <a class="dropdown-item p-3" (click)="product.product.isActive ? openConfirmDialog(product.product._id) : openConfirmDialog2(product.product._id)" style="cursor:pointer;">
                                                 <i class='bx' [ngClass]="{'bx-check-circle': !product.product.isActive, 'bx-x-circle': product.product.isActive}"></i>
                                                 {{product.product.isActive ? 'Deactivate' : 'Activate'}}
                                             </a>
@@ -303,7 +295,6 @@
         </main>
     </section>
 
-    <!-- Product Info Modal -->
     <div class="modal fade" id="productInfoModal" tabindex="-1" role="dialog" aria-labelledby="productInfoModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -337,7 +328,6 @@
                     <input type="number" [(ngModel)]="selectedProduct.product.cost" name="cost" [disabled]="!editing" class="value">
                   </div>
                 </div>
-                <!-- Category Field - Editable dropdown when in edit mode -->
                 <div class="info-item">
                   <strong class="label">Category:</strong>
                   <div class="input-wrapper">
@@ -353,7 +343,6 @@
                     </ng-template>
                   </div>
                 </div>
-                <!-- Brand Field - Editable dropdown when in edit mode -->
                 <div class="info-item">
                   <strong class="label">Brand:</strong>
                   <div class="input-wrapper">
@@ -389,7 +378,6 @@
                 </div>
               </div>
 
-              <!-- Description field moved right above images -->
               <div class="info-item description-item mt-3" *ngIf="selectedProduct && selectedProduct.product">
                 <strong class="label">Description:</strong>
                 <div class="input-wrapper">
@@ -397,7 +385,6 @@
                 </div>
               </div>
 
-              <!-- Product Images Section with Enhanced UI -->
               <div class="product-images-container" *ngIf="selectedProduct && selectedProduct.product && selectedProduct.product.images">
                 <h6>Product Images</h6>
                 
@@ -409,7 +396,6 @@
                     </button>
                   </div>
                   
-                  <!-- Empty state when no images -->
                   <div class="no-images-placeholder" *ngIf="selectedProduct.product.images.length === 0">
                     <i class='bx bx-image'></i>
                     <p>No images yet</p>
@@ -450,7 +436,6 @@
       </div>
     </div>
 
-    <!-- Add Product Modal -->
     <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content custom-modal">
@@ -578,7 +563,6 @@
       </div>
     </div>
 
-    <!-- Export Product Modal -->
     <div class="modal fade" id="exportProductModal" tabindex="-1" role="dialog" aria-labelledby="exportProductModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
