@@ -31,5 +31,14 @@ module.exports.OnlineProductService={
         }catch(error){
             throw error;
         }
+    },
+
+    getPrductById:async(id)=>{
+        try{
+            return await OnlineProductsRepository.getProductByID(id);
+        }catch(error){
+            throw error;
+        }
     }
+
 }

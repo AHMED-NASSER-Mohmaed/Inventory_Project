@@ -14,6 +14,17 @@ const OnlineProductsRepository = {
     }
   },
 
+  getProductByID:async(id)=>{
+    try{
+      return  await OnlineProducts.findById(id)
+        .populate("seller")
+        .populate("product")
+        .select();
+    }catch(error){
+      throw error;
+    }
+  },
+
   updateOurSellerRecordQty: async (productId, sellerId, newQty) => {
     try {
 
