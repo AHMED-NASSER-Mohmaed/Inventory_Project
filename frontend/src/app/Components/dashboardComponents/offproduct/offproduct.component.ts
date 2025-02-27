@@ -555,6 +555,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
             }
           },
           error: (error) => {
+            console.log(error)
             this.toaster.error(error.error?.message || 'Failed to delete image');
           }
         });

@@ -53,7 +53,7 @@ export class OffproductService {
   }
 
   deleteProductImage(productId: string, imageId: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/product/Images/delete/${imageId}`, { headers: this.getHeaders() });
+    return this.http.delete(`${this.baseUrl}/product/Images/delete/${productId}/${imageId}`, { headers: this.getHeaders() });
   }
 
   updateProductData(productId: string, data: any): Observable<any> {
