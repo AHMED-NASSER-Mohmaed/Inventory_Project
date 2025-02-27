@@ -14,6 +14,7 @@ const { sendResponseToClint } = require("../utils/apiFeatures");
 
 
 const express = require("express");
+
 const router = express.Router();
 
 
@@ -38,6 +39,11 @@ const OnlineProductsOp = {
         let result = await OnlineProductService.getONProducts(req.validatedParams);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 
+    },
+
+    getProductByID:async(req,res,next)=>{
+        let result=await OnlineProductService.getPrductById(req.params.id);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
     }
 }
 
@@ -47,6 +53,9 @@ router
         validatorFilterParams( [["undefined"]] , [["undefined"]]),
         validateSearchParams(OnlineProductsOp.searchFiledName, OnlineProductsOp.searchValueAcoordingNaN),
         catchAsync(OnlineProductsOp.getOnLineProducts)
+    )
+    .get("/OnlineProducts/:id",
+        catchAsync(OnlineProductsOp.getProductByID)
     )
 
  

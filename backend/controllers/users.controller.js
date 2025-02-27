@@ -19,9 +19,8 @@ const AppError = require("../utils/appError");
 const route = express.Router();
 
 const genaricFilters = {
-
-  searchFiledName: ["firstName", "lastName","branch", "SSN", "phoneNumber",],
-  searchValueAcoordingNaN: [true, true,false, false, false],
+  searchFiledName: ["firstName", "lastName", "branch", "SSN", "phoneNumber"],
+  searchValueAcoordingNaN: [true, true, false, false, false],
 
   searchFiledNameForCustomer: ["firstName", "lastName", "phoneNumber"],
   searchValueAcoordingNaNforCustomer: [true, true, false],
@@ -77,8 +76,6 @@ const genaraicFunctions = {
   },
 
   updateImageProfile: async (req, res, next) => {
-   
-
     let result = null;
     try {
       if (!req.files)
@@ -291,7 +288,6 @@ const sellerOp = {
 /********************************************************************/
 
 const adminOp = {
-
   addAdmin: async (req, res, next) => {
     //attach role on data
 
@@ -299,7 +295,6 @@ const adminOp = {
     // req.body.managerId = req.user._id;
 
     // req.body.passwordConfirm = req.body.password;
-
 
     const result = await staffService.createStaff(req.body);
 
@@ -313,12 +308,11 @@ const adminOp = {
 
   //delete by id
   deleteAdmin: async (req, res, next) => {
-
     const result = await staffService.deleteStaff({
       _id: req.params.id,
       role: APP_CONFIG.ADMIN,
     });
-    
+
     sendResponseToClint(
       res,
       APP_CONFIG.HTTP_OK,
@@ -329,11 +323,9 @@ const adminOp = {
 
   //by id
   activeAdmin: async (req, res, next) => {
-
-
     const result = await staffService.activeStaff({
       _id: req.params.id,
-      branch:req.params.bid,
+      branch: req.params.bid,
       role: APP_CONFIG.ADMIN,
     });
 
@@ -348,9 +340,8 @@ const adminOp = {
   // //paggination -->filter --- sort
   // also search by SSN , firstName , lastName , phoneNumber
   getAdmins: async (req, res, next) => {
-
     req.validatedParams.filters["role"] = APP_CONFIG.ADMIN;
-    
+
     const result = await staffService.getStaffByFilter(req.validatedParams);
     sendResponseToClint(
       res,
@@ -393,9 +384,7 @@ const adminOp = {
 /***********************************************************************/
 
 const clerkOp = {
-
   addClerk: async (req, res, next) => {
-
     //attach role on data
     req.body.role = APP_CONFIG.CLERK;
 
@@ -428,11 +417,10 @@ const clerkOp = {
 
   //active clerk by id
   activeClerk: async (req, res, next) => {
-
-    console.log(req.params)
+    console.log(req.params);
     const ack = await staffService.activeStaff({
       _id: req.params.id,
-      branch:req.params.bid,
+      branch: req.params.bid,
       role: APP_CONFIG.CLERK,
     });
 
@@ -496,7 +484,7 @@ const cashierOp = {
   addCashier: async (req, res, next) => {
     //attach role on data
     req.body.role = APP_CONFIG.CASHIER;
-     
+
     const cashier = await staffService.createStaff(req.body);
 
     sendResponseToClint(
@@ -527,7 +515,7 @@ const cashierOp = {
   activeCashier: async (req, res, next) => {
     const ack = await staffService.activeStaff({
       _id: req.params.id,
-      branch:req.params.bid,
+      branch: req.params.bid,
       role: APP_CONFIG.CASHIER,
     });
 
@@ -625,10 +613,7 @@ const customerOp = {
 
   //done
   updateCustomer: async (req, res, next) => {
-    
-      
     if (req.user.role !== APP_CONFIG.SUPPERADMIN) {
-
       if (req.user.userType == APP_CONFIG.CUSTOMER)
         req.params.id = req.user._id;
       else
@@ -640,7 +625,7 @@ const customerOp = {
 
     console.log(req.params.id);
 
-    let result = await userService.updateUser(req.params.id , req.body);
+    let result = await userService.updateUser(req.params.id, req.body);
     sendResponseToClint(
       res,
       APP_CONFIG.HTTP_OK,
@@ -925,7 +910,6 @@ route
   /****************************************************************************************************/
   // customer section
 
-   
   .post(
     "/addCustomer",
     prot_rest(APP_CONFIG.SUPPERADMIN),
@@ -961,7 +945,6 @@ route
     catchAsync(customerOp.activeCustomer)
   ) //end of patch
 
-  
   .get(
     "/customerCount",
     prot_rest(APP_CONFIG.SUPPERADMIN),
@@ -971,12 +954,13 @@ route
     ),
     catchAsync(customerOp.getCustomerCount)
   )
-  
-  .post("/updateCustomer",
+
+  .post(
+    "/updateCustomer",
     prot_rest(APP_CONFIG.CUSTOMER),
     catchAsync(customerOp.updateCustomer)
   )
-  
+
   .patch(
     "/updateCustomer/:id",
     prot_rest(APP_CONFIG.SUPPERADMIN),
@@ -992,7 +976,6 @@ route
     catchAsync(genaraicFunctions.updateImageProfile)
   )
 
-   
   //update image profile for othe with intvention from super admin.
   .patch(
     "/updateImageProfileFor/:id",

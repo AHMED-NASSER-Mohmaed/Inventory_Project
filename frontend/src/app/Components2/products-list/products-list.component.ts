@@ -7,7 +7,7 @@ import { catchError, of, Subscription } from 'rxjs';
 import { HeaderComponent } from "../../core/header/header.component";
 import { FooterComponent } from "../../core/footer/footer.component";
 import { QuickviewComponent } from '../HomePage/quickview/quickview.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { category } from '../../_models/category';
 import { Brand } from '../../_models/api-responses';
 import { NgModule } from '@angular/core';
@@ -25,7 +25,7 @@ import { CartService } from '../../_services/cart.service';
 @Component({
   selector: 'app-products-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, QuickviewComponent, HeaderComponent, FooterComponent],
+  imports: [CommonModule, FormsModule, QuickviewComponent, HeaderComponent, FooterComponent, RouterLink],
   templateUrl: './products-list.component.html',
   styleUrls: ['./products-list.component.css']
 })
@@ -295,6 +295,7 @@ export class ProductsListComponent implements OnInit {
     }
   
     increase(product: any) {
+      console.log(product);
       if (product.requiredQty + 1 > product.stock) return;
         product.requiredQty += 1;
         this.cartService.addToCart(product._id, 1, this.sessionId!).subscribe((response) => {

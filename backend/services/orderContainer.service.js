@@ -5,6 +5,8 @@ const onlineProductRepo = require("../repos/tempOnlineProduct.repo");
 const offlineProductRepo = require("../repos/tempOfflineProducts.repo")
 const AppError = require("../utils/appError");
 
+const UserProductRpo = require("../repos/userProducts.repo")
+
 class OrderContainerService {
 
 
@@ -14,10 +16,11 @@ class OrderContainerService {
     }
 
     const sellerOrders = {};
-
+    const tempArrayToBeAddedInTheProductUser = [];
     for (const item of cart.products) {
       
       const OnlineProduct = await onlineProductRepo.getOnlineProductById(item.onlineProduct._id);
+      tempArrayToBeAddedInTheProductUser.push(item.onlineProduct._id);
       console.log(OnlineProduct);
 
       // get the seller ID as a string (after populating, seller is an object)
@@ -89,7 +92,7 @@ class OrderContainerService {
     // update the orderContainer with references to the created orders
     orderContainer.sellersOrders = orders.map(order => ({ order: order._id }));
     await orderContainer.save();
-
+    
     // return the created orderContainer
     return orderContainer;
   }

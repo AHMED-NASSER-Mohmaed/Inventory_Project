@@ -55,17 +55,13 @@ export class LoginComponent implements OnDestroy{
 
           if(tokenData.id.role === 'admin'){
             setTimeout(() => {
-              this.router.navigateByUrl('/dashboard');
+              this.router.navigateByUrl('/LandingPage');
             }, 1500);
-          }
-
-          if(tokenData.id.role === 'super_admin'){
+          }else if(tokenData.id.role === 'super_admin'){
             setTimeout(() => {
               this.router.navigateByUrl('/dashboard');
             }, 1500);
-          }
-
-          if(tokenData.id.userType === 'customer'){
+          }else{
             setTimeout(() => {
               this.router.navigateByUrl('/LandingPage');
             }, 1500);

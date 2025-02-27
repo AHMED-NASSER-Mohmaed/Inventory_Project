@@ -390,4 +390,28 @@
     transform: scale(1.2);
   }
 
+  .no-reviews-message {
+    text-align: center;
+    padding: 40px 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+  }
+  
+  .empty-reviews-icon {
+    font-size: 4rem;
+    color: #ccc;
+    margin-bottom: 15px;
+  }
+  
+  .no-reviews-message h3 {
+    font-size: 1.6em;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .no-reviews-message p {
+    font-size: 1.1em;
+    color: #666;
+  }
+
 

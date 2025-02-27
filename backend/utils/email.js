@@ -119,4 +119,12 @@ module.exports = class Email {
       _content
     );
   }
+
+  async sendApprovedSeller() {
+    await this.send("approvedSeller", "Watchlok: Your status as seller");
+  }
+
+  async sendRejectedSeller() {
+    await this.send("rejectedSeller", "Watchlok: Your status as seller");
+  }
 };

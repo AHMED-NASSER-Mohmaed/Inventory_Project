@@ -3,7 +3,27 @@ const orderRepository = require("../repos/order.repo");
 const orderContainerRepository = require("../repos/orderContainer.repo");
 const onlineProductRepo = require("../repos/tempOnlineProduct.repo");
 const AppError = require("../utils/appError");
+const ProductUserRepo = require("../repos/userProducts.repo");
 class OrderService {
+
+  async  getCustomerAndProducts(orderId) {
+    try {
+        const orderData = await orderRepository.getOrderById(orderId); //
+        const customerId = orderData?.orderContainer?.customer?._id.toString();
+        const  onlineProductsIds = orderData?.products
+        .map(product => product.onlineProduct._id.toString());
+        
+        return {
+           customerId,
+           onlineProductsIds
+        };
+    } catch (error) {
+        console.error("Error fetching order:", error);
+        return null;
+    }
+}
+
+
 // need to check on the user comming to update the order if he is the clerk or the cashier or the external seller
 // cahier is the one who takes the rate of the order from the external seller by confirming the order by status completed
 // clerk is the one who processes the order and fulfill it same as the external seller who handles his own orders
@@ -84,6 +104,13 @@ class OrderService {
             order.status = isPartiallyFulfilled ? "partially shipped" : "shipped";
           } else if (newStatus === "delivered") {
               order.status = isPartiallyFulfilled ? "partially delivered" : "delivered";
+              console.log(order)
+              const mappedOrderProductsIds = await this.getCustomerAndProducts(order._id.toString());
+              console.log(mappedOrderProductsIds);
+              console.log(mappedOrderProductsIds.customerId);        // Use it wherever needed
+              console.log(mappedOrderProductsIds.onlineProductsIds); // 
+              
+              await ProductUserRepo.addProducts(mappedOrderProductsIds.customerId, mappedOrderProductsIds.onlineProductsIds);
           } else if (newStatus === "cancelled") {
             await Promise.all(order.products.map(async (prod) => {
                 if (prod.fulfilledQuantity > 0) {
@@ -202,6 +229,8 @@ class OrderService {
             updatedAt,
         };
     }
+    
+  
       async getOrderById(orderId) {
         const returnedOrder = await orderRepository.getOrderById(orderId);
 

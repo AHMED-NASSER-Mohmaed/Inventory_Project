@@ -1,0 +1,46 @@
+
+<div class="container">
+    <div class="leftbox">
+        <nav>
+            <a routerLink="/LandingPage" id="Home"><i class="fa-solid fa-house"></i></a>
+            <a id="profile" class="active"><i class="fa fa-user"></i></a>
+            <a routerLink="/clerk-dashboard"id="Dashboard"><i class='bx bxs-dashboard'></i></a>
+            <a (click)="openConfirmDialog()" id="Logout"><i class="fa-solid fa-right-from-bracket" style="transform: rotate(180deg);"></i></a>
+        </nav>
+    </div>
+    
+    <div class="rightbox">
+        <div class="profile">
+            <h1>Personal Info</h1>
+            <div class="image-container">
+                <img [src]="userP" width="100" height="100" style="border-radius: 180px;" class="firstImage" />
+            </div>
+    
+            <form #personalInfoForm="ngForm">
+                <h2>First Name</h2>
+                <input type="text" [(ngModel)]="user.firstName" name="firstName" [disabled]="!isEditing" required
+                    minlength="3" #firstName="ngModel"
+                    [ngClass]="{'valid': firstName.valid, 'invalid': firstName.invalid && firstName.touched}"
+                    id="firstName" />
+    
+                <h2>Last Name</h2>
+                <input type="text" [(ngModel)]="user.lastName" name="lastName" [disabled]="!isEditing" required
+                    minlength="3" #lastName="ngModel"
+                    [ngClass]="{'valid': lastName.valid, 'invalid': lastName.invalid && lastName.touched}" id="lastName" />
+    
+                <h2>Phone Number</h2>
+                <input type="text" [(ngModel)]="user.phoneNumber" name="phoneNumber" [disabled]="!isEditing" required
+                    pattern="^(010|011|012|015)[0-9]{8}$" #phoneNumber="ngModel"
+                    [ngClass]="{'valid': phoneNumber.valid, 'invalid': phoneNumber.invalid && phoneNumber.touched}"
+                    id="phoneNumber" />
+    
+                <h2>Email</h2>
+                <input type="email" [(ngModel)]="user.email" name="email" [disabled]="!isEditing" required email
+                    #email="ngModel" [ngClass]="{'valid': email.valid, 'invalid': email.invalid && email.touched}"
+                    id="email" />
+            </form>
+    
+           
+        </div>
+    </div>
+</div>

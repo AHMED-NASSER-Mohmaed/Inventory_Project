@@ -2,49 +2,64 @@
 <div class="div1">
   <div class="div2">
     <main class="main">
-      <!-- Wrapper Section -->
       <section class="section wrapper wrapper-section">
         <div class="container wrapper-column">
-        <p-carousel class="larger-carousel" [value]="images" [numVisible]="1" [numScroll]="1" [circular]="true" [autoplayInterval]="3000"
-            [showIndicators]="true">
-            <ng-template pTemplate="item" let-image >
-                <div class="wrapper-bgimage">
-                    <img [src]="image.src" class="wrapper-image" alt="product">
-                </div>
-            </ng-template>
-        </p-carousel>
-          <div class="wrapper-content">
+          <div *ngIf="isLoading" class="center" style="grid-column: span 2; padding: 2rem;">
+            <p>Loading product details...</p>
+          </div>
+          
+          <div *ngIf="errorMessage" class="center" style="grid-column: span 2; padding: 2rem;">
+            <p style="color: red;">{{ errorMessage }}</p>
+          </div>
+          
+          <p-carousel *ngIf="!isLoading && product" class="larger-carousel" [value]="images" [numVisible]="1" [numScroll]="1" [circular]="true" [autoplayInterval]="3000"
+              [showIndicators]="true">
+              <ng-template pTemplate="item" let-image >
+                  <div class="wrapper-bgimage">
+                      <img [src]="image.src" class="wrapper-image" alt="product">
+                  </div>
+              </ng-template>
+          </p-carousel>
+          
+          <div *ngIf="!isLoading && product" class="wrapper-content">
             <div class="wrapper-inform">
-              <span class="badge badge-darken">Man's Watches</span>
+              <div class="category-brand">
+                <div class="product-meta" *ngIf="product.brand">
+                  <span class="meta-label">Brand:</span>
+                  <span class="badge badge-brand">{{ product.brand.Bname }}</span>
+                </div>
+                <div class="product-meta">
+                  <span class="meta-label">Section:</span>
+                  <span class="badge badge-category">{{ product.category?.Cname || 'Product Category' }}</span>
+                </div>
+              </div>
               <h1 class="display-medium font-bold" style="letter-spacing: 2px; font-weight: 750;">
-                Rolex Diamond Edition
+                {{ product.name }}
               </h1>
               <p class="text-base font-normal">
-                Experience timeless elegance with this masterfully crafted timepiece,
-                featuring precision engineering and luxurious diamond accents that
-                perfectly blend traditional craftsmanship with modern sophistication.
+                {{ product.description }}
               </p>
             </div>
             <div class="wrapper-detail">
               <div class="price">
                 <span class="text-base font-medium">Price:</span>
-                <h3 class="text-large font-semi">$1099.00</h3>
+                <h3 class="text-large font-semi">${{ product.price }}.00</h3>
               </div>
-              <div class="sizes">
-                <span class="text-base font-medium">Colors:</span>
-                <ul class="sizes-lists">
-                  <li class="sizes-item is-select" style="background-color: #612121; border-radius: 50%"></li>
-                  <li class="sizes-item" style="background-color: #22225f; border-radius: 50%"></li>
-                  <li class="sizes-item" style="background-color: #352d0c; border-radius: 50%"></li>
-                  <li class="sizes-item" style="background-color: #000000; border-radius: 50%"></li>
-                </ul>
+              <div class="stock-indicator">
+                <span class="text-base font-medium">Availability:</span>
+                <div class="stock-status">
+                  <span class="stock-dot" [ngClass]="{'in-stock': stockCount > 0, 'out-of-stock': stockCount <= 0}"></span>
+                  <span class="stock-text" [ngClass]="{'text-success': stockCount > 0, 'text-danger': stockCount <= 0}">
+                    {{ stockCount > 0 ? 'In Stock' : 'Out of Stock' }}
+                  </span>
+                </div>
               </div>
             </div>
             <div class="wrapper-action">
-              <button class="btn btn-darken">Add to Cart</button>
-              <!-- <button class="btn btn-default" disabled>
-                <i class="far fa-heart"></i>
-              </button> -->
+              <button class="btn btn-darken" [disabled]="stockCount <= 0" (click)="increase(product)">
+                Add to Cart
+              </button>
+              <span *ngIf="stockCount > 0" class="stock-count">{{ stockCount }} items left</span>
             </div>
           </div>
         </div>

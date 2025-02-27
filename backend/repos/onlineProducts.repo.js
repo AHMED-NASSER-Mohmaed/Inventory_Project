@@ -14,6 +14,39 @@ const OnlineProductsRepository = {
     }
   },
 
+  //for product details page
+  getProductByID:async(id)=>{
+    try{
+      return await OnlineProducts.findOne({
+        _id: id,
+        isActive: true,
+        status: APP_CONFIG.APPROVED_STATUS
+      })
+        .populate({
+          path: "seller",
+          select: "firstName lastName companyName"
+        })
+        .populate({
+          path: "product",
+          select: "name code price images description brand category", 
+          populate: [
+            {
+              path: "brand",
+              select: "Bname" // Selecting required fields from brand
+            },
+            {
+              path: "category",
+              select: "Cname" // Selecting required fields from category
+            }
+          ]
+        })
+        .select("stock");
+      
+    }catch(error){
+      throw error;
+    }
+  },
+
   updateOurSellerRecordQty: async (productId, sellerId, newQty) => {
     try {
 

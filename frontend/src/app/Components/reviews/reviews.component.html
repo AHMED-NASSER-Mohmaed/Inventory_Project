@@ -2,10 +2,18 @@
 <section class="testimonial-section" id="testimonials">
     <div class="container">
       <h2 class="section-title" style="color: hsl(210, 15%, 8%);">Reviews</h2>
-      <div class="swiper testimonial-wrapper grid-col-3">
+      
+      <!-- No reviews message -->
+      <div *ngIf="!reviews || reviews.length === 0" class="no-reviews-message">
+        <div class="empty-reviews-icon">
+          <i class='bx bx-message-x'></i>
+        </div>
+        <h3>No Reviews Yet For This Product</h3>
+        <p>Be the first to share your experience!</p>
+      </div>
+      
+      <div class="swiper testimonial-wrapper grid-col-3" *ngIf="reviews && reviews.length > 0">
         <div class="swiper-wrapper">
-
-
 
         <ng-container *ngFor="let review of reviews">
             <div class="swiper-slide testimonial-items">
@@ -135,8 +143,6 @@
                 </div>
             </div>
         </ng-container>
-
-
 
         </div>
         <!-- <div class="swiper-button-next"></div>   -->

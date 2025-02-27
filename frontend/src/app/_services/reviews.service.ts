@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class ReviewsService {
   }
 
   getProductReviews(id: string): any {
-    return this.http.get(`${this.baseUrl}/products/${id}/reviews`, { headers: this.getHeaders() });
+    return this.http.get(`${this.baseUrl}/reviews/${id}`, { headers: this.getHeaders() });
   }
 
   getUser(userId: string) {
@@ -23,7 +24,10 @@ export class ReviewsService {
   }
 
   addReview(productId: string, review: { content: string; rating: number }) {
-    return this.http.post(`${this.baseUrl}/products/${productId}/reviews`, review, { headers: this.getHeaders() });
+    return this.http.post(`${this.baseUrl}/reviews/${productId}`, review, { headers: this.getHeaders() });
   }
 
+  getProductDetails(id: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/OnlineProducts/${id}`, { headers: this.getHeaders() });
+  }
 }
