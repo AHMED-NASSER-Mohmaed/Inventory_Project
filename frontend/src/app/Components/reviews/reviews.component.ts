@@ -36,13 +36,15 @@ export class ReviewsComponent implements AfterViewInit, OnInit, OnDestroy {
               this.reviews = res.reviews;
               
               this.reviews.forEach(review => {
-                this.subscriptions.push(
-                  this.reviewsService.getUser("67ba212a1072108c0cdc8764").subscribe({
-                    next: (userRes: any) => {
-                      review.user = userRes.user;
-                    }
-                  })
-                );
+                if (review.user && review.user._id) {
+                  this.subscriptions.push(
+                    this.reviewsService.getUser(review.user._id).subscribe({
+                      next: (userRes: any) => {
+                        review.user = userRes.user;
+                      }
+                    })
+                  );
+                }
               });
             }
           })
