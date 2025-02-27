@@ -1,33 +1,46 @@
-import { Component, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { CarouselModule } from 'primeng/carousel';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
+import { CommonModule } from '@angular/common';
 import { ReviewsComponent } from '../reviews/reviews.component';
 import { HeaderComponent } from '../../core/header/header.component';
 import { FooterComponent } from '../../core/footer/footer.component';
+import { ReviewsService } from '../../_services/reviews.service';
+
+interface ProductImage {
+  _id?: string;
+  fileId: string;
+  url: string;
+}
+
+interface ProductDetails {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  categoryName?: string;
+  images: ProductImage[];
+}
 
 @Component({
   selector: 'app-productdetails',
   standalone: true,
-  imports: [CarouselModule, TagModule, ButtonModule , ReviewsComponent , HeaderComponent , FooterComponent],
+  imports: [CarouselModule, TagModule, ButtonModule, ReviewsComponent, HeaderComponent, FooterComponent, CommonModule],
   templateUrl: './productdetails.component.html',
   styleUrl: './productdetails.component.css'
 })
-export class ProductdetailsComponent implements AfterViewInit, OnDestroy {
-
-  images: any[] = [
-    { src: 'assets/pic1.png' },
-    { src: 'assets/pic1.png' },
-    { src: 'assets/pic1.png' }
-  ];
+export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit {
+  productId: string = '';
+  product: ProductDetails | null = null;
+  images: any[] = [];
+  isLoading: boolean = true;
+  errorMessage: string = '';
 
   // New responsive carousel data
-  products: any[] = [
-    { image: 'pic1.png', inventoryStatus: 'INSTOCK', name: 'Product 1', price: 99 },
-    { image: 'pic2.png', inventoryStatus: 'LOWSTOCK', name: 'Product 2', price: 149 },
-    { image: 'pic3.png', inventoryStatus: 'OUTOFSTOCK', name: 'Product 3', price: 199 }
-  ];
-
+  products: any[] = [];
   responsiveOptions: any[] = [
     { breakpoint: '1024px', numVisible: 3, numScroll: 3 },
     { breakpoint: '768px', numVisible: 2, numScroll: 2 },
@@ -35,6 +48,63 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy {
   ];
 
   private cleanupFunctions: (() => void)[] = [];
+
+  constructor(
+    private route: ActivatedRoute,
+    private reviewsService: ReviewsService
+  ) {}
+
+  ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      if (params['id']) {
+        this.productId = params['id'];
+        this.loadProductDetails();
+      } else {
+        // If no ID provided, use a default ID for testing
+        this.productId = '67c01abc9c3783c4fa6af8e1';
+        this.loadProductDetails();
+      }
+    });
+  }
+
+  loadProductDetails(): void {
+    this.isLoading = true;
+    this.reviewsService.getProductDetails(this.productId).subscribe({
+      next: (response) => {
+        if (response && response.data) {
+          const productData = response.data.product;
+          this.product = {
+            _id: productData._id,
+            name: productData.name,
+            description: productData.description,
+            price: productData.price,
+            category: productData.category,
+            images: productData.images
+          };
+          
+          // Filter out the default image and prepare carousel images
+          const defaultImageUrl = "https://ik.imagekit.io/ysypur5vc/Untitled_azZLiI3tg.jpg";
+          this.images = this.product.images
+            .filter(img => img.url !== defaultImageUrl)
+            .map(img => ({
+              src: img.url
+            }));
+          
+          // If no images remain after filtering, use a placeholder
+          if (this.images.length === 0) {
+            this.images = [{ src: 'assets/placeholder-image.png' }];
+          }
+          
+          this.isLoading = false;
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching product details:', error);
+        this.errorMessage = 'Failed to load product details. Please try again later.';
+        this.isLoading = false;
+      }
+    });
+  }
 
   ngAfterViewInit(): void {
     const headerMenu = document.getElementById("header");

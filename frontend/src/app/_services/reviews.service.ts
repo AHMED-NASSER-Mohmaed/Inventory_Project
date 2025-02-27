@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -26,4 +27,7 @@ export class ReviewsService {
     return this.http.post(`${this.baseUrl}/reviews/${productId}`, review, { headers: this.getHeaders() });
   }
 
+  getProductDetails(id: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/OnlineProducts/${id}`, { headers: this.getHeaders() });
+  }
 }
