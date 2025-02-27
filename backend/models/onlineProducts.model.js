@@ -24,12 +24,7 @@ const OnlineProductsSchema = new mongoose.Schema(
     },
 
 
-    // // Default is "pending" for the seller
-    // status: {
-    //   type: String,
-    //   enum: ["pending", "approved", "rejected"],
-    //   default: "pending",
-    // },
+    
 
     // Online branches only
     branch: { type: Number, ref: "Branch", required: true },
