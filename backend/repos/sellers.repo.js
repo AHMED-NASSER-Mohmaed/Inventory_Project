@@ -7,7 +7,6 @@ const AppError = require("../utils/appError");
 
 // filter is an object
 async function getSellerByFilter(page, limit, sort, filter) {
-
     try {
 
         const [results, total] = await Promise.all([

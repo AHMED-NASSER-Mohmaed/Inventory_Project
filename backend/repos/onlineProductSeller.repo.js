@@ -5,6 +5,7 @@ class OnlineProductRepository {
 
   // Case 1: Seller adds an already approved product
   async addSellerProduct(sellerId, productId, stock, price) {
+    
     try {
 
     //check firstly if product exist or not 

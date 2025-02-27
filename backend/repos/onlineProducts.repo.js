@@ -50,65 +50,6 @@ const OnlineProductsRepository = {
   // },
 
 
-  //fix that 
-  //isActive + deactive products
-  //filters may contain [catergory,brand] 
-  // getONProducts: async (filters, sort, page, limit) => {
-
-  //   try {
-
-  //     const [result, total] = await Promise.all([
-
-  //       await OnlineProducts.aggregate([
-  //         {
-  //           $lookup: {
-  //             from: "products",
-  //             localField: "product",
-  //             foreignField: "_id",
-  //             as: "product"
-  //           }
-  //         },
-  //         { $unwind: "$product" },
-  //         {
-  //           $match: {
-  //             ...filters
-  //           }
-
-  //         },
-  //         { $sort: sort },
-  //         { $skip: (page - 1) * limit },
-  //         { $limit: limit },
-  //         { $project: { __v: 0, kind: 0, "product.satus": 0, "product.isActive": 0 } }
-  //       ]),
-  //       await OnlineProducts.aggregate([
-  //         {
-  //           $lookup: {
-  //             from: "products",
-  //             localField: "product",
-  //             foreignField: "_id",
-  //             as: "product"
-  //           }
-  //         },
-  //         { $unwind: "$product" },
-  //         {
-  //           $match: {
-  //             ...filters
-  //           }
-  //         },
-  //         {
-  //           $count: "total"
-  //         }])
-
-
-  //     ])
-  //     return inboxResult(result, total[0]?.total || 0, page, limit);
-  //   } catch (error) {
-  //     throw error;
-  //   }
-
-  // },
-
-
   //for youmna
   getONProducts: async (filters, sort, page, limit) => {
 
@@ -155,16 +96,13 @@ const OnlineProductsRepository = {
                   "_id": 1,
                   "product._id": 1,
                   "product.name":1,
+                  "product.code":1,
                   "product.price": 1,
                   "product.images":1,
-                  
-                  "description": 1,
+                  "product.description": 1,
                   "seller._id":1,
                   "seller.firstName": 1, // Ensure seller's first name is included
                   "seller.lastName":1,
-                  
-
-
               }
           }
         ]),
@@ -197,7 +135,7 @@ const OnlineProductsRepository = {
     }
   },
 
-
+  
 
   // getCount: async (filters) => {
   //   try {
