@@ -67,11 +67,12 @@ button.btn {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    transition: background 0.3s;
+    transition:  0.3s;
 }
 
 button.btn:hover {
-    background: #218838;
+    background: rgba(60, 56, 56, 0.53);
+    color: black;
 }
 
 select, input {
