@@ -36,7 +36,6 @@ class SellerAnalysisRepository {
           status: { $in: ["delivered", "completed"] },
         },
       },
-
       { $unwind: "$products" },
       {
         $group: {
@@ -45,9 +44,10 @@ class SellerAnalysisRepository {
           totalProductRevenue: { $sum: "$products.totalPrice" },
         },
       },
+      // Lookup product details from the products collection
       {
         $lookup: {
-          from: "products", // your collection name for products
+          from: "products",
           localField: "_id",
           foreignField: "_id",
           as: "productDetails",
@@ -57,6 +57,56 @@ class SellerAnalysisRepository {
         $unwind: {
           path: "$productDetails",
           preserveNullAndEmptyArrays: true,
+        },
+      },
+      // Lookup online product details from the onlineproducts collection for this seller
+      {
+        $lookup: {
+          from: "onlineproducts",
+          let: { productId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$product", "$$productId"] },
+                    { $eq: ["$seller", new mongoose.Types.ObjectId(sellerId)] },
+                  ],
+                },
+                isActive: true,
+                status: "approved",
+              },
+            },
+            { $project: { price: 1, _id: 0 } },
+            { $limit: 1 },
+          ],
+          as: "onlineProductDetails",
+        },
+      },
+      {
+        $unwind: {
+          path: "$onlineProductDetails",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      // Final projection: include only specific fields from productDetails and compute finalPrice
+      {
+        $project: {
+          _id: 1,
+          totalQuantity: 1,
+          totalProductRevenue: 1,
+          productDetails: {
+            name: "$productDetails.name",
+            code: "$productDetails.code",
+            price: "$productDetails.price",
+            category: "$productDetails.category",
+            status: "$productDetails.status",
+            images: "$productDetails.images",
+            sellers: "$productDetails.sellers",
+          },
+          finalPrice: {
+            $ifNull: ["$onlineProductDetails.price", "$productDetails.price"],
+          },
         },
       },
       { $sort: { totalQuantity: -1 } },
@@ -72,43 +122,6 @@ class SellerAnalysisRepository {
         $group: {
           _id: "$status",
           count: { $sum: 1 },
-        },
-      },
-    ]);
-  }
-
-  // Get inventory summary from OnlineProducts for this seller
-  async getSellerInventorySummary(sellerId) {
-    return await OnlineProducts.aggregate([
-      {
-        $match: {
-          seller: new mongoose.Types.ObjectId(sellerId),
-          isActive: true,
-          status: "approved",
-        },
-      },
-      {
-        $group: {
-          _id: "$product",
-          totalStock: { $sum: "$stock" },
-          averagePrice: { $avg: "$price" },
-        },
-      },
-      {
-        $sort: { totalStock: 1 },
-      },
-      {
-        $lookup: {
-          from: "products", // collection name of your Product model
-          localField: "_id",
-          foreignField: "_id",
-          as: "productDetails",
-        },
-      },
-      {
-        $unwind: {
-          path: "$productDetails",
-          preserveNullAndEmptyArrays: true,
         },
       },
     ]);

@@ -3,6 +3,7 @@ const Product = require("../models/product.model");
 const User = require("../models/user.model");
 const Order = require("../models/order.model");
 const OnlineProducts = require("../models/onlineProducts.model");
+const mongoose = require("mongoose");
 
 class DashboardRepository {
   // Total number of products
@@ -20,43 +21,6 @@ class DashboardRepository {
         },
       },
     ]);
-  }
-
-  // Aggregate online stock per product (only active & approved online products)
-  async getOnlineInventorySummary() {
-    return await OnlineProducts.aggregate([
-      {
-        $match: {
-          isActive: true,
-          status: "approved",
-        },
-      },
-      {
-        $group: {
-          _id: "$product", // group by product id
-          totalStock: { $sum: "$stock" },
-          averagePrice: { $avg: "$price" },
-        },
-      },
-    ]);
-  }
-
-  // Get low-stock products based on a threshold (aggregate online stock below threshold)
-  async getLowStockProducts(threshold) {
-    const stockSummary = await this.getOnlineInventorySummary();
-    const lowStockProductIds = stockSummary
-      .filter((item) => item.totalStock < threshold)
-      .map((item) => item._id);
-
-    return await Product.find({ _id: { $in: lowStockProductIds } });
-  }
-
-  // Get pricing and margin analysis for products (showing cost, markupPercentage, and price)
-  async getPricingMarginAnalysis() {
-    return await Product.find(
-      {},
-      { name: 1, cost: 1, markupPercentage: 1, price: 1 }
-    );
   }
 
   // Monthly Sign-ups: count new users per month
@@ -96,7 +60,8 @@ class DashboardRepository {
     ]);
   }
 
-  // Revenue Stats: revenue breakdown by seller (example)
+  // Revenue Stats: revenue breakdown by seller (with populated seller details)
+  // Revenue Stats: revenue breakdown by seller with populated seller details and restricted fields
   async getRevenueBySeller() {
     return await Order.aggregate([
       {
@@ -112,10 +77,33 @@ class DashboardRepository {
         },
       },
       { $sort: { totalRevenue: -1 } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "sellerDetails",
+        },
+      },
+      { $unwind: { path: "$sellerDetails", preserveNullAndEmptyArrays: true } },
+      // Project only specific seller fields (adjust as needed)
+      {
+        $project: {
+          _id: 1,
+          totalRevenue: 1,
+          orderCount: 1,
+          sellerDetails: {
+            firstName: "$sellerDetails.firstName",
+            lastName: "$sellerDetails.lastName",
+            companyName: "$sellerDetails.companyName",
+            status: "$sellerDetails.status",
+            email: "$sellerDetails.email",
+          },
+        },
+      },
     ]);
   }
-
-  // Popular Products: aggregate orders by product and sum the requested quantities or totalPrice
+  // Popular Products: aggregate orders by product with populated product details
   async getPopularProducts() {
     return await Order.aggregate([
       { $unwind: "$products" },
@@ -127,11 +115,66 @@ class DashboardRepository {
         },
       },
       { $sort: { totalSoldQty: -1 } },
-      { $limit: 10 }, // top 10 popular products
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "products", // collection name for Product model
+          localField: "_id",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: { path: "$productDetails", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $lookup: {
+          from: "onlineproducts",
+          let: { productId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ["$product", "$$productId"] },
+                isActive: true,
+                status: "approved",
+              },
+            },
+            { $project: { price: 1, _id: 0 } },
+            { $limit: 1 },
+          ],
+          as: "onlineProductDetails",
+        },
+      },
+      {
+        $unwind: {
+          path: "$onlineProductDetails",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          totalSoldQty: 1,
+          totalRevenue: 1,
+          productDetails: {
+            name: "$productDetails.name",
+            code: "$productDetails.code",
+            price: "$productDetails.price",
+            category: "$productDetails.category",
+            status: "$productDetails.status",
+            images: "$productDetails.images",
+            sellers: "$productDetails.sellers",
+          },
+          finalPrice: {
+            $ifNull: ["$onlineProductDetails.price", "$productDetails.price"],
+          },
+        },
+      },
     ]);
   }
 
-  // Top Sellers: aggregate orders by seller and sum the total revenue
+  // Top Sellers: aggregate orders by seller and populate seller details
+  // Top Sellers: aggregate orders by seller and populate seller details with a restricted projection
   async getTopSellers() {
     return await Order.aggregate([
       {
@@ -147,7 +190,30 @@ class DashboardRepository {
         },
       },
       { $sort: { totalRevenue: -1 } },
-      { $limit: 5 }, // top 5 sellers
+      { $limit: 5 },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "sellerDetails",
+        },
+      },
+      { $unwind: { path: "$sellerDetails", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 1,
+          totalRevenue: 1,
+          orderCount: 1,
+          sellerDetails: {
+            firstName: "$sellerDetails.firstName",
+            lastName: "$sellerDetails.lastName",
+            companyName: "$sellerDetails.companyName",
+            status: "$sellerDetails.status",
+            email: "$sellerDetails.email",
+          },
+        },
+      },
     ]);
   }
 }

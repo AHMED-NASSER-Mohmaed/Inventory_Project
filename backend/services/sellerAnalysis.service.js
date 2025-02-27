@@ -8,14 +8,12 @@ class SellerAnalysisService {
         SellerAnalysisRepository.getSellerMonthlyRevenue(sellerId),
         SellerAnalysisRepository.getSellerTopProducts(sellerId),
         SellerAnalysisRepository.getSellerOrderStats(sellerId),
-        SellerAnalysisRepository.getSellerInventorySummary(sellerId),
       ]);
 
     return {
       monthlyRevenue,
       topProducts,
       orderStats,
-      inventorySummary,
     };
   }
 }
