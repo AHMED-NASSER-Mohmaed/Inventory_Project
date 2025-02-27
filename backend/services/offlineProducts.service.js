@@ -62,7 +62,7 @@ module.exports.OfflineProductsService = {
 
     parseFilters: (filters) => {
 
-        let fielters=["code" , "brand", "category" ,"name"]
+        let fielters=["code" , "brand", "category" ,"name" , "isActive","price"]
 
         return Object.fromEntries(
 
@@ -81,6 +81,7 @@ module.exports.OfflineProductsService = {
 
     getOfflineProducts: async (validatedParams) => {
         try {
+            console.log(validatedParams,"from service");
             
             return await OfflineProductsRepo.getOffProducts(this.OfflineProductsService.parseFilters(validatedParams.filters),
                 validatedParams.sort, validatedParams.page, validatedParams.limit);

@@ -62,32 +62,27 @@ const ProductController = {
 
     //for deleting images ,,,, u have to send for me array of ides in body 
     deleteProductImages: async (req, res, next) => {
-
-        const { productId } = req.params;
-        const { deleteImageIds } = req.body; // rrray of file ids to delete
-
-        if (!productId || !deleteImageIds || deleteImageIds.length === 0) 
-            sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,"Product ID and image IDs are required.")
-
-        // console.log(deleteImageIds);
-
-        console.log(deleteImageIds)
-
-        let index=deleteImageIds.indexOf(APP_CONFIG.PDIAMGE_ID_KEY);
-
-        if(index!==-1){
-            deleteImageIds.splice(index,1);
-            if(deleteImageIds.length === 0)
-                throw new AppError("you do not have the rights to delete this image",APP_CONFIG.HTTP_BAD_REQUEST);
-        }
-
-           
-
-
+        const  productId  = req.params.productId;
+        const  deleteImageIds  = req.params.deleteImageIds; 
+       
         
-        //  relete images from ImageKit
-        await deleteFiles(deleteImageIds);
-
+        if (!productId || !deleteImageIds ) 
+            throw new AppError("Product ID and image IDs are required.",APP_CONFIG.HTTP_BAD_REQUEST);
+        
+        // console.log(deleteImageIds);
+        
+        // console.log(deleteImageIds)
+        
+        // let index=deleteImageIds.indexOf(APP_CONFIG.PDIAMGE_ID_KEY);
+        
+        // if(index!==-1){
+            //     deleteImageIds.splice(index,1);
+            //     if(deleteImageIds.length === 0)
+            //         throw new AppError("you do not have the rights to delete this image",APP_CONFIG.HTTP_BAD_REQUEST);
+            // }
+            
+            //  relete images from ImageKit
+            await deleteFiles([deleteImageIds]);
 
         //check if product exist before deleting 
         const product = await productService.isProductExist(productId);
@@ -133,7 +128,7 @@ router
         catchAsync(ProductController.updateProductImages)
     )
 
-    .delete("/product/Images/delete/:productId",
+    .delete("/product/Images/delete/:productId/:deleteImageIds",
         pro_res(APP_CONFIG.SUPPERADMIN),
         catchAsync(ProductController.deleteProductImages)
     )

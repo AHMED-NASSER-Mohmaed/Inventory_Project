@@ -1,6 +1,7 @@
-const { reject } = require('lodash');
+ 
 const Product = require('../models/product.model');
 const { APP_CONFIG } = require('../config/app.config');
+const mongoose=require("mongoose")
 // const { inboxResult } = require("../utils/apiFeatures")
 
 module.exports.productRepo = {
@@ -56,14 +57,15 @@ module.exports.productRepo = {
 
   deleteProduct:async(productId)=>{
     try{
-      return await  Product.updateOne({_id:productId},{$set:{isActive:true}});
+      return await Product.updateOne({_id:productId},{$set:{isActive:false}});
     }catch(error){
       throw error;
     }
   },
+
   activeProduct:async(productId)=>{
     try{
-      return await Product.updateOne({_id:productId},{$set:{isActive:false}});
+      return await Product.updateOne({_id:productId},{$set:{isActive:true}});
     }catch(error){
       throw error;
     }

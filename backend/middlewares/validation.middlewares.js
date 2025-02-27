@@ -55,7 +55,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
 
     let filters = {}
 
-    // console.log("from search ", req.validatedParams);
+    console.log("from search ", req.validatedParams);
 
     if (req.query.filters) {
       try {
@@ -92,7 +92,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
             if (!['branch', 'brand', 'category'].includes(field))
               value = { $regex: `^${value}`, $options: 'i' }
             else
-              value = new mongoose.Types.ObjectId("67be7a05f8d783308fc3a8e3");
+              value = new mongoose.Types.ObjectId(value);
           }
           else {
             value = Number(value)
@@ -117,7 +117,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
     }
 
     //  be genaric fucntion
-    // console.log(req.validatedParams, "after");
+    console.log(req.validatedParams, "after");
 
     if (!req.validatedParams)
       req.validatedParams = {};

@@ -80,7 +80,7 @@ const ProductSchema = new mongoose.Schema(
     status: {                                    // "pending", "approved", or "rejected"
       type: String,
       enum: ["pending", "approved", "rejected"],
-      default: "pending",
+      default: "approved",
     },
 
 
