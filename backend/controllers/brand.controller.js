@@ -96,7 +96,6 @@ router
     )
 
     .get("/brands/Allactive/idN",
-        prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(brandOp.getAllActiveBrandsIdsName)
     )
 

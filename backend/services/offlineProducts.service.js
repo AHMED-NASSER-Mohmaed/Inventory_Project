@@ -61,14 +61,13 @@ module.exports.OfflineProductsService = {
     },
 
     parseFilters: (filters) => {
-
-        let fielters=["code" , "brand", "category" ,"name" , "isActive","price"]
+        let fielters=["code" , "brand", "category" ,"name" , "isActive"]
 
         return Object.fromEntries(
 
             Object.entries(filters).map(
                 ([key, value]) => {
-
+                    console.log("key : ", key);
                     if (fielters.includes(key))
                         return [`product.${key}`, value]
 

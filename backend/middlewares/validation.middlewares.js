@@ -19,7 +19,6 @@ const validateSortPaginationParams = (allowedSort) => {
         const [field, order] = req.query.sort.split(':'); // Split field and order
 
 
-
         if (allowedSort.includes(field)) { // Check if field is allowed
           sort = { [field]: order === 'asc' ? 1 : -1 }; // Set sort object
         } else {
@@ -41,7 +40,7 @@ const validateSortPaginationParams = (allowedSort) => {
       limit,
     }
 
-    // console.log("from pagination : ", req.validatedParams);
+    console.log("from pagination : ", req.validatedParams);
     next();
 
 
@@ -55,7 +54,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
 
     let filters = {}
 
-    console.log("from search ", req.validatedParams);
+    console.log("from search ", req.query.filters);
 
     if (req.query.filters) {
       try {

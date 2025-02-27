@@ -24,7 +24,7 @@ module.exports.OnlineProductService={
     getONProducts:async(validatedParams)=>{
         try{
 
-            return await OnlineProductsRepository.getONProducts(parseFilters(validatedParams.filters),validatedParams.sort,
+            return await OnlineProductsRepository.getONProducts(this.OnlineProductService.parseFilters(validatedParams.filters),validatedParams.sort,
                 validatedParams.page,validatedParams.limit
             )
 

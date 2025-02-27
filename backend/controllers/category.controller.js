@@ -87,7 +87,6 @@ router
         catchAsync(categoryOp.activateCategory)
     )
     .get("/categories/AllActive/idN",
-        prot_rest(APP_CONFIG.SUPPERADMIN),
         catchAsync(categoryOp.getAllActiveCategoryIdsNames),
     )
 
