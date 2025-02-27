@@ -1215,19 +1215,20 @@ input[type="number"] {
 }
 
 .filter-section {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .filter-category {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 10px;
+  padding: 10px 12px;
   background-color: var(--grey);
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
-  margin-bottom: 3px;
+  margin-bottom: 5px;
+  transition: background-color 0.3s ease;
 }
 
 .filter-category:hover {
@@ -1247,20 +1248,35 @@ input[type="number"] {
 }
 
 .filter-option {
-  padding: 8px 10px;
-  margin: 2px 0;
+  padding: 10px 12px;
+  margin: 4px 0;
   cursor: pointer;
   border-radius: 4px;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
 .filter-option:hover {
   background-color: var(--grey);
+  transform: translateX(3px);
 }
 
 .filter-option.selected {
   background-color: var(--blue);
   color: var(--light);
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-left: 4px solid var(--dark);
+}
+
+.filter-option.selected::after {
+  content: '✓';
+  position: absolute;
+  right: 10px;
+  font-size: 0.9em;
+  opacity: 0.8;
 }
 
 .filter-option.clear-option {
@@ -1281,6 +1297,13 @@ input[type="number"] {
   padding-top: 10px;
   border-top: 1px solid var(--grey);
   margin-top: 5px;
+}
+
+.filter-divider {
+  height: 10px;
+  background: linear-gradient(to right, transparent, var(--dark), transparent);
+  margin: 10px 0;
+  opacity: 0.5;
 }
 
 /* Fix for Angular Material Menu - Add these at the end of the file */
@@ -1336,6 +1359,20 @@ input[type="number"] {
 
 :host .parent3.dark .filter-option.selected {
   background-color: var(--blue);
+}
+
+:host .parent3.dark .filter-divider {
+  background: linear-gradient(to right, transparent, var(--light), transparent);
+  opacity: 0.2;
+}
+
+:host .parent3.dark .filter-option.selected {
+  background-color: var(--blue);
+  border-left: 4px solid var(--light);
+}
+
+:host .parent3.dark .filter-option:hover:not(.selected) {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 @media screen and (max-width: 1215px) {
