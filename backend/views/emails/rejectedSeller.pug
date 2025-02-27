@@ -1,0 +1,46 @@
+extends baseEmail
+
+block content
+  table.body(role='presentation', border='0', cellpadding='0', cellspacing='0')
+    tr
+      td
+      td.container
+        .content
+          // START CENTERED WHITE CONTAINER
+          table.main(role='presentation')
+
+            // START MAIN AREA
+            tbody
+              tr
+                td.wrapper
+                  table(role='presentation', border='0', cellpadding='0', cellspacing='0')
+                    tbody
+                      tr
+                        td
+                          h1(style='color: #e74c3c; margin-bottom: 25px;') Application Update
+                          p We regret to inform you that your seller account application could not be approved at this time.
+                          
+                          .reason-section(style='margin: 30px 0; padding: 20px; background: #f9f9f9;')
+                            h3(style='color: #2d3436; margin-bottom: 15px;') Primary Reasons:
+                            ul(style='list-style: none; padding-left: 20px;')
+                              li(style='margin-bottom: 10px;') • Documentation did not meet requirements
+                              li(style='margin-bottom: 10px;') • Business model mismatch with our platform
+                              li(style='margin-bottom: 10px;') • Verification issues
+
+                          p You may reapply after 60 days. In the meantime, we recommend:
+                          ul(style='list-style: none; padding-left: 20px;')
+                            li(style='margin-bottom: 10px;') ✓ Reviewing our seller requirements
+                            li(style='margin-bottom: 10px;') ✓ Updating your documentation
+                            li(style='margin-bottom: 10px;') ✓ Ensuring legal compliance
+
+                          p.contact-support(style='margin-top: 30px;')
+                            | For specific details, contact 
+                            a(href='mailto:sellers@watchlok.com') seller support
+
+            // START FOOTER
+            .footer(style='margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;')
+              p(style='color: #666; font-size: 12px;')
+                | Watchlok Seller Team
+                br
+                a(href=`${url}/privacy`) Privacy Policy
+              p(style='color: #666; font-size: 12px;') © 2024 Watchlok. All rights reserved.

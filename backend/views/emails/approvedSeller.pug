@@ -1,0 +1,38 @@
+extends baseEmail
+
+block content
+  table.body(role='presentation', border='0', cellpadding='0', cellspacing='0')
+    tr
+      td
+      td.container
+        .content
+          // START CENTERED WHITE CONTAINER
+          table.main(role='presentation')
+
+            // START MAIN AREA
+            tbody
+              tr
+                td.wrapper
+                  table(role='presentation', border='0', cellpadding='0', cellspacing='0')
+                    tbody
+                      tr
+                        td
+                          h1(style='color: #2ecc71; margin-bottom: 25px;') Congratulations, #{firstName}!
+                          p Your seller account application has been approved! 🎉
+                          p You can now start listing products on our marketplace.
+                          
+                          .cta-section(style='margin: 40px 0;')
+                            a.btn-primary(href=`${url}/seller/dashboard`, style='display: inline-block; padding: 12px 30px; background: #2ecc71; color: white; text-decoration: none; border-radius: 4px;') Go to Seller Dashboard
+
+                          h3(style='color: #2d3436; margin-bottom: 15px;') Next Steps:
+                          ul(style='list-style: none; padding-left: 20px;')
+                            li(style='margin-bottom: 10px;') ✓ Complete your store profile
+                            li(style='margin-bottom: 10px;') ✓ Set up payment information
+                            li(style='margin-bottom: 10px;') ✓ Review our seller guidelines
+
+            // START FOOTER
+            .footer(style='margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;')
+              p(style='color: #666; font-size: 12px;')
+                | Need help? Contact our seller support team at 
+                a(href='mailto:sellers@watchlok.com') sellers@watchlok.com
+              p(style='color: #666; font-size: 12px;') © 2024 Watchlok. All rights reserved.

@@ -51,7 +51,9 @@
                 <div class="navbar-nav">
 
                     <a class="nav-item nav-link nav-icon " routerLink="/Cprofile"><i class='bx bx-user'></i></a>
-                    <a class="nav-item nav-link nav-icon " routerLink="/maincart"><i class='bx bx-cart'></i></a>
+                    <!-- <a class="nav-item nav-link nav-icon " routerLink="/maincart"><i class='bx bx-cart'></i><span class="cart-badge">{{ cartCounter }}</span></a> -->
+                    <a class="nav-item nav-link nav-icon position-relative" routerLink="/maincart"> <i class='bx bx-cart' style="font-size: 24px;"></i> <span class="cart-badge">{{ cartCounter }}</span></a>
+                      
                     <a *ngIf="!token" class="nav-item nav-link nav-icon" [routerLink]="['/login']"><i class='bx bx-log-in loginIcon'></i></a>
                     <a *ngIf="token" class="nav-item nav-link nav-icon" (click)="openConfirmDialog()"><i class='bx bx-log-out logoutIcon'></i></a>
     

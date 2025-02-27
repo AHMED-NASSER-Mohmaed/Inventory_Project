@@ -48,7 +48,7 @@ class CartService {
     // find if product exists
     const product = await isProductExist(productId);
 
-    if (!product || !product.isActive || product.satus !== "approved") {
+    if (!product || !product.isActive || product.status !== "approved") {
       throw new AppError("Product not found", 404);
     }
 
@@ -83,7 +83,7 @@ class CartService {
 
     if (existingItem) {
       const newQuantity = existingItem.requiredQty + quantity;
-      if(newQuantity < 0) {
+      if (newQuantity < 0) {
         throw new AppError(
           `What are you doing? Can't add negative quantity!!!!`,
           400
@@ -102,7 +102,7 @@ class CartService {
         newQuantity
       );
     } else {
-      if(quantity <= 0) {
+      if (quantity <= 0) {
         throw new AppError(
           `What are you doing? Can't add negative quantity!!!!`,
           400
@@ -184,7 +184,7 @@ class CartService {
 
     for (const item of cart.products) {
       const product = await isProductExist(item.onlineProduct);
-      if (!product || !product.isActive || product.satus !== "approved") {
+      if (!product || !product.isActive || product.status !== "approved") {
         messages.push(
           `Product (id: ${item.onlineProduct}) is no longer available.`
         );
@@ -237,7 +237,7 @@ class CartService {
             productCategory: product.category,
             // Flatten seller details:
             sellerId: seller._id,
-            sellerCompanyName: seller.companyName || seller.firstName
+            sellerCompanyName: seller.companyName || seller.firstName,
           };
         }
         // If no onlineProduct, return the item as is.

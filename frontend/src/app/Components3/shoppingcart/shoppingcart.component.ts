@@ -48,6 +48,9 @@ export class ShoppingcartComponent implements OnInit {
       if (!this.sessionId && response.sessionId) {
         localStorage.setItem('sessionId', response.sessionId);
       }
+      else if(!response.sessionId){
+        localStorage.removeItem("sessionId");
+      }
       // this.increase("");
     });
   }
@@ -91,7 +94,10 @@ export class ShoppingcartComponent implements OnInit {
     if (product.requiredQty + 1 > product.stock) return;
       product.requiredQty += 1;
       this.cartService.addToCart(product.onlineProductId, 1, this.sessionId!).subscribe((response) => {
-      localStorage.setItem('sessionId', response.data.sessionId);
+        if(response.data.sessionId)
+          localStorage.setItem('sessionId', response.data.sessionId);
+        else if(response.data.sessionId)
+          localStorage.removeItem("sessionId");
       // this.loadCart(); //but it takes more time
       this.getSubtotal();
       this.getTotalAmount();
@@ -109,6 +115,10 @@ export class ShoppingcartComponent implements OnInit {
     product.requiredQty -= 1;
     this.cartService.addToCart(product.onlineProductId, -1, this.sessionId!).subscribe((response) => {
       localStorage.setItem('sessionId', response.data.sessionId);
+      if(response.data.sessionId)
+        localStorage.setItem('sessionId', response.data.sessionId);
+      else if(response.data.sessionId)
+        localStorage.removeItem("sessionId");
       // this.loadCart();
       this.getSubtotal();
       this.getTotalAmount();
