@@ -106,7 +106,7 @@ class OrderContainerController {
 //   Create an order container from cart
   async createOnlineOrderContainer(req, res) {
       const cart = req.body;
-        // cart.customerId = req.user._id; // in case of online cart, the customer id is the user id
+        cart.customerId = req.user.id; // in case of online cart, the customer id is the user id
       const orderContainer = await OrderContainerService.createOnlineOrderContainerFromCart(cart);
       res.status(APP_CONFIG.HTTP_CREATED).json({
         message: "success",
@@ -135,11 +135,12 @@ class OrderContainerController {
   async cashierFinalisOnlineOrderByCompleteStatus(req, res) {
     if(req.user.role == "cashier" ){ // becasue  admin can process the order too but it has to be admin of that branch
         // but once that order is assigned to someone the other cannot handle it (the order will be dedicated to only one person)
-        if(!req.user.branch!=APP_CONFIG.ONLINE_BRANCH_ID){
+        if(req.user.branch!=APP_CONFIG.ONLINE_BRANCH_ID){
             throw new AppError("You are not authorized to process this order since you are not employed in this branch.");
         }
     }
     let orderId = req.params.orderId;
+    console.log(orderId);
     let cashierId = req.user.id;
     const subOrder = await SubOrderService.cashierFinalisOnlineOrderByCompleteStatus({orderId, cashierId});
     res.status(APP_CONFIG.HTTP_OK).json({
@@ -181,7 +182,7 @@ class OrderContainerController {
     let cashierId = req.user.id; // you have to check on the online branch here which would be a static value in the app config
     // if the cashier doesn't match that branch id then throw an error
 
-    let status = req.params.status;
+    let status = req.query.status;
 
     const subOrders = await SubOrderService.getAllOnlineOrdersForCashierBasedOnStatus(cashierId, status);
     res.status(APP_CONFIG.HTTP_OK).json({

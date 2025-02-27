@@ -47,7 +47,7 @@ module.exports.productService={
             let selectedBrand= await brandRepo.getBrandById(data.brand);
              
 
-            console.log(selectedBrand,"HHHHHHHHHHHH");
+            // console.log(selectedBrand,"HHHHHHHHHHHH");
 
             if(selectedBrand==null || !selectedBrand['isActive'])
                 throw new AppError("sorry brand dose not exist",APP_CONFIG.HTTP_NOT_FOUND);

@@ -37,7 +37,7 @@ const offlineProductOp = {
     },
 
     getProducts: async (req, res, next) => {
-        console.log(req.validatedParams);
+        console.log(req.validatedParams,"from controller");
         let result = await OfflineProductsService.getOfflineProducts(req.validatedParams);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },

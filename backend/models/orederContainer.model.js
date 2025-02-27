@@ -75,7 +75,7 @@ const OrderContainerSchema = new mongoose.Schema(
       default: "pending",
     },
 
-    branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch" },
+    branch: {  type: Number, ref: "Branch" },
   },
   {
     timestamps: true,
