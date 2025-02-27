@@ -11,7 +11,7 @@ export class Product {
             public category: string,
             public sellerId: string,
             public sellerName: string,
-            public isActive: boolean = false, // Default values
+            public isActive: boolean = false, 
             public status: boolean = false,
             public description?: string,
             public _id?: string,

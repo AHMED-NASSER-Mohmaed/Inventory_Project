@@ -9,6 +9,7 @@ import { FooterComponent } from "../../core/footer/footer.component";
 import { QuickviewComponent } from '../HomePage/quickview/quickview.component';
 import { ActivatedRoute } from '@angular/router';
 import { category } from '../../_models/category';
+import { Brand } from '../../_models/api-responses';
 
 @Component({
   selector: 'app-products-list',
@@ -20,7 +21,7 @@ import { category } from '../../_models/category';
 export class ProductsListComponent implements OnInit {
   products: Product[] = [];
   categories: category[] = [];
-  brandsByCategory: category[] = [];
+  brands: Brand[] = []; 
   selectedCategoryId: string = "";
   selectedBrandId: string = "";
   showQuickView: boolean = false;
@@ -33,6 +34,7 @@ export class ProductsListComponent implements OnInit {
   hasPreviousPage: boolean = false;
   sort: string = "";
   total: number = 0;
+  searchQuery: string = '';
 
   constructor(
     private productsService: ProductsService,
@@ -47,12 +49,12 @@ export class ProductsListComponent implements OnInit {
     });
 
     this.loadCategories();
+    this.loadBrands();
   }
 
   loadCategories(): void {
     this.productsService.getAllCategories().subscribe({
       next: (response) => {
-        // Access the data array from the response
         if (response && response.data && Array.isArray(response.data)) {
           this.categories = response.data;
           console.log('Categories loaded:', this.categories);
@@ -64,6 +66,24 @@ export class ProductsListComponent implements OnInit {
       error: (error) => {
         console.error('Error fetching categories', error);
         this.categories = [];
+      }
+    });
+  }
+
+  loadBrands(): void {
+    this.productsService.getAllBrands().subscribe({
+      next: (response) => {
+        if (response && response.data && Array.isArray(response.data)) {
+          this.brands = response.data;
+          console.log('Brands loaded:', this.brands);
+        } else {
+          console.error('Unexpected brands response format:', response);
+          this.brands = [];
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching brands', error);
+        this.brands = [];
       }
     });
   }
@@ -87,39 +107,83 @@ export class ProductsListComponent implements OnInit {
     this.getProducts(1);
   }
 
-  getProducts(pageNumber: number = 1): void {
-    this.currentPage = pageNumber;
-    this.productsService.getPaginatedProducts(this.currentPage, this.itemsPerPage, this.sort, this.selectedCategoryId, this.selectedBrandId)
-      .subscribe({
-        next: (res: any) => {
-          this.products = res.result.result;
-          this.totalPages = Math.ceil(res.result.total / this.itemsPerPage);
-          this.pagesArray = Array(this.totalPages).fill(0).map((x, i) => i + 1);
-          this.hasNextPage = !!res.result.next;
-          this.hasPreviousPage = !!res.result.previous;
-          this.total = res.result.total - 1;
-        },
-        error: (error) => {
-          console.log('API Error:', error);
-        }
-      });
-  }
-
   onCategoryChange(value: string | null): void {
     if (value !== null) {
       this.selectedCategoryId = value;
+      this.currentPage = 1; 
       this.getProducts(1);
+      console.log('Category selected:', value);
     } else {
       this.selectedCategoryId = "";
-      this.products = [];
+      this.getProducts(1);
     }
   }
 
   onBrandChange(value: string | null): void {
     if (value !== null) {
       this.selectedBrandId = value;
+      this.currentPage = 1; 
+      this.getProducts(1);
+      console.log('Brand selected:', value);
+    } else {
+      this.selectedBrandId = "";
       this.getProducts(1);
     }
+  }
+
+  getProducts(pageNumber: number = 1): void {
+    this.currentPage = pageNumber;
+    
+    // Show loading state
+    this.products = [];
+    
+    this.productsService.getPaginatedProducts(
+      this.currentPage, 
+      this.itemsPerPage, 
+      this.sort,
+      this.selectedCategoryId, 
+      this.selectedBrandId,
+      this.searchQuery
+    ).subscribe({
+      next: (res: any) => {
+        if (res && res.data && res.data.result) {
+          // Map the response data
+          this.products = res.data.result.map((item: any) => ({
+            _id: item.product._id,
+            name: item.product.name,
+            price: item.product.price,
+            images: item.product.images,
+            sellerName: `${item.seller?.firstName || ''} ${item.seller?.lastName || ''}`,
+            sellerId: item.seller?._id || ''
+          }));
+          
+          // Update pagination
+          this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
+          this.pagesArray = Array(this.totalPages).fill(0).map((x, i) => i + 1);
+          this.hasNextPage = !!res.data.next;
+          this.hasPreviousPage = this.currentPage > 1;
+          this.total = res.data.total;
+          
+          console.log('Products loaded with filters - Category:', this.selectedCategoryId, 'Brand:', this.selectedBrandId, 'Search:', this.searchQuery);
+        } else {
+          console.error('Unexpected response structure:', res);
+          this.handleEmptyResults();
+        }
+      },
+      error: (error) => {
+        console.log('API Error:', error);
+        this.handleEmptyResults();
+      }
+    });
+  }
+  
+  // Helper method for error handling
+  private handleEmptyResults(): void {
+    this.products = [];
+    this.totalPages = 1;
+    this.pagesArray = [1];
+    this.hasNextPage = false;
+    this.hasPreviousPage = false;
   }
 
   openQuickView(product: Product): void {
@@ -135,7 +199,9 @@ export class ProductsListComponent implements OnInit {
     this.selectedCategoryId = "";
     this.selectedBrandId = "";
     this.sort = "";
+    this.currentPage = 1;
     this.getProducts(1);
+    console.log('Filters reset');
   }
 
   nextPage(): void {
@@ -157,5 +223,11 @@ export class ProductsListComponent implements OnInit {
       this.currentPage = pageNumber;
       this.getProducts(pageNumber);
     }
+  }
+
+  onSearch(event: Event): void {
+    event.preventDefault();
+    this.currentPage = 1;
+    this.getProducts();
   }
 }

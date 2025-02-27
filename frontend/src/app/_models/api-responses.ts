@@ -6,6 +6,14 @@ export interface ProductResponse {
   data: {
     result: ProductItem[];
     total: number;
+    next?: {
+      page: number;
+      limit: number;
+    };
+    previous?: {
+      page: number;
+      limit: number;
+    };
   };
 }
 
@@ -31,4 +39,14 @@ export interface ProductItem {
       url: string;
     }[];
   };
+}
+
+export interface BrandResponse {
+  message: string;
+  data: Brand[];
+}
+
+export interface Brand {
+  _id: string;
+  Bname: string;
 }

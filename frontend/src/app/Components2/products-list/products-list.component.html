@@ -9,13 +9,11 @@
 <div class="container-fluid">
     <div class="row">
 
-        <!-- Sidebar for Filters -->
         <div class="col-md-4 col-lg-3">
             <aside class="sidebar pt-4 bg-light">
                 <p class="filterHeader">Filter by</p>
                 <hr>
 
-                <!-- Filter by Categories -->
                 <div class="mb-3">
                     <label class="form-label">Categories</label>
                     <div *ngIf="categories && categories.length > 0">
@@ -34,34 +32,44 @@
                     <hr>
                 </div>
                 
-                <!-- Filter by Brands -->
-                <div *ngIf="selectedCategoryId && brandsByCategory.length > 0">
-                    <div class="mb-3 brands">
-                        <label class="form-label">Brands</label>
-                        <div *ngFor="let brand of brandsByCategory" class="form-check">
+                <div class="mb-3">
+                    <label class="form-label">Brands</label>
+                    <div *ngIf="brands && brands.length > 0">
+                        <div *ngFor="let brand of brands" class="form-check">
                             <input class="form-check-input" type="radio" name="brand" [value]="brand._id"
                                    (change)="onBrandChange(brand._id)" [id]="'brand' + brand._id"
                                    [checked]="selectedBrandId === brand._id">
                             <label class="form-check-label" [for]="'brand' + brand._id">
-                              {{ brand.name }}
+                              {{ brand.Bname }}
                             </label>
                         </div>
+                    </div>
+                    <div *ngIf="!brands || brands.length === 0">
+                        <p>No brands available</p>
                     </div>
                     <hr>
                 </div>
       
-                <!-- Filter Buttons -->
                 <button class="btn filter-btn" type="button" (click)="resetFilters()">Reset Filters</button>
             </aside>
         </div>
 
-        <!-- Main Content Area -->
         <div class="col-md-8 col-lg-9">
-            <!-- Search and Sort Options -->
             <div *ngIf="products.length > 0" class="row mb-4">
                 <div class="col-md-6 position-relative">
-                    <input type="text" class="form-control searchBar" placeholder="Search products...">
-                    <i class="fas fa-search search-icon"></i>
+                    <form (submit)="onSearch($event)">
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                class="form-control searchBar" 
+                                placeholder="Search products..." 
+                                [(ngModel)]="searchQuery" 
+                                name="searchQuery">
+                            <button type="submit" class="btn btn-outline-secondary">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
                 <div class="col-md-6">
                     <select class="form-control custom-select" (change)="onSortChange($event)">
@@ -72,7 +80,6 @@
                 </div>
             </div>
 
-            <!-- Product Display -->
             <div class="row productRow">
                 <div *ngIf="products.length === 0">
                     <p class="text-danger">Sorry! No products available</p>
@@ -97,7 +104,6 @@
     </div>
 </div>
 
-<!-- Pagination Controls -->
 <div *ngIf="products.length > 0" class="pagination-controls text-center my-4">
     <button class="btn btn-light" (click)="previousPage()" [disabled]="currentPage === 1">
         <i class='bx bx-chevron-left' style="font-size: 1.7em;"></i>
