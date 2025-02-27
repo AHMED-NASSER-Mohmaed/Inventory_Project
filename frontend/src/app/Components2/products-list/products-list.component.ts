@@ -62,11 +62,11 @@ export class ProductsListComponent implements OnInit {
   }
 
   loadCategories(): void {
-    this.productsService.getAllcategories().subscribe({
+    this.productsService.getAllCategories('_id', 'Cname').subscribe({
       next: (data) => {
         this.categories = data;
-        this.categories2 = this.categories.categories;
-        this.activeCategory = this.categories2.filter((obj: { parentCatId: any }) => obj.parentCatId === null);
+        // this.categories2 = this.categories.categories;
+        // this.activeCategory = this.categories2.filter((obj: { parentCatId: any }) => obj.parentCatId === null);
       },
       error: (error) => {
         console.error('Error fetching categories', error);
@@ -74,6 +74,20 @@ export class ProductsListComponent implements OnInit {
     });
   }
 
+
+
+  loadBrands(): void {
+    this.productsService.getAllBrands('_id', 'Bname').subscribe({
+      next: (data) => {
+        this.categories = data;
+        // this.categories2 = this.categories.categories;
+        // this.activeCategory = this.categories2.filter((obj: { parentCatId: any }) => obj.parentCatId === null);
+      },
+      error: (error) => {
+        console.error('Error fetching categories', error);
+      }
+    });
+  } 
 
   onSortChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement; 
@@ -87,7 +101,7 @@ export class ProductsListComponent implements OnInit {
             this.sort = 'price:desc';
             break;
         default:
-            this.sort = ''; // No sorting
+            this.sort = ''; 
             break;
     }
 

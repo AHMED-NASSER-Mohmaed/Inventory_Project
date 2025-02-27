@@ -209,7 +209,6 @@ export class DeliveredTableComponent {
     }
   
   
-  
     toggleEdit(event?: any): void {
       console.log('Selected Suborder before editing:', this.selectedSuborder); 
     
@@ -218,13 +217,9 @@ export class DeliveredTableComponent {
     
         if (!this.selectedSuborder?.orderId) {
           console.error('Order ID is undefined or invalid.');
+          this.toaster.error('Invalid Order ID.', 'Error');
           return;
         }
-    
-        // if (!this.validateFulfilledQuantity()) {
-        //   this.toaster.error('Fulfilled quantity cannot exceed available stock.', 'Validation Error');
-        //   return; 
-        // }
     
         if (!this.selectedSuborder.products?.length) {
           console.error('Products array is missing or empty.');
@@ -232,60 +227,32 @@ export class DeliveredTableComponent {
           return;
         }
     
-        const newStatus = this.selectedSuborder.orderStatus ?? 'PENDING';
-    
-        const fulfilledQuantities: { [key: string]: number } = {};
-    
-        this.selectedSuborder.products.forEach((product:any) => {
-          if (product.productId && product.productFulfilledQuantity !== undefined) {
-            fulfilledQuantities[product.productId] = product.productFulfilledQuantity;
+        // Make a request to update the suborder without changing the status or fulfilled quantities
+        const sub = this.cashierservice.updateSuborder(this.selectedSuborder.orderId).subscribe({
+          next: (res: any) => {
+            if (res.message === 'success') {
+              this.selectedSuborder = { ...this.selectedSuborder, ...res.updatedSuborder };
+              this.toaster.success('Order updated successfully!', 'Success');
+            } else {
+              this.toaster.error('Failed to update order.', 'Error');
+            }
+            this.editing = false;
+          },
+          error: (error) => {
+            console.error('Error updating suborder', error);
+            this.toaster.error('An error occurred while updating the order.', 'Error');
+            this.editing = false;
           }
         });
     
-        const workingBackup = {
-          status: newStatus, 
-          fulfilledQuantities: { ...fulfilledQuantities }, 
-        };
-    
-        const sub = this.cashierservice
-          .updateSuborder(this.selectedSuborder.orderId)
-          .subscribe({
-            next: (res: any) => {
-              if (res.message === 'success') {
-                this.selectedSuborder = { ...this.selectedSuborder, ...res.updatedSuborder };
-                this.toaster.success('Order updated successfully!', 'Success');
-              } else {
-                this.selectedSuborder.orderStatus = workingBackup.status;
-                this.selectedSuborder.products.forEach((product:any) => {
-                  if (product.productId in workingBackup.fulfilledQuantities) {
-                    product.productFulfilledQuantity = workingBackup.fulfilledQuantities[product.productId];
-                  }
-                });
-                this.toaster.error('Failed to update order.', 'Error');
-              }
-              this.editing = false;
-            },
-            error: (error) => {
-              console.error('Error updating suborder', error);
-              this.selectedSuborder.orderStatus = workingBackup.status;
-              this.selectedSuborder.products.forEach((product:any) => {
-                if (product.productId in workingBackup.fulfilledQuantities) {
-                  product.productFulfilledQuantity = workingBackup.fulfilledQuantities[product.productId];
-                }
-              });
-              this.toaster.error('An error occurred while updating the order.', 'Error');
-              this.editing = false;
-            },
-          });
-    
-        this.subscriptions.push(sub); 
+        this.subscriptions.push(sub);
       } else {
-        this.editing = true;
+        this.editing = true; // Toggle editing state
       }
     
-      if (event?.target) event.target.blur();
+      if (event?.target) event.target.blur(); // Remove focus from the triggering element
     }
-  
+    
    
   
   
