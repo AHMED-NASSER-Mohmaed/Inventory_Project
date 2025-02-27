@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,58 +15,81 @@ export class OffproductService {
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  getPaginatedCustomersByStatus(page: number, limit: number, filters?: string, sort?: string): Observable<any> {
+  getPaginatedProducts(page: number, limit: number, filters?: string, sort?: string): Observable<any> {
     const filterParam = filters ? `filters=${filters}` : '';
-    const url = `${this.baseUrl}/getClerks?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
+    const url = `${this.baseUrl}/OffProduct?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
     return this.http.get(url, { headers: this.getHeaders() });
   }
 
-  deActiveCustomer(id: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/deleteClerk/${id}`, { headers: this.getHeaders() });
+  deactivateProduct(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/product/delete/${id}`, { headers: this.getHeaders() });
   }
 
-  activateCustomer(id: string, branchId?: string): Observable<any> {
-    const url = branchId 
-      ? `${this.baseUrl}/activeClerk/${id}/${branchId}` 
-      : `${this.baseUrl}/activeClerk/${id}`;
-    return this.http.patch(url, {}, { headers: this.getHeaders() });
+  activateProduct(id: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/product/active/${id}`, {}, { headers: this.getHeaders() });
   }
 
-  getActiveCustomersCount(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/clerkCount?filters=isActive:true`, { headers: this.getHeaders() });
+  getActiveProductsCount(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/OffProduct/count?filters=isActive:true`, { headers: this.getHeaders() });
   }
 
-  getInActiveCustomersCount(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/clerkCount?filters=isActive:false`, { headers: this.getHeaders() });
+  getInactiveProductsCount(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/OffProduct/count?filters=isActive:false`, { headers: this.getHeaders() });
   }
 
-  changeImage(id: string, file: File): Observable<any> {
+  updateProductImages(productId: string, deletedImageIds: string[], newImages?: File[]): Observable<any> {
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('deletedImages', JSON.stringify(deletedImageIds));
+    
+    if (newImages && newImages.length > 0) {
+      newImages.forEach(file => {
+        formData.append('image', file);
+      });
+    }
+    
     const headers = this.getHeaders();
-    headers.delete('Content-Type'); 
-    return this.http.patch(`${this.baseUrl}/updateImageProfileFor/${id}`, formData, { headers: headers });
+    headers.delete('Content-Type');
+    return this.http.patch(`${this.baseUrl}/product/Images/update/${productId}`, formData, { headers });
   }
 
-  updateCustomer(id: string, data: any): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/updateClerk/${id}`, data, { headers: this.getHeaders() });
+  deleteProductImage(productId: string, imageId: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/product/Images/delete/${imageId}`, { headers: this.getHeaders() });
   }
 
-  searchCustomers(filters: string, page: number, limit: number, sort?: string): Observable<any> {
-    const url = `${this.baseUrl}/getClerks?page=${page}&limit=${limit}&filters=${filters}${sort || ''}`;
+  updateProductData(productId: string, data: any): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/product/data/update/${productId}`, data, { headers: this.getHeaders() });
+  }
+
+  searchProducts(filters: string, page: number, limit: number, sort?: string): Observable<any> {
+    const url = `${this.baseUrl}/OffProduct?page=${page}&limit=${limit}&filters=${filters}${sort || ''}`;
     return this.http.get(url, { headers: this.getHeaders() });
   }
 
-  addAdmin(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/addClerk`, data, { headers: this.getHeaders() });
+  addProduct(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/OffProduct`, data, { headers: this.getHeaders() });
   }
 
   getMappedBranches(): Observable<any> {
     return this.http.get(`${this.baseUrl}/branches/maped`, { headers: this.getHeaders() });
   }
 
-  activateCustomerWithBranch(id: string, branchId: string): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/activeClerk/${id}/${branchId}`, {}, { headers: this.getHeaders() });
+  getAllCategories(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/categories/AllActive/idN`, { headers: this.getHeaders() });
   }
 
+  getAllBrands(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/brands/Allactive/idN`, { headers: this.getHeaders() });
+  }
+
+  getAllSuppliers(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/suppliers/IdsNames`, { headers: this.getHeaders() });
+  }
+
+  updateProductStock(productId: string, quantity: number): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/OffProduct/updateQty/${productId}/${quantity}`, {}, { headers: this.getHeaders() });
+  }
+
+  exportProduct(productId: string, sourceId: string, destinationId: string, quantity: number): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/OffProduct/exportTo?id=${productId}&src=${sourceId}&dest=${destinationId}&qty=${quantity}`, {}, { headers: this.getHeaders() });
+  }
 }
