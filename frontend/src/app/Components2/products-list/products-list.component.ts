@@ -134,7 +134,6 @@ export class ProductsListComponent implements OnInit {
   getProducts(pageNumber: number = 1): void {
     this.currentPage = pageNumber;
     
-    // Show loading state
     this.products = [];
     
     this.productsService.getPaginatedProducts(
@@ -147,7 +146,6 @@ export class ProductsListComponent implements OnInit {
     ).subscribe({
       next: (res: any) => {
         if (res && res.data && res.data.result) {
-          // Map the response data
           this.products = res.data.result.map((item: any) => ({
             _id: item.product._id,
             name: item.product.name,
@@ -157,7 +155,6 @@ export class ProductsListComponent implements OnInit {
             sellerId: item.seller?._id || ''
           }));
           
-          // Update pagination
           this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
           this.pagesArray = Array(this.totalPages).fill(0).map((x, i) => i + 1);
           this.hasNextPage = !!res.data.next;
@@ -176,8 +173,6 @@ export class ProductsListComponent implements OnInit {
       }
     });
   }
-  
-  // Helper method for error handling
   private handleEmptyResults(): void {
     this.products = [];
     this.totalPages = 1;
@@ -199,9 +194,14 @@ export class ProductsListComponent implements OnInit {
     this.selectedCategoryId = "";
     this.selectedBrandId = "";
     this.sort = "";
+    this.searchQuery = ""; 
     this.currentPage = 1;
+    
+    this.productsService.clearCache();
+    
+    console.log('Filters reset, loading all products');
+    
     this.getProducts(1);
-    console.log('Filters reset');
   }
 
   nextPage(): void {

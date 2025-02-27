@@ -544,7 +544,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
             // Remove the image from the UI
             if (this.selectedProduct && this.selectedProduct.product && this.selectedProduct.product.images) {
               this.selectedProduct.product.images = this.selectedProduct.product.images.filter(
-                (img: ProductImage) => img._id !== imageId
+                (img: ProductImage) => img._id !== imageId && img.fileId !== imageId
               );
               
               // Update the product in the list

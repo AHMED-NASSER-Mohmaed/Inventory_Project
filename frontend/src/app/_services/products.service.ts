@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { Product } from '../_models/products';
 import { category } from '../_models/category';
 import { BrandResponse, CategoryResponse, ProductResponse } from '../_models/api-responses';
@@ -10,7 +11,10 @@ import { BrandResponse, CategoryResponse, ProductResponse } from '../_models/api
 })
 export class ProductsService {
   private baseUrl = 'http://localhost:3000';
-
+  
+  // Cache for storing API responses
+  private cache: { [key: string]: ProductResponse } = {};
+  
   constructor(private http: HttpClient) { }
 
   private getHeaders(): HttpHeaders {
@@ -31,7 +35,7 @@ export class ProductsService {
   }
 
   getPaginatedProducts(page: number, itemsPerPage: number, sort: string, category: string, brand: string, searchTerm: string = ''): Observable<ProductResponse> {
-    let filterParts = [];
+    let filterParts: string[] = [];
     
     if (searchTerm && searchTerm.trim() !== '') {
       filterParts.push(`name:${searchTerm.trim()}`);
@@ -45,24 +49,62 @@ export class ProductsService {
       filterParts.push(`brand:${brand}`);
     }
     
-    let params: any = {
-      page: page.toString(),
-      limit: itemsPerPage.toString()
-    };
+    let url = `${this.baseUrl}/OnlineProducts?page=${page}&limit=${itemsPerPage}`;
     
     if (filterParts.length > 0) {
-      params.filters = filterParts.join('+');
+      url += `&filters=${filterParts.join(' ')}`;
     }
     
     if (sort) {
-      params.sort = sort;
+      url += `&sort=${sort}`;
     }
     
-    console.log('Request URL with search:', `${this.baseUrl}/OnlineProducts with params:`, params);
+    const cacheKey = url;
     
-    return this.http.get<ProductResponse>(
-      `${this.baseUrl}/OnlineProducts`, 
-      { params, headers: this.getHeaders() }
-    );
+    if (this.cache[cacheKey]) {
+      console.log('Using cached data for:', url);
+      return of(this.cache[cacheKey]);
+    }
+    
+    console.log('Fetching fresh data for:', url);
+    
+    return this.http.get<ProductResponse>(url, { headers: this.getHeaders() })
+      .pipe(
+        tap((response: ProductResponse) => {
+          this.cache[cacheKey] = response;
+        })
+      );
+  }
+  
+  clearCacheItem(page: number, itemsPerPage: number, sort: string, category: string, brand: string, searchTerm: string = ''): void {
+    let filterParts: string[] = [];
+    
+    if (searchTerm && searchTerm.trim() !== '') {
+      filterParts.push(`name:${searchTerm.trim()}`);
+    }
+    
+    if (category) {
+      filterParts.push(`category:${category}`);
+    }
+    
+    if (brand) {
+      filterParts.push(`brand:${brand}`);
+    }
+    
+    let url = `${this.baseUrl}/OnlineProducts?page=${page}&limit=${itemsPerPage}`;
+    
+    if (filterParts.length > 0) {
+      url += `&filters=${filterParts.join(' ')}`;
+    }
+    
+    if (sort) {
+      url += `&sort=${sort}`;
+    }
+    
+    delete this.cache[url];
+  }
+  
+  clearCache(): void {
+    this.cache = {};
   }
 }

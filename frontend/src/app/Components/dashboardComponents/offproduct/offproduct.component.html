@@ -404,7 +404,7 @@
                 <div class="images-grid">
                   <div class="image-item" *ngFor="let image of selectedProduct.product.images">
                     <img [src]="image.url" alt="Product image">
-                    <button type="button" class="image-delete-btn" (click)="deleteImageDirectly(image._id)" title="Delete image">
+                    <button type="button" class="image-delete-btn" (click)="deleteImageDirectly(image.fileId)" title="Delete image">
                       <i class='bx bx-trash'></i>
                     </button>
                   </div>
@@ -609,7 +609,7 @@
                 <div class="info-item">
                   <strong class="label">To Branch:</strong>
                   <div class="input-wrapper">
-                    <mat-select [(ngModel)]="exportDestinationBranch" name="destinationBranch" placeholder="Select Destination Branch" required>
+                    <mat-select [(ngModel)]="exportDestinationBranch" name="destinationBranch" placedeleteImageDirectlyder="Select Destination Branch" required>
                       <mat-option *ngFor="let branch of branches" [value]="branch.id" [disabled]="branch.id == selectedProduct?.branch">
                         {{ branch.main + ' ' + branch.sub }}
                       </mat-option>
