@@ -135,11 +135,12 @@ class OrderContainerController {
   async cashierFinalisOnlineOrderByCompleteStatus(req, res) {
     if(req.user.role == "cashier" ){ // becasue  admin can process the order too but it has to be admin of that branch
         // but once that order is assigned to someone the other cannot handle it (the order will be dedicated to only one person)
-        if(!req.user.branch!=APP_CONFIG.ONLINE_BRANCH_ID){
+        if(req.user.branch!=APP_CONFIG.ONLINE_BRANCH_ID){
             throw new AppError("You are not authorized to process this order since you are not employed in this branch.");
         }
     }
     let orderId = req.params.orderId;
+    console.log(orderId);
     let cashierId = req.user.id;
     const subOrder = await SubOrderService.cashierFinalisOnlineOrderByCompleteStatus({orderId, cashierId});
     res.status(APP_CONFIG.HTTP_OK).json({
