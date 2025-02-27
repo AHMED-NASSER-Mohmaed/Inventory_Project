@@ -4,7 +4,7 @@ module.exports.OnlineProductService={
 
     parseFilters: (filters) => {
 
-        let fielters=["code" , "category" ,"name" , "isActive" , "price"]
+        let fielters=["code" , "category" ,"name" , "isActive",'brand']
 
         return Object.fromEntries(
 

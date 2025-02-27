@@ -54,20 +54,14 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
 
     let filters = {}
 
-    console.log("from search ", req.query.filters);
-
     if (req.query.filters) {
       try {
 
-        //beacause it's splited from validator fields
         let filterObjects = [req.query.filters].flat();
-
 
         filterObjects.forEach((element) => {
 
           let [field, value] = element.split(':');
-
-          // console.log(field, value, "   ");
 
           // Find the index of the searchFiledName array that contains the field
           const filterIndex = searchFiledName.findIndex((element) => element.trim() === field.trim());
@@ -76,15 +70,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
             throw new AppError(`Invalid filter field: ${field}`, APP_CONFIG.HTTP_BAD_REQUEST);
           }
 
-          // // Check if the value is valid based on searchValueAcoordingNaN
-          // const isValueNaN = searchValueAcoordingNaN[filterIndex]; // true or false
-          // const isValueValid = isValueNaN ? isNaN(value) : !isNaN(value);
-
-          // if (!isValueValid) {
-          //   throw new AppError(`Invalid value: ${value} for field: ${field}. Expected ${isValueNaN ? 'non-numeric' : 'numeric'} value.`, APP_CONFIG.HTTP_BAD_REQUEST);
-          // }
-
-
+        
           const isValueNaN = searchValueAcoordingNaN[filterIndex];
 
           if (isValueNaN) {
@@ -98,13 +84,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
             if (!value)
               throw new AppError(`Invalid value: ${value} for field: ${field}. Expected ${isValueNaN ? 'non-numeric' : 'numeric'} value.`, APP_CONFIG.HTTP_BAD_REQUEST);
           }
-
-          // if (!isValueNaN) {
-          // } else if (isValueNaN && !['branch', 'brand', 'category'].includes(field))
-
-
-            // value = { $regex: `^${value}`, $options: 'i' }
-            // value= new RegExp(`^${value}|${value}$`, 'i');
+ 
 
             filters[field] = value; // Insert filter objects
         });
@@ -116,17 +96,19 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
     }
 
     //  be genaric fucntion
-    console.log(req.validatedParams, "after");
+    console.log(req.validatedParams,filters.category, "after");
 
     if (!req.validatedParams)
-      req.validatedParams = {};
+      req.validatedParams = filters;
 
+    
+    if(!req.validatedParams.filters)
+      req.validatedParams.filters={};
 
     Object.keys(filters).forEach(key => {
       req.validatedParams.filters[key] = filters[key];
     });
 
-    console.log("from search : ", req.validatedParams);
 
     next(); // Proceed to the next middleware/controller
   };
