@@ -15,13 +15,14 @@
                 <p class="filterHeader">Filter by</p>
                 <hr>
 
-                <!-- Filter by Gender (Categories) -->
+                <!-- Filter by Categories -->
                 <div class="mb-3">
-                    <label class="form-label">categories</label>
+                    <label class="form-label">Categories</label>
                     <div *ngFor="let category of categories" class="form-check">
-                        <input class="form-check-input" type="radio" name="gender" [value]="category._id"
-                               (change)="onCategoryChange(category._id)" [id]="'gender' + category._id">
-                        <label class="form-check-label" [for]="'gender' + category._id">
+                        <input class="form-check-input" type="radio" name="category" [value]="category._id"
+                               (change)="onCategoryChange(category._id)" [id]="'category' + category._id"
+                               [checked]="selectedCategoryId === category._id">
+                        <label class="form-check-label" [for]="'category' + category._id">
                           {{ category.Cname }}
                         </label>
                     </div>
@@ -29,17 +30,19 @@
                 </div>
                 
                 <!-- Filter by Brands -->
-                <div *ngIf="selectedCategoryId">
+                <div *ngIf="selectedCategoryId && brandsByCategory.length > 0">
                     <div class="mb-3 brands">
                         <label class="form-label">Brands</label>
                         <div *ngFor="let brand of brandsByCategory" class="form-check">
                             <input class="form-check-input" type="radio" name="brand" [value]="brand._id"
-                                   (change)="onBrandChange(brand._id)" [id]="brand._id">
-                            <label class="form-check-label" [for]="brand._id">
-                              {{ brand.Bname }}
+                                   (change)="onBrandChange(brand._id)" [id]="'brand' + brand._id"
+                                   [checked]="selectedBrandId === brand._id">
+                            <label class="form-check-label" [for]="'brand' + brand._id">
+                              {{ brand.name }}
                             </label>
                         </div>
                     </div>
+                    <hr>
                 </div>
       
                 <!-- Filter Buttons -->
@@ -69,9 +72,9 @@
                 <div *ngIf="products.length === 0">
                     <p class="text-danger">Sorry! No products available</p>
                 </div>
-                <div *ngFor="let product of products" class="product-card">
+                <div *ngFor="let product of products" class="product-card col-md-4 mb-4">
                     <div class="image-container position-relative">
-                        <img [src]="product.images[0].url" class="card-img-top product-img" alt="...">
+                        <img [src]="product.images[0].url" class="card-img-top product-img" alt="{{ product.name }}">
                         <div class="overlay-icons">
                             <a class="product-item product-link product-icon" href="#"><i class="fas fa-heart"></i></a>
                             <a class="product-item product-link product-icon" (click)="openQuickView(product)"><i class="fas fa-eye"></i></a>
@@ -90,12 +93,16 @@
 </div>
 
 <!-- Pagination Controls -->
-<div *ngIf="products.length > 0" class="pagination-controls">
-    <button (click)="previousPage()" [disabled]="currentPage === 1"><i class='bx bx-chevron-left' style="font-size: 1.7em;"></i></button>
-    <div *ngFor="let page of pagesArray">
-        <button (click)="selectedPage(page)" [disabled]="currentPage === page">{{ page }}</button>
+<div *ngIf="products.length > 0" class="pagination-controls text-center my-4">
+    <button class="btn btn-light" (click)="previousPage()" [disabled]="currentPage === 1">
+        <i class='bx bx-chevron-left' style="font-size: 1.7em;"></i>
+    </button>
+    <div *ngFor="let page of pagesArray" class="d-inline-block mx-1">
+        <button class="btn btn-light" (click)="selectedPage(page)" [disabled]="currentPage === page">{{ page }}</button>
     </div>
-    <button (click)="nextPage()" [disabled]="currentPage === totalPages"><i class='bx bx-chevron-right' style="font-size: 1.7em;"></i></button>
+    <button class="btn btn-light" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        <i class='bx bx-chevron-right' style="font-size: 1.7em;"></i>
+    </button>
 </div>
 
 <app-footer></app-footer>
