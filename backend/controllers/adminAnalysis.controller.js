@@ -1,6 +1,7 @@
 // dashboard.controller.js
 const DashboardService = require("../services/adminAnalysis.service");
 const catchAsync = require("../utils/catchAsync");
+const prot_rest = require("../utils/authMiddlewaresOptions");
 
 class DashboardController {
   constructor() {
@@ -9,7 +10,11 @@ class DashboardController {
   }
 
   initializeRoutes() {
-    this.router.get("/admin-dashboard/analytics", this.getAnalyticsOverview);
+    this.router.get(
+      "/admin-dashboard/analytics",
+      prot_rest("admin", "super_admin"),
+      this.getAnalyticsOverview
+    );
   }
 
   getAnalyticsOverview = catchAsync(async (req, res, next) => {
