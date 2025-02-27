@@ -73,6 +73,8 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
         
           const isValueNaN = searchValueAcoordingNaN[filterIndex];
 
+          console.log(isValueNaN,value);
+
           if (isValueNaN) {
             if (!['branch', 'brand', 'category'].includes(field))
               value = { $regex: `^${value}`, $options: 'i' }
@@ -99,7 +101,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
     console.log(req.validatedParams,filters.category, "after");
 
     if (!req.validatedParams)
-      req.validatedParams = filters;
+      req.validatedParams = {};
 
     
     if(!req.validatedParams.filters)
