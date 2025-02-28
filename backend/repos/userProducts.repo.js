@@ -34,7 +34,6 @@ class UserProductRepository {
       const userProduct = await UserProduct.findOne({ customerId });
 
       if (userProduct) {
-        // Add only new productIds that are not already in the array
         const newProducts = productIds.filter(
           (id) => !userProduct.productIds.includes(id)
         );
@@ -46,7 +45,6 @@ class UserProductRepository {
 
         return userProduct;
       } else {
-        // Create a new document if the user has no existing products
         return await UserProduct.create({ customerId, productIds });
       }
     } catch (err) {

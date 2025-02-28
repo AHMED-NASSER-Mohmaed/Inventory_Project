@@ -106,7 +106,7 @@ class OrderService {
               order.status = isPartiallyFulfilled ? "partially delivered" : "delivered";
               console.log(order)
               const mappedOrderProductsIds = await this.getCustomerAndProducts(order._id.toString());
-              console.log(mappedOrderProductsIds);
+              // console.log(mappedOrderProductsIds);
               console.log(mappedOrderProductsIds.customerId);        // Use it wherever needed
               console.log(mappedOrderProductsIds.onlineProductsIds); // 
               

@@ -228,6 +228,7 @@ export class DeliveredTableComponent {
         }
     
         // Make a request to update the suborder without changing the status or fulfilled quantities
+        console.log(this.selectedSuborder.orderId)
         const sub = this.cashierservice.updateSuborder(this.selectedSuborder.orderId).subscribe({
           next: (res: any) => {
             if (res.message === 'success') {

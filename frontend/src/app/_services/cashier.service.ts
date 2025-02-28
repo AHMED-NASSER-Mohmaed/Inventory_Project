@@ -27,8 +27,8 @@ export class CashierService {
     const url = `${this.baseUrl}/finilizeSuborder/${orderId}`;
     console.log('Request URL:', url); 
     const headers = this.getHeaders(); 
-  
-    return this.http.patch(url, { headers });
+    console.log('Headers:', headers);
+    return this.http.patch(url, {}, { headers });
   }
 }
 
