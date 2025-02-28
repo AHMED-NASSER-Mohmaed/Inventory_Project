@@ -161,7 +161,7 @@
               [(ngModel)]="selectedSuborder.orderStatus"
               [disabled]="!editing"
             >
-              <option value="pending">Pending</option>
+              <!-- <option value="pending">Pending</option> -->
               <option value="processing">Processing</option>
               <option value="shipped">Shipped</option>
               <option value="delivered">Delivered</option>
@@ -201,7 +201,7 @@
                   type="button"
                   class="btn btn-outline-secondary"
                   (click)="incrementQuantity()"
-                  [disabled]="!editing || selectedSuborder.products[0].productFulfilledQuantity >= selectedSuborder.products[0].productStock"
+                  [disabled]="!editing || selectedSuborder.products[0].productFulfilledQuantity >= selectedSuborder.products[0].productRequestedQuantity"
                 >
                   <i class='bx bx-plus'></i>
                 </button>

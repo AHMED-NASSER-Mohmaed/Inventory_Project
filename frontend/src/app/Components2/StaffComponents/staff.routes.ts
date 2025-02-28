@@ -1,19 +1,17 @@
 import { Routes } from '@angular/router';
-import { ClerkDashboardComponent } from './clerk-dashboard/clerk-dashboard.component';
 import { PendingTableComponent } from './pending-table/pending-table.component';
 import { CancelledTableComponent } from './cancelled-table/cancelled-table.component';
 import { ProcessingTableComponent } from './processing-table/processing-table.component';
 import { ShippedTableComponent } from './shipped-table/shipped-table.component';
 import { DeliveredTableComponent } from './delivered-table/delivered-table.component';
-import { CompletedTableComponent } from './Cashier/completed-table/completed-table.component';
 // import { DeliveredTableComponent } from './delivered-table/delivered-table.component';
 
 export const dashRoutes: Routes = [
    
     {
         path: '',
-        title: 'Pending orders',
-        component:PendingTableComponent,
+        pathMatch: 'full',
+        redirectTo: 'pending-orders',
     }
     ,
     {
@@ -45,11 +43,6 @@ export const dashRoutes: Routes = [
         component: DeliveredTableComponent,
     },
 
-    {
-        path: 'completed-orders',
-        title: 'completed orders',
-        component: CompletedTableComponent,
-    },
 
   
 ];
