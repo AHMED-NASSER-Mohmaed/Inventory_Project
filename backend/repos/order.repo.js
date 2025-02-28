@@ -290,7 +290,7 @@ class OrderRepository {
   }
 
   async  getAllOnlineSubOrdersForCustomer(customerId, status) {
-    return await Order.find({
+    const orders = await Order.find({
       subOrderType: "online",
       status: status, // Filter by status
     })
@@ -303,7 +303,13 @@ class OrderRepository {
         },
       })
       .exec();
+    return orders.filter(order => 
+      order.orderContainer && order.orderContainer.customer._id.toString() == customerId
+    );
   }
+
+ 
+  
   
     
 }

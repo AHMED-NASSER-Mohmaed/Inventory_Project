@@ -55,6 +55,12 @@ class OrderContainerController {
           catchAsync(this.finalizeOfflineOrderContainer)
         );
 
+        this.router.get(
+          "order-container-offline",
+          AuthMiddleware.protect,
+          catchAsync(this.getOfflineOrderContainers)
+        );
+
 
         // online container orders
         this.router.post(
@@ -218,8 +224,8 @@ class OrderContainerController {
   // seller 
 
   async getAllOnlineOrdersForSeller(req, res){
-    // let sellerId = req.user._id; 
-    let sellerId = '67aa455d1ea026264bf6c6b4'; // for testing
+    let sellerId = req.user.id; 
+    // let sellerId = '67aa455d1ea026264bf6c6b4'; // for testing
 
 
     let status = req.params.status;
@@ -273,6 +279,15 @@ class OrderContainerController {
     });
   }
 
+  async getOfflineOrderContainers(req, res){
+    const { status } = req.query;
+    const orderContainers= await OrderContainerService.getOrderOfflineContainers(status, req.user.branch);
+    res.status(APP_CONFIG.HTTP_OK).json({
+      message: "success",
+      orderContainers,
+    });
+  }
+
   async getAllOfflineSubordersForSuperAdmin(req, res){
     const allOfflineSuborders= await orderService.getAllOfflineSubOrdersForSuperAdmin();
     res.status(APP_CONFIG.HTTP_OK).json({
@@ -289,6 +304,9 @@ class OrderContainerController {
     });
   }
 
+
+
+  // customer
 
   async  cancelSubOrderForCustomer(req, res) {
       const { orderId } = req.params; 
