@@ -18,6 +18,14 @@ class OrderContainerController {
 
       initializeRoutes() {
 
+        // customer
+        // i need here the status in query string
+        this.router.get("/customerOrders", AuthMiddleware.protect, catchAsync(this.getSubOrdersForCustomerByStatus)); 
+        // i need here order id as a route parameter as you see below
+        this.router.patch("/customerOrders/cancelWholeOrder/:orderId", AuthMiddleware.protect, catchAsync(this.cancelSubOrderForCustomer));
+        // i need here order id as a route parameter and products ids you wanna remove from the order as an array in the body request
+        this.router.patch("/customerOrders/cancelSomeProductsInTheOrder/:orderId", AuthMiddleware.protect, catchAsync(this.cancelSubOrderWithProductIdsForCustomer));
+
         // superAdmin
 
         this.router.get(
@@ -44,7 +52,7 @@ class OrderContainerController {
         this.router.patch(
           "/finalize-order-container-offline/:containerId",
           AuthMiddleware.protect,
-          catchAsync(this.createOnlineOrderContainer)
+          catchAsync(this.finalizeOfflineOrderContainer)
         );
 
 
@@ -280,6 +288,33 @@ class OrderContainerController {
       allOnlineSuborders,
     });
   }
+
+
+  async  cancelSubOrderForCustomer(req, res) {
+      const { orderId } = req.params; 
+      const customerId = req.user.id; 
+      const response = await orderService.cancelSubOrderByCustomer(customerId, orderId);
+      return res.status(200).json(response);
+  }
+
+  async  cancelSubOrderWithProductIdsForCustomer(req, res) {
+    const { orderId } = req.params; 
+    const {  productIds } = req.body;
+    const customerId = req.user.id; 
+
+    const response = await orderService.cancelOnlineProductsFromSubOrderByCustomer(customerId, orderId, productIds);
+    return res.status(200).json(response);
+  }
+  async  getSubOrdersForCustomerByStatus(req, res) {
+      const { status } = req.query;
+      const customerId = req.user.id;
+
+      const orders = await orderService.getAllOnlineSubOrdersForCustomerByStatus(customerId, status);
+      return res.status(200).json(orders);
+  }
+
+
+
 }
 
 module.exports = new OrderContainerController().router;

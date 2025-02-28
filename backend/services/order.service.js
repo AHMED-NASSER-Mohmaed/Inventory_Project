@@ -4,6 +4,7 @@ const orderContainerRepository = require("../repos/orderContainer.repo");
 const onlineProductRepo = require("../repos/tempOnlineProduct.repo");
 const AppError = require("../utils/appError");
 const ProductUserRepo = require("../repos/userProducts.repo");
+
 class OrderService {
 
   async  getCustomerAndProducts(orderId) {
@@ -298,6 +299,19 @@ class OrderService {
       const returnedOrders = await orderRepository.getAllOfflineSubOrdersForSuperAdmin();
       const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
       return mappedOrders;
+    }
+
+    // customer
+    async getAllOnlineSubOrdersForCustomerByStatus(customerId, status){
+      return await orderRepository.getAllOnlineSubOrdersForCustomer(customerId, status);
+    }
+
+    async cancelOnlineProductsFromSubOrderByCustomer(customerId, orderId, productsIds){
+      return await orderRepository.cancelOnlineProductsFromOrderByCustomer(customerId, orderId, productsIds);
+    }
+
+    async cancelSubOrderByCustomer(customerId, orderId){
+      return await orderRepository.cancelOrderByCustomer(customerId, orderId);
     }
 }
 
