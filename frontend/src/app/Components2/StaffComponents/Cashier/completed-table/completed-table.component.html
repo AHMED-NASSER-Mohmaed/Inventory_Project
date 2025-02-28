@@ -151,7 +151,7 @@
       <div class="modal-body">
         <div *ngIf="selectedSuborder">
           <p><strong>Seller Name:</strong> {{ selectedSuborder.sellerName }}</p>
-
+          <p><strong>Order Status:</strong> {{ selectedSuborder.orderStatus }}</p>
           <!-- Dropdown for Order Status -->
           <!-- <div class="form-group">
             <label for="orderStatus"><strong>Order Status:</strong></label>
@@ -172,11 +172,13 @@
           <p><strong>Total Quantity:</strong> {{ selectedSuborder.orderTotalQty }}</p>
 
           <div *ngIf="selectedSuborder.products && selectedSuborder.products.length > 0">
-            <p><strong>Product Name:</strong> {{ selectedSuborder.products[0].productName }}</p>
-            <p><strong>Product ID:</strong> {{ selectedSuborder.products[0].productId }}</p>
-            <p><strong>Requested Quantity:</strong> {{ selectedSuborder.products[0].productRequestedQuantity }}</p>
-            <p><strong>Fulfilled Quantity:</strong> {{ selectedSuborder.products[0].productFulfilledQuantity }}</p>
-            <p><strong>Available Stock:</strong> {{ selectedSuborder.products[0].productStock }}</p>
+            <div *ngFor="let product of selectedSuborder.products">
+              <p><strong>Product Name:</strong> {{ product.productName }}</p>
+              <p><strong>Product ID:</strong> {{ product.productId }}</p>
+              <p><strong>Requested Quantity:</strong> {{ product.productRequestedQuantity }}</p>
+              <p><strong>Fulfilled Quantity:</strong> {{ product.productFulfilledQuantity }}</p>
+              <p><strong>Available Stock:</strong> {{ product.productStock }}</p>
+            </div>
 
             <!-- Counter Input for Fulfilled Quantity -->
             <!-- <div class="form-group">

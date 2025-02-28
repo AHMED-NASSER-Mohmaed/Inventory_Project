@@ -43,7 +43,15 @@ export class ShoppingcartComponent implements OnInit {
       for(let i = 0; i < this.products.length; i++){
         console.log(this.products[i].productName)
       }
-      console.log(this.products);
+      this.products.forEach(pro => pro.shallowStock = pro.stock - pro.requiredQty);
+      this.products.forEach(pro => {
+        if(pro.productImages.length > 1){
+          pro.urlImage = pro.productImages[1].url;
+        }
+        else{
+          pro.urlImage = pro.productImages[0].url;
+        }
+      });
       this.getSubtotal();
       this.getTotalAmount();
       if(localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
@@ -96,7 +104,7 @@ export class ShoppingcartComponent implements OnInit {
   // }
 
   getSubtotal(): number {
-    return this.products.reduce((acc, product) => acc + (product.price * product.requiredQty), 0);
+    return this.products.reduce((acc, product) => acc + (product.productPrice * product.requiredQty), 0);
   }
 
   getTotalAmount(): number {
@@ -106,6 +114,7 @@ export class ShoppingcartComponent implements OnInit {
   increase(product: any) {
     if (product.requiredQty + 1 > product.stock) return;
       product.requiredQty += 1;
+      product.shallowStock -= 1;
       this.cartService.addToCart(product.onlineProductId, 1, this.sessionId!).subscribe((response) => {
         if(localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
           localStorage.removeItem('sessionId');
@@ -118,6 +127,8 @@ export class ShoppingcartComponent implements OnInit {
       this.getSubtotal();
       this.getTotalAmount();
     });
+    // this.loadCart();
+
 
     // for test
     // this.cartService.addToCart("67b8f7c83c7eb38260dfc804", 1, this.sessionId!).subscribe((response) => {
@@ -135,6 +146,7 @@ export class ShoppingcartComponent implements OnInit {
   decrease(product: any) {
     if (product.requiredQty - 1 < 1) return;
     product.requiredQty -= 1;
+    product.shallowStock += 1;
     this.cartService.addToCart(product.onlineProductId, -1, this.sessionId!).subscribe((response) => {
       if(localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
         localStorage.removeItem('sessionId');
@@ -144,7 +156,7 @@ export class ShoppingcartComponent implements OnInit {
         localStorage.setItem('sessionId', response.data.sessionId);
           this.sessionId = response.data.sessionId;
       }
-      this.loadCart();
+      // this.loadCart();
       this.getSubtotal();
       this.getTotalAmount();
     });

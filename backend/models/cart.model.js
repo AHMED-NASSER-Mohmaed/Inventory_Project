@@ -65,14 +65,19 @@ CartSchema.pre(/^find/, function (next) {
   this.populate({
     path: "products.onlineProduct",
     select:
-      "-branch -isActive -satus -rating -ratingsQuantity -createdAt -updatedAt",
+      "-branch -isActive -status -rating -ratingsQuantity -createdAt -updatedAt",
     populate: [
       { path: "seller", select: "firstName lastName" },
-      { path: "product", select: "name price images category description" },
+      { 
+        path: "product", 
+        select: "name price images category description", 
+        populate: [{ path: "category", select: "Cname" } , { path: "brand", select: "Bname" }]
+      },
     ],
   });
   next();
 });
+
 
 CartSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
 

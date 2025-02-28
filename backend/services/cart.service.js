@@ -232,7 +232,7 @@ class CartService {
           const product = op.product || {};
 
           return {
-            _id: item._id,
+            // _id: item._id,
             requiredQty: item.requiredQty,
             onlineProductId: op._id,
             stock: op.stock,
@@ -243,7 +243,8 @@ class CartService {
             productPrice: product.price,
             productImages: product.images,
             productDescription: product.description,
-            productCategory: product.category,
+            productCategory: product.category.Cname,
+            productBrand: product.brand.Bname,
             // Flatten seller details:
             sellerId: seller._id,
             sellerCompanyName: seller.companyName || seller.firstName,

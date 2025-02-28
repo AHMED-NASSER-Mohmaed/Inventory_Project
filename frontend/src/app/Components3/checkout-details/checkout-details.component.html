@@ -143,13 +143,13 @@
                     @for (product of products; track product.onlineProductId){
                         <tr class="no-border " >
                             <td  >
-                                <img [src]="product.productImages[0].url" alt="Silver Bracelet" class="product-img">
+                                <img [src]="product.urlImage" alt="Silver Bracelet" class="product-img">
                                 <span>{{product.productName}}</span>
                             </td>
                         </tr>
                         <tr class="no-border ">
                             <td>Price</td>
-                            <td >{{product.price | currency}}</td>
+                            <td >{{product.productPrice | currency}}</td>
                         </tr>
                         <tr>
                             <td>Quantity</td>

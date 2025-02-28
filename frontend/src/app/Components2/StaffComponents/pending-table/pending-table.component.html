@@ -164,10 +164,14 @@
           <p><strong>Total Quantity:</strong> {{ selectedSuborder.orderTotalQty }}</p>
 
           <div *ngIf="selectedSuborder.products && selectedSuborder.products.length > 0">
-            <p><strong>Product Name:</strong> {{ selectedSuborder.products[0].productName }}</p>
-            <p><strong>Product ID:</strong> {{ selectedSuborder.products[0].productId }}</p>
-            <p><strong>Requested Quantity:</strong> {{ selectedSuborder.products[0].productRequestedQuantity }}</p>
-            <p><strong>Available Stock:</strong> {{ selectedSuborder.products[0].productStock }}</p>
+            <div *ngFor="let product of selectedSuborder.products">
+              <hr/>
+              <p><strong>Product Name:</strong> {{ product.productName }}</p>
+              <p><strong>Product ID:</strong> {{ product.productId }}</p>
+              <p><strong>Requested Quantity:</strong> {{ product.productRequestedQuantity }}</p>
+              <p><strong>Available Stock:</strong> {{ product.productStock }}</p>
+            </div>
+          
 
             <!-- Counter Input for Fulfilled Quantity -->
             <!-- <div class="form-group">

@@ -172,46 +172,50 @@
           <p><strong>Total Quantity:</strong> {{ selectedSuborder.orderTotalQty }}</p>
 
           <div *ngIf="selectedSuborder.products && selectedSuborder.products.length > 0">
-            <p><strong>Product Name:</strong> {{ selectedSuborder.products[0].productName }}</p>
-            <p><strong>Product ID:</strong> {{ selectedSuborder.products[0].productId }}</p>
-            <p><strong>Requested Quantity:</strong> {{ selectedSuborder.products[0].productRequestedQuantity }}</p>
-            <p><strong>Available Stock:</strong> {{ selectedSuborder.products[0].productStock }}</p>
-
-            <!-- Counter Input for Fulfilled Quantity -->
-            <div class="form-group">
-              <label for="fulfilledQuantity"><strong>Fulfilled Quantity:</strong></label>
-              <div class="input-group">
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary"
-                  (click)="decrementQuantity()"
-                  [disabled]="!editing || selectedSuborder.products[0].productFulfilledQuantity <= 0"
-                >
-                  <i class='bx bx-minus'></i>
-                </button>
-                <input
-                  type="number"
-                  id="fulfilledQuantity"
-                  class="form-control text-center"
-                  [(ngModel)]="selectedSuborder.products[0].productFulfilledQuantity"
-                  [disabled]="!editing"
-                  readonly
-                />
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary"
-                  (click)="incrementQuantity()"
-                  [disabled]="!editing || selectedSuborder.products[0].productFulfilledQuantity >= selectedSuborder.products[0].productRequestedQuantity"
-                >
-                  <i class='bx bx-plus'></i>
-                </button>
-              </div>
-              <!-- Validation Error Message -->
-              <div *ngIf="validationError" class="text-danger mt-2">
-                {{ validationError }}
+            <div *ngFor="let product of selectedSuborder.products; let i = index">
+              <hr/>
+              <p><strong>Product Name:</strong> {{ product.productName }}</p>
+              <p><strong>Product ID:</strong> {{ product.productId }}</p>
+              <p><strong>Requested Quantity:</strong> {{ product.productRequestedQuantity }}</p>
+              <p><strong>Available Stock:</strong> {{ product.productStock }}</p>
+          
+              <!-- Counter Input for Fulfilled Quantity -->
+              <div class="form-group">
+                <label for="fulfilledQuantity{{i}}"><strong>Fulfilled Quantity:</strong></label>
+                <div class="input-group">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="decrementQuantity(product)"
+                    [disabled]="!editing || product.productFulfilledQuantity <= 0"
+                  >
+                    <i class='bx bx-minus'></i>
+                  </button>
+                  <input
+                    type="number"
+                    id="fulfilledQuantity{{i}}"
+                    class="form-control text-center"
+                    [(ngModel)]="product.productFulfilledQuantity"
+                    [disabled]="!editing"
+                    readonly
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="incrementQuantity(product)"
+                    [disabled]="!editing || product.productFulfilledQuantity >= getMinValue(product)"
+                  >
+                    <i class='bx bx-plus'></i>
+                  </button>
+                </div>
+                <!-- Validation Error Message -->
+                <div *ngIf="validationError" class="text-danger mt-2">
+                  {{ validationError }}
+                </div>
               </div>
             </div>
           </div>
+          
         </div>
       </div>
 

@@ -57,6 +57,15 @@ export class CheckoutDetailsComponent implements OnInit {
         console.log(this.products[i].productName)
       }
       console.log(this.products);
+      this.products.forEach(pro => pro.shallowStock = pro.stock - pro.requiredQty);
+      this.products.forEach(pro => {
+        if(pro.productImages.length > 1){
+          pro.urlImage = pro.productImages[1].url;
+        }
+        else{
+          pro.urlImage = pro.productImages[0].url;
+        }
+      });
       this.getSubtotal();
       this.getTotalAmount();
       if(localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
@@ -80,7 +89,7 @@ export class CheckoutDetailsComponent implements OnInit {
   }
 
   getSubtotal(): number {
-    return this.products.reduce((acc, product) => acc + (product.price * product.requiredQty), 0);
+    return this.products.reduce((acc, product) => acc + (product.productPrice * product.requiredQty), 0);
   }
 
   getTotalAmount(): number {
