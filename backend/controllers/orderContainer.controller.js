@@ -45,13 +45,13 @@ class OrderContainerController {
         // offline container orders
         this.router.post(
           "/order-container-offline",
-          AuthMiddleware.protect,
+          pro_res('clerk'),
           catchAsync(this.createOfflineOrderContainer)
         );
 
         this.router.patch(
           "/finalize-order-container-offline/:containerId",
-          AuthMiddleware.protect,
+          pro_res('cashier'),
           catchAsync(this.finalizeOfflineOrderContainer)
         );
 
@@ -262,6 +262,7 @@ class OrderContainerController {
   /* offline container orders */
 
   async createOfflineOrderContainer(req, res) {
+    req.body.branch = req.user.branch;
     const orderContainer = await OrderContainerService.createOfflineOrderContainer(req.body);
     res.status(APP_CONFIG.HTTP_CREATED).json({
       message: "success",

@@ -292,14 +292,14 @@ class OrderRepository {
   async  getAllOnlineSubOrdersForCustomer(customerId, status) {
     const orders = await Order.find({
       subOrderType: "online",
-      status: status, // Filter by status
+      status: status, 
     })
       .populate("products.onlineProduct products.product seller")
       .populate({
         path: "orderContainer",
-        match: { customer: customerId }, // Filter by customer ID
+        match: { customer: customerId }, 
         populate: {
-          path: "customer", // Nested population to get customer details
+          path: "customer", 
         },
       })
       .exec();
