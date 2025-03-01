@@ -18,43 +18,50 @@ import { CartService } from '../../../_services/cart.service';
   templateUrl: './quickview.component.html',
   styleUrls: ['./quickview.component.css']
 })
-export class QuickviewComponent {
+export class QuickviewComponent  {
   @Input() isVisible: boolean = false;
-  @Input() selectedProduct: Product | any;
+  @Input() selectedProduct: any;
   @Output() closeModalEvent = new EventEmitter<void>();
 
   quantity: number = 1; // Initialize quantity
   shippingFees = 50;
   maxQuantity = 10;
   sessionId: string | null = null;
+  shallowStock: number = 0;
 
   loading: boolean = false;
   products: any[] = [];
   constructor(private cartService: CartService){
     
   }
+  ngOnInit(): void{
+    this.loadCart();
+  }
+
   closeModal() {
     this.isVisible = false;
     this.closeModalEvent.emit(); // Emit the event when the modal is closed
   }
 
   increaseQuantity() {
+    if(this.quantity > this.selectedProduct.stock) return;
     this.quantity += 1;
   }
 
   decreaseQuantity() {
-    if (this.quantity > 1) {
+    if (this.quantity < 1) return;
       this.quantity -= 1;
-    }
   }
 
   loadCart() {
     // this.loading = true; 
     this.cartService.getCart(this.sessionId!).subscribe((response) => {
       this.products = response.cart.products;
-      // for(let i = 0; i < this.products.length; i++){
-      //   console.log(this.products[i].productName)
-      // }
+      for(let i = 0; i < this.products.length; i++){
+       if(this.products[i].onlineProductId == this.selectedProduct._id){
+        this.shallowStock = this.products[i].stock - this.products[i].requiredQty;
+       }
+      }
       console.log(this.products);
       // this.getSubtotal();
       // this.getTotalAmount();
@@ -78,61 +85,50 @@ export class QuickviewComponent {
   );
   }
 
+
   increase(product: any) {
-    if(!product.requiredQty ){
-      product.requiredQty = 1;
-    }
-    // if (product.requiredQty + 1 > product.stock) return;
-    if (product.requiredQty + 1 > product.stock) return;
-    console.log("lol")
-      product.requiredQty += 1;
-      this.quantity += 1;
-      this.cartService.addToCart(product._id, 1, this.sessionId!).subscribe((response) => {
-        if(localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
+    console.log(product);
+    
+    if(this.quantity > this.shallowStock) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Oops!',
+        text: 'Cannot add product to the cart with that quantity',
+      });
+      return;
+    };
+  
+    
+    this.cartService.addToCart(product._id, this.quantity, this.sessionId!).subscribe({
+      next: (response) => {
+        if (localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
           localStorage.removeItem('sessionId');
           this.sessionId = null;
         }
-        if(!localStorage.getItem('token') && response.data.sessionId && response.data.sessionId != this.sessionId) {
+        if (!localStorage.getItem('token') && response.data.sessionId && response.data.sessionId !== this.sessionId) {
           localStorage.setItem('sessionId', response.data.sessionId);
-            this.sessionId = response.data.sessionId;
-        }
-      // this.getSubtotal();
-      // this.getTotalAmount();
-    });
-
-    // for test
-    // this.cartService.addToCart("67b8f7c83c7eb38260dfc804", 1, this.sessionId!).subscribe((response) => {
-    //   if(localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
-    //     localStorage.removeItem('sessionId');
-    //     this.sessionId = null; //67b8f7c83c7eb38260dfc804
-    //   }
-    //   if(!localStorage.getItem('token') && response.data.sessionId && response.data.sessionId != this.sessionId) {
-    //     localStorage.setItem('sessionId', response.data.sessionId);
-    //       this.sessionId = response.data.sessionId;
-    //   }
-    // });
-  }
-
-  decrease(product: any) {
-    console.log(product);
-    if(!product.requiredQty ){
-      product.requiredQty = 1;
-    }
-    if (product.requiredQty - 1 < 1) return;
-    this.quantity -= 1;
-    product.requiredQty -= 1;
-    this.cartService.addToCart(product.onlineProductId, -1, this.sessionId!).subscribe((response) => {
-      if(localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
-        localStorage.removeItem('sessionId');
-        this.sessionId = null;
-      }
-      if(!localStorage.getItem('token') && response.data.sessionId && response.data.sessionId != this.sessionId) {
-        localStorage.setItem('sessionId', response.data.sessionId);
           this.sessionId = response.data.sessionId;
+        }
+  
+        Swal.fire({
+          icon: 'success',
+          title: 'Added to Cart!',
+          text: `${product.name} has been added successfully.`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: (error) => {
+        console.error("Error adding to cart:", error);
+        
+        Swal.fire({
+          icon: 'info',
+          title: 'Oops!',
+          text: 'Product Out of Stock!',
+        });
       }
-      this.loadCart();
-      // this.getSubtotal();
-      // this.getTotalAmount();
     });
   }
+
+ 
 }

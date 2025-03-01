@@ -10,10 +10,11 @@ import { CartService } from '../../_services/cart.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-checkout-details',
-  imports: [ FormsModule, CommonModule,NgxSpinnerModule ],
+  imports: [ FormsModule, CommonModule,NgxSpinnerModule, MatProgressSpinnerModule ],
   templateUrl: './checkout-details.component.html',
   styleUrl: './checkout-details.component.css'
 })
@@ -39,13 +40,25 @@ export class CheckoutDetailsComponent implements OnInit {
     paymentMethod: ''
   };
 
-  constructor(private cartService: CartService, private router: Router,  public spinner: NgxSpinnerService) {}
+  constructor(private cartService: CartService, private router: Router,  public spinner: NgxSpinnerService, public spinner2: MatProgressSpinnerModule) {}
 
   ngOnInit(): void {
     // this.spinner.show();
+    this.startLoading();
     this.sessionId = localStorage.getItem('sessionId');
     this.loadCart();
     this.fetchLocationData();
+  }
+  startLoading() {
+    this.loading = true;
+    // Simulating an async operation like an API call
+    setTimeout(() => {
+      this.loading = false;
+    }, 3000); // Hides spinner after 3 seconds
+  }
+
+  stopLoading() {
+    this.loading = false;
   }
 
   loadCart() {
@@ -76,6 +89,7 @@ export class CheckoutDetailsComponent implements OnInit {
         localStorage.setItem('sessionId', response.sessionId);
           this.sessionId = response.sessionId;
       }
+      this.stopLoading();
       // this.spinner.hide();
       // this.loading = false; 
     },

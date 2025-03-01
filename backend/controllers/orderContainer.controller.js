@@ -45,14 +45,20 @@ class OrderContainerController {
         // offline container orders
         this.router.post(
           "/order-container-offline",
-          AuthMiddleware.protect,
+          pro_res('clerk'),
           catchAsync(this.createOfflineOrderContainer)
         );
 
         this.router.patch(
           "/finalize-order-container-offline/:containerId",
-          AuthMiddleware.protect,
+          pro_res('cashier'),
           catchAsync(this.finalizeOfflineOrderContainer)
+        );
+
+        this.router.get(
+          "order-container-offline",
+          AuthMiddleware.protect,
+          catchAsync(this.getOfflineOrderContainers)
         );
 
 
@@ -218,8 +224,8 @@ class OrderContainerController {
   // seller 
 
   async getAllOnlineOrdersForSeller(req, res){
-    // let sellerId = req.user._id; 
-    let sellerId = '67aa455d1ea026264bf6c6b4'; // for testing
+    let sellerId = req.user.id; 
+    // let sellerId = '67aa455d1ea026264bf6c6b4'; // for testing
 
 
     let status = req.params.status;
@@ -256,6 +262,7 @@ class OrderContainerController {
   /* offline container orders */
 
   async createOfflineOrderContainer(req, res) {
+    req.body.branch = req.user.branch;
     const orderContainer = await OrderContainerService.createOfflineOrderContainer(req.body);
     res.status(APP_CONFIG.HTTP_CREATED).json({
       message: "success",
@@ -270,6 +277,15 @@ class OrderContainerController {
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       orderContainer,
+    });
+  }
+
+  async getOfflineOrderContainers(req, res){
+    const { status } = req.query;
+    const orderContainers= await OrderContainerService.getOrderOfflineContainers(status, req.user.branch);
+    res.status(APP_CONFIG.HTTP_OK).json({
+      message: "success",
+      orderContainers,
     });
   }
 
@@ -289,6 +305,9 @@ class OrderContainerController {
     });
   }
 
+
+
+  // customer
 
   async  cancelSubOrderForCustomer(req, res) {
       const { orderId } = req.params; 

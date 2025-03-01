@@ -9,10 +9,12 @@ import { CartService } from '../../_services/cart.service';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+import Swal from 'sweetalert2';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-shoppingcart',
-  imports: [HeaderComponent, FooterComponent, CommonModule, RouterModule, NgxSpinnerModule],
+  imports: [HeaderComponent, FooterComponent, CommonModule, RouterModule, NgxSpinnerModule, MatProgressSpinnerModule],
   templateUrl: './shoppingcart.component.html',
   styleUrl: './shoppingcart.component.css'
 })
@@ -29,19 +31,35 @@ export class ShoppingcartComponent implements OnInit {
 
   loading: boolean = false;
 
-  constructor(private cartService: CartService, public spinner: NgxSpinnerService) {}
+  constructor(private cartService: CartService, public spinner: NgxSpinnerService, public spinner2: MatProgressSpinnerModule) {}
   ngOnInit(): void {
     // this.spinner.show();
+    // this.spinner2.show();
+    this.startLoading();
     this.sessionId = localStorage.getItem('sessionId');
     this.loadCart();
   }
 
+  startLoading() {
+    this.loading = true;
+    // Simulating an async operation like an API call
+    setTimeout(() => {
+      this.loading = false;
+    }, 3000); // Hides spinner after 3 seconds
+  }
+
+  stopLoading() {
+    this.loading = false;
+  }
+
   loadCart() {
+
     // this.loading = true; 
     this.cartService.getCart(this.sessionId!).subscribe((response) => {
       this.products = response.cart.products;
       for(let i = 0; i < this.products.length; i++){
-        console.log(this.products[i].productName)
+        console.log(this.products[i].sellerCompanyName)
+       if(this.products[i].sellerCompanyName == 'inentory system') this.products[i].sellerCompanyName = 'Our System'
       }
       this.products.forEach(pro => pro.shallowStock = pro.stock - pro.requiredQty);
       this.products.forEach(pro => {
@@ -63,13 +81,15 @@ export class ShoppingcartComponent implements OnInit {
           this.sessionId = response.sessionId;
       }
       // this.spinner.hide();
-      this.loading = false; 
+      // this.loading = false; 
+      this.stopLoading();
     },
 
     (error) => {
       console.error('Error loading cart:', error);
-      this.loading = false; // ✅ Ensure loading is set to false on error
-      this.spinner.hide();
+      // this.spinner.hide();
+      // this.loading = false; 
+      this.stopLoading();
     }
   );
   }
@@ -165,11 +185,25 @@ export class ShoppingcartComponent implements OnInit {
   
  
   removeProduct(productId: string) {
-    this.cartService.removeFromCart(productId, this.sessionId!).subscribe(() => {
-      this.products = this.products.filter(p => p.onlineProductId !== productId);
-      this.loadCart();
-      this.getSubtotal();
-      this.getTotalAmount();
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you really want to remove this item from your cart?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, remove it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.cartService.removeFromCart(productId, this.sessionId!).subscribe(() => {
+          this.products = this.products.filter(p => p.onlineProductId !== productId);
+          this.loadCart();
+          this.getSubtotal();
+          this.getTotalAmount();
+          Swal.fire('Removed!', 'The product has been removed from your cart.', 'success');
+        });
+      }
     });
   }
+  
 }

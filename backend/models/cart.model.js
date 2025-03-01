@@ -67,10 +67,10 @@ CartSchema.pre(/^find/, function (next) {
     select:
       "-branch -isActive -status -rating -ratingsQuantity -createdAt -updatedAt",
     populate: [
-      { path: "seller", select: "firstName lastName" },
+      { path: "seller", select: "firstName lastName companyName" },
       { 
         path: "product", 
-        select: "name price images category description", 
+        select: "name price images category brand description", 
         populate: [{ path: "category", select: "Cname" } , { path: "brand", select: "Bname" }]
       },
     ],

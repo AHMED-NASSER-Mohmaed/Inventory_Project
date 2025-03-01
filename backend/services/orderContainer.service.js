@@ -233,6 +233,10 @@ class OrderContainerService {
   async getOrderContainerById(containerId) {
     return await orderContainerRepository.getOrderContainerById(containerId);
   }
+
+  async getOrderOfflineContainers( status, branch){
+    return await orderContainerRepository.getOrderOfflineContainers(status, branch);
+  }
 }
 
 module.exports = new OrderContainerService();

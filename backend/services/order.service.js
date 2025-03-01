@@ -303,7 +303,9 @@ class OrderService {
 
     // customer
     async getAllOnlineSubOrdersForCustomerByStatus(customerId, status){
-      return await orderRepository.getAllOnlineSubOrdersForCustomer(customerId, status);
+      const returnedOrders = await orderRepository.getAllOnlineSubOrdersForCustomer(customerId, status);
+      const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+      return mappedOrders;
     }
 
     async cancelOnlineProductsFromSubOrderByCustomer(customerId, orderId, productsIds){

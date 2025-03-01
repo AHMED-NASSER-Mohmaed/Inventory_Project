@@ -290,20 +290,42 @@ class OrderRepository {
   }
 
   async  getAllOnlineSubOrdersForCustomer(customerId, status) {
-    return await Order.find({
-      subOrderType: "online",
-      status: status, // Filter by status
-    })
-      .populate("products.onlineProduct products.product seller")
-      .populate({
-        path: "orderContainer",
-        match: { customer: customerId }, // Filter by customer ID
-        populate: {
-          path: "customer", // Nested population to get customer details
-        },
+    let orders;
+    if(!status){
+      orders =  await Order.find({
+        subOrderType: "online",
       })
-      .exec();
+        .populate("products.onlineProduct products.product seller")
+        .populate({
+          path: "orderContainer",
+          match: { customer: customerId }, 
+          populate: {
+            path: "customer", 
+          },
+        })
+        .exec();
+    }else{
+      orders = await Order.find({
+        subOrderType: "online",
+        status: status, 
+      })
+        .populate("products.onlineProduct products.product seller")
+        .populate({
+          path: "orderContainer",
+          match: { customer: customerId }, 
+          populate: {
+            path: "customer", 
+          },
+        })
+        .exec();
+    }
+    return orders.filter(order => 
+      order.orderContainer && order.orderContainer.customer._id.toString() == customerId
+    );
   }
+
+ 
+  
   
     
 }

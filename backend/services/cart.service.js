@@ -243,11 +243,11 @@ class CartService {
             productPrice: product.price,
             productImages: product.images,
             productDescription: product.description,
-            productCategory: product.category.Cname,
-            productBrand: product.brand.Bname,
+            productCategory: product.category?.Cname,
+            productBrand: product.brand?.Bname,
             // Flatten seller details:
             sellerId: seller._id,
-            sellerCompanyName: seller.companyName || seller.firstName,
+            sellerCompanyName: seller?.companyName || seller?.firstName,
           };
         }
         // If no onlineProduct, return the item as is.
