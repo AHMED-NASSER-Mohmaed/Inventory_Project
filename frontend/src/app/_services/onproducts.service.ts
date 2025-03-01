@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 
-export class OffproductService {
+export class OnproductsService {
 
   constructor(public http: HttpClient) { }
   private baseUrl = 'http://localhost:3000';
@@ -18,7 +18,7 @@ export class OffproductService {
 
   getPaginatedProducts(page: number, limit: number, filters?: string, sort?: string): Observable<any> {
     const filterParam = filters ? `filters=${filters}` : '';
-    const url = `${this.baseUrl}/OffProduct?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
+    const url = `${this.baseUrl}/OnlineProducts?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
     return this.http.get(url, { headers: this.getHeaders() });
   }
 
@@ -93,4 +93,5 @@ export class OffproductService {
   exportProduct(productId: string, sourceId: string, destinationId: string, quantity: number): Observable<any> {
     return this.http.patch(`${this.baseUrl}/OffProduct/exportTo?id=${productId}&src=${sourceId}&dest=${destinationId}&qty=${quantity}`, {}, { headers: this.getHeaders() });
   }
+
 }

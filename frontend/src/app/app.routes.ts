@@ -42,6 +42,7 @@ import { ClerkProfileComponent } from './Components/clerk-profile/clerk-profile.
 import { CashierProfileComponent } from './Components/cashier-profile/cashier-profile.component';
 import { auth7Guard } from './auth7.guard';
 import { auth8Guard } from './auth8.guard';
+import { CustomerOrderDetailsComponent } from './Components/customer-order-details/customer-order-details.component';
 
 
 export const routes: Routes = [
@@ -223,6 +224,11 @@ export const routes: Routes = [
                 path: 'resetpassword',
                 component: ResetpasswordComponent,
                 title: 'Reset Password'
+            },
+            {
+                path: 'orders',
+                component: CustomerOrderDetailsComponent,
+                title: 'Orders'
             }
         ]
     },

@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, signal, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.component';
 import { ConfirmDialogComponent2 } from '../../../confirm-dialog2/confirm-dialog2.component';
-import { ConfirmDialogImgchangeComponent } from '../../../confirm-dialog-imgchange/confirm-dialog-imgchange.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
@@ -20,7 +19,6 @@ import { MatTreeNestedDataSource, MatTreeModule } from '@angular/material/tree';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
-// Define a TreeNode interface for filter structure
 interface FilterNode {
   name: string;
   type?: string;
@@ -46,8 +44,8 @@ interface FilterNode {
   templateUrl: './offproduct.component.html',
   styleUrl: './offproduct.component.css',
 })
+
 export class OffproductComponent implements OnInit, OnDestroy {
-  // Filter state and pagination
   currentFilter: string = '';
   currentPage: number = 1;
   itemsPerPage: number = 10;
@@ -64,10 +62,9 @@ export class OffproductComponent implements OnInit, OnDestroy {
 
   subscriptions: Subscription[] = [];
 
-  // Cache for storing product pages
   pageCache: { [key: string]: { result: OffProduct[]; total: number } } = {};
 
-  selectedFilter: string = 'name'; // Default filter
+  selectedFilter: string = 'name'; 
   searchQuery: string = '';
 
   showNoResults: boolean = false;
@@ -122,7 +119,6 @@ export class OffproductComponent implements OnInit, OnDestroy {
   exportDestinationBranch: string = '';
   exportQuantity: number = 0;
 
-  // Tree related properties
   treeControl = new NestedTreeControl<FilterNode>(node => node.children);
   filterDataSource = new MatTreeNestedDataSource<FilterNode>();
   filterNodes: FilterNode[] = [
@@ -245,7 +241,6 @@ export class OffproductComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.categories = res.data;
         
-        // Update tree nodes with categories
         const categoryNode = this.filterNodes.find(node => node.name === 'Category');
         if (categoryNode) {
           categoryNode.children = this.categories.map(category => ({
@@ -725,7 +720,6 @@ export class OffproductComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.toaster.success('Product added successfully');
         
-        // Close modal with pure JavaScript
         const modalElement = document.getElementById('addProductModal');
         if (modalElement) {
           modalElement.classList.remove('show');
@@ -735,11 +729,9 @@ export class OffproductComponent implements OnInit, OnDestroy {
         while (backdrops.length > 0) {
           backdrops[0].parentNode?.removeChild(backdrops[0]);
         }
-        // Remove modal-open class from body
         document.body.classList.remove('modal-open');
         document.body.style.removeProperty('padding-right');
         
-        // Clear form
         this.newProduct = {
           name: '',
           code: '',
@@ -751,7 +743,6 @@ export class OffproductComponent implements OnInit, OnDestroy {
           stock: 0
         };
         
-        // Refresh product data from server to ensure consistent data display
         this.refreshProductData();
       },
       error: (error) => {
