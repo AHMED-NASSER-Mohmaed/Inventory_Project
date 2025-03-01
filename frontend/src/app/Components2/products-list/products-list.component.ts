@@ -52,6 +52,7 @@ export class ProductsListComponent implements OnInit {
   sessionId: string | null = null;
 
   loading: boolean = false;
+  tempProducts: any[] = []
 
 
   constructor(
@@ -70,6 +71,7 @@ export class ProductsListComponent implements OnInit {
 
     this.loadCategories();
     this.loadBrands();
+    this.loadCart();
   }
 
   loadCategories(): void {
@@ -267,11 +269,11 @@ export class ProductsListComponent implements OnInit {
     loadCart() {
       // this.loading = true; 
       this.cartService.getCart(this.sessionId!).subscribe((response) => {
-        this.products = response.cart.products;
-        // for(let i = 0; i < this.products.length; i++){
-        //   console.log(this.products[i].productName)
-        // }
-        console.log(this.products);
+        // this.products = response.cart.products;
+        // // for(let i = 0; i < this.products.length; i++){
+        // //   console.log(this.products[i].productName)
+        // // }
+        // console.log(this.products);
         // this.getSubtotal();
         // this.getTotalAmount();
         if(localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
@@ -296,50 +298,48 @@ export class ProductsListComponent implements OnInit {
   
     increase(product: any) {
       console.log(product);
-      if (product.requiredQty + 1 > product.stock) return;
-        product.requiredQty += 1;
-        this.cartService.addToCart(product._id, 1, this.sessionId!).subscribe((response) => {
-          if(localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
+      
+      if (product.requiredQty + 1 > product.stock) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Oops!',
+          text: 'Product Out of Stock!',
+        });
+      };
+    
+      product.requiredQty += 1;
+      
+      this.cartService.addToCart(product._id, 1, this.sessionId!).subscribe({
+        next: (response) => {
+          if (localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
             localStorage.removeItem('sessionId');
             this.sessionId = null;
           }
-          if(!localStorage.getItem('token') && response.data.sessionId && response.data.sessionId != this.sessionId) {
+          if (!localStorage.getItem('token') && response.data.sessionId && response.data.sessionId !== this.sessionId) {
             localStorage.setItem('sessionId', response.data.sessionId);
-              this.sessionId = response.data.sessionId;
-          }
-        // this.getSubtotal();
-        // this.getTotalAmount();
-      });
-  
-      // for test
-      // this.cartService.addToCart("67b8f7c83c7eb38260dfc804", 1, this.sessionId!).subscribe((response) => {
-      //   if(localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
-      //     localStorage.removeItem('sessionId');
-      //     this.sessionId = null; //67b8f7c83c7eb38260dfc804
-      //   }
-      //   if(!localStorage.getItem('token') && response.data.sessionId && response.data.sessionId != this.sessionId) {
-      //     localStorage.setItem('sessionId', response.data.sessionId);
-      //       this.sessionId = response.data.sessionId;
-      //   }
-      // });
-    }
-  
-    decrease(product: any) {
-      if (product.requiredQty - 1 < 1) return;
-      product.requiredQty -= 1;
-      this.cartService.addToCart(product.onlineProductId, -1, this.sessionId!).subscribe((response) => {
-        if(localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
-          localStorage.removeItem('sessionId');
-          this.sessionId = null;
-        }
-        if(!localStorage.getItem('token') && response.data.sessionId && response.data.sessionId != this.sessionId) {
-          localStorage.setItem('sessionId', response.data.sessionId);
             this.sessionId = response.data.sessionId;
+          }
+    
+          Swal.fire({
+            icon: 'success',
+            title: 'Added to Cart!',
+            text: `${product.name} has been added successfully.`,
+            timer: 2000,
+            showConfirmButton: false
+          });
+        },
+        error: (error) => {
+          console.error("Error adding to cart:", error);
+          
+          Swal.fire({
+            icon: 'info',
+            title: 'Oops!',
+            text: 'Product Out of Stock!',
+          });
         }
-        this.loadCart();
-        // this.getSubtotal();
-        // this.getTotalAmount();
       });
     }
+    
+  
   
 }

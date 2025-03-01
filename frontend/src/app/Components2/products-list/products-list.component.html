@@ -1,10 +1,10 @@
 <app-header></app-header>
 
-<app-quickview >
+<!-- <app-quickview 
     [isVisible]="showQuickView" 
     [selectedProduct]="selectedProduct" 
     (closeModalEvent)="closeQuickView()">
-</app-quickview>
+</app-quickview> -->
 
 <div class="container-fluid">
     <div class="row">
@@ -93,7 +93,7 @@
                         <h5 class="card-title">{{ product.name }}</h5>
                         <p class="card-price">{{ product.price }} le</p>
                         <p class="card-seller">Sold by: {{ product.sellerCompanyName }}</p>
-                        <button class="btn add-to-cart-btn" (click)="$event.stopPropagation(); increase(product)">Add to Cart</button>
+                        <button [disabled]="product.shallowStock == 0" class="btn add-to-cart-btn" (click)="$event.stopPropagation(); increase(product)">Add to Cart</button>
                     </div>
                 </div>
             </div>

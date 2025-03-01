@@ -6,18 +6,18 @@
         </div>
         <div class="modal-body">
             <div class="product-image">
-                <img [src]="selectedProduct.images[0].url" alt="Product Image">
+                <img [src]="selectedProduct.imgUrl" alt="Product Image">
             </div>
             <div class="product-details">
                 <p class="price">{{ selectedProduct?.price }} le</p>
                 <p class="description">{{ selectedProduct?.description }}</p>
 
                 <div class="quantity-control">
-                    <button (click)="decrease(selectedProduct)">-</button>
+                    <button [disabled]="this.quantity <= 1" (click)="decreaseQuantity()">-</button>
                     <span>{{ quantity }}</span>
-                    <button (click)="increase(selectedProduct)">+</button>
+                    <button [disabled]="this.quantity >= shallowStock" (click)="increaseQuantity()">+</button>
                 </div>
-                <button class="add-to-cart-btn">Add to Cart</button>
+                <button class="add-to-cart-btn" (click)="increase(selectedProduct)">Add to Cart</button>
             </div>
         </div>
     </div>
