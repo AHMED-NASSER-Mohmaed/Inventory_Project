@@ -30,7 +30,7 @@ import { CartService } from '../../_services/cart.service';
   styleUrls: ['./products-list.component.css']
 })
 export class ProductsListComponent implements OnInit {
-  products: Product[] = [];
+  products: any[] = [];
   categories: category[] = [];
   brands: Brand[] = []; 
   selectedCategoryId: string = "";
@@ -171,11 +171,11 @@ export class ProductsListComponent implements OnInit {
             _id: item.product._id,
             name: item.product.name,
             price: item.product.price,
-            images: item.product.images,
+            imgUrl: (item.product.images.length > 1) ? item.product.images[1].url :  item.product.images[0].url,
             sellerName: `${item.seller?.firstName || ''} ${item.seller?.lastName || ''}`,
             sellerId: item.seller?._id || '',
-            stock: item.stock
-            // sellerCompanyName: item.seller.companyName,
+            stock: item.stock,
+            sellerCompanyName: item.seller?.companyName,
           }));
           
           this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);

@@ -58,7 +58,8 @@ export class ShoppingcartComponent implements OnInit {
     this.cartService.getCart(this.sessionId!).subscribe((response) => {
       this.products = response.cart.products;
       for(let i = 0; i < this.products.length; i++){
-        console.log(this.products[i].productName)
+        console.log(this.products[i].sellerCompanyName)
+       if(this.products[i].sellerCompanyName == 'inentory system') this.products[i].sellerCompanyName = 'Our System'
       }
       this.products.forEach(pro => pro.shallowStock = pro.stock - pro.requiredQty);
       this.products.forEach(pro => {
