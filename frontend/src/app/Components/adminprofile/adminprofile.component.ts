@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CustomersProfileService } from '../../_services/customer-profile.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AccountService } from '../../_services/account.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ConfirmLogoutDialogComponent } from '../../confirm-logout-dialog/confirm-logout-dialog.component';
 import { Account } from '../../_models/account';
 import { Subscription } from 'rxjs';
@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-adminprofile',
-  imports: [FormsModule , CommonModule ],
+  imports: [FormsModule , CommonModule , RouterLink ],
   templateUrl: './adminprofile.component.html',
   styleUrl: './adminprofile.component.css'
 })

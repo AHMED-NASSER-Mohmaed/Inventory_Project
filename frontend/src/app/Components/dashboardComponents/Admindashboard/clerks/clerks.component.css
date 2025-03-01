@@ -66,6 +66,7 @@
     display: inline-block;
     width: 50px;
     height: 25px;
+    margin-left: 2em;
 }
 
 .switch-mode input {
@@ -291,7 +292,7 @@ input:checked + .slider:before {
   grid-gap: 16px;
 }
 :host #content main .head-title .left .breadcrumb li {
-  color: var (--dark);
+  color: var(--dark);
 }
 :host #content main .head-title .left .breadcrumb li a {
   color: var(--dark-grey);
@@ -336,7 +337,7 @@ input:checked + .slider:before {
 }
 :host #content main .box-info li:nth-child(2) .bx {
   background: var(--custom);
-  color: var (--dark-dark);
+  color: var(--dark-dark);
   transition: 0.3s;
 }
 :host #content main .box-info li:nth-child(2) .bx:hover {
@@ -437,13 +438,13 @@ mat-button-toggle{
 }
 
 .matbuttongroupfilter{
-  height: 6em;
+  height: 9em;
   border-radius: 0;
   margin-left: 0;
 }
 
 .matbuttongroupfilter mat-button-toggle{
-    height: 6em;
+    height: 3em;
     font-size: 0.9em;
 }
 
@@ -825,7 +826,7 @@ mat-button-toggle{
     font-size: 0.95em;
     color: var(--dark);
     background: #fff;
-    font-family: var (--poppins);
+    font-family: var(--poppins);
 }
 
 #sellerInfoModal .modal-body .info-grid {
@@ -854,7 +855,7 @@ input[type="number"] {
 
 #sellerInfoModal .modal-body .info-item .label {
     font-weight: 600;
-    color: var (--dark);
+    color: var(--dark);
 }
 
 #sellerInfoModal .modal-body .info-item:not(:last-child)::after {
@@ -1187,194 +1188,6 @@ input[type="number"] {
   cursor: not-allowed;
 }
 
-/* Consolidated Filter Menu Styles */
-.filter-badge {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 8px;
-  height: 8px;
-  background-color: var(--blue);
-  border-radius: 50%;
-}
-
-.consolidated-filter-container {
-  min-width: 250px;
-  max-width: 350px;
-  padding: 10px;
-  background-color: var(--light);
-  color: var(--dark);
-  font-family: var(--poppins);
-}
-
-.filter-section-header {
-  margin: 0 0 10px 0;
-  padding-bottom: 8px;
-  font-weight: 600;
-  border-bottom: 1px solid var(--grey);
-}
-
-.filter-section {
-  margin-bottom: 15px;
-}
-
-.filter-category {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
-  background-color: var(--grey);
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  margin-bottom: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.filter-category:hover {
-  background-color: var(--dark-grey);
-}
-
-.filter-options {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease-in-out;
-  margin-left: 15px;
-}
-
-.filter-options.expanded {
-  max-height: 250px;
-  overflow-y: auto;
-}
-
-.filter-option {
-  padding: 10px 12px;
-  margin: 4px 0;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s ease-in-out;
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-.filter-option:hover {
-  background-color: var(--grey);
-  transform: translateX(3px);
-}
-
-.filter-option.selected {
-  background-color: var(--blue);
-  color: var(--light);
-  font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  border-left: 4px solid var(--dark);
-}
-
-.filter-option.selected::after {
-  content: '✓';
-  position: absolute;
-  right: 10px;
-  font-size: 0.9em;
-  opacity: 0.8;
-}
-
-.filter-option.clear-option {
-  color: var(--red);
-  font-size: 0.9em;
-  margin-top: 5px;
-  border-top: 1px solid var(--grey);
-  padding-top: 8px;
-}
-
-.filter-option.clear-option:hover {
-  background-color: rgba(186, 28, 22, 0.1);
-}
-
-.filter-actions {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 10px;
-  border-top: 1px solid var(--grey);
-  margin-top: 5px;
-}
-
-.filter-divider {
-  height: 10px;
-  background: linear-gradient(to right, transparent, var(--dark), transparent);
-  margin: 10px 0;
-  opacity: 0.5;
-}
-
-/* Fix for Angular Material Menu - Add these at the end of the file */
-::ng-deep .mat-mdc-menu-panel.filters-menu {
-  max-width: 350px !important;
-  min-width: 300px !important;
-}
-
-::ng-deep .mat-mdc-menu-panel.filters-menu .mat-mdc-menu-content {
-  padding: 0 !important;
-}
-
-/* Ensure the container has enough space */
-.consolidated-filter-container {
-  width: 300px !important;
-  max-width: 100% !important;
-  padding: 16px !important;
-}
-
-/* Make menu items slightly bigger for better touch targets */
-.filter-category {
-  padding: 10px 12px !important;
-  margin-bottom: 5px !important;
-}
-
-.filter-option {
-  padding: 10px 12px !important;
-  margin: 3px 0 !important;
-}
-
-/* Fix for Material menu positioning */
-::ng-deep .filters-menu {
-  max-width: none !important;
-}
-
-::ng-deep .filters-menu .mat-menu-content {
-  padding: 0 !important;
-}
-
-:host .parent3.dark .consolidated-filter-container {
-  background-color: var(--grey);
-  color: var(--dark);
-}
-
-:host .parent3.dark .filter-category {
-  background-color: var(--dark);
-  color: var(--light);
-}
-
-:host .parent3.dark .filter-option:hover {
-  background-color: var(--dark);
-}
-
-:host .parent3.dark .filter-option.selected {
-  background-color: var(--blue);
-}
-
-:host .parent3.dark .filter-divider {
-  background: linear-gradient(to right, transparent, var(--light), transparent);
-  opacity: 0.2;
-}
-
-:host .parent3.dark .filter-option.selected {
-  background-color: var(--blue);
-  border-left: 4px solid var(--light);
-}
-
-:host .parent3.dark .filter-option:hover:not(.selected) {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
 @media screen and (max-width: 1215px) {
   .matbuttontogglegroup2 {
     flex-wrap: wrap;
@@ -1551,271 +1364,4 @@ input[type="number"] {
         flex-direction: column;
         align-items: flex-start;
     }
-}
-
-#productInfoModal .modal-dialog,
-#addProductModal .modal-dialog,
-#stockUpdateModal .modal-dialog,
-#exportProductModal .modal-dialog {
-    max-width: 500px;
-    margin: 30px auto;
-}
-
-#productInfoModal .modal-content,
-#addProductModal .modal-content,
-#stockUpdateModal .modal-content,
-#exportProductModal .modal-content {
-    border-radius: 15px;
-}
-
-#productInfoModal .modal-header,
-#addProductModal .modal-header,
-#stockUpdateModal .modal-header,
-#exportProductModal .modal-header {
-    background: linear-gradient(90deg, var(--dark), #eee);
-    padding: 20px;
-    border-bottom: none;
-    font-family: var(--poppins);
-}
-
-#productInfoModal .modal-header .modal-title,
-#addProductModal .modal-header .modal-title,
-#stockUpdateModal .modal-header .modal-title,
-#exportProductModal .modal-header .modal-title {
-    color: #fff;
-    font-size: 1.5em;
-    font-weight: 500;
-}
-
-#productInfoModal .modal-header .close,
-#addProductModal .modal-header .close,
-#stockUpdateModal .modal-header .close,
-#exportProductModal .modal-header .close {
-    color: #fff;
-    font-size: 1.2em;
-    opacity: 0.8;
-    transition: opacity 0.3s ease;
-}
-
-#productInfoModal .modal-header .close:hover,
-#addProductModal .modal-header .close:hover,
-#stockUpdateModal .modal-header .close:hover,
-#exportProductModal .modal-header .close:hover {
-    opacity: 1;
-}
-
-#productInfoModal .modal-body,
-#addProductModal .modal-body,
-#stockUpdateModal .modal-body,
-#exportProductModal .modal-body {
-    padding: 25px 20px;
-    font-size: 0.95em;
-    color: var(--dark);
-    background: #fff;
-    font-family: var(--poppins);
-}
-
-#productInfoModal .modal-body .info-grid,
-#addProductModal .modal-body .info-grid,
-#stockUpdateModal .modal-body .info-grid,
-#exportProductModal .modal-body .info-grid {
-    display: grid;
-    grid-gap: 15px;
-    row-gap: 30px; 
-}
-
-#productInfoModal .modal-body .info-item,
-#addProductModal .modal-body .info-item,
-#stockUpdateModal .modal-body .info-item,
-#exportProductModal .modal-body .info-item {
-    display: grid;
-    grid-template-columns: 120px 1fr;
-    align-items: center;
-    position: relative;
-    padding-bottom: 10px;
-}
-
-#productInfoModal .modal-body .info-item .label,
-#addProductModal .modal-body .info-item .label,
-#stockUpdateModal .modal-body .info-item .label,
-#exportProductModal .modal-body .info-item .label {
-    font-weight: 600;
-    color: var(--dark);
-}
-
-#productInfoModal .modal-body .info-item:not(:last-child)::after,
-#addProductModal .modal-body .info-item:not(:last-child)::after,
-#stockUpdateModal .modal-body .info-item:not(:last-child)::after,
-#exportProductModal .modal-body .info-item:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 1px;
-    background: linear-gradient(to right, transparent, #ccc, transparent);
-    margin-top: 10px;
-}
-
-#productInfoModal .modal-footer,
-#addProductModal .modal-footer,
-#stockUpdateModal .modal-footer,
-#exportProductModal .modal-footer {
-    background: #f1f1f1;
-    border-top: none;
-    padding: 15px 20px;
-    font-family: var(--poppins);
-}
-
-#productInfoModal .modal-footer .btn,
-#addProductModal .modal-footer .btn,
-#stockUpdateModal .modal-footer .btn,
-#exportProductModal .modal-footer .btn {
-    background-color: var(--dark);  
-    border: none;
-    font-size: 1.2em;               
-    padding: 10px 15px;             
-    transition: background-color 0.3s ease;
-    color: var(--light);
-    margin-right: 1em;
-}
-
-#productInfoModal .modal-footer .btn:hover,
-#addProductModal .modal-footer .btn:hover,
-#stockUpdateModal .modal-footer .btn:hover,
-#exportProductModal .modal-footer .btn:hover {
-    background-color: var(--dark-grey);
-    color: var(--dark);
-}
-
-#productInfoModal .modal-footer .btn:disabled,
-#addProductModal .modal-footer .btn:disabled,
-#stockUpdateModal .modal-footer .btn:disabled,
-#exportProductModal .modal-footer .btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.product-images-container {
-    margin-top: 30px;
-}
-
-.product-images-container h6 {
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: var(--dark);
-}
-
-.images-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.image-item {
-    position: relative;
-    height: 100px;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.image-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.image-delete-btn {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background-color: rgba(0, 0, 0, 0.6);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 14px;
-    line-height: 1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.description-item {
-    display: block !important;
-    grid-template-columns: 1fr !important;
-}
-
-.description-item .label {
-    margin-bottom: 10px;
-    display: block;
-}
-
-.description-item .input-wrapper {
-    margin-left: 0;
-    width: 100%;
-}
-
-.description-item textarea {
-    width: 100%;
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid var(--grey);
-    background-color: var(--light);
-    color: var(--dark);
-    resize: vertical;
-}
-
-:host .parent3.dark #productInfoModal .modal-content,
-:host .parent3.dark #addProductModal .modal-content,
-:host .parent3.dark #stockUpdateModal .modal-content,
-:host .parent3.dark #exportProductModal .modal-content {
-    background: var(--grey);
-}
-
-:host .parent3.dark #productInfoModal .modal-header,
-:host .parent3.dark #addProductModal .modal-header,
-:host .parent3.dark #stockUpdateModal .modal-header,
-:host .parent3.dark #exportProductModal .modal-header {
-    background: linear-gradient(135deg, var(--dark), var(--grey));
-}
-
-:host .parent3.dark #productInfoModal .modal-body,
-:host .parent3.dark #addProductModal .modal-body,
-:host .parent3.dark #stockUpdateModal .modal-body,
-:host .parent3.dark #exportProductModal .modal-body {
-    background: var(--grey);
-    color: var(--dark);
-}
-
-:host .parent3.dark #productInfoModal .modal-footer,
-:host .parent3.dark #addProductModal .modal-footer,
-:host .parent3.dark #stockUpdateModal .modal-footer,
-:host .parent3.dark #exportProductModal .modal-footer {
-    background: var(--grey);
-}
-
-:host .parent3.dark #productInfoModal .modal-header .modal-title,
-:host .parent3.dark #addProductModal .modal-header .modal-title,
-:host .parent3.dark #stockUpdateModal .modal-header .modal-title,
-:host .parent3.dark #exportProductModal .modal-header .modal-title,
-:host .parent3.dark #productInfoModal .modal-header .close,
-:host .parent3.dark #addProductModal .modal-header .close,
-:host .parent3.dark #stockUpdateModal .modal-header .close,
-:host .parent3.dark #exportProductModal .modal-header .close {
-    color: var(--light); 
-}
-
-:host .parent3.dark #productInfoModal .modal-body,
-:host .parent3.dark #addProductModal .modal-body,
-:host .parent3.dark #stockUpdateModal .modal-body,
-:host .parent3.dark #exportProductModal .modal-body,
-:host .parent3.dark #productInfoModal .modal-footer,
-:host .parent3.dark #addProductModal .modal-footer,
-:host .parent3.dark #stockUpdateModal .modal-footer,
-:host .parent3.dark #exportProductModal .modal-footer {
-    color: var(--dark); 
 }

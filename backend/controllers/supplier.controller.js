@@ -67,7 +67,7 @@ class SupplierController {
 
         this.router.get(
             "/suppliers/IdsNames",
-            pro_res(APP_CONFIG.SUPPERADMIN),
+            pro_res(APP_CONFIG.SUPPERADMIN , APP_CONFIG.ADMIN),
             catchAsync(this.getAllSuppliersActiveIdAndNames)
         );
 

@@ -43,6 +43,7 @@ import { CashierProfileComponent } from './Components/cashier-profile/cashier-pr
 import { auth7Guard } from './auth7.guard';
 import { auth8Guard } from './auth8.guard';
 import { CustomerOrderDetailsComponent } from './Components/customer-order-details/customer-order-details.component';
+import { auth9Guard } from './_guards/auth9.guard';
 
 
 export const routes: Routes = [
@@ -199,6 +200,28 @@ export const routes: Routes = [
             }
         ]
     },
+    {
+        path: '',
+        component: LayoutComponent,
+        children: [
+            {
+                path: 'Adashboard',
+                loadChildren: () => import('./Components/dashboardComponents/Admindashboard/Admindashboard.routes').then(s => s.dashRoutes2),
+                canActivate: [auth9Guard]
+            }
+        ]
+    },
+    // {
+    //     path: '',
+    //     component: LayoutComponent,
+    //     children: [
+    //         {
+    //             path: 'dashboard',
+    //             loadChildren: () => import('./Components/dashboardComponents/dashboard.routes').then(s => s.dashRoutes),
+    //             canActivate: [authGuard]
+    //         }
+    //     ]
+    // },
     {
         path: 'lock',
         component: LockComponent,

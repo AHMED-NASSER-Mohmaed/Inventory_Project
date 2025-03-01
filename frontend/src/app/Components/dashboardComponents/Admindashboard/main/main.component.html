@@ -1,0 +1,93 @@
+<div class="parent3">
+    <section id="sidebar">
+        <a href="#" class="brand">
+            <i class='bx bxs-watch'></i>
+            <span class="text">Watchly</span>
+        </a>
+        <ul class="side-menu top">
+            <!-- Users menu with dropdown -->
+            <li routerLinkActive="active" (click)="toggleDropdown('users')">
+                <a href="javascript:void(0)">
+                    <i class='bx bxs-group'></i>
+                    <span class="text">Staff</span>
+                    <i class='bx bx-chevron-down dropdown-icon' [class.rotate]="isDropdownOpen('users')"></i>
+                </a>
+                <ul class="dropdown-menu" [class.show]="isDropdownOpen('users')">
+                    <li style="text-align: center; padding: 5px 0; width: 96%; cursor: pointer">
+                      <a routerLink="/Adashboard/Cashiers" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
+                        <i class='bx bxs-wallet' style="font-size: 1.5em;"></i>
+                        <span class="text" style="font-size: 0.9em;">Cashiers</span>
+                      </a>
+                    </li>
+                    <li style="text-align: center; padding: 5px 0; width: 96%; cursor: pointer;">
+                      <a routerLink="/Adashboard/Clerks" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
+                        <i class='bx bxs-briefcase' style="font-size: 1.5em;"></i>
+                        <span class="text" style="font-size: 0.9em;">Clerks</span>
+                      </a>
+                    </li>
+                  </ul>
+            </li>
+            <!-- Orders menu -->
+            <li routerLinkActive="active">
+                <a routerLink="/dashboard/orders" style="cursor: pointer">
+                    <i class='bx bxs-package'></i>
+                    <span class="text">Orders</span>
+                </a>
+            </li>
+            <!-- Products menu -->
+            <li routerLinkActive="active">
+                <a routerLink="/Adashboard/products">
+                    <i class='bx bxs-shopping-bag-alt'></i>
+                    <span class="text">Products</span>
+                </a>
+            </li>
+            <!-- Analytics menu -->
+            <li routerLinkActive="active">
+                <a routerLink="/dashboard/analytics" style="cursor: pointer">
+                    <i class='bx bxs-doughnut-chart'></i>
+                    <span class="text">Analytics</span>
+                </a>
+            </li>
+        </ul>
+        <ul class="side-menu">
+            <li>
+                <a class="logout" style="cursor: pointer" (click)="openConfirmDialog()">
+                    <i class='bx bx-log-out-circle'></i>
+                    <span class="text">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+    <!-- SIDEBAR -->
+    
+    
+    
+    <!-- CONTENT -->
+    <section id="content">
+        <!-- NAVBAR -->
+        <nav>
+            <i class='bx bx-menu' style="transform: scale(1.5);" ></i>
+            <form action="#">
+                <div class="form-input">
+                    <button type="submit" class="search-btn" disabled style="visibility: hidden;"><i class='bx bx-tool' ></i></button>
+                </div>
+            </form>
+            <input type="checkbox" id="switch-mode" hidden >
+            <label for="switch-mode" class="switch-mode"></label>
+            <a href="#" class="notification">
+                <i class='bx bxs-bell' style="transform: scale(1.5);"></i>
+                <span class="num">10</span>
+            </a>
+            <a href="#" class="profile">
+                <img [src]="tokenData.id.photo.url">
+            </a>
+        </nav>
+        <!-- NAVBAR -->
+    
+        <!-- MAIN -->
+        <router-outlet></router-outlet>
+        <!-- MAIN -->
+    </section>
+    </div>
+    
+    

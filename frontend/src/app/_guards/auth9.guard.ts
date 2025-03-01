@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { decodeToken } from '../_helpers/jwt-helper';
 
-export const authGuard: CanActivateFn = (route, state) => {
+export const auth9Guard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   const token = localStorage.getItem('token');
@@ -11,7 +11,7 @@ export const authGuard: CanActivateFn = (route, state) => {
     tokenData = decodeToken(token);
   }
 
-  if (tokenData && (tokenData.id.role === 'super_admin')) {
+  if (tokenData && (tokenData.id.role === 'admin')) {
     return true;
   } else {
     router.navigateByUrl('/lock');

@@ -1306,7 +1306,6 @@ input[type="number"] {
   opacity: 0.5;
 }
 
-/* Fix for Angular Material Menu - Add these at the end of the file */
 ::ng-deep .mat-mdc-menu-panel.filters-menu {
   max-width: 350px !important;
   min-width: 300px !important;
@@ -1316,14 +1315,12 @@ input[type="number"] {
   padding: 0 !important;
 }
 
-/* Ensure the container has enough space */
 .consolidated-filter-container {
   width: 300px !important;
   max-width: 100% !important;
   padding: 16px !important;
 }
 
-/* Make menu items slightly bigger for better touch targets */
 .filter-category {
   padding: 10px 12px !important;
   margin-bottom: 5px !important;
@@ -1334,7 +1331,6 @@ input[type="number"] {
   margin: 3px 0 !important;
 }
 
-/* Fix for Material menu positioning */
 ::ng-deep .filters-menu {
   max-width: none !important;
 }
@@ -1744,6 +1740,7 @@ input[type="number"] {
     justify-content: center;
 }
 
+/* Description item styling */
 .description-item {
     display: block !important;
     grid-template-columns: 1fr !important;
@@ -1769,6 +1766,7 @@ input[type="number"] {
     resize: vertical;
 }
 
+/* Dark mode specific styles */
 :host .parent3.dark #productInfoModal .modal-content,
 :host .parent3.dark #addProductModal .modal-content,
 :host .parent3.dark #stockUpdateModal .modal-content,
