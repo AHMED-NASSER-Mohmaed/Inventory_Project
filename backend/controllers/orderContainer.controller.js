@@ -56,7 +56,7 @@ class OrderContainerController {
         );
 
         this.router.get(
-          "order-container-offline",
+          "/order-container-offline",
           AuthMiddleware.protect,
           catchAsync(this.getOfflineOrderContainers)
         );
