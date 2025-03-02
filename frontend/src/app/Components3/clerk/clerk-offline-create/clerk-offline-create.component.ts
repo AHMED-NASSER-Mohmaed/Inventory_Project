@@ -21,6 +21,7 @@ import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { RouterModule } from '@angular/router';
 
 import { CartService } from '../../../_services/cart.service';
+import { OfflineClerkCashierService } from '../../../_services/offline-clerk-cashier.service';
 
 
 
@@ -54,12 +55,14 @@ export class ClerkOfflineCreateComponent implements OnInit {
   sessionId: string | null = null;
 
   loading: boolean = false;
-  tempProducts: any[] = []
+  tempProducts: any[] = [];
+  productsWillBeSent: any[] = [];
 
 
   constructor(
     private productsService: ProductsService,
     private route: ActivatedRoute,
+    private clerkDashboardService: OfflineClerkCashierService
   ) { }
 
   ngOnInit(): void {
@@ -130,29 +133,22 @@ export class ClerkOfflineCreateComponent implements OnInit {
     this.getProducts(1);
   }
 
-  onCategoryChange(value: string | null): void {
-    if (value !== null) {
-      this.selectedCategoryId = value;
-      this.currentPage = 1; 
-      this.getProducts(1);
-      console.log('Category selected:', value);
-    } else {
-      this.selectedCategoryId = "";
-      this.getProducts(1);
-    }
+  onCategoryChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    this.selectedCategoryId = selectElement.value || ""; // Ensure valid value
+    this.currentPage = 1;
+    this.getProducts(1);
+    console.log('Category selected:', this.selectedCategoryId);
   }
-
-  onBrandChange(value: string | null): void {
-    if (value !== null) {
-      this.selectedBrandId = value;
-      this.currentPage = 1; 
-      this.getProducts(1);
-      console.log('Brand selected:', value);
-    } else {
-      this.selectedBrandId = "";
-      this.getProducts(1);
-    }
+  
+  onBrandChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    this.selectedBrandId = selectElement.value || ""; // Ensure valid value
+    this.currentPage = 1;
+    this.getProducts(1);
+    console.log('Brand selected:', this.selectedBrandId);
   }
+  
 
   getProducts(pageNumber: number = 1): void {
     this.currentPage = pageNumber;
@@ -185,7 +181,7 @@ export class ClerkOfflineCreateComponent implements OnInit {
                 : item.product.images[0].url,
               sellerName: `${item.seller?.firstName || ''} ${item.seller?.lastName || ''}`,
               sellerId: item.seller?._id || '',
-              stock: item.stock,
+              stock: item.stock ? item.stock : 5,
               sellerCompanyName: item.seller?.companyName,
               shallowStock: matchingProduct 
                 ? Math.max(matchingProduct.stock - matchingProduct.requiredQty, 0) 
@@ -270,7 +266,83 @@ export class ClerkOfflineCreateComponent implements OnInit {
     this.getProducts();
   }
 
+  addToOrder(product: any) {
+    if (product.stock > 0) {
+      let existingProduct = this.tempProducts.find((p: any) => p._id === product._id);
   
+      if (existingProduct) {
+        existingProduct.requiredQty += 1;
+      } else {
+        product.requiredQty = 1; // Initialize quantity
+        this.tempProducts.push(product); // Push the actual product reference
+      }
+  
+      product.stock--; // Reduce stock directly in the original reference
+    }
+  }
+  
+  
+  increaseQty(product: any) {
+    // Check if the requiredQty + 1 is within the original stock constraints
+    if (product.requiredQty < product.stock + product.requiredQty) {
+      product.requiredQty += 1;
+      product.stock--; // Reduce available stock
+    }
+  }
+  
+  
+  decreaseQty(product: any) {
+    if (product.requiredQty > 1) {
+      product.requiredQty -= 1;
+      product.stock++; // Increase available stock when reducing quantity
+    } 
+    // else {
+    //   // If requiredQty becomes 0, remove from tempProducts
+    //   this.tempProducts = this.tempProducts.filter((p) => p._id !== product._id);
+    // }
+  }
+  
+  
+
+  getSubtotal(): number {
+    return this.tempProducts.reduce((acc, product) => acc + (product.price * product.requiredQty), 0);
+  }
+
+  getTotalAmount(): number {
+    return this.getSubtotal();
+  }
+
+  phone1: string = '';
+  phone2: string = '';
+  gov: string = '';
+  address: string = '';
+  placeOrder() {
+    if (this.tempProducts.length > 0 && this.phone1) {
+        const order = {
+            products: this.tempProducts.map(product => ({
+                offlineProduct: product._id, 
+                requiredQty: product.requiredQty 
+            })),
+            gov: this.gov,
+            address: this.address, 
+            phone1: this.phone1,
+            phone2: this.phone2
+        };
+        this.clerkDashboardService.placeOrder(order).subscribe(
+          response => {
+            console.log('Order Response:', response);
+          },
+          error => {
+            console.error('Order Error:', error);
+          }
+        );
+        console.log("Order placed successfully!", order);
+    } else {
+        console.warn("Order cannot be placed. Ensure products and phone1 are provided.");
+    }
+}
+
+
   
     
 }

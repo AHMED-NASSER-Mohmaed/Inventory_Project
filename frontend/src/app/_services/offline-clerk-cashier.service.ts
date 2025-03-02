@@ -29,10 +29,24 @@ export class OfflineClerkCashierService {
     const params = { newStatus: updateData.newStatus };
     return this.http.patch(url, {} ,  { params, headers });
   }
-    private getHeaders(): HttpHeaders {
-      const token = localStorage.getItem('token');
-      return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+
+    // Initialize headers with default values
+    let headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+    });
+
+    // Add Authorization header only if token exists
+    if (token) {
+        headers = headers.set('Authorization', `Bearer ${token}`);
+    } else {
+        console.warn('No authentication token found in localStorage.');
     }
+
+    return headers;
+  }
+
   
     getAllCategories(): Observable<CategoryResponse> {
       return this.http.get<CategoryResponse>(`${this.baseUrl}/categories/AllActive/idN`, { headers: this.getHeaders() });
@@ -119,5 +133,11 @@ export class OfflineClerkCashierService {
     clearCache(): void {
       this.cache = {};
     }
+
+    placeOrder(order: any): Observable<any> {
+        console.log("Sending Order:", order);
+        return this.http.post('http://localhost:3000/order-container-offline', order, { headers: this.getHeaders() });
+    }
+    
 }
 
