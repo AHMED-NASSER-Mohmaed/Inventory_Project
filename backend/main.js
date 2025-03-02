@@ -165,6 +165,10 @@ process.on("uncaughtException", (err) => {
       // if (!await Supplier.findOne({ email: supplier.email })) {
       //   console.log(await Supplier.create(supplier));
       // }
+/*
+      if (!await Supplier.findOne({ email: supplier.email })) {
+        console.log(await Supplier.create(supplier));
+      }*/
 
       if (!await Supplier.findOne({ email: Dawoodsupplier.email })) {
         console.log(await Supplier.create(Dawoodsupplier));
