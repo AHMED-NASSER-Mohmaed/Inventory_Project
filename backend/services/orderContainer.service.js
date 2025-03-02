@@ -4,8 +4,6 @@ const orderContainerRepository = require("../repos/orderContainer.repo");
 const onlineProductRepo = require("../repos/tempOnlineProduct.repo");
 const offlineProductRepo = require("../repos/tempOfflineProducts.repo");
 const AppError = require("../utils/appError");
-const UserRepository = require("../repos/user.repo");
-const TransactionRepository = require("../repos/transaction.repo");
 
 const UserProductRpo = require("../repos/userProducts.repo");
 
@@ -123,7 +121,7 @@ class OrderContainerService {
       );
 
       // get the seller ID as a string (after populating, seller is an object)
-      let sellerId = OfflineProduct.seller?._id.toString();
+      let sellerId = OfflineProduct?.seller?._id.toString();
       if (!sellerId) sellerId = APP_CONFIG.COMPANY_ID;
       if (sellerId != APP_CONFIG.COMPANY_ID) {
         throw new AppError(

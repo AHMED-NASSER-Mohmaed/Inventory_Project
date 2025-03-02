@@ -98,6 +98,7 @@ module.exports.APP_CONFIG = {
   APPROVED_STATUS: "approved",
   REJECT_STATUS: "rejected",
   PENDING_STATUS: "pending",
+  AWAITING_APPROVAL_STATUS: "awaiting_approval",
 
   COMPANYNAME: "Watchly",
 };

@@ -41,26 +41,30 @@ const OnlineProductsRepository = {
         })
         .select("stock");
     } catch (error) {
+
+    } catch (error) {
       throw error;
     }
   },
 
-  updateOurSellerRecordQty: async (productId, sellerId, newQty) => {
+  updateSellerRecordQty: async (productId, sellerId, newQty) => {
     try {
       return await OnlineProducts.updateOne(
         { product: productId, sellerId },
         { $set: { stock: newQty } }
       );
+      return await OnlineProducts.updateOne({ product: productId, seller:sellerId }, { $set: { stock: newQty } })
+
     } catch (error) {
       throw error;
     }
   },
 
   //for online bracnh usage
-  upsertOurSellerRecord: async (productId, newQty, newPrice) => {
+  upsertSellerRecord: async (productId, sellerId, newQty, newPrice) => {
     try {
       return await OnlineProducts.findOneAndUpdate(
-        { _id: productId, seller: APP_CONFIG.COMPANY_ID }, // Search condition
+        { _id: productId, seller: sellerId }, // Search condition
         {
           $inc: { stock: newQty }, // Only increment stock if the document exists
           $setOnInsert: {
@@ -70,6 +74,7 @@ const OnlineProductsRepository = {
             price: newPrice,
             status: APP_CONFIG.APPROVED_STATUS,
           }, // Ensure new document can be created without conflicting stock updates
+          $setOnInsert: { product: productId, seller: new mongoose.Types.ObjectId(APP_CONFIG.COMPANY_ID), branch: APP_CONFIG.ONLINE_BRANCH_ID, price: newPrice, status: APP_CONFIG.APPROVED_STATUS } // Ensure new document can be created without conflicting stock updates
         },
         { upsert: true, new: true } // Ensure upsert + return updated document
       );
@@ -167,6 +172,98 @@ const OnlineProductsRepository = {
       throw error;
     }
   },
+
+  //isActive --> true // false
+  //status ---> pending // appreoved // rejected
+  getONProductsDash: async (filters, sort, page, limit) => {
+
+    try {
+      
+      if (sort && sort.price) {
+
+        let value = sort.price;
+        delete sort.price;
+        sort['product.price'] = value;
+
+      }
+
+      //filter is a Active 
+      const [result, total] = await Promise.all([
+
+        await OnlineProducts.aggregate([
+          {
+            $lookup: {
+              from: "products",
+              localField: "product",
+              foreignField: "_id",
+              as: "product"
+            }
+          },
+          { $unwind: "$product" },
+          {
+            $lookup: {
+              from: "users",
+              localField: "seller",
+              foreignField: "_id",
+              as: "seller"
+            }
+          },
+          { $unwind: { path: "$seller", preserveNullAndEmptyArrays: true } }, // Preserve null sellers
+          {
+            $match: {
+              ...filters
+            }
+          },
+          { $sort: sort },
+          { $skip: (page - 1) * limit },
+          { $limit: limit },
+          {
+            $project: {
+              "_id": 1,
+              "product._id": 1,
+              "product.name": 1,
+              "product.code": 1,
+              "product.price": 1,
+              "product.images": 1,
+              "product.description": 1,
+              "seller._id": 1,
+              "seller.firstName": 1, // Ensure seller's first name is included
+              "seller.lastName": 1,
+              "seller.companyName": 1,
+            }
+          }
+        ]),
+
+        await OnlineProducts.aggregate([
+          {
+            $lookup: {
+              from: "products",
+              localField: "product",
+              foreignField: "_id",
+              as: "product"
+            }
+          },
+          { $unwind: "$product" },
+          {
+            $match: {
+              ...filters
+            }
+          },
+          {
+            $count: "total"
+          }
+        ])
+      ]);
+
+
+      return inboxResult(result, total[0]?.total || 0, page, limit);
+    } catch (error) {
+      throw error;
+    }
+
+  },
+
+
 
   // getCount: async (filters) => {
   //   try {

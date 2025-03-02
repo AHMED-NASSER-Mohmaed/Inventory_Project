@@ -3,6 +3,7 @@ const OfflineProducts = require("../models/offlineSchema.model");
 const { inboxResult } = require("../utils/apiFeatures");
 
 const Product = require("../models/product.model");
+const { APP_CONFIG } = require("../config/app.config");
 module.exports.OfflineProductsRepo = {
 
     addOfflineProduct: async (data) => {
@@ -15,8 +16,14 @@ module.exports.OfflineProductsRepo = {
 
     getOffProductByIdAndBrandId: async (id,bracnhId) => {
         try {
+            console.log(id,bracnhId)
+
             
-            return await OfflineProducts.findOne({_id:id,branch:bracnhId}).populate("branch");
+            return await OfflineProducts.findOne({
+                _id:id,
+                branch:bracnhId,})
+                .populate("branch");
+                
         } catch (error) {
             console.log("helooo");
             throw error;
