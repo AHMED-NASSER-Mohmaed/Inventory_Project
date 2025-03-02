@@ -25,7 +25,7 @@ module.exports.OnlineProductService={
             let fieldes=["code" , "category" ,"name" , "isActive",'brand','status'];
             let filters=this.OnlineProductService.parseFilters(validatedParams.filters,fieldes);
             filters['isActive']=true;
-            filters['isDeleted']=true;
+            filters['isDeleted']=false;
             filters['status']='approved';
             return await OnlineProductsRepository.getONProducts(filters,validatedParams.sort,
                 validatedParams.page,validatedParams.limit
