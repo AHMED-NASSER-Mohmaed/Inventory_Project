@@ -109,13 +109,14 @@ class OrderContainerService {
       const OfflineProduct = await offlineProductRepo.findOfflineProductById(item.offlineProduct);
 
       // get the seller ID as a string (after populating, seller is an object)
-      const sellerId = OfflineProduct.seller._id.toString();
-      if( !sellerId.equals(APP_CONFIG.COMPANY_ID)) {
+      let sellerId = OfflineProduct.seller?._id.toString();
+      if(!sellerId)sellerId = APP_CONFIG.COMPANY_ID;
+      if( sellerId != APP_CONFIG.COMPANY_ID) {
         throw new AppError("Invalid seller id, cannot sell products from external sellers in offline mode");
       }
       // group products by seller
       if (!sellerOrders[sellerId]) {
-        sellerOrders[sellerId] = { seller: OfflineProduct.seller._id, products: [] }; // why is that bc it's going to be populated with the seller id
+        sellerOrders[sellerId] = { seller: sellerId, products: [] }; // why is that bc it's going to be populated with the seller id
       }
 
       // add product details to the seller's order
@@ -157,7 +158,7 @@ class OrderContainerService {
       const totalPrice = products.reduce((sum, p) => sum + p.totalPrice, 0); // sum of all total prices in the order products
 
      /*********************** to be reviewed  */
-        tempClerk = cart.clerk; // clerk here should be the one who filled the cart in case of offline
+      let  tempClerk = cart.clerk; // clerk here should be the one who filled the cart in case of offline
       /*********************** to be reviewed */
       // prepare order data
       const orderData = {
@@ -217,6 +218,7 @@ class OrderContainerService {
         }
         // mark order as cancelled
         await orderRepository.updateOrderStatus(order._id, "cancelled" ) ;
+        console.log(order._id)
       }
       
       // update order container status

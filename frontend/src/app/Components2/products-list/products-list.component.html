@@ -93,7 +93,13 @@
                         <h5 class="card-title">{{ product.name }}</h5>
                         <p class="card-price">{{ product.price }} le</p>
                         <p class="card-seller">Sold by: {{ product.sellerCompanyName }}</p>
-                        <button [disabled]="product.shallowStock == 0" class="btn add-to-cart-btn" (click)="$event.stopPropagation(); increase(product)">Add to Cart</button>
+                        @if(product.shallowStock <= 0){
+                            <div class="mt-3">
+
+                                <span class="text-danger">Product Out of Stock!</span>
+                            </div>
+                        }
+                        <button [disabled]="product.shallowStock <= 0" class="btn add-to-cart-btn" (click)="$event.stopPropagation(); increase(product)">Add to Cart</button>
                     </div>
                 </div>
             </div>

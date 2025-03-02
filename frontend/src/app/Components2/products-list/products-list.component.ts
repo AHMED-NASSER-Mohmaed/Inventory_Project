@@ -65,14 +65,16 @@ export class ProductsListComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.selectedCategoryId = params['catId'] || "";
       this.selectedBrandId = params['brandId'] || "";
-      this.getProducts();
-      console.log(this.products)
+  
+      this.loadCart(() => {
+        this.getProducts(); // Ensure tempProducts is populated before this runs
+      });
     });
-
+  
     this.loadCategories();
     this.loadBrands();
-    this.loadCart();
   }
+  
 
   loadCategories(): void {
     this.productsService.getAllCategories().subscribe({
@@ -155,9 +157,8 @@ export class ProductsListComponent implements OnInit {
 
   getProducts(pageNumber: number = 1): void {
     this.currentPage = pageNumber;
-    
     this.products = [];
-    
+  
     this.productsService.getPaginatedProducts(
       this.currentPage, 
       this.itemsPerPage, 
@@ -167,26 +168,39 @@ export class ProductsListComponent implements OnInit {
       this.searchQuery
     ).subscribe({
       next: (res: any) => {
-        if (res && res.data && res.data.result) {
-          console.log(res)
-          this.products = res.data.result.map((item: any) => ({
-            _id: item.product._id,
-            name: item.product.name,
-            price: item.product.price,
-            imgUrl: (item.product.images.length > 1) ? item.product.images[1].url :  item.product.images[0].url,
-            sellerName: `${item.seller?.firstName || ''} ${item.seller?.lastName || ''}`,
-            sellerId: item.seller?._id || '',
-            stock: item.stock,
-            sellerCompanyName: item.seller?.companyName,
-          }));
-          
+        if (res?.data?.result) {
+          console.log("Fetched products:", res.data.result);
+          console.log("Temp products from cart:", this.tempProducts);
+  
+          this.products = res.data.result.map((item: any) => {
+            const matchingProduct = this.tempProducts.find(
+              (pro) => pro.onlineProductId === item.product._id
+            );
+  
+            return {
+              _id: item.product._id,
+              name: item.product.name,
+              price: item.product.price,
+              imgUrl: item.product.images.length > 1 
+                ? item.product.images[1].url 
+                : item.product.images[0].url,
+              sellerName: `${item.seller?.firstName || ''} ${item.seller?.lastName || ''}`,
+              sellerId: item.seller?._id || '',
+              stock: item.stock,
+              sellerCompanyName: item.seller?.companyName,
+              shallowStock: matchingProduct 
+                ? Math.max(matchingProduct.stock - matchingProduct.requiredQty, 0) 
+                : item.stock,  // Prevent negative stock values
+            };
+          });
+  
+          console.log("Updated products with shallow stock:", this.products);
+  
           this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
-          this.pagesArray = Array(this.totalPages).fill(0).map((x, i) => i + 1);
+          this.pagesArray = Array.from({ length: this.totalPages }, (_, i) => i + 1);
           this.hasNextPage = !!res.data.next;
           this.hasPreviousPage = this.currentPage > 1;
           this.total = res.data.total;
-          
-          console.log('Products loaded with filters - Category:', this.selectedCategoryId, 'Brand:', this.selectedBrandId, 'Search:', this.searchQuery);
         } else {
           console.error('Unexpected response structure:', res);
           this.handleEmptyResults();
@@ -198,6 +212,7 @@ export class ProductsListComponent implements OnInit {
       }
     });
   }
+  
   private handleEmptyResults(): void {
     this.products = [];
     this.totalPages = 1;
@@ -266,46 +281,42 @@ export class ProductsListComponent implements OnInit {
     //   return this.getSubtotal() + this.shippingFees;
     // }
 
-    loadCart() {
-      // this.loading = true; 
-      this.cartService.getCart(this.sessionId!).subscribe((response) => {
-        // this.products = response.cart.products;
-        // // for(let i = 0; i < this.products.length; i++){
-        // //   console.log(this.products[i].productName)
-        // // }
-        // console.log(this.products);
-        // this.getSubtotal();
-        // this.getTotalAmount();
-        if(localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
-          localStorage.removeItem('sessionId');
-          this.sessionId = null;
-        }
-        if(!localStorage.getItem('token') && response.sessionId && this.sessionId != response.sessionId) {
-          localStorage.setItem('sessionId', response.sessionId);
+    loadCart(callback?: Function) {
+      this.cartService.getCart(this.sessionId!).subscribe(
+        (response) => {
+          this.tempProducts = response.cart.products || [];
+    
+          console.log("Cart loaded, tempProducts:", this.tempProducts);
+    
+          if (localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
+            localStorage.removeItem('sessionId');
+            this.sessionId = null;
+          }
+          if (!localStorage.getItem('token') && response.sessionId && this.sessionId != response.sessionId) {
+            localStorage.setItem('sessionId', response.sessionId);
             this.sessionId = response.sessionId;
+          }
+    
+          if (callback) callback(); // Run callback after cart loads
+        },
+        (error) => {
+          console.error('Error loading cart:', error);
+          if (callback) callback(); // Run callback even if there's an error
         }
-        // this.spinner.hide();
-        // this.loading = false; 
-      },
-  
-      (error) => {
-        console.error('Error loading cart:', error);
-        // this.loading = false; // ✅ Ensure loading is set to false on error
-        // this.spinner.hide();
-      }
-    );
+      );
     }
+    
   
     increase(product: any) {
       console.log(product);
-      
-      if (product.requiredQty + 1 > product.stock) {
+      if (product.shallowStock <= 0) {
         Swal.fire({
           icon: 'info',
           title: 'Oops!',
           text: 'Product Out of Stock!',
         });
       };
+      product.shallowStock -= 1;
     
       product.requiredQty += 1;
       

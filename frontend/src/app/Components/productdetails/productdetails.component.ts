@@ -76,14 +76,16 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.productId = params['id'];
-        this.loadProductDetails();
       } else {
         // If no ID provided, use a default ID for testing
         this.productId = '67c01abc9c3783c4fa6af8e1';
-        this.loadProductDetails();
       }
+      
+      // Load cart first, then fetch product details
+      this.loadCart();
     });
   }
+  
 
   loadProductDetails(): void {
     this.isLoading = true;
@@ -93,7 +95,9 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
           // Handle the new response structure
           const responseData = response.data;
           const productData = responseData.product;
-          
+            const matchingProduct = this.products.find(
+              (pro) => pro.onlineProductId == productData._id
+            );
           this.product = {
             _id: productData._id,
             name: productData.name,
@@ -102,14 +106,13 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
             category: productData.category,
             brand: productData.brand,
             images: productData.images
-          };
-          
-          // Set stock count from response
-          this.stockCount = responseData.stock || 0;
+          }
+          this.stockCount =  matchingProduct
+          ? Math.max(matchingProduct.stock - matchingProduct.requiredQty, 0) : responseData.stock ;
           
           // Filter out the default image and prepare carousel images
           const defaultImageUrl = "https://ik.imagekit.io/ysypur5vc/Untitled_azZLiI3tg.jpg";
-          this.images = this.product.images
+          this.images = this.product?.images
             .filter(img => img.url !== defaultImageUrl)
             .map(img => ({
               src: img.url
@@ -121,6 +124,8 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
           }
           
           this.isLoading = false;
+          
+          // Set stock count from response
         }
       },
       error: (error) => {
@@ -222,12 +227,14 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
       }
       // this.spinner.hide();
       // this.loading = false; 
+      this.loadProductDetails();
     },
 
     (error) => {
       console.error('Error loading cart:', error);
       // this.loading = false; // ✅ Ensure loading is set to false on error
       // this.spinner.hide();
+      this.loadProductDetails();
     }
   );
   }
@@ -255,40 +262,10 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
           localStorage.setItem('sessionId', response.data.sessionId);
             this.sessionId = response.data.sessionId;
         }
-      // this.getSubtotal();
-      // this.getTotalAmount();
     });
 
-    // for test
-    // this.cartService.addToCart("67b8f7c83c7eb38260dfc804", 1, this.sessionId!).subscribe((response) => {
-    //   if(localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
-    //     localStorage.removeItem('sessionId');
-    //     this.sessionId = null; //67b8f7c83c7eb38260dfc804
-    //   }
-    //   if(!localStorage.getItem('token') && response.data.sessionId && response.data.sessionId != this.sessionId) {
-    //     localStorage.setItem('sessionId', response.data.sessionId);
-    //       this.sessionId = response.data.sessionId;
-    //   }
-    // });
   }
 
-  decrease(product: any) {
-    if (product.requiredQty - 1 < 1) return;
-    product.requiredQty -= 1;
-    this.cartService.addToCart(product.onlineProductId, -1, this.sessionId!).subscribe((response) => {
-      if(localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
-        localStorage.removeItem('sessionId');
-        this.sessionId = null;
-      }
-      if(!localStorage.getItem('token') && response.data.sessionId && response.data.sessionId != this.sessionId) {
-        localStorage.setItem('sessionId', response.data.sessionId);
-          this.sessionId = response.data.sessionId;
-      }
-      this.loadCart();
-      // this.getSubtotal();
-      // this.getTotalAmount();
-    });
-  }
 
   ngOnDestroy(): void {
     this.cleanupFunctions.forEach(cleanup => cleanup());
