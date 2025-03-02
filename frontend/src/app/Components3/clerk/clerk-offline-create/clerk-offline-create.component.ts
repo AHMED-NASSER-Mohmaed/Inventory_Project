@@ -1,0 +1,276 @@
+
+
+import { Component, OnInit } from '@angular/core';
+import { ProductsService } from '../../../_services/products.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Product } from '../../../_models/products';
+import { catchError, of, Subscription } from 'rxjs';
+import { HeaderComponent } from "../../../core/header/header.component";
+import { FooterComponent } from "../../../core/footer/footer.component";
+// import { QuickviewComponent } from '../../HomePage/quickview/quickview.component';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { category } from '../../../_models/category';
+import { Brand } from '../../../_models/api-responses';
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { concatWith } from 'rxjs';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+import { RouterModule } from '@angular/router';
+
+import { CartService } from '../../../_services/cart.service';
+
+
+
+@Component({
+  selector: 'app-clerk-offline-create',
+  imports: [CommonModule, FormsModule, HeaderComponent, FooterComponent, RouterLink],
+  // declarations: [QuickviewComponent],
+  templateUrl: './clerk-offline-create.component.html',
+  styleUrl: './clerk-offline-create.component.css'
+})
+export class ClerkOfflineCreateComponent implements OnInit {
+  products: any[] = [];
+  categories: category[] = [];
+  brands: Brand[] = []; 
+  selectedCategoryId: string = "";
+  selectedBrandId: string = "";
+  showQuickView: boolean = false;
+  selectedProduct: Product | null = null;
+  currentPage: number = 1;
+  itemsPerPage: number = 6;
+  totalPages: number = 1;
+  pagesArray: number[] = [];
+  hasNextPage: boolean = false;
+  hasPreviousPage: boolean = false;
+  sort: string = "";
+  total: number = 0;
+  searchQuery: string = '';
+  // products: any[] = [];
+  shippingFees = 50;
+  maxQuantity = 10;
+  sessionId: string | null = null;
+
+  loading: boolean = false;
+  tempProducts: any[] = []
+
+
+  constructor(
+    private productsService: ProductsService,
+    private route: ActivatedRoute,
+  ) { }
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.selectedCategoryId = params['catId'] || "";
+      this.selectedBrandId = params['brandId'] || "";
+  
+        this.getProducts(); 
+    });
+  
+    this.loadCategories();
+    this.loadBrands();
+  }
+  
+
+  loadCategories(): void {
+    this.productsService.getAllCategories().subscribe({
+      next: (response) => {
+        if (response && response.data && Array.isArray(response.data)) {
+          this.categories = response.data;
+          console.log('Categories loaded:', this.categories);
+        } else {
+          console.error('Unexpected categories response format:', response);
+          this.categories = [];
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching categories', error);
+        this.categories = [];
+      }
+    });
+  }
+
+  loadBrands(): void {
+    this.productsService.getAllBrands().subscribe({
+      next: (response) => {
+        if (response && response.data && Array.isArray(response.data)) {
+          this.brands = response.data;
+          console.log('Brands loaded:', this.brands);
+        } else {
+          console.error('Unexpected brands response format:', response);
+          this.brands = [];
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching brands', error);
+        this.brands = [];
+      }
+    });
+  }
+
+  onSortChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const sortValue = selectElement.value;
+
+    switch (sortValue) {
+      case 'price_asc':
+        this.sort = 'price:asc';
+        break;
+      case 'price_desc':
+        this.sort = 'price:desc';
+        break;
+      default:
+        this.sort = '';
+        break;
+    }
+
+    this.getProducts(1);
+  }
+
+  onCategoryChange(value: string | null): void {
+    if (value !== null) {
+      this.selectedCategoryId = value;
+      this.currentPage = 1; 
+      this.getProducts(1);
+      console.log('Category selected:', value);
+    } else {
+      this.selectedCategoryId = "";
+      this.getProducts(1);
+    }
+  }
+
+  onBrandChange(value: string | null): void {
+    if (value !== null) {
+      this.selectedBrandId = value;
+      this.currentPage = 1; 
+      this.getProducts(1);
+      console.log('Brand selected:', value);
+    } else {
+      this.selectedBrandId = "";
+      this.getProducts(1);
+    }
+  }
+
+  getProducts(pageNumber: number = 1): void {
+    this.currentPage = pageNumber;
+    this.products = [];
+  
+    this.productsService.getPaginatedProducts(
+      this.currentPage, 
+      this.itemsPerPage, 
+      this.sort,
+      this.selectedCategoryId, 
+      this.selectedBrandId,
+      this.searchQuery
+    ).subscribe({
+      next: (res: any) => {
+        if (res?.data?.result) {
+          console.log("Fetched products:", res.data.result);
+          console.log("Temp products from cart:", this.tempProducts);
+  
+          this.products = res.data.result.map((item: any) => {
+            const matchingProduct = this.tempProducts.find(
+              (pro) => pro.onlineProductId === item.product._id
+            );
+  
+            return {
+              _id: item.product._id,
+              name: item.product.name,
+              price: item.product.price,
+              imgUrl: item.product.images.length > 1 
+                ? item.product.images[1].url 
+                : item.product.images[0].url,
+              sellerName: `${item.seller?.firstName || ''} ${item.seller?.lastName || ''}`,
+              sellerId: item.seller?._id || '',
+              stock: item.stock,
+              sellerCompanyName: item.seller?.companyName,
+              shallowStock: matchingProduct 
+                ? Math.max(matchingProduct.stock - matchingProduct.requiredQty, 0) 
+                : item.stock,  // Prevent negative stock values
+            };
+          });
+  
+          console.log("Updated products with shallow stock:", this.products);
+  
+          this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
+          this.pagesArray = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+          this.hasNextPage = !!res.data.next;
+          this.hasPreviousPage = this.currentPage > 1;
+          this.total = res.data.total;
+        } else {
+          console.error('Unexpected response structure:', res);
+          this.handleEmptyResults();
+        }
+      },
+      error: (error) => {
+        console.log('API Error:', error);
+        this.handleEmptyResults();
+      }
+    });
+  }
+  
+  private handleEmptyResults(): void {
+    this.products = [];
+    this.totalPages = 1;
+    this.pagesArray = [1];
+    this.hasNextPage = false;
+    this.hasPreviousPage = false;
+  }
+
+  openQuickView(product: Product): void {
+    this.selectedProduct = product;
+    this.showQuickView = true;
+  }
+
+  closeQuickView(): void {
+    this.showQuickView = false;
+  }
+
+  resetFilters(): void {
+    this.selectedCategoryId = "";
+    this.selectedBrandId = "";
+    this.sort = "";
+    this.searchQuery = ""; 
+    this.currentPage = 1;
+    
+    this.productsService.clearCache();
+    
+    console.log('Filters reset, loading all products');
+    
+    this.getProducts(1);
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.getProducts(this.currentPage);
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.getProducts(this.currentPage);
+    }
+  }
+
+  selectedPage(pageNumber: number): void {
+    if (this.currentPage !== pageNumber) {
+      this.currentPage = pageNumber;
+      this.getProducts(pageNumber);
+    }
+  }
+
+  onSearch(event: Event): void {
+    event.preventDefault();
+    this.currentPage = 1;
+    this.getProducts();
+  }
+
+  
+  
+    
+}
