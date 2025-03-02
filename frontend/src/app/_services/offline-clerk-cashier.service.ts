@@ -74,8 +74,8 @@ export class OfflineClerkCashierService {
       if (brand) {
         filterParts.push(`brand:${brand}`);
       }
-      
-      let url = `${this.baseUrl}/OnlineProducts?page=${page}&limit=${itemsPerPage}`;
+      // http://localhost:3000/OffProduct/clerk
+      let url = `${this.baseUrl}/OffProduct/clerk?page=${page}&limit=${itemsPerPage}`;
       
       if (filterParts.length > 0) {
         url += `&filters=${filterParts.join(' ')}`;
