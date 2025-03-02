@@ -28,6 +28,29 @@ class UserProductRepository {
       throw err;
     }
   }
+
+  async addProducts(customerId, productIds) {
+    try {
+      const userProduct = await UserProduct.findOne({ customerId });
+
+      if (userProduct) {
+        const newProducts = productIds.filter(
+          (id) => !userProduct.productIds.includes(id)
+        );
+
+        if (newProducts.length > 0) {
+          userProduct.productIds.push(...newProducts);
+          await userProduct.save();
+        }
+
+        return userProduct;
+      } else {
+        return await UserProduct.create({ customerId, productIds });
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
 }
 
 module.exports = new UserProductRepository();

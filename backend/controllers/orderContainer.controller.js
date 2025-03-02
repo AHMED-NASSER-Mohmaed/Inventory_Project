@@ -7,6 +7,7 @@ const { APP_CONFIG } = require("../config/app.config");
 const pro_res=require("../utils/authMiddlewaresOptions");
 const AppError=require("../utils/appError");
 const orderService = require("../services/order.service");
+const CartService = require("../services/cart.service");
 
 class OrderContainerController {
 
@@ -16,6 +17,14 @@ class OrderContainerController {
       }
 
       initializeRoutes() {
+
+        // customer
+        // i need here the status in query string
+        this.router.get("/customerOrders", AuthMiddleware.protect, catchAsync(this.getSubOrdersForCustomerByStatus)); 
+        // i need here order id as a route parameter as you see below
+        this.router.patch("/customerOrders/cancelWholeOrder/:orderId", AuthMiddleware.protect, catchAsync(this.cancelSubOrderForCustomer));
+        // i need here order id as a route parameter and products ids you wanna remove from the order as an array in the body request
+        this.router.patch("/customerOrders/cancelSomeProductsInTheOrder/:orderId", AuthMiddleware.protect, catchAsync(this.cancelSubOrderWithProductIdsForCustomer));
 
         // superAdmin
 
@@ -36,14 +45,20 @@ class OrderContainerController {
         // offline container orders
         this.router.post(
           "/order-container-offline",
-          AuthMiddleware.protect,
+          pro_res('cashier', 'clerk'),
           catchAsync(this.createOfflineOrderContainer)
         );
 
         this.router.patch(
           "/finalize-order-container-offline/:containerId",
+          pro_res('cashier'),
+          catchAsync(this.finalizeOfflineOrderContainer)
+        );
+
+        this.router.get(
+          "/order-container-offline",
           AuthMiddleware.protect,
-          catchAsync(this.createOnlineOrderContainer)
+          catchAsync(this.getOfflineOrderContainers)
         );
 
 
@@ -105,9 +120,22 @@ class OrderContainerController {
       }
 //   Create an order container from cart
   async createOnlineOrderContainer(req, res) {
-      const cart = req.body;
-        cart.customerId = req.user.id; // in case of online cart, the customer id is the user id
-      const orderContainer = await OrderContainerService.createOnlineOrderContainerFromCart(cart);
+      const customerId = req.user.id;
+      const cart = await CartService.getCustomerCart(customerId);
+      // console.log(cart);
+      const form = req.body.form;
+      // console.log(form)
+      // cart.products.forEach((product) => console.log(product.onlineProduct));
+        // cart.customerId = req.user._id; // in case of online cart, the customer id is the user id
+      // const  mergedCartWithFormData =  { ...cart, ...form };
+      // mergedCartWithFormData.customerId = customerId;
+      cart.customerId = customerId;
+      cart.gov = form.gov;
+      cart.phone1 = form.phone1;
+      cart.phone2 = form.phone2;
+      cart.address = form.address;
+     const orderContainer = await OrderContainerService.createOnlineOrderContainerFromCart(cart);
+      await CartService.clearCartForCustomer(customerId);
       res.status(APP_CONFIG.HTTP_CREATED).json({
         message: "success",
         orderContainer,
@@ -160,7 +188,7 @@ class OrderContainerController {
         throw new AppError("You are not authorized to get those orders since you are not employed in this branch.",APP_CONFIG.HTTP_UNAUTHORIZED);
     }
 
-    let clerkId = req.user._id; // you have to check on the online branch here which would be a static value in the app config 
+    let clerkId = req.user.id; // you have to check on the online branch here which would be a static value in the app config 
     // if the clerk doesn't match that branch id then throw an error
 
     let status = req.query.status; //ahmed nasser
@@ -196,8 +224,8 @@ class OrderContainerController {
   // seller 
 
   async getAllOnlineOrdersForSeller(req, res){
-    // let sellerId = req.user._id; 
-    let sellerId = '67aa455d1ea026264bf6c6b4'; // for testing
+    let sellerId = req.user.id; 
+    // let sellerId = '67aa455d1ea026264bf6c6b4'; // for testing
 
 
     let status = req.params.status;
@@ -234,6 +262,8 @@ class OrderContainerController {
   /* offline container orders */
 
   async createOfflineOrderContainer(req, res) {
+    req.body.branch = req.user.branch;
+    req.body.clerk = req.user.id;
     const orderContainer = await OrderContainerService.createOfflineOrderContainer(req.body);
     res.status(APP_CONFIG.HTTP_CREATED).json({
       message: "success",
@@ -242,12 +272,22 @@ class OrderContainerController {
   }
   async finalizeOfflineOrderContainer(req, res) {
     const containerOrderId = req.params.containerId;
-    const newStatus = req.body.status;
+    const newStatus = req.query.newStatus;
     const data = { containerOrderId, newStatus } 
     const orderContainer = await OrderContainerService.finalizeOfflineOrderContainerForCashier(data);
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       orderContainer,
+    });
+  }
+
+  async getOfflineOrderContainers(req, res){
+    const { status } = req.query;
+    console.log(req.user.branch)
+    const orderContainers= await OrderContainerService.getOrderOfflineContainers(status, req.user.branch);
+    res.status(APP_CONFIG.HTTP_OK).json({
+      message: "success",
+      orderContainers,
     });
   }
 
@@ -266,6 +306,36 @@ class OrderContainerController {
       allOnlineSuborders,
     });
   }
+
+
+
+  // customer
+
+  async  cancelSubOrderForCustomer(req, res) {
+      const { orderId } = req.params; 
+      const customerId = req.user.id; 
+      const response = await orderService.cancelSubOrderByCustomer(customerId, orderId);
+      return res.status(200).json(response);
+  }
+
+  async  cancelSubOrderWithProductIdsForCustomer(req, res) {
+    const { orderId } = req.params; 
+    const {  productIds } = req.body;
+    const customerId = req.user.id; 
+
+    const response = await orderService.cancelOnlineProductsFromSubOrderByCustomer(customerId, orderId, productIds);
+    return res.status(200).json(response);
+  }
+  async  getSubOrdersForCustomerByStatus(req, res) {
+      const { status } = req.query;
+      const customerId = req.user.id;
+
+      const orders = await orderService.getAllOnlineSubOrdersForCustomerByStatus(customerId, status);
+      return res.status(200).json(orders);
+  }
+
+
+
 }
 
 module.exports = new OrderContainerController().router;

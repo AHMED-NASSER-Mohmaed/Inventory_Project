@@ -1,13 +1,18 @@
-<div class="container m-auto my-5">
+<!-- <ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-scale-multiple"></ngx-spinner> -->
+ 
+<div class="spinner-container" *ngIf="loading">
+    <mat-progress-spinner class="custom-spinner" mode="indeterminate" diameter="50" ></mat-progress-spinner>
+  </div>
+<div *ngIf="!loading" class="container m-auto my-5">
     <h2 class="fs-2">Shopping Cart</h2>
     <div class="row position-relative">
         <div class="col-lg-8 cart order-lg-1 order-2 ">
             <div class="title">
                 <div class="row">
                     <div class="col">
-                        <h4 class="fs-4"><b>Shopping Cart</b></h4>
+                        <h4 class="fs-4"><b>{{ products.length }} items</b></h4>
                     </div>
-                    <div class="col align-self-center text-right text-muted fs-5">{{ products.length }} items</div>
+                    <!-- <div class="col align-self-center text-right text-muted fs-5">{{ products.length }} items</div> -->
                 </div>
             </div>
             
@@ -16,25 +21,38 @@
     
                     <div class="row main align-items-center">
                         <span class="close" (click)="removeProduct(product.onlineProductId)">&#10005;</span>
-                        <div class="col-lg-3"><img class="img-fluid" [src]="product.productImages[0].url" alt="{{ product.productName }}"></div>
+                        <div class="col-lg-3"><img class="img-fluid" [src]="product.urlImage" alt="{{ product.productName }}"></div>
                         <div class="col-lg-6 row p-4 px-md-4 py-md-0">
                             <h2 class="fs-4">  {{product.productName}}</h2>
                             <div class=" text-muted description">{{ product.productDescription }}</div>
-                            <div class="col-6 mt-3"> <span class="price fs-5">{{ product.price | currency }} </span></div>
-                            <div class="col-6 text-muted mt-3 "> <span class="seller">Sold by: {{ product.sellerCompanyName }}</span></div>
+                            <div class="col-8  text-muted  mt-3 "><span class="category text-capitalize">Category: <span >{{ product.productCategory }}</span></span></div>
+                            <div class="col-4  text-muted  mt-3 "><span class="category text-capitalize">Brand: <span>{{ product.productBrand }}</span></span></div>
+                            <div class="col-8 text-muted mt-3 "> <span class="seller text-capitalize">Sold by: {{ product.sellerCompanyName }}</span></div>
+                            <div class="col-4 mt-3"> <span class="price fs-5">{{ product.productPrice |  currency:'USD':'symbol':'1.0-0'  }} </span></div>
                         </div>
                         <div class="col-lg-3  row p-4 px-md-4">
-
-                            <div class="col-6 col-lg-12 text-muted "><span class="category">{{ product.category }}</span></div>
-                            <div class="col-6 col-lg-12 quantity mt-lg-3">
+                            
+                            
+                            <div class="col-12 col-lg-12 quantity mt-lg-3">
                                 <a class="decrease" (click)="decrease(product)">-</a>
                                 <span>{{product.requiredQty}}</span>
                                 <a  class="increase"  (click)="increase(product)">+</a> 
+                                
                             </div>
+                            @if(product.shallowStock > 0){
+
+                                <div class="available-stock mt-lg-5" >Only <span>{{product.shallowStock}}</span> left in stock</div>
+                            }@else {
+                                <div class="out-stock mt-lg-5">Out of stock</div>
+                            }
                         </div>
                     </div>
                 </div>
-            }
+            } @empty {
+                <div class="m-auto w-100  text-center fs-3 my-5 fw-bold empty">
+                   No products ordered yet!
+                </div>
+              }
             <a  [routerLink]="['/LandingPage']"  class="left-arrow"><div class="back-to-shop mt-5"><span class="text-muted"> &leftarrow; Back to shop</span></div></a>
         </div>
         <div class="col-lg-4 summary sticky-lg-top order-lg-2 order-1">

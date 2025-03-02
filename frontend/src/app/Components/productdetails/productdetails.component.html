@@ -56,7 +56,7 @@
               </div>
             </div>
             <div class="wrapper-action">
-              <button class="btn btn-darken" [disabled]="stockCount <= 0" (click)="addToCart()">
+              <button class="btn btn-darken" [disabled]="stockCount <= 0" (click)="increase(product)">
                 Add to Cart
               </button>
               <span *ngIf="stockCount > 0" class="stock-count">{{ stockCount }} items left</span>

@@ -128,3 +128,32 @@ input:focus, textarea:focus, select:focus {
         height: 200px;
     }
 }
+
+.custom-spinner::ng-deep circle {
+    stroke: #4d4846 !important; /* Change this to your desired color */
+}
+
+.spinner-container {
+    position: fixed; /* Keeps spinner in place */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centers the spinner */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.7); /* Optional: Adds a translucent background */
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000; /* Ensures spinner is above other elements */
+}
+
+  /* :root {
+    --spinner-color: #4caf50; /* Green */
+  /* } */
+/*   
+.mat-progress-spinner circle {
+stroke: var(--spinner-color) !important;
+} */
+.custom-spinner::ng-deep circle {
+    stroke: #4d4846 !important; /* Change this to your desired color */
+}

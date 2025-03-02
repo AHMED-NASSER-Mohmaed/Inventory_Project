@@ -5,6 +5,8 @@ const onlineProductRepo = require("../repos/tempOnlineProduct.repo");
 const offlineProductRepo = require("../repos/tempOfflineProducts.repo")
 const AppError = require("../utils/appError");
 
+const UserProductRpo = require("../repos/userProducts.repo")
+
 class OrderContainerService {
 
 
@@ -14,10 +16,12 @@ class OrderContainerService {
     }
 
     const sellerOrders = {};
-
+    const tempArrayToBeAddedInTheProductUser = [];
     for (const item of cart.products) {
       
-      const OnlineProduct = await onlineProductRepo.getOnlineProductById(item.onlineProduct);
+      const OnlineProduct = await onlineProductRepo.getOnlineProductById(item.onlineProduct._id);
+      tempArrayToBeAddedInTheProductUser.push(item.onlineProduct._id);
+      console.log(OnlineProduct);
 
       // get the seller ID as a string (after populating, seller is an object)
       const sellerId = OnlineProduct.seller._id.toString();
@@ -47,7 +51,7 @@ class OrderContainerService {
       address: cart.address, // address (for online orders)
       phone1: cart.phone1, // primary phone number
       phone2: cart.phone2 , // secondary phone number
-      branch: cart.branch, // Branch (for offline orders)
+      branch: APP_CONFIG.ONLINE_BRANCH_ID, // Branch (for offline orders)
       status: "pending",
     };// if it's offline, there's no need to use any other status than "Completed" as the order is already completed and delivered dircetly to the customer
 
@@ -88,7 +92,7 @@ class OrderContainerService {
     // update the orderContainer with references to the created orders
     orderContainer.sellersOrders = orders.map(order => ({ order: order._id }));
     await orderContainer.save();
-
+    
     // return the created orderContainer
     return orderContainer;
   }
@@ -105,13 +109,14 @@ class OrderContainerService {
       const OfflineProduct = await offlineProductRepo.findOfflineProductById(item.offlineProduct);
 
       // get the seller ID as a string (after populating, seller is an object)
-      const sellerId = OfflineProduct.seller._id.toString();
-      if( !sellerId.equals(APP_CONFIG.COMPANY_ID)) {
+      let sellerId = OfflineProduct?.seller?._id.toString();
+      if(!sellerId)sellerId = APP_CONFIG.COMPANY_ID;
+      if( sellerId != APP_CONFIG.COMPANY_ID) {
         throw new AppError("Invalid seller id, cannot sell products from external sellers in offline mode");
       }
       // group products by seller
       if (!sellerOrders[sellerId]) {
-        sellerOrders[sellerId] = { seller: OfflineProduct.seller._id, products: [] }; // why is that bc it's going to be populated with the seller id
+        sellerOrders[sellerId] = { seller: sellerId, products: [] }; // why is that bc it's going to be populated with the seller id
       }
 
       // add product details to the seller's order
@@ -153,7 +158,7 @@ class OrderContainerService {
       const totalPrice = products.reduce((sum, p) => sum + p.totalPrice, 0); // sum of all total prices in the order products
 
      /*********************** to be reviewed  */
-        tempClerk = cart.clerk; // clerk here should be the one who filled the cart in case of offline
+      let  tempClerk = cart.clerk; // clerk here should be the one who filled the cart in case of offline
       /*********************** to be reviewed */
       // prepare order data
       const orderData = {
@@ -213,6 +218,7 @@ class OrderContainerService {
         }
         // mark order as cancelled
         await orderRepository.updateOrderStatus(order._id, "cancelled" ) ;
+        console.log(order._id)
       }
       
       // update order container status
@@ -228,6 +234,10 @@ class OrderContainerService {
 
   async getOrderContainerById(containerId) {
     return await orderContainerRepository.getOrderContainerById(containerId);
+  }
+
+  async getOrderOfflineContainers( status, branch){
+    return await orderContainerRepository.getOrderOfflineContainers(status, branch);
   }
 }
 

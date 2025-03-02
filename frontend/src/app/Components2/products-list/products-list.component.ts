@@ -3,13 +3,24 @@ import { ProductsService } from '../../_services/products.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Product } from '../../_models/products';
-import { Subscription } from 'rxjs';
+import { catchError, of, Subscription } from 'rxjs';
 import { HeaderComponent } from "../../core/header/header.component";
 import { FooterComponent } from "../../core/footer/footer.component";
 import { QuickviewComponent } from '../HomePage/quickview/quickview.component';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { category } from '../../_models/category';
 import { Brand } from '../../_models/api-responses';
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { concatWith } from 'rxjs';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+import { RouterModule } from '@angular/router';
+
+import { CartService } from '../../_services/cart.service';
+
+
 
 @Component({
   selector: 'app-products-list',
@@ -19,7 +30,7 @@ import { Brand } from '../../_models/api-responses';
   styleUrls: ['./products-list.component.css']
 })
 export class ProductsListComponent implements OnInit {
-  products: Product[] = [];
+  products: any[] = [];
   categories: category[] = [];
   brands: Brand[] = []; 
   selectedCategoryId: string = "";
@@ -35,22 +46,35 @@ export class ProductsListComponent implements OnInit {
   sort: string = "";
   total: number = 0;
   searchQuery: string = '';
+  // products: any[] = [];
+  shippingFees = 50;
+  maxQuantity = 10;
+  sessionId: string | null = null;
+
+  loading: boolean = false;
+  tempProducts: any[] = []
+
 
   constructor(
     private productsService: ProductsService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cartService: CartService
   ) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.selectedCategoryId = params['catId'] || "";
       this.selectedBrandId = params['brandId'] || "";
-      this.getProducts();
+  
+      this.loadCart(() => {
+        this.getProducts(); // Ensure tempProducts is populated before this runs
+      });
     });
-
+  
     this.loadCategories();
     this.loadBrands();
   }
+  
 
   loadCategories(): void {
     this.productsService.getAllCategories().subscribe({
@@ -133,9 +157,8 @@ export class ProductsListComponent implements OnInit {
 
   getProducts(pageNumber: number = 1): void {
     this.currentPage = pageNumber;
-    
     this.products = [];
-    
+  
     this.productsService.getPaginatedProducts(
       this.currentPage, 
       this.itemsPerPage, 
@@ -145,24 +168,39 @@ export class ProductsListComponent implements OnInit {
       this.searchQuery
     ).subscribe({
       next: (res: any) => {
-        if (res && res.data && res.data.result) {
-          this.products = res.data.result.map((item: any) => ({
-            _id: item.product._id,
-            name: item.product.name,
-            price: item.product.price,
-            images: item.product.images.splice(1,1),
-            sellerName: `${item.seller?.companyName }`,
-            sellerId: item.seller?._id || ''
-          }));
-          
-          console.log(this.products,"from service .........");
+        if (res?.data?.result) {
+          console.log("Fetched products:", res.data.result);
+          console.log("Temp products from cart:", this.tempProducts);
+  
+          this.products = res.data.result.map((item: any) => {
+            const matchingProduct = this.tempProducts.find(
+              (pro) => pro.onlineProductId === item.product._id
+            );
+  
+            return {
+              _id: item.product._id,
+              name: item.product.name,
+              price: item.product.price,
+              imgUrl: item.product.images.length > 1 
+                ? item.product.images[1].url 
+                : item.product.images[0].url,
+              sellerName: `${item.seller?.firstName || ''} ${item.seller?.lastName || ''}`,
+              sellerId: item.seller?._id || '',
+              stock: item.stock,
+              sellerCompanyName: item.seller?.companyName,
+              shallowStock: matchingProduct 
+                ? Math.max(matchingProduct.stock - matchingProduct.requiredQty, 0) 
+                : item.stock,  // Prevent negative stock values
+            };
+          });
+  
+          console.log("Updated products with shallow stock:", this.products);
+  
           this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
-          this.pagesArray = Array(this.totalPages).fill(0).map((x, i) => i + 1);
+          this.pagesArray = Array.from({ length: this.totalPages }, (_, i) => i + 1);
           this.hasNextPage = !!res.data.next;
           this.hasPreviousPage = this.currentPage > 1;
           this.total = res.data.total;
-          
-          console.log('Products loaded with filters - Category:', this.selectedCategoryId, 'Brand:', this.selectedBrandId, 'Search:', this.searchQuery);
         } else {
           console.error('Unexpected response structure:', res);
           this.handleEmptyResults();
@@ -174,6 +212,7 @@ export class ProductsListComponent implements OnInit {
       }
     });
   }
+  
   private handleEmptyResults(): void {
     this.products = [];
     this.totalPages = 1;
@@ -231,4 +270,87 @@ export class ProductsListComponent implements OnInit {
     this.currentPage = 1;
     this.getProducts();
   }
+
+  
+  
+    // getSubtotal(): number {
+    //   return this.products.reduce((acc, product) => acc + (product.price * product.requiredQty), 0);
+    // }
+  
+    // getTotalAmount(): number {
+    //   return this.getSubtotal() + this.shippingFees;
+    // }
+
+    loadCart(callback?: Function) {
+      this.cartService.getCart(this.sessionId!).subscribe(
+        (response) => {
+          this.tempProducts = response.cart.products || [];
+    
+          console.log("Cart loaded, tempProducts:", this.tempProducts);
+    
+          if (localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
+            localStorage.removeItem('sessionId');
+            this.sessionId = null;
+          }
+          if (!localStorage.getItem('token') && response.sessionId && this.sessionId != response.sessionId) {
+            localStorage.setItem('sessionId', response.sessionId);
+            this.sessionId = response.sessionId;
+          }
+    
+          if (callback) callback(); // Run callback after cart loads
+        },
+        (error) => {
+          console.error('Error loading cart:', error);
+          if (callback) callback(); // Run callback even if there's an error
+        }
+      );
+    }
+    
+  
+    increase(product: any) {
+      console.log(product);
+      if (product.shallowStock <= 0) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Oops!',
+          text: 'Product Out of Stock!',
+        });
+      };
+      product.shallowStock -= 1;
+    
+      product.requiredQty += 1;
+      
+      this.cartService.addToCart(product._id, 1, this.sessionId!).subscribe({
+        next: (response) => {
+          if (localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
+            localStorage.removeItem('sessionId');
+            this.sessionId = null;
+          }
+          if (!localStorage.getItem('token') && response.data.sessionId && response.data.sessionId !== this.sessionId) {
+            localStorage.setItem('sessionId', response.data.sessionId);
+            this.sessionId = response.data.sessionId;
+          }
+    
+          Swal.fire({
+            icon: 'success',
+            title: 'Added to Cart!',
+            text: `${product.name} has been added successfully.`,
+            timer: 2000,
+            showConfirmButton: false
+          });
+        },
+        error: (error) => {
+          console.error("Error adding to cart:", error);
+          
+          Swal.fire({
+            icon: 'info',
+            title: 'Oops!',
+            text: 'Product Out of Stock!',
+          });
+        }
+      });
+    }
+    
+  
+  
 }

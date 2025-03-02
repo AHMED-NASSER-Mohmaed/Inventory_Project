@@ -1,0 +1,172 @@
+
+<!-- <app-quickview 
+    [isVisible]="showQuickView" 
+    [selectedProduct]="selectedProduct" 
+    (closeModalEvent)="closeQuickView()">
+</app-quickview> -->
+<div class="container-fluid" style="min-height: calc(100vh - 56px)">
+    <div class="row bg-light py-3 px-2 rounded">
+        <div class="col-md-5 col-lg-5 d-flex align-items-center">
+            <label class="form-label me-3 " style="font-size: 17px">Categories</label>
+            <select class="form-select" (change)="onCategoryChange($event)">
+                <option value="" selected>Select Category</option>
+                <option *ngFor="let category of categories" [value]="category._id">
+                    {{ category.Cname }}
+                </option>
+            </select>
+        </div>
+
+        <div class="col-md-5 col-lg-5 d-flex align-items-center">
+            <label class="form-label me-3" style="font-size: 17px">Brands</label>
+            <select class="form-select" (change)="onBrandChange($event)">
+                <option value="" selected>Select Brand</option>
+                <option *ngFor="let brand of brands" [value]="brand._id">
+                    {{ brand.Bname }}
+                </option>
+            </select>
+        </div>
+
+        <div class="col-md-2 col-lg-2 d-flex align-items-end">
+            <button class="btn filter-btn w-100" type="button" (click)="resetFilters()">Reset Filters</button>
+        </div>
+    </div>
+<div class="row mt-4">
+
+
+    <!-- Product and Search Section -->
+
+    <div class=" col-lg-8">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <form (submit)="onSearch($event)">
+                    <div class="input-group">
+                        <input type="text" class="form-control searchBar" placeholder="Search products..." [(ngModel)]="searchQuery" name="searchQuery">
+                        <button type="submit" class="btn btn-outline-secondary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <select class="form-control custom-select" (change)="onSortChange($event)">
+                    <option value="" disabled selected hidden>Sort</option>
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="price_desc">Price: High to Low</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row productRow">
+            <div *ngFor="let product of products" class="product-card col-md-4 mb-4" [routerLink]="['/LandingPage/Product', product._id]" style="cursor: pointer;">
+                <div class="image-container position-relative">
+                    <img [src]="product.imgUrl" class="card-img-top product-img" alt="{{ product.name }}">
+                    <div class="overlay-icons">
+                        <a class="product-item product-link product-icon" href="#" (click)="$event.stopPropagation()"><i class="fas fa-heart"></i></a>
+                        <a class="product-item product-link product-icon" (click)="openQuickView(product); $event.stopPropagation()"><i class="fas fa-eye"></i></a>
+                    </div>
+                </div>
+                <div class="img-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-price">{{ product.price | currency }} </p>
+                    <!-- <p class="card-seller">Sold by: {{ product.sellerCompanyName }}</p> -->
+                    @if(product.stock <= 0){
+                        <div class="mt-3">
+                            <span class="text-danger">Product Out of Stock!</span>
+                        </div>
+                    }@else{
+                        <div class="mt-3">
+                            <span class="text-success">Only {{product.stock}} left</span>
+                        </div>
+                    }
+                    <button [disabled]="product.shallowStock <= 0" class="btn add-to-cart-btn" (click)="$event.stopPropagation(); addToOrder(product) ">Add to order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Summary Section -->
+    <div class="col-md-6 col-lg-4 order-summary sticky-top">
+        <h2>Your Order</h2>
+        <div class="summary-content">
+            <table>
+                @for (product of tempProducts; track product.onlineProductId) {
+                    <tr class="no-border">
+                        <td>
+                            <img [src]="product.imgUrl" alt="Product Image" class="product-img">
+                            <span>{{ product.name }}</span>
+                        </td>
+                    </tr>
+                    <tr class="no-border">
+                        <td>Price</td>
+                        <td>{{ product.price | currency }}</td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-6 ms-2">Quantity</td>
+                        <td class="quantity col-5">
+                            <a class="decrease" (click)="decreaseQty(product)">-</a>
+                            <span>{{ product.requiredQty }} X</span>
+                            <a class="increase" (click)="increaseQty(product)">+</a>
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <td><strong>{{ getTotalAmount() | currency }}</strong></td>
+                </tr>
+            </table>
+        </div>
+    
+        <!-- Input Fields with Validation -->
+        <div class="order-details">
+            <div class="form-group d-flex flex-column">
+                <input type="text" name="phone1" [(ngModel)]="phone1" 
+                    pattern="(011|010|012|015)[0-9]{8}$" required 
+                    #phone1Ref="ngModel" class="form-control" placeholder="Phone number 1">
+    
+                @if(phone1Ref.invalid && phone1Ref.touched) {
+                    @if(phone1Ref.errors?.['required']) {
+                        <div class="error text-danger">Phone number is required</div>
+                    }
+                    @if(phone1Ref.errors?.['pattern']) {
+                        <div class="error text-danger">
+                            Phone number should be 11 digits and start with (011, 010, 012, 015)
+                        </div>
+                    }
+                }
+    
+                <input type="text" name="phone2" [(ngModel)]="phone2" 
+                    #phone2Ref="ngModel" class="form-control mt-2" placeholder="Phone number 2">
+    
+                <input type="text" name="gov" [(ngModel)]="address" 
+                class="form-control mt-2" placeholder="Address">
+                <input type="text" name="gov" [(ngModel)]="gov" 
+                    class="form-control mt-2" placeholder="Government">
+            </div>
+        </div>
+    
+        <!-- Place Order Button -->
+        <button 
+            class="btn .checkout-button btn-primary mt-3 w-100" 
+            [disabled]="tempProducts.length === 0 || phone1Ref.invalid"
+            (click)="placeOrder()">
+            Place Order
+        </button>
+    </div>
+    
+    
+    
+</div>
+</div>
+
+
+<div *ngIf="products.length > 0" class="pagination-controls text-center my-4">
+    <button class="btn btn-light" (click)="previousPage()" [disabled]="currentPage === 1">
+        <i class='bx bx-chevron-left' style="font-size: 1.7em;"></i>
+    </button>
+    <div *ngFor="let page of pagesArray" class="d-inline-block mx-1">
+        <button class="btn btn-light" (click)="selectedPage(page)" [disabled]="currentPage === page">{{ page }}</button>
+    </div>
+    <button class="btn btn-light" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        <i class='bx bx-chevron-right' style="font-size: 1.7em;"></i>
+    </button>
+</div>

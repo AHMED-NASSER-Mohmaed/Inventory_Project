@@ -124,19 +124,20 @@ const OnlineProductsRepository = {
           { $skip: (page - 1) * limit },
           { $limit: limit },
           {
-            $project: {
-              "_id": 1,
-              "product._id": 1,
-              "product.name": 1,
-              "product.code": 1,
-              "product.price": 1,
-              "product.images": 1,
-              "product.description": 1,
-              "seller._id": 1,
-              "seller.firstName": 1, // Ensure seller's first name is included
-              "seller.lastName": 1,
-              "seller.companyName": 1,
-            }
+              $project: {
+                  "_id": 1,
+                  "product._id": 1,
+                  "product.name":1,
+                  "product.code":1,
+                  "product.price": 1,
+                  "product.images":1,
+                  "product.description": 1,
+                  "product.stock": 1,
+                  "seller._id":1,
+                  "seller.firstName": 1, // Ensure seller's first name is included
+                  "seller.lastName":1,
+                  "seller.companyName":1,
+              }
           }
         ]),
 

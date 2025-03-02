@@ -15,6 +15,7 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: beige;
 }
 
 h2 {
@@ -129,7 +130,7 @@ select, input {
 }
 
 .card{
-    background: beige;
+    background-color: #c4d0d836;
     transition: 0.3s;
     margin:  10px 0;
 }
@@ -153,7 +154,7 @@ select, input {
     color: rgb(129, 113, 77);
 }
 .category{
-    text-shadow: 0 1px 0 gray;
+    /* text-shadow: 0 1px 0 gray; */
     font-weight: 600;
     color: rgb(162, 123, 31);
 }
@@ -178,3 +179,55 @@ input:focus, textarea:focus, select:focus {
     border: none;   
     box-shadow: none; 
   }
+
+.available-stock{
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.available-stock span{
+    color: green;
+    font-size: 20px;
+}
+
+.out-stock{
+    font-size: 14px;
+    font-weight: bold;
+    color: red;
+}
+
+.empty{
+    color: rgb(162, 123, 31);
+}
+
+.value{
+    color:white;
+    background-color:  black;
+    padding: 5px 10px;
+    border-radius: 25%;
+}
+
+.spinner-container {
+    position: fixed; /* Keeps spinner in place */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centers the spinner */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.7); /* Optional: Adds a translucent background */
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000; /* Ensures spinner is above other elements */
+  }
+
+  /* :root {
+    --spinner-color: #4caf50; /* Green */
+  /* } */
+/*   
+.mat-progress-spinner circle {
+stroke: var(--spinner-color) !important;
+} */
+.custom-spinner::ng-deep circle {
+    stroke: #4d4846 !important; /* Change this to your desired color */
+}

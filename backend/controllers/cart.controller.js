@@ -77,20 +77,20 @@ class CartController {
 
   getCart = async (req, res) => {
     let cart;
-
     if (req.user) {
       if (req.query.sessionId) {
         cart = await CartService.getGuestCart(req.query.sessionId);
-        cart = await CartService.mergeGuestCartToCustomerCart(
-          req.user.id,
-          req.query.sessionId
-        );
+          cart = await CartService.mergeGuestCartToCustomerCart(
+            req.user.id,
+            req.query.sessionId
+          );
       } else cart = await CartService.getCustomerCart(req.user.id);
     } else cart = await CartService.getGuestCart(req.query.sessionId);
 
     const { cart: validatedCart, messages } = await CartService.validateCart(
       cart._id
     );
+    console.log(validatedCart)
     res.status(200).json({
       status: "success",
       numOfCartItems: cart.products.length,

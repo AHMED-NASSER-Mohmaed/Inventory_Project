@@ -146,24 +146,20 @@ export class ProcessingTableComponent {
   
   
   
-  
-    incrementQuantity(): void {
+    getMinValue(product: any): number {
+      return Math.min(product.productRequestedQuantity, product.productStock);
+    }
+    incrementQuantity(product:any): void {
       if (this.selectedSuborder?.products?.length > 0) {
-        const product = this.selectedSuborder.products[0];
-        if (product.productFulfilledQuantity < product.productStock) {
           product.productFulfilledQuantity++;
           this.validateFulfilledQuantity();
-        }
       }
     }
   
-    decrementQuantity(): void {
+    decrementQuantity(product:any): void {
       if (this.selectedSuborder?.products?.length > 0) {
-        const product = this.selectedSuborder.products[0];
-        if (product.productFulfilledQuantity > 0) {
           product.productFulfilledQuantity--;
           this.validateFulfilledQuantity();
-        }
       }
     }
   

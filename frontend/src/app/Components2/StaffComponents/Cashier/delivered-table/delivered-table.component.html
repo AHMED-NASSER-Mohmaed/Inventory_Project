@@ -22,7 +22,7 @@
                 <div class="order">
                     <div class="head">
                         <div class="headhead">
-                        <h3>Orders</h3>
+                        <h3>Delivered Orders</h3>
                         <!-- <div class="items-per-page">
                             <label> 
                                 <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" name="itemsPerPage">
@@ -163,7 +163,7 @@
               [disabled]="!editing"
             >
               
-              <option value="delivered">Delivered</option>
+              <!-- <option value="delivered">Delivered</option> -->
               <option value="completed">Completed</option>
             </select>
           </div>
@@ -171,12 +171,13 @@
           <p><strong>Total Quantity:</strong> {{ selectedSuborder.orderTotalQty }}</p>
 
           <div *ngIf="selectedSuborder.products && selectedSuborder.products.length > 0">
-            <p><strong>Product Name:</strong> {{ selectedSuborder.products[0].productName }}</p>
-            <p><strong>Product ID:</strong> {{ selectedSuborder.products[0].productId }}</p>
-            <p><strong>Requested Quantity:</strong> {{ selectedSuborder.products[0].productRequestedQuantity }}</p>
-            <p><strong>Fulfilled Quantity:</strong> {{ selectedSuborder.products[0].productFulfilledQuantity }}</p>
-
-            <p><strong>Available Stock:</strong> {{ selectedSuborder.products[0].productStock }}</p>
+            <div *ngFor="let product of selectedSuborder.products">
+              <p><strong>Product Name:</strong> {{ product.productName }}</p>
+              <p><strong>Product ID:</strong> {{ product.productId }}</p>
+              <p><strong>Requested Quantity:</strong> {{ product.productRequestedQuantity }}</p>
+              <p><strong>Fulfilled Quantity:</strong> {{ product.productFulfilledQuantity }}</p>
+              <p><strong>Available Stock:</strong> {{ product.productStock }}</p>
+            </div>
 
             <!-- Counter Input for Fulfilled Quantity -->
           <!-- <div class="form-group">

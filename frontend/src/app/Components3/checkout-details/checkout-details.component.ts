@@ -7,10 +7,14 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { concatWith } from 'rxjs';
 import { CartService } from '../../_services/cart.service';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-checkout-details',
-  imports: [ FormsModule, CommonModule ],
+  imports: [ FormsModule, CommonModule,NgxSpinnerModule, MatProgressSpinnerModule ],
   templateUrl: './checkout-details.component.html',
   styleUrl: './checkout-details.component.css'
 })
@@ -21,12 +25,13 @@ export class CheckoutDetailsComponent implements OnInit {
   shippingFees = 50;
   sessionId: string | null = null;
   apiUrl = 'http://ip-api.com/json/';
+  loading: boolean = false;
 
   checkoutData = {
     email: '',
     firstName: '',
     lastName: '',
-    region: '',
+    gov: '',
     postcode: '',
     address: '',
     phone1: '',
@@ -35,25 +40,70 @@ export class CheckoutDetailsComponent implements OnInit {
     paymentMethod: ''
   };
 
-  constructor(private cartService: CartService) {}
+  constructor(private cartService: CartService, private router: Router,  public spinner: NgxSpinnerService, public spinner2: MatProgressSpinnerModule) {}
 
   ngOnInit(): void {
+    // this.spinner.show();
+    this.startLoading();
     this.sessionId = localStorage.getItem('sessionId');
     this.loadCart();
     this.fetchLocationData();
   }
+  startLoading() {
+    this.loading = true;
+    // Simulating an async operation like an API call
+    setTimeout(() => {
+      this.loading = false;
+    }, 3000); // Hides spinner after 3 seconds
+  }
+
+  stopLoading() {
+    this.loading = false;
+  }
 
   loadCart() {
+    // this.loading = true; 
     this.cartService.getCart(this.sessionId!).subscribe((response) => {
       this.products = response.cart.products;
-      if (!this.sessionId && response.sessionId) {
-        localStorage.setItem('sessionId', response.sessionId);
+      console.log(this.products);
+      for(let i = 0; i < this.products.length; i++){
+        console.log(this.products[i].productName)
       }
-    });
+      console.log(this.products);
+      this.products.forEach(pro => pro.shallowStock = pro.stock - pro.requiredQty);
+      this.products.forEach(pro => {
+        if(pro.productImages.length > 1){
+          pro.urlImage = pro.productImages[1].url;
+        }
+        else{
+          pro.urlImage = pro.productImages[0].url;
+        }
+      });
+      this.getSubtotal();
+      this.getTotalAmount();
+      if(localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
+        localStorage.removeItem('sessionId');
+        this.sessionId = null;
+      }
+      if(!localStorage.getItem('token') && response.sessionId && this.sessionId != response.sessionId) {
+        localStorage.setItem('sessionId', response.sessionId);
+          this.sessionId = response.sessionId;
+      }
+      this.stopLoading();
+      // this.spinner.hide();
+      // this.loading = false; 
+    },
+
+    (error) => {
+      console.error('Error loading cart:', error);
+      // this.loading = false; // 
+      // this.spinner.hide();
+    }
+  );
   }
 
   getSubtotal(): number {
-    return this.products.reduce((acc, product) => acc + (product.price * product.requiredQty), 0);
+    return this.products.reduce((acc, product) => acc + (product.productPrice * product.requiredQty), 0);
   }
 
   getTotalAmount(): number {
@@ -66,7 +116,7 @@ export class CheckoutDetailsComponent implements OnInit {
         .then(response => response.json())
         .then(data => {
             console.log('IP-API Data:', data);
-            const { lat, lon, city, regionName } = data;
+            const { lat, lon, city, govName } = data;
            
             const map = L.map('map').setView([lat, lon], 13);
   
@@ -82,9 +132,9 @@ export class CheckoutDetailsComponent implements OnInit {
   
             // getting values from object from response to input fields
             map.on('click', () => { // Use an arrow function
-              this.checkoutData.region = city; // Correctly updates the Angular component property
+              this.checkoutData.gov = city; // Correctly updates the Angular component property
               this.checkoutData.postcode = '123413';
-              console.log(this.checkoutData.region)
+              console.log(this.checkoutData.gov)
             });
         })
         .catch(error => {
@@ -92,25 +142,54 @@ export class CheckoutDetailsComponent implements OnInit {
         });
   }
 
+
   onSubmit() {
     if (this.checkoutData.email && this.checkoutData.firstName && this.checkoutData.lastName && this.checkoutData.paymentMethod) {
-      alert('Order placed successfully!');
-      console.log(this.checkoutData);
-      this.checkoutData = {
-        email: '',
-        firstName: '',
-        lastName: '',
-        region: '',
-        postcode: '',
-        address: '',
-        phone1: '',
-        phone2: '',
-        notes: '',
-        paymentMethod: ''
-      };
-    } else {
-      alert('Please fill in all required fields.');
-    }
+      this.cartService.placeOrder(this.checkoutData).subscribe(
+      (response) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Order Placed!',
+          text: 'Your order has been placed successfully, please follow it on your profile.',
+          confirmButtonText: 'OK',
+        }).then(() => {
+          this.loadCart();
+          this.router.navigate(['/']);
+          console.log('Order Response:', response);
+          this.checkoutData = {
+            email: '',
+            firstName: '',
+            lastName: '',
+            gov: '',
+            postcode: '',
+            address: '',
+            phone1: '',
+            phone2: '',
+            notes: '',
+            paymentMethod: ''
+          };
+        });
+      },
+      (error) => {
+        console.error('Order submission failed', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Order Failed',
+          text: 'Something went wrong. Please try again.',
+          confirmButtonText: 'OK',
+        });
+      }
+    );
+  } else {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Missing Fields',
+      text: 'Please fill in all required fields before submitting.',
+      confirmButtonText: 'OK',
+    });
   }
+}
+
+  
 }
 

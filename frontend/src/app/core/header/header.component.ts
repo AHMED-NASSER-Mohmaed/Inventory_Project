@@ -46,14 +46,20 @@ export class HeaderComponent  implements OnInit {
     this.cartService.getCart(this.sessionId!).subscribe((response) => {
       const count = response.cart.products.length > 0 ? response.cart.products.length : 0;
       this.cartCounter = count;
-  
       localStorage.setItem('cartCounter', count.toString());
-  
-      if (!this.sessionId && response.sessionId) {
-        localStorage.setItem('sessionId', response.sessionId);
-      } else if (!response.sessionId) {
-        localStorage.removeItem('sessionId');
+      if(localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
+                localStorage.removeItem('sessionId');
+                this.sessionId = null;
       }
+      if(!localStorage.getItem('token') && response.sessionId && this.sessionId != response.sessionId) {
+        localStorage.setItem('sessionId', response.sessionId);
+          this.sessionId = response.sessionId;
+      }
+        
+    }, 
+    (error) => {
+      this.cartCounter = 0;
+      localStorage.setItem('cartCounter', '0');
     });
   }
   
@@ -71,6 +77,8 @@ export class HeaderComponent  implements OnInit {
  logout(){
   localStorage.removeItem("token");
   localStorage.removeItem("sessionId");
+  this.cartCounter = 0;
+  localStorage.setItem('cartCounter', '0');
  }
 
 

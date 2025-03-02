@@ -31,6 +31,7 @@
     "latest": "^0.2.0",
     "leaflet": "^1.9.4",
     "ngx-skeleton-loader": "^10.0.0",
+    "ngx-spinner": "^19.0.0",
     "ngx-toastr": "^19.0.0",
     "primeicons": "^7.0.0",
     "primeng": "^19.0.7",

@@ -1,3 +1,7 @@
+<!-- <ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="ball-scale-multiple"></ngx-spinner> -->
+<!-- <div class="spinner-container" *ngIf="loading">
+    <mat-progress-spinner class="custom-spinner" mode="indeterminate" diameter="50" ></mat-progress-spinner>
+  </div> -->
 <div class="container my-5">
     <div class="row position-relative">
 
@@ -39,7 +43,7 @@
                 }
             }
             <div class="form-group d-flex">
-                <select name="city"  #region="ngModel" [(ngModel)]="checkoutData.region" required>
+                <select name="city"  #gov="ngModel" [(ngModel)]="checkoutData.gov" required>
                     <option value="">Select City *</option>
                     <option value="Cairo">Cairo</option>
                     <option value="Alexandria">Alexandria</option>
@@ -50,7 +54,7 @@
                     <option value="Aswan">Aswan</option>
                     <option value="Sharm El-Sheikh">Sharm El-Sheikh</option>
                     <option value="Hurghada">Hurghada</option>
-                    <option value="Mansoura">Mansoura</option>
+                    <option value="Al Mansurah">Mansoura</option>
                     <option value="Tanta">Tanta</option>
                     <option value="Faiyum">Faiyum</option>
                     <option value="Zagazig">Zagazig</option>
@@ -69,7 +73,7 @@
                 
                 <input type="text" name="postcode" #postcode="ngModel" pattern="^\d{6}$" required [(ngModel)]="checkoutData.postcode" placeholder="Postcode / ZIP">
             </div>
-            @if(region.invalid && region.touched){
+            @if(gov.invalid && gov.touched){
                 <div class="error">
                     Country is required
                 </div>
@@ -142,13 +146,13 @@
                     @for (product of products; track product.onlineProductId){
                         <tr class="no-border " >
                             <td  >
-                                <img [src]="product.productImages[0].url" alt="Silver Bracelet" class="product-img">
+                                <img [src]="product.urlImage" alt="Silver Bracelet" class="product-img">
                                 <span>{{product.productName}}</span>
                             </td>
                         </tr>
                         <tr class="no-border ">
                             <td>Price</td>
-                            <td >{{product.price | currency}}</td>
+                            <td >{{product.productPrice | currency}}</td>
                         </tr>
                         <tr>
                             <td>Quantity</td>
