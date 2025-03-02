@@ -3,6 +3,7 @@ const {
   protect,
   checkCustomerRole,
 } = require("../middlewares/auth.middleware");
+const { isProductExist } = require("../repos/onlineProducts.repo");
 const CartService = require("../services/cart.service");
 const catchAsync = require("../utils/catchAsync");
 const express = require("express");
@@ -49,7 +50,7 @@ class CartController {
   addToCart = async (req, res, next) => {
     const { productId, quantity } = req.body;
     let customerId, sessionId;
-
+    console.log(productId);
     if (req.user) {
       customerId = req.user.id;
     } else {
@@ -80,17 +81,17 @@ class CartController {
     if (req.user) {
       if (req.query.sessionId) {
         cart = await CartService.getGuestCart(req.query.sessionId);
-          cart = await CartService.mergeGuestCartToCustomerCart(
-            req.user.id,
-            req.query.sessionId
-          );
+        cart = await CartService.mergeGuestCartToCustomerCart(
+          req.user.id,
+          req.query.sessionId
+        );
       } else cart = await CartService.getCustomerCart(req.user.id);
     } else cart = await CartService.getGuestCart(req.query.sessionId);
 
     const { cart: validatedCart, messages } = await CartService.validateCart(
       cart._id
     );
-    console.log(validatedCart)
+    console.log(validatedCart);
     res.status(200).json({
       status: "success",
       numOfCartItems: cart.products.length,

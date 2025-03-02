@@ -30,6 +30,7 @@
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
     "pug": "^3.0.3",
+    "stripe": "^17.7.0",
     "validator": "^13.12.0"
   }
 }

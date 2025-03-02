@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const productRepo = require("../repos/product.repo");
 
 const OnlineProductsRepository = {
-
   isProductExist: async (productId) => {
     try {
       return await OnlineProducts.findById(productId);
@@ -15,43 +14,43 @@ const OnlineProductsRepository = {
   },
 
   //for product details page
-  getProductByID:async(id)=>{
-    try{
+  getProductByID: async (id) => {
+    try {
       return await OnlineProducts.findOne({
         _id: id,
         isActive: true,
-        status: APP_CONFIG.APPROVED_STATUS
+        status: APP_CONFIG.APPROVED_STATUS,
       })
         .populate({
           path: "seller",
-          select: "firstName lastName companyName"
+          select: "firstName lastName companyName",
         })
         .populate({
           path: "product",
-          select: "name code price images description brand category", 
+          select: "name code price images description brand category",
           populate: [
             {
               path: "brand",
-              select: "Bname" // Selecting required fields from brand
+              select: "Bname", // Selecting required fields from brand
             },
             {
               path: "category",
-              select: "Cname" // Selecting required fields from category
-            }
-          ]
+              select: "Cname", // Selecting required fields from category
+            },
+          ],
         })
         .select("stock");
-      
-    }catch(error){
+    } catch (error) {
       throw error;
     }
   },
 
   updateOurSellerRecordQty: async (productId, sellerId, newQty) => {
     try {
-
-      return await OnlineProducts.updateOne({ product: productId, sellerId }, { $set: { stock: newQty } })
-
+      return await OnlineProducts.updateOne(
+        { product: productId, sellerId },
+        { $set: { stock: newQty } }
+      );
     } catch (error) {
       throw error;
     }
@@ -60,12 +59,17 @@ const OnlineProductsRepository = {
   //for online bracnh usage
   upsertOurSellerRecord: async (productId, newQty, newPrice) => {
     try {
-
       return await OnlineProducts.findOneAndUpdate(
         { _id: productId, seller: APP_CONFIG.COMPANY_ID }, // Search condition
         {
           $inc: { stock: newQty }, // Only increment stock if the document exists
-          $setOnInsert: { product: productId, seller: new mongoose.Types.ObjectId(APP_CONFIG.COMPANY_ID), branch: APP_CONFIG.ONLINE_BRANCH_ID, price: newPrice,status:APP_CONFIG.APPROVED_STATUS } // Ensure new document can be created without conflicting stock updates
+          $setOnInsert: {
+            product: productId,
+            seller: new mongoose.Types.ObjectId(APP_CONFIG.COMPANY_ID),
+            branch: APP_CONFIG.ONLINE_BRANCH_ID,
+            price: newPrice,
+            status: APP_CONFIG.APPROVED_STATUS,
+          }, // Ensure new document can be created without conflicting stock updates
         },
         { upsert: true, new: true } // Ensure upsert + return updated document
       );
@@ -82,29 +86,24 @@ const OnlineProductsRepository = {
   //   }
   // },
 
-
   //for youmna
   getONProducts: async (filters, sort, page, limit) => {
-
     try {
       if (sort && sort.price) {
-
         let value = sort.price;
         delete sort.price;
-        sort['product.price'] = value;
-
+        sort["product.price"] = value;
       }
 
       const [result, total] = await Promise.all([
-
         await OnlineProducts.aggregate([
           {
             $lookup: {
               from: "products",
               localField: "product",
               foreignField: "_id",
-              as: "product"
-            }
+              as: "product",
+            },
           },
           { $unwind: "$product" },
           {
@@ -112,34 +111,34 @@ const OnlineProductsRepository = {
               from: "users",
               localField: "seller",
               foreignField: "_id",
-              as: "seller"
-            }
+              as: "seller",
+            },
           },
           { $unwind: { path: "$seller", preserveNullAndEmptyArrays: true } }, // Preserve null sellers
           {
             $match: {
-              ...filters
-            }
+              ...filters,
+            },
           },
           { $sort: sort },
           { $skip: (page - 1) * limit },
           { $limit: limit },
           {
-              $project: {
-                  "_id": 1,
-                  "product._id": 1,
-                  "product.name":1,
-                  "product.code":1,
-                  "product.price": 1,
-                  "product.images":1,
-                  "product.description": 1,
-                  "product.stock": 1,
-                  "seller._id":1,
-                  "seller.firstName": 1, // Ensure seller's first name is included
-                  "seller.lastName":1,
-                  "seller.companyName":1,
-              }
-          }
+            $project: {
+              _id: 1,
+              "product._id": 1,
+              "product.name": 1,
+              "product.code": 1,
+              "product.price": 1,
+              "product.images": 1,
+              "product.description": 1,
+              "product.stock": 1,
+              "seller._id": 1,
+              "seller.firstName": 1, // Ensure seller's first name is included
+              "seller.lastName": 1,
+              "seller.companyName": 1,
+            },
+          },
         ]),
 
         await OnlineProducts.aggregate([
@@ -148,29 +147,26 @@ const OnlineProductsRepository = {
               from: "products",
               localField: "product",
               foreignField: "_id",
-              as: "product"
-            }
+              as: "product",
+            },
           },
           { $unwind: "$product" },
           {
             $match: {
-              ...filters
-            }
+              ...filters,
+            },
           },
           {
-            $count: "total"
-          }
-        ])
+            $count: "total",
+          },
+        ]),
       ]);
-
 
       return inboxResult(result, total[0]?.total || 0, page, limit);
     } catch (error) {
       throw error;
     }
   },
-
-
 
   // getCount: async (filters) => {
   //   try {
@@ -195,10 +191,6 @@ const OnlineProductsRepository = {
   //     throw error;
   //   }
   // },
+};
 
-
-
-
-}
-
-module.exports = OnlineProductsRepository
+module.exports = OnlineProductsRepository;

@@ -24,6 +24,9 @@ module.exports.APP_CONFIG = {
   IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY,
   IMAGEKIT_PUBLIC_KEY: process.env.IMAGEKIT_PUBLIC_KEY,
   IMAGEKIT_ENDPOINT_URL: process.env.IMAGEKIT_ENDPOINT_URL,
+
+  // stripe
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   // Successful responses (2xx)
   HTTP_OK: 200, // [delete + [returned ack  data] that is already  returned in the body.] + [get verb + returned data]
 
@@ -46,25 +49,21 @@ module.exports.APP_CONFIG = {
   CUSTOMER: "customer",
   SELLER: "seller",
 
-  MAIN_BRANCH_ID:19777,
+  MAIN_BRANCH_ID: 19777,
 
   COMPANY_ID: "67aa438c2823142f438539c4",
   COMPANY_NAME: "inventory system",
 
   ONLINE_BRANCH_ID: 10,
 
-
-  SUPPERADMIN_ID:"67aa438c2823142f438539c1",
+  SUPPERADMIN_ID: "67aa438c2823142f438539c1",
 
   SUCCESS_MESSAGE: "success",
 
-  MALE_CAT_ID:"67be5efb0d6e71ed0ea5b3de",
-  FEMALE_CAT_ID:"67be5efb0d6e71ed0ea5b3df",
+  MALE_CAT_ID: "67be5efb0d6e71ed0ea5b3de",
+  FEMALE_CAT_ID: "67be5efb0d6e71ed0ea5b3df",
 
- 
-
-
-  MAX_FILE_SIZE: 2 * 1024 * 1024, // 5KB in bytes 
+  MAX_FILE_SIZE: 2 * 1024 * 1024, // 5KB in bytes
 
   UDIAMGE_ID_KEY: "fileId",
   UDIMAGE_URL_KEY: "url",
@@ -72,10 +71,9 @@ module.exports.APP_CONFIG = {
   UDIAMGE_ID_VALUE: "67a63846432c47641653594a",
   UDIMAGE_URL_VALUE: "https://ik.imagekit.io/ysypur5vc/default_n6o_4prV6.jpg",
 
-
   DU_IMAGE_DEFALUT_OBG: {
-    "fileId": "67a63846432c47641653594a",
-    "url": "https://ik.imagekit.io/ysypur5vc/default_n6o_4prV6.jpg"
+    fileId: "67a63846432c47641653594a",
+    url: "https://ik.imagekit.io/ysypur5vc/default_n6o_4prV6.jpg",
   },
   PROFILE_IMAGE_FOLDER: "users",
 
@@ -87,20 +85,19 @@ module.exports.APP_CONFIG = {
   PDIAMGE_ID_KEY: "67a79f83432c47641634dffc",
   PDIAMGE_URL_VALUE: "https://ik.imagekit.io/ysypur5vc/Untitled_azZLiI3tg.jpg",
 
-
   DP_IMAGE_DEFALUT_OBG: {
-    "fileId": "67a79f83432c47641634dffc",
-    "url": "https://ik.imagekit.io/ysypur5vc/Untitled_azZLiI3tg.jpg"
+    fileId: "67a79f83432c47641634dffc",
+    url: "https://ik.imagekit.io/ysypur5vc/Untitled_azZLiI3tg.jpg",
   },
 
   PRODUCT_IMAGE_FOLDER: "products",
 
-  MAX_IMAGE_COUNT:4,
+  MAX_IMAGE_COUNT: 4,
   /************************************************************************************************/
 
-  APPROVED_STATUS:'approved',
-  REJECT_STATUS:'rejected',
-  PENDING_STATUS:'pending',
+  APPROVED_STATUS: "approved",
+  REJECT_STATUS: "rejected",
+  PENDING_STATUS: "pending",
 
-  COMPANYNAME:"Watchly"
+  COMPANYNAME: "Watchly",
 };

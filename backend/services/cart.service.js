@@ -177,8 +177,7 @@ class CartService {
   clearCartForCustomer = async (customerId) => {
     if (customerId) {
       return await CartRepository.deleteCartByCustomerId(customerId);
-    } 
-    else{
+    } else {
       throw new AppError("No identifier provided to clear cart", 400);
     }
   };

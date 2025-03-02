@@ -74,8 +74,13 @@ const OrderContainerSchema = new mongoose.Schema(
       ],
       default: "pending",
     },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid"],
+      default: "pending",
+    },
 
-    branch: {  type: Number, ref: "Branch" },
+    branch: { type: Number, ref: "Branch" },
   },
   {
     timestamps: true,
