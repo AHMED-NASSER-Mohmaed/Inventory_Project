@@ -34,8 +34,8 @@ export class FeaturedProductsComponent implements OnInit {
           _id: item.product._id,
           name: item.product.name,
           price: item.product.price,
-          images: item.product.images,
-          sellerName: `${item.seller.firstName} ${item.seller.lastName}`,
+          images: item.product.images.splice(1,1),
+          sellerName: `${item.seller.companyName}`,
           sellerId: item.seller._id
         }));
         console.log('Featured Products:', this.products);

@@ -33,6 +33,7 @@ interface ProductDetails {
   category: CategoryDetails;
   brand: BrandDetails;
   images: ProductImage[];
+  companyName:string;
 }
 
 @Component({
@@ -86,6 +87,7 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
           // Handle the new response structure
           const responseData = response.data;
           const productData = responseData.product;
+
           
           this.product = {
             _id: productData._id,
@@ -94,9 +96,12 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
             price: productData.price,
             category: productData.category,
             brand: productData.brand,
-            images: productData.images
+            images: productData.images,
+            companyName:responseData.seller.companyName
           };
           
+          console.log("prrrrrrrrrroduuct",response.data);
+
           // Set stock count from response
           this.stockCount = responseData.stock || 0;
           

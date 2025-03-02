@@ -10,6 +10,7 @@ import 'swiper/css/pagination';
 import { ReviewsService } from '../../_services/reviews.service';
 import { Review } from '../../_models/review';
 import { ActivatedRoute } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-reviews',
@@ -24,7 +25,7 @@ export class ReviewsComponent implements AfterViewInit, OnInit, OnDestroy {
   newReviewRating: number = 5;
   productId!: string;
 
-  constructor(public reviewsService: ReviewsService , public AC: ActivatedRoute) {}
+  constructor(public reviewsService: ReviewsService , public AC: ActivatedRoute,public toster: ToastrService) {}
 
   ngOnInit(): void {
     this.subscriptions.push(
@@ -63,6 +64,10 @@ export class ReviewsComponent implements AfterViewInit, OnInit, OnDestroy {
           this.reviews.push(res.review);
           this.newReviewContent = '';
           this.newReviewRating = 5;
+          this.toster.success('Review submitted successfully!', 'Success');
+        },
+        error: (err: any) => {
+          this.toster.error('Failed to submit review. Please try again.', 'Error');
         }
       })
     );

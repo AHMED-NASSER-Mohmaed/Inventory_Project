@@ -80,8 +80,8 @@ module.exports.OfflineProductsService = {
 
     getOfflineProducts: async (validatedParams) => {
         try {
-            console.log(validatedParams,"from service");
-            
+            // console.log(validatedParams,"from service");
+           
             return await OfflineProductsRepo.getOffProducts(this.OfflineProductsService.parseFilters(validatedParams.filters),
                 validatedParams.sort, validatedParams.page, validatedParams.limit);
 
@@ -116,17 +116,18 @@ module.exports.OfflineProductsService = {
             
                 //source is offline || sub  || main --> branch
                 let offProduct = await OfflineProductsRepo.getOffProductByIdAndBrandId(offProductId,sourceBranchId);
-
+                
+                console.log(offProduct);
                 if(!offProduct)
                     throw new AppError("the branch dose not have this product.");
 
 
-                console.log(offProduct);
 
                 //the new qty is the qty that will be decreased from the source branch
                 let newSourceQty = offProduct.stock - +qty;
+                console.log("new source qty",newSourceQty);
 
-                if (newSourceQty < 1)
+                if (newSourceQty < 0)
                     throw new AppError("this source branch dose not have enough quantity", APP_CONFIG.HTTP_BAD_REQUEST);
 
                 let newDestQty = qty ;
@@ -137,6 +138,8 @@ module.exports.OfflineProductsService = {
                 //detination offline branch product
                 //findOne and update if it dose not exist add an offline product to it 
 
+
+
                 await OfflineProductsRepo.updateQuantity(offProductId, newSourceQty);
 
                 await OfflineProductsRepo.upsertOffProduct(offProduct.product, destinationBranchId, newDestQty);
@@ -145,11 +148,14 @@ module.exports.OfflineProductsService = {
                 
                 if (destinationBranch['type'] === 'online') {
                     //may be the first time to export this product to online sysytem
-                    console.log("hhhhhhhhhhhhhhhhhh");
-                    return  OnlineProductsRepository.upsertOurSellerRecord(offProduct.product,qty);
+                    console.log("hhhhhhhhhhhhhhhhhh",qty);
+
+                    return  OnlineProductsRepository.upsertSellerRecord(offProduct.product,APP_CONFIG.COMPANY_ID,qty);
+
                 }else if (sourceBranch['type']==='online'){
+
                     // we have a record in online system product.
-                    return  OnlineProductsRepository.upsertOurSellerRecord(offProduct.product,newSourceQty);
+                    return  OnlineProductsRepository.updateSellerRecordQty(offProduct.product,APP_CONFIG.COMPANY_ID,newSourceQty);
                 }                
                  
 

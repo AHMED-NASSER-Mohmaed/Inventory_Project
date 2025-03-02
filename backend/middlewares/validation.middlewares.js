@@ -1,6 +1,6 @@
 const { values } = require("lodash");
 const { APP_CONFIG } = require("../config/app.config");
-const mongoose=require("mongoose")
+const mongoose = require("mongoose")
 
 const AppError = require("../utils/appError");
 
@@ -54,6 +54,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
 
     let filters = {}
 
+
     if (req.query.filters) {
       try {
 
@@ -63,17 +64,20 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
 
           let [field, value] = element.split(':');
 
+
+
           // Find the index of the searchFiledName array that contains the field
           const filterIndex = searchFiledName.findIndex((element) => element.trim() === field.trim());
 
           if (filterIndex === -1) {
+
             throw new AppError(`Invalid filter field: ${field}`, APP_CONFIG.HTTP_BAD_REQUEST);
           }
 
-        
+
           const isValueNaN = searchValueAcoordingNaN[filterIndex];
 
-          console.log(isValueNaN,value);
+
 
           if (isValueNaN) {
             if (!['branch', 'brand', 'category'].includes(field))
@@ -86,9 +90,9 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
             if (!value)
               throw new AppError(`Invalid value: ${value} for field: ${field}. Expected ${isValueNaN ? 'non-numeric' : 'numeric'} value.`, APP_CONFIG.HTTP_BAD_REQUEST);
           }
- 
 
-            filters[field] = value; // Insert filter objects
+
+          filters[field] = value; // Insert filter objects
         });
 
 
@@ -97,15 +101,14 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
       }
     }
 
-    //  be genaric fucntion
-    console.log(req.validatedParams,filters.category, "after");
+
 
     if (!req.validatedParams)
       req.validatedParams = {};
 
-    
-    if(!req.validatedParams.filters)
-      req.validatedParams.filters={};
+
+    if (!req.validatedParams.filters)
+      req.validatedParams.filters = {};
 
     Object.keys(filters).forEach(key => {
       req.validatedParams.filters[key] = filters[key];
@@ -123,16 +126,27 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
 
     let filters = {}
 
-
-
     if (req.query.filters) {
       try {
 
-        let filterObjects = req.query.filters.split(' ');
+        let filterObjects = req.query.filters.match(/(\S+:"[^"]+"|\S+:\S+)/g)?.map(filter => {
+
+          let [key, ...valueParts] = filter.split(':'); 
+          
+         // console.log("value pats",valueParts);
+
+          let value = valueParts.join(':').replace(/^"|"$/g, ''); // Join back and remove quotes
+
+          return `${key}:${value}`;
+        }) || [];
+
+
+        //console.log(filterObjects)
+
         req.query.filters = Array.from(filterObjects);
 
         let deletedOne = 0;
-        // console.log("from filter:", req.query.filters);
+        //console.log("from filter:", req.query.filters);
 
         filterObjects.forEach((element) => {
           let [field, value] = element.split(":");
@@ -163,7 +177,7 @@ const validatorFilterParams = (allowedFilters, allowedFilterValues) => {
         });
 
       } catch (e) {
-
+        console.log("worng");
         throw new AppError(`"Invalid filter parameter format. Use "field:value"`, APP_CONFIG.HTTP_BAD_REQUEST)
       }
     }

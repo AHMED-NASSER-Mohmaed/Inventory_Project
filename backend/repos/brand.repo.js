@@ -79,8 +79,8 @@ module.exports.brandRepo = {
         }catch(error){
             throw new error;
         }
-    }
+    },
 
-
+    
 
 }

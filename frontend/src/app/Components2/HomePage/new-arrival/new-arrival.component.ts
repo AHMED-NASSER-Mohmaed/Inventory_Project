@@ -26,18 +26,20 @@ export class NewArrivalComponent implements OnInit {
   }
 
   getFeaturedProducts(): void {
+
     this.productsService.getFeaturedProducts().subscribe({
       next: (response) => {
-        console.log(response.data);
+        console.log(response.data,"dataaaaaaaaa");
         this.products = response.data.result.map((item: ProductItem) => ({
           _id: item.product._id,
           name: item.product.name,
           price: item.product.price,
-          images: item.product.images,
-          sellerName: `${item.seller.firstName} ${item.seller.lastName}`,
+          images: item.product.images.splice(1,1),
+          sellerName: `${item.seller.companyName}`,
           sellerId: item.seller._id
         }));
-        console.log('Featured Products:', this.products);
+        
+        console.log('Featured Products images:', this.products[0]['images']);
       },
       error: (error) => {
         console.error('Error fetching featured products', error);

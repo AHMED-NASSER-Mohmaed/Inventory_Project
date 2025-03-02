@@ -36,7 +36,7 @@ const OnlineProductsOp = {
 
          console.log(req.validatedParams);
 
-        let result = await OnlineProductService.getONProducts(req.validatedParams);
+        let result = await OnlineProductService.getONProductsSite(req.validatedParams);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 
     },
