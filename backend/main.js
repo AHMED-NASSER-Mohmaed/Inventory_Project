@@ -161,10 +161,10 @@ process.on("uncaughtException", (err) => {
         email: "perez@gmail.com",
         companyName: "Madridista"
       }
-
+/*
       if (!await Supplier.findOne({ email: supplier.email })) {
         console.log(await Supplier.create(supplier));
-      }
+      }*/
 
       if (!await Supplier.findOne({ email: Dawoodsupplier.email })) {
         console.log(await Supplier.create(Dawoodsupplier));
