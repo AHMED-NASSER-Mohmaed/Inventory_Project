@@ -44,6 +44,8 @@ import { auth7Guard } from './auth7.guard';
 import { auth8Guard } from './auth8.guard';
 import { CustomerOrderDetailsComponent } from './Components/customer-order-details/customer-order-details.component';
 import { auth9Guard } from './_guards/auth9.guard';
+import { ClerkOfflineDashboardComponent } from './Components3/clerk/clerk-offline-dashboard/clerk-offline-dashboard.component';
+import { CashierOfflineDashboardComponent } from './Components3/cashier/cashier-offline-dashboard/cashier-offline-dashboard.component';
 
 
 export const routes: Routes = [
@@ -311,6 +313,37 @@ export const routes: Routes = [
         {path: "completeorder", component: OrderCompeleteComponent,  canActivate: [authGuardForCartGuard]},
         // {path: "checkout", component: CheckoutDetailsComponent},
         // {path: "completeorder", component: OrderCompeleteComponent},
+    ]
+},
+
+
+{
+    path:'clerk-offline-dashboard',
+    component: ClerkOfflineDashboardComponent,
+    title: 'Clerk Offline Dashboard',
+    children: [
+        {
+            path:'',
+            loadChildren:() => import('./Components3/offline.clerk.routes').then(s => s.dashRoutes),
+            
+        },
+
+       
+    ]
+},
+
+{
+    path:'cashier-offline-dashboard',
+    component: CashierOfflineDashboardComponent,
+    title: 'Cashier Offline Dashboard',
+    children: [
+        {
+            path:'',
+            loadChildren:() => import('./Components3/cashier/offline.cashier.routes').then(s => s.dashRoutes),
+            
+        },
+
+       
     ]
 },
 

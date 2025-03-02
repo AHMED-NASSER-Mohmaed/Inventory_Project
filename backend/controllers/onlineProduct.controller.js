@@ -31,12 +31,13 @@ const OnlineProductsOp = {
 
         if(!req.validatedParams.filters)
             req.validatedParams.filters={};
-        req.validatedParams.filters['status'] = APP_CONFIG.APPROVED_STATUS;
-        req.validatedParams.filters['isActive'] = true;
+        //req.validatedParams.filters['status'] = APP_CONFIG.APPROVED_STATUS;
+        //req.validatedParams.filters['isActive'] = true;
 
-         console.log(req.validatedParams);
+        // console.log(req.validatedParams);
 
-        let result = await OnlineProductService.getONProducts(req.validatedParams);
+        let result = await OnlineProductService.getONProductsSite(req.validatedParams);
+        console.log(result);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
 
     },

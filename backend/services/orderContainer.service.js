@@ -109,7 +109,7 @@ class OrderContainerService {
       const OfflineProduct = await offlineProductRepo.findOfflineProductById(item.offlineProduct);
 
       // get the seller ID as a string (after populating, seller is an object)
-      let sellerId = OfflineProduct.seller?._id.toString();
+      let sellerId = OfflineProduct?.seller?._id.toString();
       if(!sellerId)sellerId = APP_CONFIG.COMPANY_ID;
       if( sellerId != APP_CONFIG.COMPANY_ID) {
         throw new AppError("Invalid seller id, cannot sell products from external sellers in offline mode");

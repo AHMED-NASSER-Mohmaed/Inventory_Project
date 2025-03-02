@@ -17,6 +17,8 @@ const offlineProductOp = {
     allowedFilters: [["isActive", "undefined"]],
     allowedFilterValues: [["true", "false", "undefined"]],
 
+    
+
     allowedSort: ["createdAt","price"],
     searchFiledName: [ "code" , "brand","category","branch","name"],
     searchValueAcoordingNaN: [ true, true , true , false ,true],
@@ -37,7 +39,13 @@ const offlineProductOp = {
     },
 
     getProducts: async (req, res, next) => {
-        console.log(req.validatedParams,"from controller");
+        let result = await OfflineProductsService.getOfflineProducts(req.validatedParams);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
+    getStaffProducts: async (req, res, next) => {    
+        req.validatedParams.filters['isActive']=true;
+        req.validatedParams.filters['branch']=req.user.branch;
         let result = await OfflineProductsService.getOfflineProducts(req.validatedParams);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
@@ -77,6 +85,13 @@ router
         validateSearchParams(offlineProductOp.searchFiledName,offlineProductOp.searchValueAcoordingNaN),
         catchAsync(offlineProductOp.getProducts)
     )
+    .get("/OffProduct/clerk",
+        prot_rest(APP_CONFIG.CLERK),
+        validateSortPaginationParams(offlineProductOp.allowedSort),
+        validatorFilterParams(offlineProductOp.allowedFilters,offlineProductOp.allowedFilterValues),
+        validateSearchParams(offlineProductOp.searchFiledName,offlineProductOp.searchValueAcoordingNaN),
+        catchAsync(offlineProductOp.getStaffProducts)
+    )
     .get("/OffProduct/count",
         prot_rest(APP_CONFIG.SUPPERADMIN , APP_CONFIG.ADMIN),
         validatorFilterParams(offlineProductOp.allowedFilters,offlineProductOp.allowedFilterValues),
@@ -87,6 +102,7 @@ router
         prot_rest(APP_CONFIG.SUPPERADMIN , APP_CONFIG.ADMIN),
         catchAsync(offlineProductOp.exportTo)
     )
+    
 
 
 

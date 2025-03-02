@@ -230,47 +230,50 @@ class OrderRepository {
       .populate("products.onlineProduct products.product seller")
       .populate({
         path: "orderContainer",
-        populate: {
-          path: "customer", 
-        },
+        populate: { path: "customer" },
       })
       .exec();
-
+  
     if (!order) {
       throw new Error("Order not found.");
     }
-
+  
     if (!order.orderContainer || !order.orderContainer.customer._id.equals(customerId)) {
       throw new Error("Unauthorized: This order does not belong to the customer.");
     }
-
+  
     if (["cancelled", "completed"].includes(order.status)) {
       throw new Error("Order cannot be modified at this stage.");
     }
-
+  
     let allProductsCancelled = true;
     let someProductsCancelled = false;
-
+  
     for (const product of order.products) {
       if (product.onlineProduct && onlineProductIds.includes(product.onlineProduct._id.toString())) {
         if (product.canceledQuantity < product.requestedQuantity) {
           const cancelableQty = product.requestedQuantity - product.canceledQuantity;
-
+  
           if (product.fulfilledQuantity > 0) {
-            await OnlineProduct.findByIdAndUpdate(
+            await OnlineProductsSchema.findByIdAndUpdate(
               product.onlineProduct._id,
-              { $inc: { stock: product.fulfilledQuantity } }
+              { $inc: { stock: product.fulfilledQuantity } } 
             );
           }
-
-          product.canceledQuantity = cancelableQty;
+  
+          order.totalQty -= cancelableQty;
+          order.totalPrice -= cancelableQty * (product.price || 0);
+  
+          product.canceledQuantity = product.requestedQuantity;
+          product.fulfilledQuantity = 0;
+  
           someProductsCancelled = true;
         }
       } else {
-        allProductsCancelled = false; 
+        allProductsCancelled = false;
       }
     }
-
+  
     if (allProductsCancelled) {
       order.status = "cancelled";
     } else if (order.status === "delivered") {
@@ -278,16 +281,19 @@ class OrderRepository {
     } else if (order.status === "shipped") {
       order.status = "partially shipped";
     }
-
+  
     await order.save();
-
-    return { 
+  
+    return {
       message: someProductsCancelled
         ? "Selected online products have been cancelled successfully."
         : "No valid online products to cancel.",
-      newStatus: order.status
+      newStatus: order.status,
+      updatedTotalPrice: order.totalPrice,
+      updatedTotalQty: order.totalQty,
     };
   }
+  
 
   async  getAllOnlineSubOrdersForCustomer(customerId, status) {
     let orders;
