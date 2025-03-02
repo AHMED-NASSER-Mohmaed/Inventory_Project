@@ -31,8 +31,8 @@ const OnlineProductsOp = {
 
         if(!req.validatedParams.filters)
             req.validatedParams.filters={};
-        //req.validatedParams.filters['status'] = APP_CONFIG.APPROVED_STATUS;
-        //req.validatedParams.filters['isActive'] = true;
+        req.validatedParams.filters['status'] = APP_CONFIG.APPROVED_STATUS;
+        req.validatedParams.filters['isActive'] = true;
 
         // console.log(req.validatedParams);
 

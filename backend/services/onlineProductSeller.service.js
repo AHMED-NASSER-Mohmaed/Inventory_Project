@@ -177,6 +177,15 @@ class OnlineProductService {
       throw error;
     }
   }
+  
+  async deActiveSellerProduct(onProductId){
+    try{
+      
+    }catch(error){
+      throw error;
+    }
+  }
+
 
 
   async approveSellerListing(listingId) {
