@@ -21,25 +21,6 @@
             </div>
 
             <ul class="box-info">
-                <li>    
-                    <ngx-skeleton-loader *ngIf="onlineOrdersCount === 0 && isLoading" appearance="custom-content">
-                        <div class="skeleton-container">
-                          <div class="skeleton-box">
-                            <div class="skeleton-circle"></div>
-                          </div>
-                          <div class="skeleton-text">
-                            <div class="skeleton-line short"></div>
-                            <div class="skeleton-line"></div>
-                          </div>
-                        </div>
-                    </ngx-skeleton-loader>                      
-                      
-                    <i *ngIf="!(onlineOrdersCount === 0 && isLoading)" class='bx bx-shopping-bag'></i>
-                    <span *ngIf="!(onlineOrdersCount === 0 && isLoading)" class="text">
-                        <h3>{{onlineOrdersCount}}</h3>
-                        <p>Online Orders</p>
-                    </span>
-                </li>
                 <li>
                     <ngx-skeleton-loader *ngIf="offlineOrdersCount === 0 && isLoading" appearance="custom-content">
                         <div class="skeleton-container">
@@ -143,13 +124,6 @@
                                         'bx-sort': sortField !== 'createdAt'
                                     }"></i>
                                 </th>
-                                <th>
-                                    Type
-                                    <span id="dots-container">
-                                        <span class="dot green-dot" [class.selected]="currentFilter === 'online'" (click)="setFilter('online')" title="Show Online Orders"></span>
-                                        <span class="dot red-dot" [class.selected]="currentFilter === 'offline'" (click)="setFilter('offline')" title="Show In-Store Orders"></span>
-                                    </span>
-                                </th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -182,11 +156,6 @@
                                 </td>
                                 <td>{{ formatPrice(order.orderTotalPrice) }}</td>
                                 <td>{{ order.createdAt | date:'dd/MM/yyyy' }}</td>
-                                <td>
-                                    <span class="order-type" [class.online]="isOnlineOrder(order)" [class.offline]="isOfflineOrder(order)">
-                                        {{ getOrderType(order) }}
-                                    </span>
-                                </td>
                                 <td>
                                     <div class="dropdown" [ngClass]="{'show': dropdownStates[i]}" (click)="toggleDropdown(i)">
                                         <a class="btn btn-secondary dropdown-toggle btn-lg" role="button" id="dropdownMenuLink" aria-haspopup="true" aria-expanded="false" style="padding: 0px 5px; padding-left: 8px; display: flex; align-items: center;   background-color: var(--dark); color:var(--light);;">
@@ -233,7 +202,7 @@
                                 </div>
                                 
                                 <div class="info-group">
-                                    <h6 class="info-title"><i class='bx bx-store'></i> Seller</h6>
+                                    <h6 class="info-title"><i class='bx bx-store'></i> Clerk</h6>
                                     <p class="info-value">{{selectedOrder.sellerName}}</p>
                                 </div>
                             </div>
