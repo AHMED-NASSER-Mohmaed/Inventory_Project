@@ -3,6 +3,7 @@ import { MainComponent } from './main/main.component';
 import { CashiersComponent } from './cashiers/cashiers.component';
 import { ClerksComponent } from './clerks/clerks.component';
 import { ProductsComponent } from './products/products.component';
+import { OrdersComponent } from './orders/orders.component';
 
 
 export const dashRoutes2: Routes = [
@@ -30,6 +31,11 @@ export const dashRoutes2: Routes = [
         path: 'products',
         component: ProductsComponent,
         title: 'Products'
+      }, 
+      {
+      path: 'orders',
+      component: OrdersComponent,
+      title: 'Orders'
       }
     ]
   }
