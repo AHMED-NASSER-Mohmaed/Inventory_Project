@@ -61,10 +61,18 @@ const productSellerController = {
         sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
     },
 
+    //supper admin
     deActiveSellerProduct:async(req,res,next)=>{
         let result= await OnlineProductService.deActiveSellerProduct(req.params.onProductId);
         sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
     }, 
+    //supper admin
+    activeSellerProduct:async(req,res,next)=>{
+        let result= await OnlineProductService.activeSellerProduct(req.params.onProductId);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+    },
+    
+    
 
     allowedFilterFields: [['status', 'undefined'], ['isActive', 'undefined']],
     allowedFillterValues: [[APP_CONFIG.APPROVED_STATUS, APP_CONFIG.REJECT_STATUS, APP_CONFIG.PENDING_STATUS, 'undefined'],
@@ -77,16 +85,18 @@ const productSellerController = {
 
 }
 
-
-router.post("/seller/addPendingProduct",
+    //for seller
+router.post("/seller/addExistingProduct",
     pro_res(APP_CONFIG.SELLER),
-    catchAsync(productSellerController.addPendingProduct)
+    catchAsync(productSellerController.addexistProduct)
 )
-
+      //for seller
     .post("/seller/addNewProduct",
         pro_res(APP_CONFIG.SELLER),
         catchAsync(productSellerController.addNewProduct)
     )
+
+
     //supper admin
     .patch("/approveProduct/:productId",
         pro_res(APP_CONFIG.SUPPERADMIN),
@@ -97,10 +107,19 @@ router.post("/seller/addPendingProduct",
         pro_res(APP_CONFIG.SUPPERADMIN),
         catchAsync(productSellerController.rejectProduct)
     )
+    //supper admin
     .patch("deActiveOnProduct/:productId",
         pro_res(APP_CONFIG.SUPPERADMIN),
-        catchAsync()
+        catchAsync(productSellerController.deActiveSellerProduct)
     )
+    //supper admin
+    .patch("activeOnProduct/:productId",
+        pro_res(APP_CONFIG.SUPPERADMIN),
+        catchAsync(productSellerController.activeSellerProduct)
+    )
+
+    
+
     //for seller
     .get("/seller/Product",
         pro_res(APP_CONFIG.SELLER),

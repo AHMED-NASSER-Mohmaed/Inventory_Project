@@ -82,7 +82,7 @@ const ProductSchema = new mongoose.Schema(
     },
 
     // Array of seller product references
-    sellers: [{ type: mongoose.Schema.Types.ObjectId, ref: "SellerProduct" }],
+    sellers: [{ type: mongoose.Schema.Types.ObjectId, ref: "OnlineProductsSchema" }],
 
     // Array of supplier product references
     supplier: { type: mongoose.Schema.Types.ObjectId, ref: "SupplierProduct" },

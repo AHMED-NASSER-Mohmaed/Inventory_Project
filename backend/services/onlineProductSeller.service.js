@@ -19,7 +19,7 @@ class OnlineProductService {
       if (existingProduct.status !== "approved") {
         throw new Error("Product is not approved yet.");
       }
-
+      
       return await onlineProductRepo.addExistProduct(sellerId, productId, stock, price);
 
     } catch (error) {
@@ -180,12 +180,30 @@ class OnlineProductService {
   
   async deActiveSellerProduct(onProductId){
     try{
+      let ack=await onlineProductRepo.deActiveSellerProduct(onProductId);
+
       
+      if (!ack.modifiedCount && !ack.matchedCount)
+        throw new AppError("product dose not exist!", APP_CONFIG.HTTP_BAD_REQUEST);
+       
+
+      return ack;
+
     }catch(error){
       throw error;
     }
   }
 
+  async activeSellerProduct(onProductId){
+    try{
+      let ack=await onlineProductRepo.activeSellerProduct(onProductId);
+      if (!ack.modifiedCount && !ack.matchedCount)
+        throw new AppError("product dose not exist!", APP_CONFIG.HTTP_BAD_REQUEST);
+      return ack;
+    }catch(error){
+      throw error;
+    }
+  }
 
 
   async approveSellerListing(listingId) {

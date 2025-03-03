@@ -146,7 +146,7 @@ module.exports.productService={
             throw error;
         }
     },
-
+    //deprecated
     approveProduct:async(productId)=>{
         try{
 
@@ -162,7 +162,7 @@ module.exports.productService={
             throw error;
         }
     },
-
+    //deprecated
     rejectProduct:async(productId)=>{
         try{
 
@@ -179,8 +179,13 @@ module.exports.productService={
         }
     },
 
-
-
+    getAllSelledOnline:async()=>{
+        try{
+            
+        }catch(error){
+            throw error;
+        }
+    }
 
 
     
