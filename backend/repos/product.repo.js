@@ -120,53 +120,148 @@ module.exports.productRepo = {
 
   },
 
-
-  getAllOnlineProductInfo: async (filters, sort, page, limit) => {
-    try {
-
-      let [results, total] = await Promise.all([
-
-        Product.aggregate([
+  /*
+    getAllOnlineProductInfo: async (filters, sort, page=1, limit=2) => {
+      try {
+        console.log("Fetching online product info...");
+  
+        return await Product.aggregate([
           {
             $match: {
-              sellers: { $exists: true, $ne: [] } // Ensure sellerIds is not empty
+              sellers: { $exists: true, $ne: [] } // Ensure sellers array exists and is not empty
             }
           },
           {
             $lookup: {
-              from: "onlineProducts", // Name of the OnlineProduct collection
-              localField: "sellers", // Field in ProductSchema
-              foreignField: "_id", // Matching field in OnlineProductSchema
-              as: "matchedOnlineProducts" // Output field
+              from: "onlineproducts",
+              localField: "sellers",
+              foreignField: "_id",
+              as: "populatedSellers"
             }
           },
           {
-            $match: {
-              "matchedOnlineProducts.0": { $exists: true } // Ensures at least one match exists
+              $unwind: { path: "$populatedSellers", preserveNullAndEmptyArrays: true } // Flatten the array
+          },
+          {
+            $lookup: {
+              from: "users",// Match with Seller collection
+              localField: "populatedSellers.seller", // seller field in OnlineProductsSchema
+              foreignField: "_id", // _id in Seller collection
+              as: "populatedSellers.sellerDetails"
             }
+          },
+          // {
+          //     $group: {
+          //         _id: "$_id",
+          //         name: { $first: "$name" },
+          //         code: { $first: "$code" },
+          //         price: { $first: "$price" },
+          //         cost: { $first: "$cost" },
+          //         images: { $first: "$images" },
+          //         description: { $first: "$description" },
+          //         category: { $first: "$category" },
+          //         brand: { $first: "$brand" },
+          //         isActive: { $first: "$isActive" },
+          //         status: { $first: "$status" },
+          //         sellers: { $first: "$sellers" },
+          //         supplier: { $first: "$supplier" },
+          //         populatedSellers: { $push: "$populatedSellers" } // Reconstruct populated sellers array
+          //     }
+          // },
+          {
+            $sort: sort || { createdAt: -1 } // Apply sorting
+          },
+          {
+            $skip: (page - 1) * limit // Pagination: Skip previous pages
+          },
+          {
+            $limit: limit // Limit the results per page
           }
-        ])
-        
-        // await Product.aggregate([
-        //   {
-        //     $match: {
-        //       ...filters
-        //     }
+  
+        ]);
+      } catch (err) {
+        console.error("Error in getAllOnlineProductInfo:", err);
+        throw err;
+      }
+    }
+  */
 
-        //   }, {
-        //     $count: "total"
-        //   }
-        // ])
+
+  getAllOnlineProductInfo: async (filters, sort, page, limit) => {
+    try {
+      return Product.aggregate([
+        {
+          $match: {
+            sellers: { $exists: true, $ne: [] } // Ensure the product has sellers
+          }
+        },
+        {
+          $lookup: {
+            from: "onlineproducts", // Match with OnlineProducts collection
+            localField: "sellers",   // The sellers array in Product
+            foreignField: "_id",     // The _id in OnlineProducts
+            as: "OnLineProducts"
+          }
+        },
+        {
+          $unwind: "$OnLineProducts" // Unwind the array to process each OnlineProduct separately
+        },
+        {
+          $lookup: {
+            from: "users", // Match with Seller collection
+            localField: "OnLineProducts.seller", // The seller reference in OnlineProducts
+            foreignField: "_id", // The _id in Seller collection
+            as: "OnLineProducts.sellerDetails"
+          }
+        },
+        {
+          $unwind: "$OnLineProducts.sellerDetails" // Since sellerDetails is an array, unwind to get a single seller
+        },
+        {
+          $group: {
+            _id: "$_id",
+            name: { $first: "$name" },
+            code: { $first: "$code" },
+            price: { $first: "$price" },
+            images: { $first: "$images" },
+            category: { $first: "$category" },
+            brand: { $first: "$brand" },
+
+            OnLineProducts: { $push: "$OnLineProducts" } // Reassemble the array after populating seller details
+          }
+        },
+        {
+          $project:{
+            "_id":1,
+            "name":1,
+            "code":1,
+            "price":1,
+            "images":1,
+            "description":1,
+            "category":1,
+            "brand":1,
+            "createdAt":1,
+            "OnLineProducts._id":1,
+            "OnLineProducts.isDeleted":1,
+            "OnLineProducts.stock":1,
+            "OnLineProducts.createdAt":1,
+            "OnLineProducts.price":1,
+            "OnLineProducts.sellerDetails._id":1,
+            "OnLineProducts.sellerDetails.firstName":1,
+            "OnLineProducts.sellerDetails.lastName":1,
+            "OnLineProducts.sellerDetails.companyName":1,
+
+          }
+        }
 
       ]);
-
-      return inboxResult(results, total, page, limit);
-
-
     } catch (err) {
       throw err;
     }
   }
+
+
+
 
 
 

@@ -186,7 +186,7 @@ export class ProductsListComponent implements OnInit {
             );
   
             return {
-              _id: item.product._id,
+              _id: item._id,
               name: item.product.name,
               price: item.product.price,
               imgUrl: item.product.images.length > 1 

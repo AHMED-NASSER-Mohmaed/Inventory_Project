@@ -244,7 +244,10 @@ class OrderService {
         console.log("from pending and clerk",status);
         if(status == "pending" && userType == "seller") {
           const returnedOrders =  await orderRepository.getAllOnlineOrdersForSellerPendingState(clerkId);
-          const mappedOrders = await Promise.all(returnedOrders.map(order => {this.mapOrderData(order); console.log(order._id)}));
+          console.log(returnedOrders);
+          const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+          console.log(mappedOrders);
+          console.log(mappedOrders)
           return mappedOrders;
         }
         else if(status == "pending" && userType == "clerk") {
