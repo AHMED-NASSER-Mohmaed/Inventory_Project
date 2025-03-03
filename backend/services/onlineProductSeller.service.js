@@ -17,13 +17,13 @@ class OnlineProductService {
       let existingProduct = await productService.isProductExist(productId)
 
       if (existingProduct.status !== "approved") {
-        throw new Error("Product is not approved yet.");
+        throw new AppError("Product is not approved yet.",APP_CONFIG.HTTP_BAD_REQUEST);
       }
       
       return await onlineProductRepo.addExistProduct(sellerId, productId, stock, price);
 
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 
@@ -56,7 +56,7 @@ class OnlineProductService {
       if (!brandService.isBrandActive(productData.brand))
         throw new AppError("brand dose not exist!", APP_CONFIG.HTTP_BAD_REQUEST);
 
-      console.log(productData);
+      //console.log(productData);
 
       const { newProduct, newListing } = await onlineProductRepo.addNewProduct(sellerId, productData);
 
