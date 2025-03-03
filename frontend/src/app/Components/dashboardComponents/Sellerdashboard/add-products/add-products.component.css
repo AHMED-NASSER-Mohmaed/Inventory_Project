@@ -1553,7 +1553,8 @@ input[type="number"] {
 #productInfoModal .modal-dialog,
 #addProductModal .modal-dialog,
 #stockUpdateModal .modal-dialog,
-#exportProductModal .modal-dialog {
+#exportProductModal .modal-dialog,
+#sellProductModal .modal-dialog {
     max-width: 500px;
     margin: 30px auto;
 }
@@ -1561,14 +1562,16 @@ input[type="number"] {
 #productInfoModal .modal-content,
 #addProductModal .modal-content,
 #stockUpdateModal .modal-content,
-#exportProductModal .modal-content {
+#exportProductModal .modal-content,
+#sellProductModal .modal-content {
     border-radius: 15px;
 }
 
 #productInfoModal .modal-header,
 #addProductModal .modal-header,
 #stockUpdateModal .modal-header,
-#exportProductModal .modal-header {
+#exportProductModal .modal-header,
+#sellProductModal .modal-header {
     background: linear-gradient(90deg, var(--dark), #eee);
     padding: 20px;
     border-bottom: none;
@@ -1578,7 +1581,8 @@ input[type="number"] {
 #productInfoModal .modal-header .modal-title,
 #addProductModal .modal-header .modal-title,
 #stockUpdateModal .modal-header .modal-title,
-#exportProductModal .modal-header .modal-title {
+#exportProductModal .modal-header .modal-title,
+#sellProductModal .modal-header .modal-title {
     color: #fff;
     font-size: 1.5em;
     font-weight: 500;
@@ -1587,7 +1591,8 @@ input[type="number"] {
 #productInfoModal .modal-header .close,
 #addProductModal .modal-header .close,
 #stockUpdateModal .modal-header .close,
-#exportProductModal .modal-header .close {
+#exportProductModal .modal-header .close,
+#sellProductModal .modal-header .close {
     color: #fff;
     font-size: 1.2em;
     opacity: 0.8;
@@ -1597,14 +1602,16 @@ input[type="number"] {
 #productInfoModal .modal-header .close:hover,
 #addProductModal .modal-header .close:hover,
 #stockUpdateModal .modal-header .close:hover,
-#exportProductModal .modal-header .close:hover {
+#exportProductModal .modal-header .close:hover,
+#sellProductModal .modal-header .close:hover {
     opacity: 1;
 }
 
 #productInfoModal .modal-body,
 #addProductModal .modal-body,
 #stockUpdateModal .modal-body,
-#exportProductModal .modal-body {
+#exportProductModal .modal-body,
+#sellProductModal .modal-body {
     padding: 25px 20px;
     font-size: 0.95em;
     color: var(--dark);
@@ -1615,49 +1622,91 @@ input[type="number"] {
 #productInfoModal .modal-body .info-grid,
 #addProductModal .modal-body .info-grid,
 #stockUpdateModal .modal-body .info-grid,
-#exportProductModal .modal-body .info-grid {
-    display: grid;
-    grid-gap: 15px;
-    row-gap: 30px; 
+#exportProductModal .modal-body .info-grid,
+#sellProductModal .modal-body .info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
 }
 
 #productInfoModal .modal-body .info-item,
 #addProductModal .modal-body .info-item,
 #stockUpdateModal .modal-body .info-item,
-#exportProductModal .modal-body .info-item {
-    display: grid;
-    grid-template-columns: 120px 1fr;
+#exportProductModal .modal-body .info-item,
+#sellProductModal .modal-body .info-item {
+    display: flex;
+    flex-direction: row;
     align-items: center;
+    padding: 12px 0;
     position: relative;
-    padding-bottom: 10px;
+    border-bottom: 1px solid var(--grey);
 }
 
 #productInfoModal .modal-body .info-item .label,
 #addProductModal .modal-body .info-item .label,
 #stockUpdateModal .modal-body .info-item .label,
-#exportProductModal .modal-body .info-item .label {
+#exportProductModal .modal-body .info-item .label,
+#sellProductModal .modal-body .info-item .label {
     font-weight: 600;
     color: var(--dark);
+    width: 120px;
+    flex-shrink: 0;
+    margin-right: 10px;
 }
 
+#productInfoModal .modal-body .info-item .input-wrapper,
+#addProductModal .modal-body .info-item .input-wrapper,
+#stockUpdateModal .modal-body .info-item .input-wrapper,
+#exportProductModal .modal-body .info-item .input-wrapper,
+#sellProductModal .modal-body .info-item .input-wrapper {
+    flex: 1;
+    margin-left: 0;
+}
+
+/* Remove the pseudo element dividers since we're using border-bottom */
 #productInfoModal .modal-body .info-item:not(:last-child)::after,
 #addProductModal .modal-body .info-item:not(:last-child)::after,
 #stockUpdateModal .modal-body .info-item:not(:last-child)::after,
-#exportProductModal .modal-body .info-item:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 1px;
-    background: linear-gradient(to right, transparent, #ccc, transparent);
-    margin-top: 10px;
+#exportProductModal .modal-body .info-item:not(:last-child)::after,
+#sellProductModal .modal-body .info-item:not(:last-child)::after {
+    content: none;
+}
+
+#sellProductModal .modal-body .info-grid .info-item .value,
+#addProductModal .modal-body .info-grid .info-item .value,
+#productInfoModal .modal-body .info-grid .info-item .value {
+    margin-left: 0;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--grey);
+    border-radius: 4px;
+}
+
+/* Fix for dark mode */
+:host .parent3.dark .info-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Fix for description item which should still be vertical */
+.description-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+}
+
+.description-item .label {
+    margin-bottom: 10px;
+    width: 100% !important;
+}
+
+.description-item .input-wrapper {
+    width: 100%;
 }
 
 #productInfoModal .modal-footer,
 #addProductModal .modal-footer,
 #stockUpdateModal .modal-footer,
-#exportProductModal .modal-footer {
+#exportProductModal .modal-footer,
+#sellProductModal .modal-footer {
     background: #f1f1f1;
     border-top: none;
     padding: 15px 20px;
@@ -1667,7 +1716,8 @@ input[type="number"] {
 #productInfoModal .modal-footer .btn,
 #addProductModal .modal-footer .btn,
 #stockUpdateModal .modal-footer .btn,
-#exportProductModal .modal-footer .btn {
+#exportProductModal .modal-footer .btn,
+#sellProductModal .modal-footer .btn {
     background-color: var(--dark);  
     border: none;
     font-size: 1.2em;               
@@ -1680,7 +1730,8 @@ input[type="number"] {
 #productInfoModal .modal-footer .btn:hover,
 #addProductModal .modal-footer .btn:hover,
 #stockUpdateModal .modal-footer .btn:hover,
-#exportProductModal .modal-footer .btn:hover {
+#exportProductModal .modal-footer .btn:hover,
+#sellProductModal .modal-footer .btn:hover {
     background-color: var(--dark-grey);
     color: var(--dark);
 }
@@ -1688,7 +1739,8 @@ input[type="number"] {
 #productInfoModal .modal-footer .btn:disabled,
 #addProductModal .modal-footer .btn:disabled,
 #stockUpdateModal .modal-footer .btn:disabled,
-#exportProductModal .modal-footer .btn:disabled {
+#exportProductModal .modal-footer .btn:disabled,
+#sellProductModal .modal-footer .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
@@ -1769,21 +1821,24 @@ input[type="number"] {
 :host .parent3.dark #productInfoModal .modal-content,
 :host .parent3.dark #addProductModal .modal-content,
 :host .parent3.dark #stockUpdateModal .modal-content,
-:host .parent3.dark #exportProductModal .modal-content {
+:host .parent3.dark #exportProductModal .modal-content,
+:host .parent3.dark #sellProductModal .modal-content {
     background: var(--grey);
 }
 
 :host .parent3.dark #productInfoModal .modal-header,
 :host .parent3.dark #addProductModal .modal-header,
 :host .parent3.dark #stockUpdateModal .modal-header,
-:host .parent3.dark #exportProductModal .modal-header {
+:host .parent3.dark #exportProductModal .modal-header,
+:host .parent3.dark #sellProductModal .modal-header {
     background: linear-gradient(135deg, var(--dark), var(--grey));
 }
 
 :host .parent3.dark #productInfoModal .modal-body,
 :host .parent3.dark #addProductModal .modal-body,
 :host .parent3.dark #stockUpdateModal .modal-body,
-:host .parent3.dark #exportProductModal .modal-body {
+:host .parent3.dark #exportProductModal .modal-body,
+:host .parent3.dark #sellProductModal .modal-body {
     background: var(--grey);
     color: var(--dark);
 }
@@ -1791,7 +1846,8 @@ input[type="number"] {
 :host .parent3.dark #productInfoModal .modal-footer,
 :host .parent3.dark #addProductModal .modal-footer,
 :host .parent3.dark #stockUpdateModal .modal-footer,
-:host .parent3.dark #exportProductModal .modal-footer {
+:host .parent3.dark #exportProductModal .modal-footer,
+:host .parent3.dark #sellProductModal .modal-footer {
     background: var(--grey);
 }
 
@@ -1799,10 +1855,12 @@ input[type="number"] {
 :host .parent3.dark #addProductModal .modal-header .modal-title,
 :host .parent3.dark #stockUpdateModal .modal-header .modal-title,
 :host .parent3.dark #exportProductModal .modal-header .modal-title,
+:host .parent3.dark #sellProductModal .modal-header .modal-title,
 :host .parent3.dark #productInfoModal .modal-header .close,
 :host .parent3.dark #addProductModal .modal-header .close,
 :host .parent3.dark #stockUpdateModal .modal-header .close,
-:host .parent3.dark #exportProductModal .modal-header .close {
+:host .parent3.dark #exportProductModal .modal-header .close,
+:host .parent3.dark #sellProductModal .modal-header .close {
     color: var(--light); 
 }
 
@@ -1810,9 +1868,11 @@ input[type="number"] {
 :host .parent3.dark #addProductModal .modal-body,
 :host .parent3.dark #stockUpdateModal .modal-body,
 :host .parent3.dark #exportProductModal .modal-body,
+:host .parent3.dark #sellProductModal .modal-body,
 :host .parent3.dark #productInfoModal .modal-footer,
 :host .parent3.dark #addProductModal .modal-footer,
 :host .parent3.dark #stockUpdateModal .modal-footer,
-:host .parent3.dark #exportProductModal .modal-footer {
+:host .parent3.dark #exportProductModal .modal-footer,
+:host .parent3.dark #sellProductModal .modal-footer {
     color: var(--dark); 
 }
