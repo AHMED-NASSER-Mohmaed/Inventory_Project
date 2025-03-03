@@ -4,6 +4,7 @@ const { categoryService } = require("../services/category.service");
 const onlineProductRepo = require("../repos/onlineProductSeller.repo");
 const AppError = require("../utils/appError");
 const { productService } = require("./product.service");
+const { filter } = require("lodash");
 
 class OnlineProductService {
   v
@@ -17,13 +18,13 @@ class OnlineProductService {
       let existingProduct = await productService.isProductExist(productId)
 
       if (existingProduct.status !== "approved") {
-        throw new Error("Product is not approved yet.");
+        throw new AppError("Product is not approved yet.",APP_CONFIG.HTTP_BAD_REQUEST);
       }
       
       return await onlineProductRepo.addExistProduct(sellerId, productId, stock, price);
 
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 
@@ -56,7 +57,7 @@ class OnlineProductService {
       if (!brandService.isBrandActive(productData.brand))
         throw new AppError("brand dose not exist!", APP_CONFIG.HTTP_BAD_REQUEST);
 
-      console.log(productData);
+      //console.log(productData);
 
       const { newProduct, newListing } = await onlineProductRepo.addNewProduct(sellerId, productData);
 
@@ -88,7 +89,7 @@ class OnlineProductService {
   }
 
   parseFilters(filters) {
-    let fielters = ["code", "brand", "category", "name", 'isActive']
+    let fielters = ["code", "brand", "category", "name"]
 
     return Object.fromEntries(
 
@@ -107,11 +108,14 @@ class OnlineProductService {
 
   async getSellerProduct(sellerId, { filters, sort, page, limit }) {
     try {
-
+      
+      
       filters = this.parseFilters(filters);
+      filters['product.isActive']=true;
       filters['seller'] = sellerId;
       filters['isDeleted'] = false;
 
+      console.log(filters);
       return await onlineProductRepo.getSellerProduct(filters, sort, page, limit);
 
     } catch (error) {
@@ -122,7 +126,9 @@ class OnlineProductService {
 
   async deActiveProduct(onProductId) {
     try {
-      let ack = await onlineProductRepo.deActiveSellerProduct(onProductId);
+
+      console.log("fro mservice")
+      let ack = await onlineProductRepo.deActiveProduct(onProductId);
 
 
       if (!ack.modifiedCount && !ack.matchedCount)
@@ -137,7 +143,7 @@ class OnlineProductService {
 
   async activeProduct(onProductId) {
     try {
-      let ack = await onlineProductRepo.activeSellerProduct(onProductId);
+      let ack = await onlineProductRepo.activeProduct(onProductId);
 
       if (!ack.modifiedCount && !ack.matchedCount)
         throw new AppError("product dose not exist!", APP_CONFIG.HTTP_BAD_REQUEST);

@@ -13,7 +13,7 @@ const {
 
 const { APP_CONFIG } = require("../config/app.config");
 const OnlineProductService = require("../services/onlineProductSeller.service");
- 
+
 
 const productSellerController = {
 
@@ -40,57 +40,58 @@ const productSellerController = {
     },
 
     getSellerProduct: async (req, res, next) => {
-       
+
         let result = await OnlineProductService.getSellerProduct(req.user._id, req.validatedParams);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
-    deActiveProduct:async(req,res,next)=>{
+    deActiveProduct: async (req, res, next) => {
+        console.log("from controller..")
         let result = await OnlineProductService.deActiveProduct(req.params.onProductId);
-        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
-    activeProduct:async(req,res,next)=>{
+    activeProduct: async (req, res, next) => {
         let result = await OnlineProductService.activeProduct(req.params.onProductId);
-        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
-    updateProduct:async(req,res,next)=>{
-        
-        let result = await OnlineProductService.upadateSellerProduct(req.params.onProductId,req.body);
-        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+    updateProduct: async (req, res, next) => {
+
+        let result = await OnlineProductService.upadateSellerProduct(req.params.onProductId, req.body);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
     //supper admin
-    deActiveSellerProduct:async(req,res,next)=>{
-        let result= await OnlineProductService.deActiveSellerProduct(req.params.onProductId);
-        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
-    }, 
-    //supper admin
-    activeSellerProduct:async(req,res,next)=>{
-        let result= await OnlineProductService.activeSellerProduct(req.params.onProductId);
-        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+    deActiveSellerProduct: async (req, res, next) => {
+        let result = await OnlineProductService.deActiveSellerProduct(req.params.onProductId);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
-    
-    
+    //supper admin
+    activeSellerProduct: async (req, res, next) => {
+        let result = await OnlineProductService.activeSellerProduct(req.params.onProductId);
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+    },
+
+
 
     allowedFilterFields: [['status', 'undefined'], ['isActive', 'undefined']],
     allowedFillterValues: [[APP_CONFIG.APPROVED_STATUS, APP_CONFIG.REJECT_STATUS, APP_CONFIG.PENDING_STATUS, 'undefined'],
     ['true', 'false', 'undefined']],
 
-    searchFiledName: [   "code", "brand", "category", "branch", "name"],
-    searchValueAcoordingNaN: [true,    true,   true,        false,    true],
+    searchFiledName: ["code", "brand", "category", "branch", "name"],
+    searchValueAcoordingNaN: [true, true, true, false, true],
 
-    allowedSort: ["createdAt","price"],
+    allowedSort: ["createdAt", "price"],
 
 }
 
-    //for seller
+//for seller
 router.post("/seller/addExistingProduct",
     pro_res(APP_CONFIG.SELLER),
     catchAsync(productSellerController.addexistProduct)
 )
-      //for seller
+    //for seller
     .post("/seller/addNewProduct",
         pro_res(APP_CONFIG.SELLER),
         catchAsync(productSellerController.addNewProduct)
@@ -118,18 +119,18 @@ router.post("/seller/addExistingProduct",
         catchAsync(productSellerController.activeSellerProduct)
     )
 
-    
+
 
     //for seller
     .get("/seller/Product",
         pro_res(APP_CONFIG.SELLER),
         validateSortPaginationParams(productSellerController.allowedSort),
         validatorFilterParams(productSellerController.allowedFilterFields, productSellerController.allowedFillterValues),
-        validateSearchParams(productSellerController.searchFiledName,productSellerController.searchValueAcoordingNaN),
+        validateSearchParams(productSellerController.searchFiledName, productSellerController.searchValueAcoordingNaN),
         catchAsync(productSellerController.getSellerProduct)
     )
     //for seller
-    .patch("seller/deActiveProduct/:onProductId",
+    .delete("/seller/deActiveProduct/:onProductId",
         pro_res(APP_CONFIG.SELLER),
         catchAsync(productSellerController.deActiveProduct)
     )

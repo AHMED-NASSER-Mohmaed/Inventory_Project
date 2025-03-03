@@ -16,7 +16,7 @@ const signup = catchAsync(async (req, res) => {
 const login = catchAsync(async (req, res) => {
   console.log("hello", req.body);
   const user = await AuthService.login(req.body.email, req.body.password);
-  console.log(user);
+  // console.log(user);
   createSendToken(user, 200, res);
 });
 

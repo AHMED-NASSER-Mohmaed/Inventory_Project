@@ -51,7 +51,7 @@ class OrderService {
         console.log(order);
         if(order.status == "shipped" && !fulfilledQuantities) throw new AppError("You have to fulfill the order first before updating the status to shipped");
         // update fulfilled and canceled quantities
-        if (fulfilledQuantities) {
+        if (fulfilledQuantities && order.status == "shipped") {
             await Promise.all(order.products.map(async prod => {
               console.log(" hahahh " + prod.onlineProduct._id);
                 if (fulfilledQuantities[prod.product._id]) { // product here refers to the id of each product within products array

@@ -95,6 +95,7 @@ module.exports.productRepo = {
     }
   },
 
+  //for seller
   getAvalibaleProduct: async (filters, sort, page, limit) => {
     try {
 
@@ -120,50 +121,42 @@ module.exports.productRepo = {
   },
 
 
-  getAllOnlineProduct: async (filters, sort, page, limit) => {
+  getAllOnlineProductInfo: async (filters, sort, page, limit) => {
     try {
-
-
 
       let [results, total] = await Promise.all([
 
-        await Product.aggregate([
+        Product.aggregate([
           {
             $match: {
-              ...filters
-            }
-
-          }, {
-            $lookup: {
-              from: "OnlineProducts",
-              localFiled: "sellers",
-              forgeignField: "_id",
-              as: "onlineProduct"
+              sellers: { $exists: true, $ne: [] } // Ensure sellerIds is not empty
             }
           },
           {
             $lookup: {
-              from: "seller",
-              localFiled: "OnlineProducts.sellers",
-              forgeignField: "_id",
-              as: "seller"
+              from: "onlineProducts", // Name of the OnlineProduct collection
+              localField: "sellers", // Field in ProductSchema
+              foreignField: "_id", // Matching field in OnlineProductSchema
+              as: "matchedOnlineProducts" // Output field
             }
           },
-          { $sort: sort },
-          { $skip: (page - 1) * limit },
-          { $limit: limit },
-        ]),
-
-        await Product.aggregate([
           {
             $match: {
-              ...filters
+              "matchedOnlineProducts.0": { $exists: true } // Ensures at least one match exists
             }
-
-          }, {
-            $count: "total"
           }
         ])
+        
+        // await Product.aggregate([
+        //   {
+        //     $match: {
+        //       ...filters
+        //     }
+
+        //   }, {
+        //     $count: "total"
+        //   }
+        // ])
 
       ]);
 

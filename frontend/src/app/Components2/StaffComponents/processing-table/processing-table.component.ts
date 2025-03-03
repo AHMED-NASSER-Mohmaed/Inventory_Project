@@ -49,9 +49,7 @@ export class ProcessingTableComponent {
     
     // Filter state and pagination
     currentFilter: string = '';
-    currentPage: number = 1;
-    itemsPerPage: number = 10;
-    totalPages: number = 1;
+    
     hasNextPage: boolean = false;
     hasPreviousPage: boolean = false;
   
@@ -112,6 +110,7 @@ export class ProcessingTableComponent {
           console.log('Fetched orders:', data);
           this.orders = data;
           this.dataresponse = this.orders.subOrders; 
+          this.updatePagination(); 
           console.log('Processed data response:', this.dataresponse);
           this.dropdownStates = new Array(this.dataresponse.length).fill(false);
           this.isLoading = false;
@@ -166,8 +165,12 @@ export class ProcessingTableComponent {
     validateFulfilledQuantity(): boolean {
       if (this.selectedSuborder?.products?.length > 0) {
         const product = this.selectedSuborder.products[0];
-        if (product.productFulfilledQuantity > product.productStock) {
-          this.validationError = `Fulfilled quantity cannot exceed available stock (${product.productStock}).`;
+        if (product.productFulfilledQuantity > product.productStock ) {
+          this.validationError = `Fulfilled quantity cannot exceed available stock (${product.productStock}). please choose the cancelled status`;
+          return false;
+        }
+        if (product.productStock == 0) {
+          this.validationError = `stock is (${product.productStock}) cannot proceed the order. please choose the cancelled status`;
           return false;
         }
       }
@@ -216,8 +219,8 @@ export class ProcessingTableComponent {
           return;
         }
     
-        if (!this.validateFulfilledQuantity()) {
-          this.toaster.error('Fulfilled quantity cannot exceed available stock.', 'Validation Error');
+        if (!this.validateFulfilledQuantity() && this.selectedSuborder.orderStatus != 'cancelled') {
+          this.toaster.error('Fulfilled quantity cannot exceed available stock. you have to choose the cancelled status!', 'Validation Error');
           return; 
         }
     
@@ -241,6 +244,11 @@ export class ProcessingTableComponent {
           status: newStatus, 
           fulfilledQuantities: { ...fulfilledQuantities }, 
         };
+
+        if(newStatus == this.status) {
+          this.toaster.info('You have to update the status first!!', 'Info');
+          return;
+        }
     
         const sub = this.clerkDashboardService
           .updateSuborder(this.selectedSuborder.orderId, {
@@ -252,6 +260,7 @@ export class ProcessingTableComponent {
               if (res.message === 'success') {
                 this.selectedSuborder = { ...this.selectedSuborder, ...res.updatedSuborder };
                 this.toaster.success('Order updated successfully!', 'Success');
+                this.fetchOrders(this.status);
               } else {
                 this.selectedSuborder.orderStatus = workingBackup.status;
                 this.selectedSuborder.products.forEach((product:any) => {
@@ -312,6 +321,40 @@ export class ProcessingTableComponent {
     ngOnDestroy(): void {
       this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
+
+        // Pagination Variables
+  currentPage: number = 1;
+  itemsPerPage: number = 5;
+  totalPages: number = 1;
+
+   // Pagination Logic
+   get paginatedOrders(): any[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    return this.dataresponse.slice(startIndex, endIndex);
+  }
+
+  updatePagination(): void {
+    this.totalPages = Math.ceil(this.dataresponse.length / this.itemsPerPage);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
   }
   
 

@@ -142,11 +142,12 @@ const ProductController = {
         req.validatedParams.filters['status']=APP_CONFIG.APPROVED_STATUS;
 
 
-        let result = await productService.getAllAvalibleProduct(req.validatedParams);
+        let result = await productService.getAllOnlineProductInfo(req.validatedParams);
         sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
         
     },
 
+    
     searchFiledName: ["code", "brand", "category", "name"],
     searchValueAcoordingNaN: [true, true, true, true],
 
