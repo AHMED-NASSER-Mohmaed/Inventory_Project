@@ -175,8 +175,8 @@ class OnlineProductRepository {
               "product.images": 1,
               "product.category": 1,
               "product.brand": 1,
-              "product.status": 1,
-              "product.isActive": 1,
+              "status": 1,
+              "isActive": 1,
               "product.description": 1,
               "price": 1,
               "stock": 1,
@@ -215,18 +215,20 @@ class OnlineProductRepository {
 
   }
 
-  async deActiveSellerProduct(onProductId) {
+  async deActiveProduct(onProductId) {
     try {
+      console.log("from reppppp");
       //here you can pull online seller id from array of seller
-      return await OnlineProducts.updateOne({ _id: onProductId, isDeleted: false, status: APP_CONFIG.APPROVED_STATUS }, { isActive: false });
+      return await OnlineProducts.updateOne({ _id: onProductId, isDeleted: false, status: APP_CONFIG.APPROVED_STATUS }, {$set:{ isActive: false} });
     } catch (error) {
       throw error;
     }
   }
 
-  async activeSellerProduct(onProductId) {
+  async activeProduct(onProductId) {
     try {
-      return await OnlineProducts.updateOne({ _id: onProductId, isDeleted: false, status: APP_CONFIG.APPROVED_STATUS }, { isActive: true });
+      return await OnlineProducts.updateOne({ _id: onProductId, isDeleted: false, status: APP_CONFIG.APPROVED_STATUS }, {$set:{ isActive: true} });
+      
     } catch (error) {
       throw error;
     }
