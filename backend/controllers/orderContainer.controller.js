@@ -56,12 +56,7 @@ class OrderContainerController {
       pro_res("clerk"),
       catchAsync(this.createOfflineOrderContainer)
     );
-    // offline container orders
-    this.router.post(
-      "/order-container-offline",
-      pro_res("cashier", "clerk"),
-      catchAsync(this.createOfflineOrderContainer)
-    );
+    
 
     this.router.patch(
       "/finalize-order-container-offline/:containerId",
@@ -264,10 +259,11 @@ class OrderContainerController {
     let sellerId = req.user.id;
     // let sellerId = '67aa455d1ea026264bf6c6b4'; // for testing
 
-    let status = req.params.status;
+    let status = req.query.status;
 
     // let userType = req.user.userType == 'seller';
     let userType = "seller";
+    console.log(status)
     const subOrders =
       await SubOrderService.getAllOnlineOrdersForClerkOrSellerBasedOnStatus(
         sellerId,
