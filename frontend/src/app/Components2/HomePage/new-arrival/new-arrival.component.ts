@@ -55,6 +55,7 @@ export class NewArrivalComponent implements OnInit {
   }
 
   getFeaturedProducts(): void {
+
     this.productsService.getFeaturedProducts().subscribe({
       next: (response) => {
         console.log("Fetched Featured Products:", response.data.result);

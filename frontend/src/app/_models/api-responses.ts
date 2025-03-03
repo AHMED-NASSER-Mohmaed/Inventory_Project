@@ -26,8 +26,7 @@ export interface ProductItem {
   _id: string;
   seller: {
     _id: string;
-    firstName: string;
-    lastName: string;
+    companyName:string;
   };
   product: {
     _id: string;

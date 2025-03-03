@@ -216,7 +216,7 @@ class OrderService {
             products: products.map(({ product, onlineProduct, requestedQuantity: productRequestedQuantity, fulfilledQuantity: productFulfilledQuantity, canceledQuantity: productCanceledQuantity }) => ({
                 productId: product?._id,
                 productName: product?.name,
-                productUrlImage: product?.images?.length > 0 ? product.images[0].url : null,
+                productUrlImage: product?.images?.length > 1 ? product.images[1].url : product.images[0]?.url,
                 productCode: product?.code,
                 productPrice: onlineProduct?.price,
                 productStock: onlineProduct?.stock,
@@ -296,6 +296,12 @@ class OrderService {
       return mappedOrders;
     }
     async getAllOfflineSubOrdersForSuperAdmin(){
+      const returnedOrders = await orderRepository.getAllOfflineSubOrdersForSuperAdmin();
+      const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+      return mappedOrders;
+    }
+
+    async getAllOfflineSubOrdersForAdminByBranch(branch, status){
       const returnedOrders = await orderRepository.getAllOfflineSubOrdersForSuperAdmin();
       const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
       return mappedOrders;

@@ -105,7 +105,16 @@ module.exports.brandService = {
         } catch (error) {
             throw new error;
         }
-    }
+    },
+
+    isBrandActive: async (brandId) => {
+        try {
+            const brand = await brandRepo.getBrandById(brandId);
+            return brand ? brand.isActive : null;
+        } catch (error) {
+            throw error;
+        }
+    },
 
 
 

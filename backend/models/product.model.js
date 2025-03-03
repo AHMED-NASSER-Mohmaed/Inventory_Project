@@ -75,17 +75,14 @@ const ProductSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
- 
     //default is false for the seller -- for us approved in case we are the people who add this product to the system 
     status: {                                    // "pending", "approved", or "rejected"
       type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "approved",
+      enum:["pending","approved", "rejected",]
     },
 
-
     // Array of seller product references
-    sellers: [{ type: mongoose.Schema.Types.ObjectId, ref: "SellerProduct" }],
+    sellers: [{ type: mongoose.Schema.Types.ObjectId, ref: "OnlineProductsSchema" }],
 
     // Array of supplier product references
     supplier: { type: mongoose.Schema.Types.ObjectId, ref: "SupplierProduct" },

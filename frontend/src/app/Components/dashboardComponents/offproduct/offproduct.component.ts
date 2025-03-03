@@ -386,13 +386,14 @@ export class OffproductComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.toaster.clear();
+
+        console.log(error,"from toster");
         this.toaster.error(error.error.message || 'Failed to deactivate product', 'Failed', {
           timeOut: 1500,
           positionClass: 'toast-bottom-right',
           progressBar: true,
           closeButton: true,
         });
-        console.log(error);
       },
     });
     this.subscriptions.push(sub);

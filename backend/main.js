@@ -15,11 +15,10 @@ const Supplier = require("./models/supplier.model");
 const User = require("./models/user.model");
 const Product = require("./models/product.model");
 const branch = require("./models/branch.model");
-const counter = require("./models/counter.model");
-const WorksOn = require("./models/worksOn.model");
 
 
 const { compareSync } = require("bcryptjs");
+const { Brand } = require("./models/brand.model");
 const port = APP_CONFIG.HTTP_PORT || 5000;
 
 
@@ -45,29 +44,20 @@ process.on("uncaughtException", (err) => {
 
     callback: async () => {
 
-      
-      
-      /*
-      let worksOnObj = {
-        employee: APP_CONFIG.SUPPERADMIN_ID,
-        type: APP_CONFIG.SUPPERADMIN,
-        branch: "19777"
-        }*/
-       
-       
-       /****************************************************************************************** */   
-       let superAdmin = {
-         _id: APP_CONFIG.SUPPERADMIN_ID,
-         firstName: "ahmed",
-         lastName: "nasser",
-         email: "AhmedNasser@gmail.com",
-         phoneNumber: "01062303884",
-         password: "onlyonewhocanregister",
-         passwordConfirm: "onlyonewhocanregister",
-         userType: "staff",
-         SSN: "30101101206161",
-         role: "super_admin",
-       }
+      // console.log(await Product.collection.drop());
+      /****************************************************************************************** */
+      let superAdmin = {
+        _id: APP_CONFIG.SUPPERADMIN_ID,
+        firstName: "ahmed",
+        lastName: "nasser",
+        email: "AhmedNasser@gmail.com",
+        phoneNumber: "01062303884",
+        password: "onlyonewhocanregister",
+        passwordConfirm: "onlyonewhocanregister",
+        userType: "staff",
+        SSN: "30101101206161",
+        role: "super_admin",
+      }
       if (!await Staff.findOne({ SSN: superAdmin.SSN })) {
 
         // await Staff.deleteOne({SSN:superAdmin.SSN});
@@ -75,14 +65,14 @@ process.on("uncaughtException", (err) => {
         await Staff.create(superAdmin);
 
       }
-       /****************************************************************************************** */ 
+      /****************************************************************************************** */
 
       let mainBranch = {
-        _id: '19777',
+        "_id": APP_CONFIG.MAIN_BRANCH_ID,
         type: "main",
         governate: 6,
         registrationNumber: "123-69",
-        admin:APP_CONFIG.SUPPERADMIN_ID,
+        admin: APP_CONFIG.SUPPERADMIN_ID,
         location: "Elmasoura - Ahmed Maher Street"
       }
 
@@ -93,11 +83,11 @@ process.on("uncaughtException", (err) => {
       );
       /*******************************************************************************************/
       let onlineBranch = {
-        _id: 0,
+        _id: APP_CONFIG.ONLINE_BRANCH_ID,
         type: "online",
         governate: 1,
         registrationNumber: "123-692",
-        location: "Cairo bab-elmoneeb"
+        location: "Online"
       }
 
       await branch.findOneAndUpdate(
@@ -106,24 +96,9 @@ process.on("uncaughtException", (err) => {
         { $setOnInsert: onlineBranch }, // Insert only if not found
         { upsert: true, new: true }
       );
-      
+
       /*******************************************************************************************/
 
-
-
-      // await counter.create({ _id: "branch", seq: 3 })
-      // await branch.create(mainBranch);
-      // await branch.create(onlineBranch);
-      // await WorksOn.create(worksOnObj);
-      // await branch.updateOne({_id:mainBranch._id},{admin:APP_CONFIG.SUPPERADMIN_ID});
-      // await branch.updateOne({_id:mainBranch._id},{isActive:true});
-
-
-
-
-      // console.log("delete all",await User.find({userType:"customer"}));
-      // console.log("delete all",await User.find({userType:"staff"}));
-      // console.log("delete all",await User.find({userType:"seller"}));
 
       /*******************************************************************************************/
       let seller = {
@@ -142,87 +117,79 @@ process.on("uncaughtException", (err) => {
         "companyRegistrationNumber": "30-10-15",
         "status": true,
       }
-      
+
       if (!await Seller.findOne({ SSN: seller.SSN })) {
         await Seller.create(seller);
         console.log("our seller record inserted");
       }
       /*******************************************************************************************/
-      // let cat1 = {
-      //   "_id":APP_CONFIG.MALE_CAT_ID,
-      //   "Cname": "male",
-      // }
-      // await Category.findOneAndUpdate(
-      //     { Cname: cat1.Cname }, // Search condition
-      //     { $setOnInsert: cat1 }, // Insert only if not found
-      //     { upsert: true, new: true }
-      // );
+      let cat1 = {
+        "_id": APP_CONFIG.MALE_CAT_ID,
+        "Cname": "male",
+      }
+      await Category.findOneAndUpdate(
+        { Cname: cat1.Cname }, // Search condition
+        { $setOnInsert: cat1 }, // Insert only if not found
+        { upsert: true, new: true }
+      );
       /*******************************************************************************************/
 
-      // let cat2 = {
-      //   "_id":APP_CONFIG.FEMALE_CAT_ID,
-      //   "Cname": "female"
-      // }
-      // await Category.findOneAndUpdate(
-      //     { Cname: cat2.Cname }, // Search condition
-      //     { $setOnInsert: cat2 }, // Insert only if not found
-      //     { upsert: true, new: true }
-      // );
-      
+      let cat2 = {
+        "_id": APP_CONFIG.FEMALE_CAT_ID,
+        "Cname": "female"
+      }
+      await Category.findOneAndUpdate(
+        { Cname: cat2.Cname }, // Search condition
+        { $setOnInsert: cat2 }, // Insert only if not found
+        { upsert: true, new: true }
+      );
+
       /*******************************************************************************************/
 
-      /*
 
-      const supplier={
-        companyRegistrationNumber:"31-21-39",
-        phoneNumber:"01018208958",
-        email:"mortada@gmail.com",
-        companyName:"elzamalek"
+
+      const supplier = {
+        companyRegistrationNumber: "31-21-39",
+        phoneNumber: "01018208958",
+        email: "mortada@gmail.com",
+        companyName: "elzamalek"
       }
 
-      const Dawoodsupplier={
-        companyRegistrationNumber:"31-21-32",
-        phoneNumber:"01118208958",
-        email:"perez@gmail.com",
-        companyName:"Madridista"
+      const Dawoodsupplier = {
+        companyRegistrationNumber: "31-21-32",
+        phoneNumber: "01118208958",
+        email: "perez@gmail.com",
+        companyName: "Madridista"
       }
-
-      if(!await Supplier.findOne({email:supplier.email})){
+/*
+      if (!await Supplier.findOne({ email: supplier.email })) {
         console.log(await Supplier.create(supplier));
-      }
+      }*/
+      
 
-      if(!await Supplier.findOne({email:Dawoodsupplier.email})){
+      if (!await Supplier.findOne({ email: Dawoodsupplier.email })) {
         console.log(await Supplier.create(Dawoodsupplier));
       }
-        
 
+      let brand = {
+        "Bname": "casio"
+      }
 
+      await Brand.findOneAndUpdate(
+        { Bname: brand.Bname }, // Search condition
+        { $setOnInsert: brand }, // Insert only if not found
+        { upsert: true, new: true }
+      );
 
-
-
-
-
-
- 
-     }
-        /*
        
 
-      // console.log(await Product.deleteOne({_id:"67a75405e18e6927a8c1083e"}))
 
 
-      //  console.log(await Product.findOneAndUpdate({_id:"67a9225b98300b78c4cbc296"},{"category": "67a92096523f30d9de2d71ea" },{new:true}));
-
-      //  console.log(await Category.deleteMany({"parentCatId":"67a92f7992df3a4b6957625d"}));
 
 
-      // console.log(await Seller.updateMany({status:false},{$set:{status:0 }}))
 
-      
-      // console.log(await Seller.updateMany({status:true},{$set:{status:1 }}))
 
-      // console.log(await Product.collection.drop());
-*/
+
 
 
 

@@ -34,6 +34,7 @@ interface ProductDetails {
   category: CategoryDetails;
   brand: BrandDetails;
   images: ProductImage[];
+  companyName:string;
 }
 
 @Component({
@@ -45,7 +46,7 @@ interface ProductDetails {
 })
 export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit {
   productId: string = '';
-  product: ProductDetails | null = null;
+  product: any | null = null;
   images: any[] = [];
   isLoading: boolean = true;
   errorMessage: string = '';
@@ -113,8 +114,8 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
           // Filter out the default image and prepare carousel images
           const defaultImageUrl = "https://ik.imagekit.io/ysypur5vc/Untitled_azZLiI3tg.jpg";
           this.images = this.product?.images
-            .filter(img => img.url !== defaultImageUrl)
-            .map(img => ({
+            .filter((img: ProductImage) => img?.url !== defaultImageUrl)
+            .map((img: ProductImage) => ({
               src: img.url
             }));
           

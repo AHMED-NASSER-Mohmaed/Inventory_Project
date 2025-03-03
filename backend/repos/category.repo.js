@@ -75,6 +75,7 @@ module.exports.categoryRepo = {
     isCategoryActive: async (categoryId) => {
       try {
           const category = await Category.findById(categoryId).select("isActive").lean();
+          console.log(category,"from cat repoo");
           return category ? category.isActive : null; // Returns true, false, or null if not found
       } catch (error) {
           throw error;

@@ -34,6 +34,7 @@ class OrderContainerRepository {
           select: "products clerk cashier status totalPrice totalQty",
           populate: [
             { path: "products.product" }, 
+            { path: "products.offlineProduct" }, 
             { path: "clerk", select: "firstName lastName  email" }, 
             { path: "cashier", select: "firstName lastName email" } 
           ]
@@ -72,39 +73,32 @@ class OrderContainerRepository {
     if (!order) return null;
   
     return {
-      _id,
-      orderType,
-      gov,
-      address,
-      phone1,
-      phone2,
-      status,
-      branch,
-      createdAt,
-      updatedAt,
-      products: order.products.map(product => ({
-        productId: product.product._id,
-        name: product.product.name,
-        code: product.product.code,
-        price: product.price,
-        totalPrice: product.totalPrice,
-        requestedQuantity: product.requestedQuantity,
-        fulfilledQuantity: product.fulfilledQuantity,
-        canceledQuantity: product.canceledQuantity,
-        images: product.product.images.map(img => img.url),
+      orderId: _id,
+      orderStatus: status,
+      customerName: `${order.customer?.firstName} ${order.customer?.lastName}`,
+      sellerName: `${order.seller?.firstName} ${order.seller?.lastName}`,
+      gov: gov,
+      address: address,
+      phone1: phone1,
+      phone2: phone2,
+      branch: branch,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      products: order.products.map(({ product, offlineProduct, requestedQuantity, fulfilledQuantity, canceledQuantity }) => ({
+        productId: product?._id,
+        productName: product?.name,
+        productUrlImage: product?.images?.length > 0 ? product.images[0].url : null,
+        productCode: product?.code,
+        productPrice: product?.price,
+        productStock: offlineProduct?.stock,
+        productRequestedQuantity: requestedQuantity,
+        productFulfilledQuantity: fulfilledQuantity,
+        productCanceledQuantity: canceledQuantity,
       })),
-      totalPrice: order.totalPrice,
-      totalQty: order.totalQty,
-      clerk: order.clerk ? {
-        // id: order.clerk._id,
-        name: `${order.clerk.firstName} ${order.clerk.lastName}`,
-        // email: order.clerk.email
-      } : null,
-      cashier: order.cashier ? {
-        // id: order.cashier._id,
-        name: `${order.cashier.firstName} ${order.cashier.lastName}`,
-        // email: order.cashier.email
-      } : null
+      orderTotalQty: order.totalQty,
+      orderTotalPrice: order.totalPrice,
+      clerkName: `${order?.clerk?.firstName} ${order?.clerk?.lastName}`,
+      cashierName:`${order?.cashier?.firstName} ${order?.cashier?.lastName}`
     };
   }
   

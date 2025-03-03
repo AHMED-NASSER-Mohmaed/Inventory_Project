@@ -83,14 +83,12 @@ module.exports.categoryService = {
     // done  for me 
     isCategoryActive: async (categoryId) => {
         try {
-            const isActive = await categoryRepo.isCategoryActive(categoryId);
-            // if (isActive === null) 
-            //     throw new AppError("Category not found", APP_CONFIG.HTTP_NOT_FOUND);
-            return isActive;
+           return await categoryRepo.isCategoryActive(categoryId);
         } catch (error) {
             throw error;
         }
     },
+
     getCount:async(filters)=>{
         try{
             return await categoryRepo.getCount(filters);
