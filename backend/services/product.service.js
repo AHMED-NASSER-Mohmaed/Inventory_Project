@@ -197,10 +197,18 @@ module.exports.productService={
             
             return  await productRepo.getAvalibaleProduct(validatedParams.filters , validatedParams.sort,validatedParams.page,validatedParams.limit);
 
+        }catch(err){
+            throw err;
+        }
+    },
+
+    getAllOnlineProduct:async(validatedParams)=>{
+        try{
+            return await productRepo.getAllOnlineProduct(validatedParams.filters,validatedParams.sort,validatedParams.page,getAllOnlineProduct.limit);
         }catch(error){
             throw error;
         }
-    },
+    }
     
 
 
