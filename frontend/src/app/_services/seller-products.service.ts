@@ -22,15 +22,15 @@ export class SellerProductsService {
   }
 
   deactivateProduct(id: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/seller/deActiveProduct/${id}`, {}, { headers: this.getHeaders() });
+    return this.http.delete(`${this.baseUrl}/seller/deActiveProduct/${id}`, { headers: this.getHeaders() });
   }
 
   activateProduct(id: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/seller/activeProduct/${id}`, {}, { headers: this.getHeaders() });
+    return this.http.patch(`${this.baseUrl}/seller/activeProduct/${id}`, {}, { headers: this.getHeaders() });
   }
 
   updateProductData(productId: string, data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/seller/updateProduct/${productId}`, data, { headers: this.getHeaders() });
+    return this.http.patch(`${this.baseUrl}/seller/updateProduct/${productId}`, data, { headers: this.getHeaders() });
   }
 
   searchProducts(filters: string, page: number, limit: number, sort?: string): Observable<any> {

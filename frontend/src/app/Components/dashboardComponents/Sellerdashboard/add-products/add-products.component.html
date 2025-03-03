@@ -249,6 +249,22 @@
               </div>
             </div>
             
+            <div class="product-images-container mt-3" *ngIf="selectedProduct && selectedProduct.images?.length">
+              <strong class="label mb-2 d-block">Product Images:</strong>
+              <div class="images-gallery">
+                <div class="main-image" *ngIf="currentMainImage">
+                  <img [src]="currentMainImage" alt="Product image" class="img-fluid">
+                </div>
+                <div class="image-thumbnails">
+                  <div class="thumbnail" *ngFor="let image of selectedProduct.images" 
+                       [class.active]="currentMainImage === image.url"
+                       (click)="setMainImage(image.url)">
+                    <img [src]="image.url" alt="Product thumbnail" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">

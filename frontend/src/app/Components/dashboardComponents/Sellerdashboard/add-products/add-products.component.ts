@@ -106,6 +106,8 @@ export class AddProductsComponent implements OnInit, OnDestroy {
 
   totalAvailableProducts: number = 0;
 
+  currentMainImage: string | null = null;
+
   constructor(
     private addProductForSellerService: AddProductsForSellerService,
     public dialog: MatDialog,
@@ -298,7 +300,16 @@ export class AddProductsComponent implements OnInit, OnDestroy {
 
   showProductInfo(product: any): void {
     this.selectedProduct = { ...product };
+    if (this.selectedProduct.images && this.selectedProduct.images.length > 0) {
+      this.currentMainImage = this.selectedProduct.images[0].url;
+    } else {
+      this.currentMainImage = null;
+    }
     console.log("Selected product:", this.selectedProduct);
+  }
+
+  setMainImage(url: string): void {
+    this.currentMainImage = url;
   }
 
   prepareForSelling(product: any): void {

@@ -35,12 +35,12 @@ interface Product {
     description: string;
     category: string;
     brand: string;
-    isActive: boolean;
-    status: 'pending' | 'approved' | 'rejected';
     images: ProductImage[];
   };
   stock: number;
   price: number;
+  isActive: boolean;  
+  status: string;     
   createdAt: string;
 }
 
@@ -752,11 +752,11 @@ export class ProductsComponent implements OnInit, OnDestroy{
   }
 
   canUpdateProduct(product: any): boolean {
-    return product && product.product && 
-      (product.product.status === 'pending' || product.product.status === 'approved');
+    return product && 
+      (product.status === 'pending' || product.status === 'approved');
   }
 
   canToggleActivation(product: any): boolean {
-    return product && product.product && product.product.status === 'approved';
+    return product && product.status === 'approved';
   }
 }
