@@ -6,6 +6,28 @@
         </a>
         <ul class="side-menu top">
             <!-- Users menu with dropdown -->
+            
+            <li routerLinkActive="active" (click)="toggleDropdown('products')">
+                <a href="javascript:void(0)">
+                    <i class='bx bxs-shopping-bag-alt'></i>
+                    <span class="text">Products</span>
+                    <i class='bx bx-chevron-down dropdown-icon' [class.rotate]="isDropdownOpen('products')"></i>
+                </a>
+                <ul class="dropdown-menu" [class.show]="isDropdownOpen('products')">
+                    <li style="text-align: center; padding: 5px 0; width: 96%; cursor: pointer">
+                      <a routerLink="/Sdashboard/products" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
+                        <i class='bx bxs-collection' style="font-size: 1.5em;"></i>
+                        <span class="text" style="font-size: 0.9em;">Browse My Products</span>
+                      </a>
+                    </li>
+                    <li style="text-align: center; padding: 5px 0; width: 96%; cursor: pointer;">
+                      <a routerLink="/Sdashboard/sell-new-products" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
+                        <i class='bx bxs-plus-circle' style="font-size: 1.5em;"></i>
+                        <span class="text" style="font-size: 0.9em;">Sell New Product</span>
+                      </a>
+                    </li>
+                </ul>
+            </li>
             <li routerLinkActive="active" (click)="toggleDropdown('users')">
                 <a href="javascript:void(0)">
                     <i class='bx bxs-package'></i>
@@ -45,13 +67,6 @@
                     </li>
                   </ul>
             </li>
-            <!-- Products menu -->
-            <li routerLinkActive="active">
-                <a routerLink="/Sdashboard/products">
-                    <i class='bx bxs-shopping-bag-alt'></i>
-                    <span class="text">Products</span>
-                </a>
-            </li>
 
             <li routerLinkActive="active">
                 <a routerLink="/Adashboard/orders" style="cursor: pointer">
@@ -74,6 +89,7 @@
                     <i class='bx bx-log-out-circle'></i>
                     <span class="text">Logout</span>
                 </a>
+                
             </li>
         </ul>
     </section>
@@ -108,5 +124,4 @@
         <!-- MAIN -->
     </section>
     </div>
-    
-    
+
