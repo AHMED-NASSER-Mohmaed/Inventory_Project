@@ -53,18 +53,15 @@ export class SignupComponent implements OnDestroy {
 
           const token = localStorage.getItem('token');
           let tokenData: any = null;
-          if (token) {
-            tokenData = decodeToken(token);
-            console.log('Decoded token:', tokenData);
-          }
-
-          if (tokenData.id.role === 'seller') {
+          if(tokenData.id.role === 'admin'){
             setTimeout(() => {
-              this.router.navigateByUrl('/login');
+              this.router.navigateByUrl('/LandingPage');
             }, 1500);
-          }
-
-          if (tokenData.id.userType === 'customer') {
+          }else if(tokenData.id.role === 'super_admin'){
+            setTimeout(() => {
+              this.router.navigateByUrl('/dashboard');
+            }, 1500);
+          }else{
             setTimeout(() => {
               this.router.navigateByUrl('/LandingPage');
             }, 1500);
@@ -85,6 +82,24 @@ export class SignupComponent implements OnDestroy {
       },
       complete: () => {
         console.log('Signup Complete');
+        const token = localStorage.getItem('token');
+          let tokenData: any = null;
+          if (token) {
+            tokenData = decodeToken(token);
+            console.log('Decoded token:', tokenData);
+          }
+
+          if (tokenData.id.userType === 'seller') {
+            setTimeout(() => {
+              this.router.navigateByUrl('/login');
+            }, 1500);
+          }
+
+          if (tokenData.id.userType === 'customer') {
+            setTimeout(() => {
+              this.router.navigateByUrl('/LandingPage');
+            }, 1500);
+          }
       }
     })
   }

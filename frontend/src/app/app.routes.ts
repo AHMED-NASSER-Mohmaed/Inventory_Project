@@ -46,6 +46,7 @@ import { CustomerOrderDetailsComponent } from './Components/customer-order-detai
 import { auth9Guard } from './_guards/auth9.guard';
 import { ClerkOfflineDashboardComponent } from './Components3/clerk/clerk-offline-dashboard/clerk-offline-dashboard.component';
 import { CashierOfflineDashboardComponent } from './Components3/cashier/cashier-offline-dashboard/cashier-offline-dashboard.component';
+import { auth10Guard } from './_guards/auth10.guard';
 
 
 export const routes: Routes = [
@@ -213,17 +214,17 @@ export const routes: Routes = [
             }
         ]
     },
-    // {
-    //     path: '',
-    //     component: LayoutComponent,
-    //     children: [
-    //         {
-    //             path: 'dashboard',
-    //             loadChildren: () => import('./Components/dashboardComponents/dashboard.routes').then(s => s.dashRoutes),
-    //             canActivate: [authGuard]
-    //         }
-    //     ]
-    // },
+    {
+        path: '',
+        component: LayoutComponent,
+        children: [
+            {
+                path: 'Sdashboard',
+                loadChildren: () => import('./Components/dashboardComponents/Sellerdashboard/Sellerdashboard.routes').then(s => s.dashRoutes3),
+                canActivate: [auth10Guard]
+            }
+        ]
+    },
     {
         path: 'lock',
         component: LockComponent,
