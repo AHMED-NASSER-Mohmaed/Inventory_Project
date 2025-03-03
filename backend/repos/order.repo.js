@@ -102,7 +102,7 @@ class OrderRepository {
       subOrderType: "online",
       status: { $in: ["shipped", "partially shipped"] },
       seller: tempSeller,
-        clerk: clerkId ,
+      $or: [{ clerk: null }, { clerk: clerkId }],
     }).populate("products.onlineProduct products.product seller").populate({
       path: "orderContainer", // Populate the orderContainer field
       populate: {

@@ -123,10 +123,19 @@
             <textarea name="notes" [(ngModel)]="checkoutData.notes" placeholder="Notes about your order, e.g., special notes for delivery"></textarea>
 
             <h2>Payment</h2>
-            <label>
-                <input type="radio" name="paymentMethod" [(ngModel)]="checkoutData.paymentMethod" value="cod" required #paymentMethod="ngModel" class="me-auto"> Cash on delivery
-            </label>
-
+            <div class="payment-methods">
+                <label class="payment-option bg-light text-dark">
+                  <input  type="radio" name="paymentMethod" [(ngModel)]="checkoutData.paymentMethod" value="cash" required #paymentMethod="ngModel">
+                  <i class="fas fa-money-bill-wave text-success"></i> Cash
+                </label>
+              
+                <label class="payment-option bg-light text-dark">
+                  <input type="radio" name="paymentMethod" [(ngModel)]="checkoutData.paymentMethod" value="credit" required #paymentMethod="ngModel">
+                  <i class="fas fa-credit-card text-danger"></i> Card
+                </label>
+              </div>
+              
+              
             @if(paymentMethod.invalid && paymentMethod.touched){
                 @if(paymentMethod.errors?.['required']){
                     <div class="error">
@@ -134,7 +143,7 @@
                     </div>
                 }
             }
-            <button type="submit" class="btn btn-dark w-100 checkout-button" [disabled]="checkoutForm.invalid">Place ORDER {{getTotalAmount() | currency}}</button>
+            <button type="submit" class="btn btn-dark w-100 checkout-button mt-3" [disabled]="checkoutForm.invalid">Place ORDER {{getTotalAmount() | currency}}</button>
         </form>
 
 
