@@ -89,7 +89,7 @@ module.exports.restrictTo = (...userTypes) => {
     userTypes = userTypes.flat();
 
     // to be reviewed
-    console.log(`request user type from post: ${req.user.userType}`);
+    // console.log(`request user type from post: ${req.user.userType}`);
     if (
       !userTypes.includes(req.user.userType) &&
       !userTypes.includes(req.user.role)
@@ -100,7 +100,7 @@ module.exports.restrictTo = (...userTypes) => {
       );
     }
 
-    console.log(userTypes, "frommmmmm restirct to t");
+    // console.log(userTypes, "frommmmmm restirct to t");
 
     next();
   };

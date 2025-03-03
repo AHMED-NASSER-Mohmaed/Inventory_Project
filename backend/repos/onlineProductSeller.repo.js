@@ -29,7 +29,6 @@ class OnlineProductRepository {
 
   // ✅ Case 2: Seller add a new product (requires admin approval)
   async addNewProduct(sellerId, productData) {
-
     try {
 
       const existingProduct = await Product.findOne({
@@ -45,12 +44,10 @@ class OnlineProductRepository {
           throw new AppError("the company dose not permmit to sell like that product", APP_CONFIG.HTTP_BAD_REQUEST);
       }
 
-
-
-
       let newProduct;
 
       if (!existingProduct) {
+
         newProduct = await Product.create({
           code: productData.code,
           name: productData.name,
@@ -84,7 +81,10 @@ class OnlineProductRepository {
         status: APP_CONFIG.PENDING_STATUS,
       });
 
+      await Product.updateOne({_id:newProduct._id},{$addToSet:{sellers:newListing._id}})
+  
       return { newProduct, newListing };
+
 
     } catch (error) {
       throw error;
@@ -94,6 +94,13 @@ class OnlineProductRepository {
   // ✅ Case 3: Admin approves a product and updates all pending seller listings ---> supper admin dashboard
   async approveProduct(productId) {
     try {
+
+      await Product.updateOne({_id:productId}, {$set:{status:APP_CONFIG.APPROVED_STATUS}});
+
+      await OnlineProducts.updateMany({product:productId},{$set:{status:APP_CONFIG.APPROVED_STATUS}});
+
+      /*
+
       // ✅ Find and update all in one query using aggregation
       let updatedProducts = await OnlineProducts.find(
         { product: productId, status: APP_CONFIG.PENDING_STATUS }
@@ -117,7 +124,7 @@ class OnlineProductRepository {
         },
         { new: true } // ✅ Returns the updated Product document
       );
-
+*/
     } catch (error) {
       throw error;
     }
@@ -166,6 +173,10 @@ class OnlineProductRepository {
               "product.name": 1,
               "product.code": 1,
               "product.images": 1,
+              "product.category": 1,
+              "product.brand": 1,
+              "product.status": 1,
+              "product.isActive": 1,
               "product.description": 1,
               "price": 1,
               "stock": 1,

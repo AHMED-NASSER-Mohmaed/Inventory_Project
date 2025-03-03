@@ -184,7 +184,6 @@ module.exports.productService={
     //for seller product list
     getAllAvalibleProduct:async(validatedParams)=>{
         try{
-            
             validatedParams.filters['isActive']=true;
             validatedParams.filters['status']=APP_CONFIG.APPROVED_STATUS;
 
@@ -202,9 +201,9 @@ module.exports.productService={
         }
     },
 
-    getAllOnlineProduct:async(validatedParams)=>{
+    getAllOnlineProductInfo:async(validatedParams)=>{
         try{
-            return await productRepo.getAllOnlineProduct(validatedParams.filters,validatedParams.sort,validatedParams.page,getAllOnlineProduct.limit);
+            return await productRepo.getAllOnlineProductInfo(validatedParams.filters,validatedParams.sort,validatedParams.page,validatedParams.limit);
         }catch(error){
             throw error;
         }

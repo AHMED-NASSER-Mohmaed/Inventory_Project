@@ -226,6 +226,7 @@ class OrderService {
             })),
             orderTotalQty: orderData.totalQty,
             orderTotalPrice: orderData.totalPrice,
+            paymentStatus: orderData.orderContainer?.paymentStatus,
             createdAt,
             updatedAt,
         };

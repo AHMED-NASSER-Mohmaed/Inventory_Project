@@ -157,3 +157,40 @@ stroke: var(--spinner-color) !important;
 .custom-spinner::ng-deep circle {
     stroke: #4d4846 !important; /* Change this to your desired color */
 }
+
+.payment-methods {
+    display: flex;
+    gap: 20px; /* Space between options */
+  }
+  
+  .payment-option {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+  }
+  
+  .payment-option input {
+    margin-right: 10px;
+    transform: scale(1.2);
+  }
+  
+  .payment-option i {
+    margin-right: 8px;
+    font-size: 18px;
+    color: #007bff;
+  }
+  
+  .payment-option:hover {
+    border-color: #007bff;
+    background: #f8f9fa;
+  }
+  
+  .payment-option input:checked + i {
+    color: #28a745;
+  }
+  
