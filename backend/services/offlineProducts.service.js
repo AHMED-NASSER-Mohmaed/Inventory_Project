@@ -4,6 +4,7 @@ const OnlineProductsRepository=require("../repos/onlineProducts.repo");
 const { APP_CONFIG } = require("../config/app.config");
 const AppError = require("../utils/appError");
 const branchService = require("../services/branch.service");
+const Product = require("../models/product.model");
 
 
 require("../services/branch.service");
@@ -149,8 +150,13 @@ module.exports.OfflineProductsService = {
                 if (destinationBranch['type'] === 'online') {
                     //may be the first time to export this product to online sysytem
                     console.log("hhhhhhhhhhhhhhhhhh",qty);
-
-                    return  OnlineProductsRepository.upsertSellerRecord(offProduct.product,APP_CONFIG.COMPANY_ID,qty);
+                    // -->we have to register our own seller id at product 
+                    
+                    let onlineListProduct=await  OnlineProductsRepository.upsertSellerRecord(offProduct.product,APP_CONFIG.COMPANY_ID,qty);
+                    
+                    await Product.updateOne({_id:offProduct.product},{$addToSet:{sellers:onlineListProduct._id}}); 
+                    
+                    return onlineListProduct; 
 
                 }else if (sourceBranch['type']==='online'){
 

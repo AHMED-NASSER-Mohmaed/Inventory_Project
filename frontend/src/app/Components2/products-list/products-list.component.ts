@@ -158,6 +158,14 @@ export class ProductsListComponent implements OnInit {
   getProducts(pageNumber: number = 1): void {
     this.currentPage = pageNumber;
     this.products = [];
+
+    console.log(this.currentPage, 
+      this.itemsPerPage, 
+      this.sort,
+      this.selectedCategoryId, 
+      this.selectedBrandId,
+      this.searchQuery,
+    "from pagianted functon taht is in ");
   
     this.productsService.getPaginatedProducts(
       this.currentPage, 

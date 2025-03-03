@@ -1,9 +1,8 @@
 const { APP_CONFIG } = require("../config/app.config");
 const OnlineProducts = require("../models/onlineProducts.model");
-const mongoose = require("mongoose");
 const AppError = require("../utils/appError");
 const Product = require("../models/product.model");
-const {inboxResult}=require("../utils/apiFeatures")
+const { inboxResult } = require("../utils/apiFeatures")
 
 class OnlineProductRepository {
 
@@ -15,9 +14,14 @@ class OnlineProductRepository {
         "product": productId,
         "stock": stock,
         "price": price,
-        "status": "pending",
+        "status": APP_CONFIG.APPROVED_STATUS,
       }
-      return await OnlineProducts.create(PendingProduct);
+      let sellerListProduct = await OnlineProducts.create(PendingProduct);
+
+      await Product.updateOne({ _id: productId }, { $addToSet: { sellers: sellerListProduct._id } })
+
+      return sellerListProduct;
+
     } catch (error) {
       throw error
     }
@@ -90,16 +94,35 @@ class OnlineProductRepository {
   // ✅ Case 3: Admin approves a product and updates all pending seller listings ---> supper admin dashboard
   async approveProduct(productId) {
     try {
+      // ✅ Find and update all in one query using aggregation
+      let updatedProducts = await OnlineProducts.find(
+        { product: productId, status: APP_CONFIG.PENDING_STATUS }
+      ).lean(); // ✅ Convert to plain objects (faster, avoids mongoose overhead)
 
-      await Product.updateOne({ _id: productId }, { status: APP_CONFIG.APPROVED_STATUS });
-      return await OnlineProducts.updateMany(
+      // ✅ Extract seller IDs from the returned documents
+      let OnlineIds = updatedProducts.map(doc => doc._id);
+
+      // ✅ Perform the update in one step (bulk update without fetching again)
+      await OnlineProducts.updateMany(
         { product: productId, status: APP_CONFIG.PENDING_STATUS },
+        { $set: { status: APP_CONFIG.APPROVED_STATUS } }
+      );
+
+      // ✅ Update the Product document and return the updated version
+      return await Product.findOneAndUpdate(
+        { _id: productId },
+        {
+          $set: { status: APP_CONFIG.APPROVED_STATUS },
+          $addToSet: { sellers: { $each: OnlineIds } }
+        },
+        { new: true } // ✅ Returns the updated Product document
       );
 
     } catch (error) {
       throw error;
     }
   }
+
 
   // ✅ Case 4: Admin rejects a product or a seller's listing       ---> supper admin dashboard
   async rejectProduct(id) {
@@ -146,7 +169,7 @@ class OnlineProductRepository {
               "product.description": 1,
               "price": 1,
               "stock": 1,
-              "createdAt":1
+              "createdAt": 1
             }
           }
         ]),
@@ -181,33 +204,47 @@ class OnlineProductRepository {
 
   }
 
-  async deActiveSellerProduct(onProductId){
-    try{
-      console.log(onProductId);
-      return await OnlineProducts.updateOne({_id:onProductId,isDeleted:false,status:APP_CONFIG.APPROVED_STATUS},{isActive:false}); 
-    }catch(error){
+  async deActiveSellerProduct(onProductId) {
+    try {
+      //here you can pull online seller id from array of seller
+      return await OnlineProducts.updateOne({ _id: onProductId, isDeleted: false, status: APP_CONFIG.APPROVED_STATUS }, { isActive: false });
+    } catch (error) {
       throw error;
     }
   }
 
-  async activeSellerProduct(onProductId){
-    try{
-      return await OnlineProducts.updateOne({_id:onProductId,isDeleted:false,status:APP_CONFIG.APPROVED_STATUS},{isActive:true}); 
-    }catch(error){
+  async activeSellerProduct(onProductId) {
+    try {
+      return await OnlineProducts.updateOne({ _id: onProductId, isDeleted: false, status: APP_CONFIG.APPROVED_STATUS }, { isActive: true });
+    } catch (error) {
       throw error;
     }
   }
 
   //for seller dashboard
-  async updateSellerStock(onProductId,newData){
-    try{
-        return await OnlineProducts.updateOne({_id:onProductId},newData);
-    }catch(error){
+  async updateSellerStock(onProductId, newData) {
+    try {
+      return await OnlineProducts.updateOne({ _id: onProductId }, newData);
+    } catch (error) {
       throw error;
     }
   }
 
+  async deActiveSellerProduct(onProductId) {
+    try {
+      return await OnlineProducts.updateOne({ _id: onProductId }, { isDeleted: true });
+    } catch (error) {
+      throw error;
+    }
+  }
 
+  async activeSellerProduct(onProductId) {
+    try {
+      return await OnlineProducts.updateOne({ _id: onProductId }, { isDeleted: false });
+    } catch (error) {
+      throw error;
+    }
+  }
 
 
 
