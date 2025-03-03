@@ -121,7 +121,7 @@ class OrderContainerController {
     // seller
     this.router.get(
       "/AllSubOrdersForExternalSeller",
-      AuthMiddleware.protect,
+      pro_res('seller'),
       catchAsync(this.getAllOnlineOrdersForSeller)
     );
   }
