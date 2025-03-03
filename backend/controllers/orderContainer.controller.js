@@ -56,12 +56,7 @@ class OrderContainerController {
       pro_res("clerk"),
       catchAsync(this.createOfflineOrderContainer)
     );
-    // offline container orders
-    this.router.post(
-      "/order-container-offline",
-      pro_res("cashier", "clerk"),
-      catchAsync(this.createOfflineOrderContainer)
-    );
+    
 
     this.router.patch(
       "/finalize-order-container-offline/:containerId",
