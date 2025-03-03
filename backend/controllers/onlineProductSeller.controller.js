@@ -78,7 +78,7 @@ const productSellerController = {
     allowedFillterValues: [[APP_CONFIG.APPROVED_STATUS, APP_CONFIG.REJECT_STATUS, APP_CONFIG.PENDING_STATUS, 'undefined'],
     ['true', 'false', 'undefined']],
 
-    searchFiledName: [        "code", "brand", "category", "branch", "name"],
+    searchFiledName: [   "code", "brand", "category", "branch", "name"],
     searchValueAcoordingNaN: [true,    true,   true,        false,    true],
 
     allowedSort: ["createdAt","price"],

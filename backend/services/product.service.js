@@ -5,6 +5,9 @@ const AppError = require('../utils/appError');
 
 const {categoryRepo} = require("../repos/category.repo")
 const {brandRepo} = require("../repos/brand.repo");
+const { filter } = require("lodash");
+const { categoryService } = require("./category.service");
+const { brandService } = require("./brand.service");
 
 
 module.exports.productService={
@@ -178,18 +181,31 @@ module.exports.productService={
             throw error;
         }
     },
-
-    getAllSelledOnline:async()=>{
+    //for seller product list
+    getAllAvalibleProduct:async(validatedParams)=>{
         try{
             
+            validatedParams.filters['isActive']=true;
+            validatedParams.filters['status']=APP_CONFIG.APPROVED_STATUS;
+
+            //we have to chek if category exist 
+            if(validatedParams.filters.category)
+                await categoryService.isCategoryActive(validatedParams.filters.category);
+            //we g=have to check if brand exist
+            if(validatedParams.filters.brand)
+                await brandService.isBrandActive(validatedParams.filters.brand);
+            
+            return  await productRepo.getAvalibaleProduct(validatedParams.filters , validatedParams.sort,validatedParams.page,validatedParams.limit);
+
         }catch(error){
             throw error;
         }
-    }
+    },
+    
 
 
     
-
+    
     
 }
 

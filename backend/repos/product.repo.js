@@ -1,7 +1,8 @@
- 
+
 const Product = require('../models/product.model');
 const { APP_CONFIG } = require('../config/app.config');
-const mongoose=require("mongoose")
+const mongoose = require("mongoose");
+const { inboxResult } = require('../utils/apiFeatures');
 // const { inboxResult } = require("../utils/apiFeatures")
 
 module.exports.productRepo = {
@@ -22,7 +23,7 @@ module.exports.productRepo = {
     try {
       return await Product.findById(id);
     } catch (error) {
-      throw  error;
+      throw error;
     }
   },
 
@@ -47,49 +48,82 @@ module.exports.productRepo = {
     }
   },
 
-  updateProduct:async(productId,data)=>{
-    try{
-      return await Product.updateOne({_id:id},{$set:data});
-    }catch(error){
+  updateProduct: async (productId, data) => {
+    try {
+      return await Product.updateOne({ _id: id }, { $set: data });
+    } catch (error) {
       throw error;
     }
   },
 
-  deleteProduct:async(productId)=>{
-    try{
-      return await Product.updateOne({_id:productId},{$set:{isActive:false}});
-    }catch(error){
+  deleteProduct: async (productId) => {
+    try {
+      return await Product.updateOne({ _id: productId }, { $set: { isActive: false } });
+    } catch (error) {
       throw error;
     }
   },
 
-  activeProduct:async(productId)=>{
-    try{
-      return await Product.updateOne({_id:productId},{$set:{isActive:true}});
-    }catch(error){
+  activeProduct: async (productId) => {
+    try {
+      return await Product.updateOne({ _id: productId }, { $set: { isActive: true } });
+    } catch (error) {
       throw error;
     }
   },
 
-  rejectProduct:async(productId)=>{
-    try{
+  rejectProduct: async (productId) => {
+    try {
 
-      return await Product.updateOne({_id:productId,status:APP_CONFIG.PENDING_STATUS},
-          {$set:{status:APP_CONFIG.REJECT_STATUS}});
+      return await Product.updateOne({ _id: productId, status: APP_CONFIG.PENDING_STATUS },
+        { $set: { status: APP_CONFIG.REJECT_STATUS } });
 
-    }catch(error){
+    } catch (error) {
       throw error;
     }
   },
 
-  approveProduct:async(productId)=>{
+  approveProduct: async (productId) => {
+    try {
+
+      return await Product.updateOne({ _id: productId, status: APP_CONFIG.PENDING_STATUS },
+        { $set: { status: APP_CONFIG.APPROVED_STATUS } });
+
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getAvalibaleProduct: async (filters, sort, page, limit) => {
+    try {
+
+      let [results,total] = await Promise.all([
+
+        await Product.find(filters)
+          .sort(sort)
+          .skip((page - 1) * limit) // (starting index = page-1)*limit
+          .limit(limit)
+          .select("_id name code images price description")
+          .lean(),
+
+         await Product.countDocuments(filters)
+
+      ]);
+
+      return inboxResult(results,total,page,limit);
+
+    } catch (error) {
+      throw error;
+    }
+
+  },
+
+  
+  getAllOnlineProduct:async (filters,sort,page,limit)=>{
     try{
 
-      return await Product.updateOne({_id:productId,status:APP_CONFIG.PENDING_STATUS},
-          {$set:{status:APP_CONFIG.APPROVED_STATUS}});
-
-    }catch(error){
-      throw error;
+    }catch(err){
+      throw err;
     }
   }
 
