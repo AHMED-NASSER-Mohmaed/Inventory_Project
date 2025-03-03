@@ -3,35 +3,28 @@ const User = require("./user.model");
 
 const SellerSchema = new mongoose.Schema(
   {
-    
-    SSN: { type: String, required: true, unique:true},
-    companyName: { type: String, required: true ,  unique:true},
-    companyRegistrationNumber: { type: String, required: true, unique:true },
-    
+    SSN: { type: String, required: true, unique: true },
+    companyName: { type: String, required: true, unique: true },
+    companyRegistrationNumber: { type: String, required: true, unique: true },
 
     // 0 --> represent pending
     // 1 --> approved
     //-1 --> rejected
 
-    status:{
+    status: {
       type: Number,
       default: 0,
     },
 
-
     /******************************************************************************/
 
-
     //online branch
-    branch: { type: mongoose.Schema.ObjectId, ref: "Bracnh", }
+    branch: { type: mongoose.Schema.ObjectId, ref: "Branch" },
   },
   {
     timestamps: true,
-  },{ strict: true }
+  },
+  { strict: true }
 );
-
- 
-
-
 
 module.exports = User.discriminator("Seller", SellerSchema);
