@@ -27,6 +27,10 @@ module.exports.APP_CONFIG = {
 
   // stripe
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+
+  // Google Auth
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   // Successful responses (2xx)
   HTTP_OK: 200, // [delete + [returned ack  data] that is already  returned in the body.] + [get verb + returned data]
 

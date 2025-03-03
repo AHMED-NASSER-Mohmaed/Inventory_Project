@@ -29,6 +29,8 @@
     "ndb": "^1.1.5",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
     "pug": "^3.0.3",
     "stripe": "^17.7.0",
     "validator": "^13.12.0"

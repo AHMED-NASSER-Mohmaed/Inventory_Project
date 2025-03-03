@@ -83,11 +83,11 @@ const verifyEmail = catchAsync(async (req, res, next) => {
 });
 const createSendToken = (user, statusCode, res) => {
   user.password = undefined;
-  user.isActive= undefined ;
-  user.kind=undefined;
-  user.createdAt=undefined;
-  user.updatedAt=undefined;
-  user.__v=undefined;
+  user.isActive = undefined;
+  user.kind = undefined;
+  user.createdAt = undefined;
+  user.updatedAt = undefined;
+  user.__v = undefined;
   const token = JWT_Manager.signToken(user);
 
   res.status(statusCode).json({
@@ -112,15 +112,31 @@ authRouter.patch(
   updatePassword
 );
 
-
 // authRouter.use(authMiddleware.protect);
-//to be reviewed 
+//to be reviewed
 authRouter.patch("/auth/updatePassword", updatePassword);
 authRouter.get("/auth/verifyEmail/:token", verifyEmail);
 authRouter.post(
   "/auth/resendVerificationEmail",
   authMiddleware.protect,
   resendVerificationEmail
+);
+
+router.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+// Handle callback after Google has authenticated the user
+router.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/auth/login" }),
+  (req, res) => {
+    // On successful authentication, generate a JWT for the user
+    const token = JWT_Manager.signToken(req.user.id, req.user.userType);
+    // You can redirect to your front-end with the token in query parameters
+    res.redirect(`/LandingPage?token=${token}`);
+  }
 );
 
 module.exports = authRouter;

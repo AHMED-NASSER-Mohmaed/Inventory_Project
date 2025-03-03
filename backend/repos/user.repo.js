@@ -5,7 +5,6 @@ const { throttle } = require("lodash");
 const { locales } = require("validator/lib/isIBAN");
 
 class UserRepository {
-
   //checking rule if manger - > create seller , cashier , clerk , customer
   //check rule if super admin - >manager seller , cashier , clerk , customer
 
@@ -13,6 +12,15 @@ class UserRepository {
 
   //done -----------------------
   //return user or null , throw an exception.
+
+  async findByEmail(email) {
+    try {
+      return await User.findOne({ email });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getUser(userId) {
     try {
       return await User.findOne({ _id: userId });
@@ -105,88 +113,73 @@ class UserRepository {
   //done ------------------
   async activeUser(userId) {
     try {
-
       //return ack.
       return await User.updateOne({ _id: userId }, { isActive: true });
-
     } catch (err) {
       throw err;
     }
   }
 
-
   //pagination
   async getCustomers(filters, sort, page, limit) {
-
     console.log(sort);
 
-
     try {
-
       const [results, total] = await Promise.all([
         await User.find(filters)
-          .collation({ locale: 'en', strength: 1 })
+          .collation({ locale: "en", strength: 1 })
           .sort(sort)
           .skip((page - 1) * limit) // (starting index = page-1)*limit
-          .limit(limit).select("-__v")
-        ,
-
-        await User.countDocuments(filters).collation({ locale: 'en', strength: 1 }).exec()
-
+          .limit(limit)
+          .select("-__v"),
+        await User.countDocuments(filters)
+          .collation({ locale: "en", strength: 1 })
+          .exec(),
       ]);
 
       // console.log("from repo", results);
 
       return inboxResult(results, total, page, limit);
-
     } catch (err) {
       throw err;
     }
   }
 
-
   //get count
   async getCountByFilter(filters) {
     try {
-
       return await User.countDocuments(filters);
-
     } catch (err) {
       throw err;
     }
   }
 
   async updateUserImage(userId, imageInfo) {
-
     try {
-
       console.log("image info : ", imageInfo, "from repo");
-      return await User.updateOne({ _id: userId }, { $set: { "photo": imageInfo } });
+      return await User.updateOne(
+        { _id: userId },
+        { $set: { photo: imageInfo } }
+      );
     } catch (err) {
       throw err;
     }
-
   }
-
 
   async isAttributeExists(userId, name, value) {
     return await checkIfAttributeExists(User, userId, name, value);
   }
 
   async getUserImageId(userId) {
-
     try {
-
-      return await User.findById({ _id: userId }, { "photo.fileId": 1, "_id": 0 });
-
+      return await User.findById(
+        { _id: userId },
+        { "photo.fileId": 1, _id: 0 }
+      );
     } catch (err) {
       throw err;
     }
-
   }
-
-
-
 }
 
 module.exports = new UserRepository();
