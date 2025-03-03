@@ -213,6 +213,7 @@
         </main>
     </section>
 
+    <!-- Product Info Modal -->
     <div class="modal fade" id="productInfoModal" tabindex="-1" role="dialog" aria-labelledby="productInfoModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content custom-modal">
@@ -239,7 +240,6 @@
                   <input type="text" [value]="selectedProduct.price | currency" disabled class="value">
                 </div>
               </div>
-              <!-- Removed Category and Brand fields -->
             </div>
 
             <div class="info-item description-item mt-3" *ngIf="selectedProduct && selectedProduct.description">
@@ -249,10 +249,8 @@
               </div>
             </div>
             
-            <!-- Removing image section with unsupported methods -->
           </div>
           <div class="modal-footer">
-            <!-- Removed toggleEdit and editing related elements -->
             <button type="button" class="btn btn-secondary" data-dismiss="modal">
               <i class='bx bx-x'></i> Close
             </button>
@@ -346,6 +344,18 @@
                   </div>
                 </div>
                 <div class="info-item">
+                  <strong class="label">Category:</strong>
+                  <div class="input-wrapper">
+                    <input type="text" [value]="getCategoryName(selectedProduct?.category)" disabled class="value">
+                  </div>
+                </div>
+                <div class="info-item">
+                  <strong class="label">Brand:</strong>
+                  <div class="input-wrapper">
+                    <input type="text" [value]="getBrandName(selectedProduct?.brand)" disabled class="value">
+                  </div>
+                </div>
+                <div class="info-item">
                   <strong class="label">Original Price:</strong>
                   <div class="input-wrapper">
                     <input type="text" [value]="selectedProduct?.price | currency" disabled class="value">
@@ -368,7 +378,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" (click)="sellExistingProduct()" [disabled]="!sellProductData.stock || sellProductData.stock <= 0 || !sellProductData.price || sellProductData.price <= 0">
-              <i class="bx bx-cart"></i> Add To My List
+              <i class="bx bx-cart"></i> Add To My Store
             </button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">
               <i class='bx bx-x'></i> Cancel

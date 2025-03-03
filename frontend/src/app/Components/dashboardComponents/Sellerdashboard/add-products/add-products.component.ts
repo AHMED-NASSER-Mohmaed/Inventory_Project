@@ -71,7 +71,6 @@ export class AddProductsComponent implements OnInit, OnDestroy {
   selectedCategory: string = '';
   selectedBrand: string = '';
 
-  // New model for adding new product
   newProduct: {
     name: string;
     code: string;
@@ -88,7 +87,6 @@ export class AddProductsComponent implements OnInit, OnDestroy {
     stock: 0
   };
 
-  // Model for selling existing product
   sellProductData: {
     productId: string;
     stock: number;
@@ -106,7 +104,6 @@ export class AddProductsComponent implements OnInit, OnDestroy {
     { name: 'Brand', children: [] }
   ];
 
-  // Add property for total available products
   totalAvailableProducts: number = 0;
 
   constructor(
@@ -137,7 +134,7 @@ export class AddProductsComponent implements OnInit, OnDestroy {
       const cached = this.pageCache[cacheKey];
       this.products = cached.result;
       this.totalPages = Math.ceil(cached.total / this.itemsPerPage);
-      this.totalAvailableProducts = cached.total; // Set total from cache
+      this.totalAvailableProducts = cached.total; 
       this.dropdownStates = new Array(this.products.length).fill(false);
       this.updatePaginationState();
       this.showNoResults = false;
@@ -176,7 +173,7 @@ export class AddProductsComponent implements OnInit, OnDestroy {
         this.products = res.data.result;
         this.showNoResults = this.products.length === 0;
         const total = res.data.total;
-        this.totalAvailableProducts = total; // Set total from response
+        this.totalAvailableProducts = total; 
         this.totalPages = Math.ceil(total / this.itemsPerPage);
         this.dropdownStates = new Array(this.products.length).fill(false);
         this.pageCache[cacheKey] = { result: this.products, total: total };
@@ -330,7 +327,6 @@ export class AddProductsComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.toaster.success('New product added successfully');
         
-        // Close modal with pure JavaScript
         const modalElement = document.getElementById('addProductModal');
         if (modalElement) {
           modalElement.classList.remove('show');
@@ -375,7 +371,6 @@ export class AddProductsComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.toaster.success('Product added for selling successfully');
         
-        // Close modal with pure JavaScript
         const modalElement = document.getElementById('sellProductModal');
         if (modalElement) {
           modalElement.classList.remove('show');
@@ -510,7 +505,7 @@ export class AddProductsComponent implements OnInit, OnDestroy {
               ? res.data.result
               : [res.data.result];
             this.showNoResults = this.products.length === 0;
-            this.totalAvailableProducts = res.data.total; // Set total from response
+            this.totalAvailableProducts = res.data.total; 
             this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
             this.dropdownStates = new Array(this.products.length).fill(false);
             this.updatePaginationState();

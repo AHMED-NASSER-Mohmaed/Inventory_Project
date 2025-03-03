@@ -568,7 +568,7 @@ mat-button-toggle{
   border-radius: 50%;
   cursor: pointer;
   transition: transform 0.2s, opacity 0.2s;
-  opacity: 0.5; /* Set default opacity to 0.5 */
+  opacity: 0.5; 
   display: inline-block;
 }
 
@@ -578,7 +578,7 @@ mat-button-toggle{
 
 .dot:hover {
   transform: scale(1.2);
-  opacity: 0.8; /* Slightly more visible on hover */
+  opacity: 0.8; 
 }
 
 .dot.selected {
@@ -1188,7 +1188,6 @@ input[type="number"] {
   cursor: not-allowed;
 }
 
-/* Consolidated Filter Menu Styles */
 .filter-badge {
   position: absolute;
   top: 0;

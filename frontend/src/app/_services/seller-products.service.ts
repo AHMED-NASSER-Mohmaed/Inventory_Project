@@ -17,7 +17,7 @@ export class SellerProductsService {
 
   getPaginatedProducts(page: number, limit: number, filters?: string, sort?: string): Observable<any> {
     const filterParam = filters ? `filters=${filters}` : '';
-    const url = `${this.baseUrl}/OnlineProducts?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
+    const url = `${this.baseUrl}/seller/Product?${filterParam}${filterParam ? '&' : ''}page=${page}&limit=${limit}${sort || ''}`;
     return this.http.get(url, { headers: this.getHeaders() });
   }
 
