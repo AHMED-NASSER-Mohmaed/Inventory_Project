@@ -3,6 +3,7 @@ const router = express.Router();
 const { sendResponseToClint } = require("../utils/apiFeatures");
 const pro_res = require("../utils/authMiddlewaresOptions");
 const catchAsync = require("../utils/catchAsync");
+
 const {
     validateSearchParams,
     validatorFilterParams,
@@ -60,6 +61,10 @@ const productSellerController = {
         sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
     },
 
+    deActiveSellerProduct:async(req,res,next)=>{
+        let result= await OnlineProductService.deActiveSellerProduct(req.params.onProductId);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+    }, 
 
     allowedFilterFields: [['status', 'undefined'], ['isActive', 'undefined']],
     allowedFillterValues: [[APP_CONFIG.APPROVED_STATUS, APP_CONFIG.REJECT_STATUS, APP_CONFIG.PENDING_STATUS, 'undefined'],
@@ -73,45 +78,53 @@ const productSellerController = {
 }
 
 
-router.post("/addPendingProduct",
+router.post("/seller/addPendingProduct",
     pro_res(APP_CONFIG.SELLER),
     catchAsync(productSellerController.addPendingProduct)
 )
 
-    .post("/addNewProduct",
+    .post("/seller/addNewProduct",
         pro_res(APP_CONFIG.SELLER),
         catchAsync(productSellerController.addNewProduct)
     )
-
+    //supper admin
     .patch("/approveProduct/:productId",
         pro_res(APP_CONFIG.SUPPERADMIN),
         catchAsync(productSellerController.approveProduct)
     )
-
+    //supper admin
     .patch("/rejectProduct/:productId",
         pro_res(APP_CONFIG.SUPPERADMIN),
         catchAsync(productSellerController.rejectProduct)
     )
+    .patch("deActiveOnProduct/:productId",
+        pro_res(APP_CONFIG.SUPPERADMIN),
+        catchAsync()
+    )
     //for seller
-    .get("/sellerProduct",
+    .get("/seller/Product",
         pro_res(APP_CONFIG.SELLER),
         validateSortPaginationParams(productSellerController.allowedSort),
         validatorFilterParams(productSellerController.allowedFilterFields, productSellerController.allowedFillterValues),
         validateSearchParams(productSellerController.searchFiledName,productSellerController.searchValueAcoordingNaN),
         catchAsync(productSellerController.getSellerProduct)
     )
-    .patch("/deActiveProduct/:onProductId",
+    //for seller
+    .patch("seller/deActiveProduct/:onProductId",
         pro_res(APP_CONFIG.SELLER),
         catchAsync(productSellerController.deActiveProduct)
     )
-    .patch("/activeProduct/:onProductId",
+    //for seller
+    .patch("/seller/activeProduct/:onProductId",
         pro_res(APP_CONFIG.SELLER),
         catchAsync(productSellerController.activeProduct)
     )
-    .patch("/updateProduct/:onProductId",
+    //for seller
+    .patch("/seller/updateProduct/:onProductId",
         pro_res(APP_CONFIG.SELLER),
         catchAsync(productSellerController.updateProduct)
     )
+
 
 
 
