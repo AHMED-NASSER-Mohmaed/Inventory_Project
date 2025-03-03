@@ -46,6 +46,7 @@ const productSellerController = {
     },
 
     deActiveProduct: async (req, res, next) => {
+        console.log("from controller..")
         let result = await OnlineProductService.deActiveProduct(req.params.onProductId);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
@@ -129,7 +130,7 @@ router.post("/seller/addExistingProduct",
         catchAsync(productSellerController.getSellerProduct)
     )
     //for seller
-    .patch("seller/deActiveProduct/:onProductId",
+    .delete("/seller/deActiveProduct/:onProductId",
         pro_res(APP_CONFIG.SELLER),
         catchAsync(productSellerController.deActiveProduct)
     )
