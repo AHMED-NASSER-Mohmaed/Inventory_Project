@@ -34,21 +34,6 @@ export class ClerkDashboardService {
       return this.http.patch(url, updateData, { headers });
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
   
     // getPaginatedCustomersByStatus(page: number, limit: number, filters?: string, sort?: string): Observable<any> {
     //   const filterParam = filters ? `filters=${filters}` : '';

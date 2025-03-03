@@ -52,7 +52,6 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
   errorMessage: string = '';
   stockCount: number = 0;
 
-  // New responsive carousel data
   products: any[] = [];
   responsiveOptions: any[] = [
     { breakpoint: '1024px', numVisible: 3, numScroll: 3 },
@@ -78,11 +77,9 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
       if (params['id']) {
         this.productId = params['id'];
       } else {
-        // If no ID provided, use a default ID for testing
         this.productId = '67c01abc9c3783c4fa6af8e1';
       }
       
-      // Load cart first, then fetch product details
       this.loadCart();
     });
   }
@@ -111,7 +108,6 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
           this.stockCount =  matchingProduct
           ? Math.max(matchingProduct.stock - matchingProduct.requiredQty, 0) : responseData.stock ;
           
-          // Filter out the default image and prepare carousel images
           const defaultImageUrl = "https://ik.imagekit.io/ysypur5vc/Untitled_azZLiI3tg.jpg";
           this.images = this.product?.images
             .filter((img: ProductImage) => img?.url !== defaultImageUrl)
@@ -119,14 +115,12 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
               src: img.url
             }));
           
-          // If no images remain after filtering, use a placeholder
           if (this.images.length === 0) {
             this.images = [{ src: 'assets/placeholder-image.png' }];
           }
           
           this.isLoading = false;
           
-          // Set stock count from response
         }
       },
       error: (error) => {
@@ -139,7 +133,6 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
 
   addToCart(): void {
     if (this.stockCount > 0) {
-      // Decrement stock count
       this.stockCount--;
       
       console.log('Added product to cart. Remaining stock:', this.stockCount);
@@ -156,7 +149,6 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
     const burgerMenu = document.getElementById("burger");
     const bgOverlay = document.querySelector(".overlay");
 
-    // Toggle to show and hide navbar menu
     if (burgerMenu && bgOverlay && navbarMenu) {
       const burgerClickHandler = () => {
         navbarMenu.classList.add("is-active");
@@ -173,7 +165,6 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
       this.cleanupFunctions.push(() => bgOverlay.removeEventListener("click", overlayClickHandler));
     }
 
-    // Closed navbar menu on links click
     document.querySelectorAll(".menu-link").forEach((link) => {
       const linkClickHandler = () => {
         if (navbarMenu && bgOverlay) {
@@ -185,7 +176,6 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
       this.cleanupFunctions.push(() => link.removeEventListener("click", linkClickHandler));
     });
 
-    // Toggle to show and hide cart section
     const cart = document.getElementById("cart");
     const cartBtn = document.getElementById("cart-btn");
 
@@ -198,7 +188,6 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
       this.cleanupFunctions.push(() => cartBtn.removeEventListener("click", cartBtnClickHandler));
     }
 
-    // Fixed navbar menu on window resizing
     const resizeHandler = () => {
       if (window.innerWidth > 768 && navbarMenu && bgOverlay && navbarMenu.classList.contains("is-active")) {
         navbarMenu.classList.remove("is-active");
@@ -209,15 +198,10 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
     this.cleanupFunctions.push(() => window.removeEventListener("resize", resizeHandler));
   }
   loadCart() {
-    // this.loading = true; 
     this.cartService.getCart(this.sessionId!).subscribe((response) => {
       this.products = response.cart.products;
-      // for(let i = 0; i < this.products.length; i++){
-      //   console.log(this.products[i].productName)
-      // }
+
       console.log(this.products);
-      // this.getSubtotal();
-      // this.getTotalAmount();
       if(localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
         localStorage.removeItem('sessionId');
         this.sessionId = null;
@@ -226,15 +210,11 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
         localStorage.setItem('sessionId', response.sessionId);
           this.sessionId = response.sessionId;
       }
-      // this.spinner.hide();
-      // this.loading = false; 
       this.loadProductDetails();
     },
 
     (error) => {
       console.error('Error loading cart:', error);
-      // this.loading = false; // ✅ Ensure loading is set to false on error
-      // this.spinner.hide();
       this.loadProductDetails();
     }
   );
@@ -245,7 +225,6 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
     if (product.requiredQty + 1 > product.stock) return;
       product.requiredQty += 1;
       if (this.stockCount > 0) {
-        // Decrement stock count
         this.stockCount--;
         
         console.log('Added product to cart. Remaining stock:', this.stockCount);
