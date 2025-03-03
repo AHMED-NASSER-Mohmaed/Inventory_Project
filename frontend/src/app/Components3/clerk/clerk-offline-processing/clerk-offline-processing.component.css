@@ -1204,3 +1204,55 @@ input[type="number"] {
         align-items: flex-start;
     }
 }
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  .order-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .order-table th, .order-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .order-table th {
+    background-color: #333;
+    color: white;
+  }
+  
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .pagination-controls button {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  .pagination-controls button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+  }
+  
+  .pagination-controls span {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+  }
+  

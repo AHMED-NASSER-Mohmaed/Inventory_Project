@@ -100,7 +100,7 @@
                                     </div>
                                 </td>
                             </tr>
-                             <tr *ngFor="let order of dataresponse; let i = index">
+                             <tr *ngFor="let order of paginatedOrders; let i = index">
                                 <td>
                                     <p>{{ order.orderId }}</p>
                                 </td>
@@ -244,6 +244,17 @@
   
 
 
+<div class="pagination-controls my-5">
+  <button (click)="prevPage()" [disabled]="currentPage === 1">
+    <i class='bx bx-chevron-left'></i> Prev
+  </button>
+
+  <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+  <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+    Next <i class='bx bx-chevron-right'></i>
+  </button>
+</div>
 
 
 

@@ -49,9 +49,6 @@ export class DeliveredTableComponent {
     
     // Filter state and pagination
     currentFilter: string = '';
-    currentPage: number = 1;
-    itemsPerPage: number = 10;
-    totalPages: number = 1;
     hasNextPage: boolean = false;
     hasPreviousPage: boolean = false;
   
@@ -112,6 +109,7 @@ export class DeliveredTableComponent {
           console.log('Fetched orders:', data);
           this.orders = data;
           this.dataresponse = this.orders.subOrders; 
+          this.updatePagination(); 
           console.log('Processed data response:', this.dataresponse);
           this.dropdownStates = new Array(this.dataresponse.length).fill(false);
           this.isLoading = false;
@@ -316,6 +314,40 @@ export class DeliveredTableComponent {
     ngOnDestroy(): void {
       this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
+
+        // Pagination Variables
+  currentPage: number = 1;
+  itemsPerPage: number = 5;
+  totalPages: number = 1;
+
+   // Pagination Logic
+   get paginatedOrders(): any[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    return this.dataresponse.slice(startIndex, endIndex);
+  }
+
+  updatePagination(): void {
+    this.totalPages = Math.ceil(this.dataresponse.length / this.itemsPerPage);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
   }
   
 

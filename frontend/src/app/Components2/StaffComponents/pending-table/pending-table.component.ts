@@ -48,9 +48,7 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
 
   
   currentFilter: string = '';
-  currentPage: number = 1;
-  itemsPerPage: number = 10;
-  totalPages: number = 1;
+  
   hasNextPage: boolean = false;
   hasPreviousPage: boolean = false;
 
@@ -112,6 +110,7 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
         console.log(data);
         this.orders = data; 
         this.dataresponse = this.orders.subOrders;
+        this.updatePagination(); 
         console.log(this.dataresponse);
         this.dropdownStates = new Array(this.dataresponse.length).fill(false);
         this.isLoading = false;
@@ -219,10 +218,6 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
         return;
       }
   
-      if (!this.validateFulfilledQuantity()) {
-        this.toaster.error('Fulfilled quantity cannot exceed available stock.', 'Validation Error');
-        return; 
-      }
   
       if (!this.selectedSuborder.products?.length) {
         console.error('Products array is missing or empty.');
@@ -244,7 +239,10 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
         status: newStatus, 
         fulfilledQuantities: { ...fulfilledQuantities }, 
       };
-  
+      if(newStatus == this.status) {
+        this.toaster.info('You have to update the status first!!', 'Info');
+        return;
+      }
       const sub = this.clerkDashboardService
         .updateSuborder(this.selectedSuborder.orderId,
           {
@@ -257,6 +255,7 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
             if (res.message === 'success') {
               this.selectedSuborder = { ...this.selectedSuborder, ...res.updatedSuborder };
               this.toaster.success('Order updated successfully!', 'Success');
+              this.fetchOrders();
             } else {
               this.selectedSuborder.orderStatus = workingBackup.status;
               this.selectedSuborder.products.forEach((product: any) => {
@@ -311,4 +310,38 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
   ngOnDestroy(): void {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
+
+      // Pagination Variables
+      currentPage: number = 1;
+      itemsPerPage: number = 5;
+      totalPages: number = 1;
+    
+       // Pagination Logic
+       get paginatedOrders(): any[] {
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        return this.dataresponse.slice(startIndex, endIndex);
+      }
+    
+      updatePagination(): void {
+        this.totalPages = Math.ceil(this.dataresponse.length / this.itemsPerPage);
+      }
+    
+      goToPage(page: number): void {
+        if (page >= 1 && page <= this.totalPages) {
+          this.currentPage = page;
+        }
+      }
+    
+      nextPage(): void {
+        if (this.currentPage < this.totalPages) {
+          this.currentPage++;
+        }
+      }
+    
+      prevPage(): void {
+        if (this.currentPage > 1) {
+          this.currentPage--;
+        }
+      }
 }
