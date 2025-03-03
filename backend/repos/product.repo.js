@@ -116,6 +116,15 @@ module.exports.productRepo = {
       throw error;
     }
 
+  },
+
+  
+  getAllOnlineProduct:async (filters,sort,page,limit)=>{
+    try{
+
+    }catch(err){
+      throw err;
+    }
   }
 
 

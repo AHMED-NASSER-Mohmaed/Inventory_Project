@@ -181,7 +181,7 @@ module.exports.productService={
             throw error;
         }
     },
-
+    //for seller product list
     getAllAvalibleProduct:async(validatedParams)=>{
         try{
             
@@ -200,7 +200,8 @@ module.exports.productService={
         }catch(error){
             throw error;
         }
-    }
+    },
+    
 
 
     
