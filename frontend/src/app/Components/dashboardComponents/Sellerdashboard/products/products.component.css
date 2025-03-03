@@ -1816,3 +1816,57 @@ input[type="number"] {
 :host .parent3.dark #exportProductModal .modal-footer {
     color: var(--dark); 
 }
+
+/* Add these new styles at the end of the file */
+
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+  text-align: center;
+  min-width: 80px;
+}
+
+.status-badge.pending {
+  background-color: #FFC107;
+  color: #000;
+}
+
+.status-badge.approved {
+  background-color: #4CAF50;
+  color: #fff;
+}
+
+.status-badge.rejected {
+  background-color: #F44336;
+  color: #fff;
+}
+
+.modal-badge {
+  font-size: 0.9rem;
+  padding: 6px 12px;
+}
+
+.badge {
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+  text-align: center;
+  min-width: 60px;
+}
+
+.badge-success {
+  background-color: #4CAF50;
+  color: #fff;
+}
+
+.badge-danger {
+  background-color: #F44336;
+  color: #fff;
+}
+
+/* You can add these at the end of your existing CSS file */
