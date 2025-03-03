@@ -107,7 +107,7 @@ class OrderContainerService {
     for (const item of cart.products) {
       // get offline product
       const OfflineProduct = await offlineProductRepo.findOfflineProductById(item.offlineProduct);
-
+      console.log(OfflineProduct);
       // get the seller ID as a string (after populating, seller is an object)
       let sellerId = OfflineProduct?.seller?._id.toString();
       if(!sellerId)sellerId = APP_CONFIG.COMPANY_ID;
@@ -121,7 +121,7 @@ class OrderContainerService {
 
       // add product details to the seller's order
       sellerOrders[sellerId].products.push({
-        product: OfflineProduct.product._id, // reference to the main product itself so we can retrieve the related data like images         quantity: item.requiredQty,
+        product: OfflineProduct?.product._id, // reference to the main product itself so we can retrieve the related data like images         quantity: item.requiredQty,
         price: OfflineProduct.product.price,
         requestedQuantity: item.requiredQty,
         fulfilledQuantity : Math.min(item.requiredQty, OfflineProduct.stock), // fulfilled quantity is the minimum between the required quantity and the available stock

@@ -154,7 +154,7 @@ export class ClerkOfflineCreateComponent implements OnInit {
     this.currentPage = pageNumber;
     this.products = [];
   
-    this.productsService.getPaginatedProducts(
+    this.clerkDashboardService.getPaginatedProducts(
       this.currentPage, 
       this.itemsPerPage, 
       this.sort,
@@ -171,9 +171,9 @@ export class ClerkOfflineCreateComponent implements OnInit {
             const matchingProduct = this.tempProducts.find(
               (pro) => pro.onlineProductId === item.product._id
             );
-  
+            console.log(item);
             return {
-              _id: item.product._id,
+              _id: item._id,
               name: item.product.name,
               price: item.product.price,
               imgUrl: item.product.images.length > 1 
@@ -268,7 +268,7 @@ export class ClerkOfflineCreateComponent implements OnInit {
 
   addToOrder(product: any) {
     if (product.stock > 0) {
-      let existingProduct = this.tempProducts.find((p: any) => p._id === product._id);
+      let existingProduct = this.tempProducts.find((p: any) => p._id == product._id);
   
       if (existingProduct) {
         existingProduct.requiredQty += 1;
@@ -301,12 +301,41 @@ export class ClerkOfflineCreateComponent implements OnInit {
     //   this.tempProducts = this.tempProducts.filter((p) => p._id !== product._id);
     // }
   }
+
+
+  removeProduct(product: any) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you really want to remove ${product.name} from the order?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, remove it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            product.stock += product.requiredQty; 
+            product.requiredQty = 0; 
+            this.tempProducts = this.tempProducts.filter((p) => p._id !== product._id); 
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Removed!',
+                text: `${product.name} has been removed from your order.`,
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+}
+
+
   
   
 
   getSubtotal(): number {
-    return this.tempProducts.reduce((acc, product) => acc + (product.price * product.requiredQty), 0);
+    return (this.tempProducts || []).reduce((acc, product) => acc + (product.price * product.requiredQty), 0);
   }
+
 
   getTotalAmount(): number {
     return this.getSubtotal();
@@ -328,19 +357,45 @@ export class ClerkOfflineCreateComponent implements OnInit {
             phone1: this.phone1,
             phone2: this.phone2
         };
+
         this.clerkDashboardService.placeOrder(order).subscribe(
-          response => {
-            console.log('Order Response:', response);
-          },
-          error => {
-            console.error('Order Error:', error);
-          }
+            response => {
+                console.log('Order Response:', response);
+                
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Order Placed!',
+                    text: 'The order has been placed successfully.',
+                    confirmButtonText: 'OK'
+                });
+
+                this.tempProducts = [];
+            },
+            error => {
+                console.error('Order Error:', error);
+                
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Order Failed!',
+                    text: 'Something went wrong. Please try again.',
+                    confirmButtonText: 'OK'
+                });
+            }
         );
-        console.log("Order placed successfully!", order);
     } else {
+       
+        Swal.fire({
+            icon: 'warning',
+            title: 'Order Not Placed',
+            text: 'Ensure products are selected and phone number is provided.',
+            confirmButtonText: 'OK'
+        });
+
         console.warn("Order cannot be placed. Ensure products and phone1 are provided.");
     }
-}
+  }
 
 
   
