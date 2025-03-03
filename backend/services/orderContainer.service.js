@@ -4,7 +4,7 @@ const orderContainerRepository = require("../repos/orderContainer.repo");
 const onlineProductRepo = require("../repos/tempOnlineProduct.repo");
 const offlineProductRepo = require("../repos/tempOfflineProducts.repo");
 const AppError = require("../utils/appError");
-
+const PaymentService = require("../services/payment.service")
 const UserProductRpo = require("../repos/userProducts.repo");
 
 class OrderContainerService {
@@ -35,14 +35,34 @@ class OrderContainerService {
 
       const productPrice =
         Number(OnlineProduct.price) || Number(OnlineProduct.product.price);
-      // add product details to the seller's order
-      sellerOrders[sellerId].products.push({
-        product: OnlineProduct.product._id, // reference to the main product itself so we can retrieve the related data like images         quantity: item.requiredQty,
-        price: productPrice,
-        requestedQuantity: item.requiredQty,
-        totalPrice: item.requiredQty * productPrice,
-        onlineProduct: OnlineProduct._id, // reference to the online product so we can retrieve the stock
-      });
+      
+        if(cart.paymentMethod == 'credit'){
+          sellerOrders[sellerId].products.push({
+            product: OnlineProduct?.product._id, // reference to the main product itself so we can retrieve the related data like images         quantity: item.requiredQty,
+            price: productPrice,
+            requestedQuantity: item.requiredQty,
+            fulfilledQuantity: Math.min(item.requiredQty, OnlineProduct.stock), // fulfilled quantity is the minimum between the required quantity and the available stock
+            canceledQuantity: Math.max(0, item.requiredQty - OnlineProduct.stock), // canceled quantity is the maximum between 0 and the difference between the required quantity and the available stock (if the stock is enough, canceled quantity will be 0)
+            totalPrice:
+              Math.min(item.requiredQty, OnlineProduct.stock) *
+              productPrice,
+            onlineProduct: OnlineProduct._id, // reference to the online product so we can retrieve the stock
+          });
+    
+          await onlineProductRepo.updateOnlineProduct(item.onlineProduct, {
+            $inc: { stock: -Math.min(item.requiredQty, OnlineProduct.stock) }, // update the stock in the database after the order is fulfilled
+          });
+        }else{
+
+          // add product details to the seller's order
+          sellerOrders[sellerId].products.push({
+            product: OnlineProduct.product._id, // reference to the main product itself so we can retrieve the related data like images         quantity: item.requiredQty,
+            price: productPrice,
+            requestedQuantity: item.requiredQty,
+            totalPrice: item.requiredQty * productPrice,
+            onlineProduct: OnlineProduct._id, // reference to the online product so we can retrieve the stock
+          });
+        }
     }
 
     // create the orderContainer first
@@ -54,7 +74,8 @@ class OrderContainerService {
       phone1: cart.phone1, // primary phone number
       phone2: cart.phone2, // secondary phone number
       branch: APP_CONFIG.ONLINE_BRANCH_ID, // Branch (for offline orders)
-      status: "pending",
+      status: (cart.paymentMethod) == 'credit'? 'shipped': 'pending',
+      paymentMethod: cart.paymentMethod,
     }; // if it's offline, there's no need to use any other status than "Completed" as the order is already completed and delivered dircetly to the customer
 
     // save the orderContainer to the database
@@ -64,14 +85,24 @@ class OrderContainerService {
     );
     // console.log(orderContainer);
     // create orders for each seller and link them to the orderContainer
+    let totalQtyForWholeOrder = 0;
+    let totalPriceForWholeOrder = 0;
     const orderPromises = Object.values(sellerOrders).map(
       async ({ seller, products }) => {
         // calculate total quantity and total price for whole order not for each product
-        const totalQty = products.reduce(
+        let totalQty = products.reduce(
           (sum, p) => sum + p.requestedQuantity,
           0
         ); // Sum of all quantities in the order products
-        const totalPrice = products.reduce((sum, p) => sum + p.totalPrice, 0); // Sum of all total prices in the order products
+        let totalPrice = products.reduce((sum, p) => sum + p.totalPrice, 0); // Sum of all total prices in the order products
+        if(cart.paymentMethod == 'credit'){
+          totalQty = products.reduce(
+            (sum, p) => sum + p.fulfilledQuantity,
+            0
+          );
+        }
+        totalPriceForWholeOrder += totalPrice;
+        totalQtyForWholeOrder += totalQty;
         let tempClerk = null;
         if (!seller.equals(APP_CONFIG.COMPANY_ID)) {
           tempClerk = seller; // seller would be the clerk in case of external seller (in order to process his own orders )
@@ -86,7 +117,7 @@ class OrderContainerService {
           clerk: tempClerk, // clerk ID (for offline orders)
           cashier: null, // cashier ID (for offline orders)
           orderContainer: orderContainer._id, // Link the order to the orderContainer
-          status: "pending",
+          status: (cart.paymentMethod) == 'credit'? 'shipped': 'pending',
           subOrderType: "online", // added to be able to return the suborders directly related to the online store
         };
 
@@ -103,8 +134,11 @@ class OrderContainerService {
       order: order._id,
     }));
     await orderContainer.save();
-
+    if(cart.paymentMethod == 'credit'){
+      return await PaymentService.createStripeCheckoutSession(orderContainer._id, totalPriceForWholeOrder, totalQtyForWholeOrder);
+    }
     return orderContainer;
+
   }
 
   async createOfflineOrderContainer(cart) {

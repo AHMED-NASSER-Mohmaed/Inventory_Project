@@ -146,6 +146,7 @@ class OrderContainerController {
     cart.phone1 = form.phone1;
     cart.phone2 = form.phone2;
     cart.address = form.address;
+    cart.paymentMethod = form.paymentMethod;
     const orderContainer =
       await OrderContainerService.createOnlineOrderContainerFromCart(cart);
     await CartService.clearCartForCustomer(customerId);

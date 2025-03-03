@@ -6,11 +6,11 @@ const AppError = require("../utils/appError");
 const stripe = require("stripe")(APP_CONFIG.STRIPE_SECRET_KEY);
 
 class PaymentService {
-  async createStripeCheckoutSession(orderContainerId, totalAmount) {
+  async createStripeCheckoutSession(orderContainerId, totalAmount, totalQuantity) {
     if (!orderContainerId || !totalAmount) {
       throw new AppError("orderContainerId and totalAmount are required", 400);
     }
-
+    console.log(totalAmount);
     const orderContainer = await orderContainerRepository.getOrderContainerById(
       orderContainerId
     );
@@ -19,9 +19,9 @@ class PaymentService {
     }
 
     const customer = await UserRepository.getUser(orderContainer.customer);
-    if (!customer) {
-      throw new AppError("Customer not found", 404);
-    }
+    // if (!customer) {
+    //   throw new AppError("Customer not found", 404);
+    // }
 
     const successUrl = `http://localhost:3000/stripe/success?session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `http://127.0.0.1:3000/products`;
@@ -36,18 +36,18 @@ class PaymentService {
             product_data: { name: "Order Payment" },
             unit_amount: Math.round(totalAmount * 100), // amount in cents
           },
-          quantity: 1,
+          quantity: totalQuantity,
         },
       ],
       success_url: successUrl,
       cancel_url: cancelUrl,
       client_reference_id: orderContainerId.toString(),
       metadata: {
-        firstName: customer.firstName,
-        lastName: customer.lastName,
-        phone: customer.phone,
+        firstName: (customer) ? customer.firstName : "unknown",
+        lastName: (customer) ? customer.lastName : "unknown",
+        phone: orderContainer?.phone1,
         price: totalAmount,
-        customer: customer._id.toString(),
+        customer: (customer) ? customer._id.toString() : "unknown" ,
       },
     });
 

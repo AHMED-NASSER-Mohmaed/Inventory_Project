@@ -26,26 +26,20 @@ const OnlineProductsRepository = {
           select: "firstName lastName companyName",
         })
         .populate({
-          path: "product",
-          select: "name code price images description brand category",
-          populate: [
-            {
-              path: "brand",
-              select: "Bname", // Selecting required fields from brand
-            },
-            {
-              path: "category",
-              select: "Cname", // Selecting required fields from category
-            },
-          ],
+          path: "brand",
+          select: "Bname",
         })
-        .select("stock");
-    } catch (error) {
-
+        .populate({
+          path: "category",
+          select: "Cname",
+        })
+        .select("stock name code price images description brand category");
+  
     } catch (error) {
       throw error;
     }
   },
+  
 
   updateSellerRecordQty: async (productId, sellerId, newQty) => {
     try {

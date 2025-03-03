@@ -144,51 +144,67 @@ export class CheckoutDetailsComponent implements OnInit {
 
 
   onSubmit() {
-    if (this.checkoutData.email && this.checkoutData.firstName && this.checkoutData.lastName && this.checkoutData.paymentMethod) {
+    if (
+      this.checkoutData.email &&
+      this.checkoutData.firstName &&
+      this.checkoutData.lastName &&
+      this.checkoutData.paymentMethod
+    ) {
       this.cartService.placeOrder(this.checkoutData).subscribe(
-      (response) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Order Placed!',
-          text: 'Your order has been placed successfully, please follow it on your profile.',
-          confirmButtonText: 'OK',
-        }).then(() => {
-          this.loadCart();
-          this.router.navigate(['/']);
-          console.log('Order Response:', response);
-          this.checkoutData = {
-            email: '',
-            firstName: '',
-            lastName: '',
-            gov: '',
-            postcode: '',
-            address: '',
-            phone1: '',
-            phone2: '',
-            notes: '',
-            paymentMethod: ''
-          };
-        });
-      },
-      (error) => {
-        console.error('Order submission failed', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Order Failed',
-          text: 'Something went wrong. Please try again.',
-          confirmButtonText: 'OK',
-        });
-      }
-    );
-  } else {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Missing Fields',
-      text: 'Please fill in all required fields before submitting.',
-      confirmButtonText: 'OK',
-    });
+        (response) => {
+          console.log(`response: ${response}`);
+  
+          if (response.orderContainer && response.orderContainer.url) {
+            // Redirect to the given URL
+            window.location.href = response.orderContainer.url;
+          } else {
+            // If no URL, execute the remaining logic
+            Swal.fire({
+              icon: 'success',
+              title: 'Order Placed!',
+              text: 'Your order has been placed successfully, please follow it on your profile.',
+              confirmButtonText: 'OK',
+            }).then(() => {
+              this.loadCart();
+              this.router.navigate(['/']);
+              console.log('Order Response:', response);
+  
+              // Reset checkout data
+              this.checkoutData = {
+                email: '',
+                firstName: '',
+                lastName: '',
+                gov: '',
+                postcode: '',
+                address: '',
+                phone1: '',
+                phone2: '',
+                notes: '',
+                paymentMethod: '',
+              };
+            });
+          }
+        },
+        (error) => {
+          console.error('Order submission failed', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Order Failed',
+            text: 'Something went wrong. Please try again.',
+            confirmButtonText: 'OK',
+          });
+        }
+      );
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Fields',
+        text: 'Please fill in all required fields before submitting.',
+        confirmButtonText: 'OK',
+      });
+    }
   }
-}
+  
 
   
 }
