@@ -1,0 +1,91 @@
+{
+  "name": "ngx-spinner",
+  "version": "19.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Napster2210/ngx-spinner.git"
+  },
+  "author": {
+    "name": "Yuvraj Chauhan",
+    "email": "yuvrajchauhan41@gmail.com"
+  },
+  "keywords": [
+    "angular",
+    "spinner",
+    "angular4",
+    "angular5",
+    "angular6",
+    "angular7",
+    "angular8",
+    "angular9",
+    "angular10",
+    "angular11",
+    "angular12",
+    "angular13",
+    "angular14",
+    "angular15",
+    "angular16",
+    "angular17",
+    "angular18",
+    "angular19",
+    "loading-spinner",
+    "loading",
+    "loading-animations",
+    "loading-indicator",
+    "loading-screen",
+    "loadingview",
+    "loading-page",
+    "ngx",
+    "ng4",
+    "ng5",
+    "ng6",
+    "ng7",
+    "ng8",
+    "ng9",
+    "ng10",
+    "ng11",
+    "ng12",
+    "ng13",
+    "ng14",
+    "ng15",
+    "ng16",
+    "ng17",
+    "ng18",
+    "ng19",
+    "loadingscreen",
+    "progress",
+    "progress-loader",
+    "progress-indicators",
+    "progress-circle",
+    "loaders",
+    "ivy"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Napster2210/ngx-spinner.git/issues"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=19.0.0",
+    "@angular/core": ">=19.0.0",
+    "@angular/animations": ">=19.0.0"
+  },
+  "schematics": "./schematics/collection.json",
+  "ng-add": {
+    "save": "dependencies"
+  },
+  "module": "fesm2022/ngx-spinner.mjs",
+  "typings": "index.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./fesm2022/ngx-spinner.mjs"
+    }
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "tslib": "^2.3.0"
+  }
+}

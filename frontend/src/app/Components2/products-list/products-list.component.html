@@ -103,6 +103,9 @@
                     </div>
                 </div>
             </div>
+            <div *ngIf="products.length === 0" class="text-center my-4">
+                <p class="text-muted">No products found matching your search criteria.</p>
+            </div>
         </div>
     </div>
 </div>

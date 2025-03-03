@@ -179,7 +179,7 @@ export class ProductsListComponent implements OnInit {
   
             return {
               _id: item.product._id,
-              name: item.product.name,
+              "name": item.product.name,
               price: item.product.price,
               imgUrl: item.product.images.length > 1 
                 ? item.product.images[1].url 

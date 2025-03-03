@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@angular/platform-browser": "^19.2.0",
+    "ngx-spinner": "^19.0.0"
+  }
+}
