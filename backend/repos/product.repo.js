@@ -3,6 +3,7 @@ const Product = require('../models/product.model');
 const { APP_CONFIG } = require('../config/app.config');
 const mongoose = require("mongoose");
 const { inboxResult } = require('../utils/apiFeatures');
+const { matches } = require('lodash');
 // const { inboxResult } = require("../utils/apiFeatures")
 
 module.exports.productRepo = {
@@ -97,7 +98,7 @@ module.exports.productRepo = {
   getAvalibaleProduct: async (filters, sort, page, limit) => {
     try {
 
-      let [results,total] = await Promise.all([
+      let [results, total] = await Promise.all([
 
         await Product.find(filters)
           .sort(sort)
@@ -106,23 +107,70 @@ module.exports.productRepo = {
           .select("_id name code images price description")
           .lean(),
 
-         await Product.countDocuments(filters)
+        await Product.countDocuments(filters)
 
       ]);
 
-      return inboxResult(results,total,page,limit);
+      return inboxResult(results, total, page, limit);
 
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      throw err;
     }
 
   },
 
-  
-  getAllOnlineProduct:async (filters,sort,page,limit)=>{
-    try{
 
-    }catch(err){
+  getAllOnlineProduct: async (filters, sort, page, limit) => {
+    try {
+
+
+
+      let [results, total] = await Promise.all([
+
+        await Product.aggregate([
+          {
+            $match: {
+              ...filters
+            }
+
+          }, {
+            $lookup: {
+              from: "OnlineProducts",
+              localFiled: "sellers",
+              forgeignField: "_id",
+              as: "onlineProduct"
+            }
+          },
+          {
+            $lookup: {
+              from: "seller",
+              localFiled: "OnlineProducts.sellers",
+              forgeignField: "_id",
+              as: "seller"
+            }
+          },
+          { $sort: sort },
+          { $skip: (page - 1) * limit },
+          { $limit: limit },
+        ]),
+
+        await Product.aggregate([
+          {
+            $match: {
+              ...filters
+            }
+
+          }, {
+            $count: "total"
+          }
+        ])
+
+      ]);
+
+      return inboxResult(results, total, page, limit);
+
+
+    } catch (err) {
       throw err;
     }
   }
@@ -149,7 +197,7 @@ const Product = require('../models/product.model');
 const AppError = require('../utils/appError');
 const { inboxResult } = require("../utils/apiFeatures")
 
-class ProductRepository {
+class ProductR epository {
 
   async createProduct(productData) {
     try {

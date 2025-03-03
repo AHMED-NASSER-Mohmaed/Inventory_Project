@@ -53,7 +53,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
   return (req, res, next) => {
 
     let filters = {}
-
+    console.log(searchFiledName, searchValueAcoordingNaN);
 
     if (req.query.filters) {
       try {
@@ -77,7 +77,7 @@ const validateSearchParams = (searchFiledName, searchValueAcoordingNaN) => {
 
           const isValueNaN = searchValueAcoordingNaN[filterIndex];
 
-
+          
 
           if (isValueNaN) {
             if (!['branch', 'brand', 'category'].includes(field))

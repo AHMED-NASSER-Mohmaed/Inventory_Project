@@ -133,8 +133,22 @@ const ProductController = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
+    getAllOnlineProduct:async(req,res,next)=>{
+        
+        if(req.validatedParams.filters)
+            req.validatedParams.filters={};
+
+        req.validatedParams.filters['isActive']=true;
+        req.validatedParams.filters['status']=APP_CONFIG.APPROVED_STATUS;
+
+
+        let result = await productService.getAllAvalibleProduct(req.validatedParams);
+        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
+        
+    },
+
     searchFiledName: ["code", "brand", "category", "name"],
-    searchValueAcoordingNaN: [true, true, true, , true],
+    searchValueAcoordingNaN: [true, true, true, true],
 
     allowedSort: ["price"],
 
@@ -159,6 +173,7 @@ router
     )
 
     .get("/getAllAvailableProduct",
+        
         pro_res(APP_CONFIG.SELLER),
 
         validateSortPaginationParams(ProductController.allowedSort),
@@ -170,6 +185,13 @@ router
 
         catchAsync(ProductController.getAllAvailbleProduct)
 
+    )
+
+    .get("/getAllOnlineProductInfo",
+        pro_res(APP_CONFIG.SUPPERADMIN),
+        validateSortPaginationParams(),
+        validatorFilterParams([['undefined']] , [['undefined']]),
+        catchAsync(ProductController.getAllOnlineProduct)
     )
 
     .delete("/product/delete/:productId",
