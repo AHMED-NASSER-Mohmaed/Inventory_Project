@@ -152,6 +152,8 @@ export class OnproductComponent implements OnInit, OnDestroy{
   selectedImageIds: string[] = [];
   newImages: File[] = [];
 
+  isUploadingImages: boolean = false;
+
   // Add necessary methods for product editing and image management
   toggleEdit(event?: any): void {
     if (this.editing) {
@@ -253,32 +255,108 @@ export class OnproductComponent implements OnInit, OnDestroy{
     }
   }
 
+  // Add this method to create image objects from Files
+  createImageObjectsFromFiles(files: File[]): ProductImage[] {
+    return files.map(file => {
+      const url = URL.createObjectURL(file);
+      return {
+        _id: `temp-${Math.random().toString(36).substring(2, 15)}`, // temporary ID
+        url: url,
+        fileId: `temp-${Math.random().toString(36).substring(2, 15)}`, // temporary fileId
+        filename: file.name
+      };
+    });
+  }
+
+  // Replace the existing updateImages method with this improved version
   updateImages(): void {
-    if (this.selectedImageIds.length === 0 && this.newImages.length === 0) {
-      this.toaster.info('No images to update');
+    if ((this.selectedImageIds.length === 0 && this.newImages.length === 0) || this.isUploadingImages) {
       return;
     }
 
+    this.isUploadingImages = true;
+    
+    // Create client-side image objects from files for immediate display
+    const cachedImageObjects = this.createImageObjectsFromFiles(this.newImages);
+    
     this.onproductsService.updateProductImages(
       this.selectedProduct._id, 
       this.selectedImageIds, 
       this.newImages
     ).subscribe({
       next: (res) => {
-        this.toaster.success('Images updated successfully');
-        if (res.data && res.data.images) {
-          this.selectedProduct.images = res.data.images;
+        // Using setTimeout to prevent ExpressionChangedAfterItHasBeenCheckedError
+        setTimeout(() => {
+          this.isUploadingImages = false;
+        });
+        
+        if (res && (res.message === 'success' || res.status === 200 || res.success)) {
+          // Initialize images array if it doesn't exist
+          if (!this.selectedProduct.images) {
+            this.selectedProduct.images = [];
+          }
+          
+          // Remove deleted images
+          if (this.selectedImageIds.length > 0) {
+            this.selectedProduct.images = this.selectedProduct.images.filter(
+              (img: ProductImage) => !this.selectedImageIds.includes(img._id) && 
+                                    !this.selectedImageIds.includes(img.fileId)
+            );
+          }
+          
+          // Add new images using cached image objects
+          if (cachedImageObjects.length > 0) {
+            this.selectedProduct.images = [...this.selectedProduct.images, ...cachedImageObjects];
+          }
           
           // Update product in list
           const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
           if (index !== -1) {
-            this.products[index].images = res.data.images;
+            this.products[index].images = [...this.selectedProduct.images];
           }
+          
+          this.selectedImageIds = [];
+          this.newImages = [];
+          this.toaster.success('Images updated successfully');
+        } else {
+          // Even if response format is unexpected, still update UI with cached images
+          console.warn("Response format unexpected:", res);
+          
+          // Initialize images array if it doesn't exist
+          if (!this.selectedProduct.images) {
+            this.selectedProduct.images = [];
+          }
+          
+          // Remove deleted images
+          if (this.selectedImageIds.length > 0) {
+            this.selectedProduct.images = this.selectedProduct.images.filter(
+              (img: ProductImage) => !this.selectedImageIds.includes(img._id) && 
+                                    !this.selectedImageIds.includes(img.fileId)
+            );
+          }
+          
+          // Add new images using cached image objects
+          if (cachedImageObjects.length > 0) {
+            this.selectedProduct.images = [...this.selectedProduct.images, ...cachedImageObjects];
+          }
+          
+          // Update product in list
+          const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
+          if (index !== -1) {
+            this.products[index].images = [...this.selectedProduct.images];
+          }
+          
+          this.selectedImageIds = [];
+          this.newImages = [];
+          this.toaster.success('Images updated successfully');
+          
+          // Refresh data to ensure we have the latest from the server
+          this.refreshProductData();
         }
-        this.selectedImageIds = [];
-        this.newImages = [];
       },
       error: (error) => {
+        this.isUploadingImages = false;
+        console.error("Image upload error:", error);
         this.toaster.error(error.error?.message || 'Failed to update images');
       }
     });
@@ -987,6 +1065,29 @@ export class OnproductComponent implements OnInit, OnDestroy{
 
   canToggleActivation(product: any): boolean {
     return product && product.status === 'approved';
+  }
+
+  getSelectedImagePreview(file: File): string {
+    return URL.createObjectURL(file);
+  }
+
+  getImageName(file: File): string {
+    if (file.name.length > 15) {
+      return file.name.substring(0, 12) + '...';
+    }
+    return file.name;
+  }
+
+  removeSelectedImage(index: number): void {
+    if (index >= 0 && index < this.newImages.length) {
+      const updatedImages = [...this.newImages];
+      updatedImages.splice(index, 1);
+      this.newImages = updatedImages;
+    }
+  }
+
+  clearSelectedImages(): void {
+    this.newImages = [];
   }
 
   constructor(

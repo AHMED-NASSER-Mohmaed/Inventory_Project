@@ -127,6 +127,8 @@ export class SignupComponent implements OnDestroy {
       },
       complete: () => {
         console.log('Signup Complete');
+        this.router.navigateByUrl('/LandingPage');
+        localStorage.removeItem('token');
       }
     })
   }
