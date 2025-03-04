@@ -261,6 +261,41 @@ input[type="radio"] {
     border: 1.3px solid rgb(233, 168, 168);
 }
 
+.password-requirements {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.password-requirements small {
+  color: #777;
+  font-size: 0.7em;
+  text-align: left;
+  margin-top: 0;
+  display: block;
+  font-style: italic;
+}
+
+.password-error {
+  margin-top: 0;
+  margin-bottom: 8px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.password-error small {
+  color: #dc3545;
+  font-size: 0.75em;
+  text-align: left;
+  margin-top: 2px;
+  margin-bottom: 0;
+  display: block;
+  font-style: italic;
+  white-space: normal;
+  width: 100%;
+  padding-left: 3px;
+  font-weight: 500; 
+}
+
 @media (max-width: 650px) {
 	section {
 		width: 300px;

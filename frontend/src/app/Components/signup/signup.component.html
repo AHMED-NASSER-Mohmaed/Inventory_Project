@@ -68,6 +68,15 @@
             <input type="password" [(ngModel)]="account.passwordConfirm" name="passwordConfirm" id="passwordConfirm" placeholder="Confirm Password" required [pattern]="account.password" #passwordConfirm="ngModel" [ngClass]="{'valid': passwordConfirm.valid, 'invalid': passwordConfirm.invalid && passwordConfirm.touched}">
 
           </div>
+
+          <div class="password-error" *ngIf="password.invalid && password.touched">
+            <small>Password requires: 8+ chars, uppercase, lowercase, number and special character.</small>
+          </div>
+
+          <div class="password-error" *ngIf="passwordConfirm.invalid && passwordConfirm.touched && password.valid">
+            <small>Passwords don't match.</small>
+          </div>
+
           <div *ngIf="account.userType === 'seller'">
             <input type="text" [(ngModel)]="account.SSN" name="ssn" id="ssn" placeholder="SSN" required pattern="^\d{14}$" #ssn="ngModel" [ngClass]="{'valid': ssn.valid, 'invalid': ssn.invalid && ssn.touched}">
 
