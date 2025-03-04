@@ -66,7 +66,7 @@ class OrderContainerController {
 
     this.router.get(
       "/order-container-offline",
-      pro_res("clerk", "cashier"),
+      pro_res("clerk", "cashier", "admin"),
       catchAsync(this.getOfflineOrderContainers)
     );
 
