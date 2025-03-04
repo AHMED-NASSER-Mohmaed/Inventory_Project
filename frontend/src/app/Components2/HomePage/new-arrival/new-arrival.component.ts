@@ -135,10 +135,10 @@ export class NewArrivalComponent implements OnInit {
       error: (error) => {
         console.error("Error adding to cart:", error);
         Swal.fire({
-          icon: 'info',
-          title: 'Oops!',
-          text: 'Product Out of Stock!',
-        });
+            icon: 'info',
+            title: 'Oops!',
+            text: error.error.message,
+          });
       }
     });
   }

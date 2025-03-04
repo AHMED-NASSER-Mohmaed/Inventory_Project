@@ -348,12 +348,10 @@ export class ProductsListComponent implements OnInit {
           });
         },
         error: (error) => {
-          console.error("Error adding to cart:", error);
-          
           Swal.fire({
             icon: 'info',
             title: 'Oops!',
-            text: 'Product Out of Stock!',
+            text: error.error.message,
           });
         }
       });
