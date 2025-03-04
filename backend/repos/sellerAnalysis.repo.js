@@ -4,6 +4,25 @@ const OnlineProducts = require("../models/onlineProducts.model");
 const mongoose = require("mongoose");
 
 class SellerAnalysisRepository {
+  async getSellerTotalProductsByStatus(sellerId) {
+    return await OnlineProducts.aggregate([
+      {
+        $match: {
+          seller: new mongoose.Types.ObjectId(sellerId),
+          isActive: true,
+        },
+      },
+      {
+        $group: {
+          _id: "$status",
+          totalProducts: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+  }
   // Get monthly revenue for a seller from orders that are delivered/completed
   async getSellerMonthlyRevenue(sellerId) {
     return await Order.aggregate([
@@ -110,7 +129,7 @@ class SellerAnalysisRepository {
         },
       },
       { $sort: { totalQuantity: -1 } },
-      { $limit: 10 },
+      { $limit: 5 },
     ]);
   }
 

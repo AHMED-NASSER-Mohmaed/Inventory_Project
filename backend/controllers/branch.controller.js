@@ -57,8 +57,6 @@ const branchController = {
         const result = await branchService.getCountByFilter(req.validatedParams.filters);
         sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
     }
-
-
 }
 
 router.post("/branches",pro_res(APP_CONFIG.SUPPERADMIN),

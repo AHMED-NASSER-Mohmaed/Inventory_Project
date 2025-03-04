@@ -230,6 +230,7 @@ module.exports.productRepo = {
               brand: { $first: "$brand" },
               isActive: { $first: "$isActive" },
               status: { $first: "$status" },
+              description:{ $first: "$description" },
               createdAt: { $first: "$createdAt" },
 
               sellerProductsInfo: { $push: "$sellerProductsInfo" } // Reassemble the array after populating seller details
