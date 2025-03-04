@@ -42,8 +42,11 @@ import { ClerkProfileComponent } from './Components/clerk-profile/clerk-profile.
 import { CashierProfileComponent } from './Components/cashier-profile/cashier-profile.component';
 import { auth7Guard } from './auth7.guard';
 import { auth8Guard } from './auth8.guard';
+import { CustomerOrderDetailsComponent } from './Components/customer-order-details/customer-order-details.component';
+import { auth9Guard } from './_guards/auth9.guard';
 import { ClerkOfflineDashboardComponent } from './Components3/clerk/clerk-offline-dashboard/clerk-offline-dashboard.component';
 import { CashierOfflineDashboardComponent } from './Components3/cashier/cashier-offline-dashboard/cashier-offline-dashboard.component';
+import { auth10Guard } from './_guards/auth10.guard';
 
 
 export const routes: Routes = [
@@ -201,6 +204,28 @@ export const routes: Routes = [
         ]
     },
     {
+        path: '',
+        component: LayoutComponent,
+        children: [
+            {
+                path: 'Adashboard',
+                loadChildren: () => import('./Components/dashboardComponents/Admindashboard/Admindashboard.routes').then(s => s.dashRoutes2),
+                canActivate: [auth9Guard]
+            }
+        ]
+    },
+    {
+        path: '',
+        component: LayoutComponent,
+        children: [
+            {
+                path: 'Sdashboard',
+                loadChildren: () => import('./Components/dashboardComponents/Sellerdashboard/Sellerdashboard.routes').then(s => s.dashRoutes3),
+                canActivate: [auth10Guard]
+            }
+        ]
+    },
+    {
         path: 'lock',
         component: LockComponent,
         title: 'Locked'
@@ -225,6 +250,11 @@ export const routes: Routes = [
                 path: 'resetpassword',
                 component: ResetpasswordComponent,
                 title: 'Reset Password'
+            },
+            {
+                path: 'orders',
+                component: CustomerOrderDetailsComponent,
+                title: 'Orders'
             }
         ]
     },

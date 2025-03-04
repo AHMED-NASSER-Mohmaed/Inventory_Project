@@ -1,0 +1,189 @@
+<div class="rightbox">
+    <div class="profile">
+        <h1>Orders History</h1>
+        
+        <div *ngIf="isLoading" class="loading-container">
+            <mat-spinner class="mat-spinner"></mat-spinner>
+        </div>
+        
+        <div *ngIf="!isLoading && allOrders.length === 0" class="no-orders">
+            <p>You don't have any orders yet.</p>
+        </div>
+        
+        <div *ngIf="!isLoading && allOrders.length > 0" class="orders-container">
+            <div class="orders-grid">
+                <div class="order-card" *ngFor="let order of orders">
+                    <div class="order-card-header">
+                        <span class="order-id">#{{order.orderId.substring(order.orderId.length - 8)}}</span>
+                        <span class="order-status" [ngClass]="getStatusClass(order.orderStatus)">{{order.orderStatus}}</span>
+                    </div>
+                    <div class="order-card-body">
+                        <div class="order-date">
+                            <i class="bx bx-calendar"></i>
+                            {{order.createdAt | date:'mediumDate'}}
+                        </div>
+                        <div class="order-items">
+                            <i class="bx bx-package"></i>
+                            {{order.orderTotalQty}} items
+                        </div>
+                        <div class="order-price">
+                            {{formatPrice(order.orderTotalPrice)}}
+                        </div>
+                    </div>
+                    <div class="order-card-footer">
+                        <div class="button-container">
+                            <button class="view-details-btn" (click)="showOrderDetails(order)">
+                                View Details
+                            </button>
+                            <button *ngIf="order.orderStatus.toLowerCase() === 'pending'" 
+                                    class="cancel-order-btn card-cancel-btn" 
+                                    (click)="cancelOrder(order.orderId)">
+                                <i class="bx bx-x-circle"></i> Cancel Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pagination-controls">
+                <button [disabled]="!hasPreviousPage" (click)="previousPage()">
+                    <i class="bx bx-chevron-left"></i> Previous
+                </button>
+                <span class="page-info">Page {{currentPage}} of {{totalPages}}</span>
+                <button [disabled]="!hasNextPage" (click)="nextPage()">
+                    Next <i class="bx bx-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="orderDetailsModalLabel">
+          <i class="bx bx-package"></i> Order Details
+          <span class="order-id-badge" *ngIf="selectedOrder">#{{selectedOrder.orderId.substring(selectedOrder.orderId.length - 8)}}</span>
+        </h5>
+      </div>
+      <div class="modal-body" *ngIf="selectedOrder">
+        <div class="order-header-wrapper">
+          <div class="order-status-banner" [ngClass]="getStatusClass(selectedOrder.orderStatus)">
+            <span style="color: white;" class="status-text">{{selectedOrder.orderStatus}}</span>
+          </div>
+          
+          <div class="order-info-grid">
+            <div class="order-info-column">
+                <div class="info-group">
+                <h6 class="info-title"><i class="bx bx-calendar"></i> Order Date</h6>
+                <p class="info-value">{{selectedOrder.createdAt | date:'medium'}}</p>
+              </div>
+            </div>
+            <div class="order-info-column">
+              
+              <div class="info-group">
+                <h6 class="info-title"><i class="bx bx-calendar-check"></i> Last Updated</h6>
+                <p class="info-value">{{selectedOrder.updatedAt | date:'medium'}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="products-section">
+          <div class="section-header" style="padding-top: 0.7em;">
+            <h3 class="section-title"><i class="bx bx-cart"></i> Order Items</h3>
+          </div>
+          
+          <div class="table-responsive">
+            <div class="table-loading-overlay" *ngIf="isLoading">
+              <div class="spinner-container">
+                <i class="bx bx-loader-alt bx-spin"></i>
+                <span>Updating order...</span>
+              </div>
+            </div>
+            <table class="table product-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th class="text-center">Price</th>
+                  <th class="text-center">Requested</th>
+                  <th class="text-center">Fulfilled</th>
+                  <th class="text-center">Canceled</th>
+                  <th class="text-right">Subtotal</th>
+                  <!-- Add Actions column only for pending orders -->
+                  <th class="text-center" *ngIf="selectedOrder.orderStatus.toLowerCase() === 'pending'">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let product of selectedOrder.products">
+                  <td>
+                    <div class="product-info">
+                      <div class="product-image-container">
+                        <img [src]="product.productUrlImage" class="product-thumbnail" alt="Product image">
+                      </div>
+                      <div class="product-details">
+                        <div class="product-name">{{product.productName}}</div>
+                        <div class="product-sku">SKU: {{product.productCode}}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-center">{{formatPrice(product.productPrice || (selectedOrder.orderTotalPrice / selectedOrder.orderTotalQty))}}</td>
+                  <td class="text-center">{{product.productRequestedQuantity}}</td>
+                  <td class="text-center" [ngClass]="{'text-success': product.productFulfilledQuantity > 0}">
+                    {{product.productFulfilledQuantity}}
+                  </td>
+                  <td class="text-center" [ngClass]="{'text-danger': product.productCanceledQuantity > 0}">
+                    {{product.productCanceledQuantity}}
+                  </td>
+                  <td class="text-right subtotal">
+                    {{formatPrice(getProductSubtotal(product))}}
+                  </td>
+                  <!-- Add delete button column only for pending orders -->
+                  <td class="text-center" *ngIf="selectedOrder.orderStatus.toLowerCase() === 'pending'">
+                    <button type="button" class="btn btn-sm btn-danger cancel-product-btn" 
+                            (click)="cancelProduct(selectedOrder.orderId, product.productId)"
+                            [disabled]="product.productCanceledQuantity === product.productRequestedQuantity"
+                            [title]="product.productCanceledQuantity === product.productRequestedQuantity ? 'Product already cancelled' : 'Cancel product'">
+                      <i class="bx bx-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="order-summary full-width">
+          <div class="summary-row">
+            <span class="summary-label">Total Items:</span>
+            <span class="summary-value">{{selectedOrder.orderTotalQty}}</span>
+          </div>
+          <div class="summary-row total">
+            <span class="summary-label">Total Price:</span>
+            <span class="summary-value">{{formatPrice(selectedOrder.orderTotalPrice)}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add a more descriptive product cancellation confirmation -->
+<div class="modal fade" id="productCancellationModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title text-dark">Cancel Product</h5>
+      </div>
+      <div class="modal-body">
+        <p>Canceling this product will reduce your order total.</p>
+        <p class="mb-0 font-weight-bold">Are you sure you want to continue?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">No, Keep Item</button>
+        <button type="button" class="btn btn-danger">Yes, Cancel Item</button>
+      </div>
+    </div>
+  </div>
+</div>

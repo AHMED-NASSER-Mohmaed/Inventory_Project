@@ -1,0 +1,406 @@
+<div class="parent3" [ngClass]="{'dark': isDarkMode}">
+    <section id="content">
+        <main>
+            <div class="head-title">
+                <div class="left">
+                    <div class="head-flex">
+                        <h1>Hi, {{tokenData.id.firstName}}!</h1>
+                        <div class="switch-container">
+                            <label class="switch-mode">
+                                <input type="checkbox" id="switch-mode" (change)="toggleDarkMode()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <ul class="breadcrumb">
+                        <li><a>Dashboard</a></li>
+                        <li><i class='bx bx-chevron-right'></i></li>
+                        <li><a class="active">Products</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="box-info">
+                <li>
+                    <i class='bx bxs-package bx'></i>
+                    <span class="text">
+                        <h3 *ngIf="!isLoading">{{totalAvailableProducts}}</h3>
+                        <h3 *ngIf="isLoading">
+                            <ngx-skeleton-loader [theme]="{ 'height': '30px', 'width': '60px', 'margin-bottom': '0' }"></ngx-skeleton-loader>
+                        </h3>
+                        <p>Available Products</p>
+                    </span>
+                </li>
+            </div>
+
+            <div class="table-data">
+                <div class="order">
+                    <div class="head">
+                        <div class="headhead">
+                        <h3>Available Products</h3>
+                        <button type="button" class="btn btn-sm btn-outline-dark" data-toggle="modal" data-target="#addProductModal" (click)="openAddModal()" style="margin-left: 5px; margin-bottom: 5px; color: var(--dark); background-color: var(--grey);">
+                            <i class='bx bx-plus' style="padding: 3px;"></i>
+                        </button>
+                        <div class="items-per-page">
+                            <label> 
+                                <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" name="itemsPerPage">
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                </select>
+                            </label>
+                        </div>
+                        </div>
+                        <form (ngSubmit)="onSearch($event)">
+                            <div class="form-input">
+                                <input type="search" 
+                                       [(ngModel)]="searchQuery" 
+                                       name="searchQuery" 
+                                       [placeholder]="searchPlaceholder"
+                                       (keypress)="validateSearchInput($event)"
+                                       (paste)="handlePaste($event)">
+                                <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                                <div id="search-btns">
+                                <button mat-icon-button type="button" [matMenuTriggerFor]="menu" style="border: none; background-color: var(--light);">
+                                    <i class='bx bx-filter' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
+                                </button>
+
+                                <button mat-icon-button type="button" (click)="resetSearch()" style="border: none; background-color: var(--light);" title="Reset Search">
+                                    <i class='bx bx-reset' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
+                                </button>
+                                </div>
+                                <mat-menu #menu="matMenu" class="matMenu">
+                                    <button mat-menu-item class="mat-menu-item">
+                                        <mat-button-toggle-group vertical name="favoriteColor" aria-label="Favorite Color"
+                                            [hideSingleSelectionIndicator]="hideSingleSelectionIndicator()" 
+                                            class="matbuttongroupfilter"
+                                            (change)="onFilterChange($event)">
+                                            <mat-button-toggle value="name">Name</mat-button-toggle>
+                                            <mat-button-toggle value="code">Code</mat-button-toggle>
+                                        </mat-button-toggle-group>
+                                    </button>
+                                </mat-menu>
+                                
+                                <button mat-icon-button type="button" [matMenuTriggerFor]="filterMenu" style="border: none; background-color: var(--light);">
+                                    <i class='bx bx-filter-alt' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
+                                    <span *ngIf="selectedCategory || selectedBrand" class="filter-badge"></span>
+                                </button>
+                                
+                                <mat-menu #filterMenu="matMenu" class="filters-menu">
+                                    <div class="consolidated-filter-container" (click)="$event.stopPropagation()">
+                                        <h4 class="filter-section-header">Filters</h4>
+                                        
+                                        <div class="filter-section">
+                                            <div class="filter-category" (click)="toggleFilterSection('category'); $event.stopPropagation()">
+                                                <span>Category</span>
+                                                <i class="bx" [ngClass]="{'bx-chevron-down': expandedSection === 'category', 'bx-chevron-right': expandedSection !== 'category'}"></i>
+                                            </div>
+                                            <div class="filter-options" [class.expanded]="expandedSection === 'category'">
+                                                <div class="filter-option" 
+                                                     *ngFor="let category of categories" 
+                                                     [class.selected]="selectedCategory === category._id"
+                                                     (click)="selectCategory(category._id); $event.stopPropagation()">
+                                                    {{ category.Cname }}
+                                                </div>
+                                                <div class="filter-option clear-option" (click)="clearFilter('category'); $event.stopPropagation()" *ngIf="selectedCategory">
+                                                    <i class='bx bx-x'></i> Clear Category Filter
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="filter-divider"></div>
+                                        
+                                        <div class="filter-section">
+                                            <div class="filter-category" (click)="toggleFilterSection('brand'); $event.stopPropagation()">
+                                                <span>Brand</span>
+                                                <i class="bx" [ngClass]="{'bx-chevron-down': expandedSection === 'brand', 'bx-chevron-right': expandedSection !== 'brand'}"></i>
+                                            </div>
+                                            <div class="filter-options" [class.expanded]="expandedSection === 'brand'">
+                                                <div class="filter-option" 
+                                                     *ngFor="let brand of brands" 
+                                                     [class.selected]="selectedBrand === brand._id"
+                                                     (click)="selectBrand(brand._id); $event.stopPropagation()">
+                                                    {{ brand.Bname }}
+                                                </div>
+                                                <div class="filter-option clear-option" (click)="clearFilter('brand'); $event.stopPropagation()" *ngIf="selectedBrand">
+                                                    <i class='bx bx-x'></i> Clear Brand Filter
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="filter-divider"></div>
+                                        
+                                        <div class="filter-actions">
+                                            <button type="button" class="btn btn-outline-secondary" 
+                                                    (click)="resetFilters(); $event.stopPropagation()"
+                                                    style="width: 100%; padding: 8px 12px; margin-top: 10px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: all 0.3s ease;">
+                                                <i class='bx bx-reset' style="margin-right: 8px; font-size: 1.1em;"></i> 
+                                                <span>Reset All Filters</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </mat-menu>
+                                
+                            </div>
+                        </form>
+                    </div>
+
+                    <table style="border-spacing: 15px; border-collapse: separate;">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Code</th>
+                                <th (click)="toggleSort('price')" style="cursor: pointer">
+                                    Price
+                                    <i class="bx" [ngClass]="{
+                                        'bx-up-arrow-alt': sortField === 'price' && sortDirection === 'asc',
+                                        'bx-down-arrow-alt': sortField === 'price' && sortDirection === 'desc',
+                                        'bx-sort': sortField !== 'price'
+                                    }"></i>
+                                </th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngIf="showNoResults" class="no-results-row">
+                                <td colspan="4" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
+                                    No Products Found with this {{lastSearchFilter === 'name' ? 'Name' : 'Code'}}
+                                </td>
+                            </tr>
+                            <tr *ngIf="!isLoading && !showNoResults && products.length === 0" class="no-results-row">
+                                <td colspan="4" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
+                                    No Products Available
+                                </td>
+                            </tr>
+                            <tr *ngIf="isLoading" class="no-results-row">
+                                <td colspan="4" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
+                                    <div style="display: flex; justify-content: center; align-items: center; height: 100%;" id="spinner">
+                                        <mat-spinner style="color: white;" class="mat-spinner"></mat-spinner>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr *ngFor="let product of products; let i = index">
+                                <td>
+                                    <p>{{ product.name }}</p>
+                                </td>
+                                <td>{{ product.code }}</td>
+                                <td>{{ product.price | currency }}</td>
+                                <td>
+                                    <div class="dropdown" [ngClass]="{'show': dropdownStates[i]}" (click)="toggleDropdown(i)">
+                                        <a class="btn btn-secondary dropdown-toggle btn-lg" role="button" id="dropdownMenuLink" aria-haspopup="true" aria-expanded="false" style="padding: 0px 5px; padding-left: 8px; display: flex; align-items: center;">
+                                            ...
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-lg" [ngClass]="{'show': dropdownStates[i]}" aria-labelledby="dropdownMenuLink" style="cursor: pointer;">
+                                            <a class="dropdown-item p-3" (click)="showProductInfo(product)" data-toggle="modal" data-target="#productInfoModal">
+                                                <i class='bx bx-show' style="margin-right: 6px;"></i> Details
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item p-3" (click)="prepareForSelling(product)" data-toggle="modal" data-target="#sellProductModal">
+                                                <i class='bx bx-cart' style="margin-right: 6px;"></i> Sell
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination-controls">
+                        <button (click)="previousPage()" [disabled]="!hasPreviousPage"><i class='bx bx-chevron-left' style="font-size: 1.7em;"></i></button>
+                        <button (click)="nextPage()" [disabled]="!hasNextPage"><i class='bx bx-chevron-right' style="font-size: 1.7em;"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- Product Info Modal -->
+    <div class="modal fade" id="productInfoModal" tabindex="-1" role="dialog" aria-labelledby="productInfoModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content custom-modal">
+          <div class="modal-header">
+            <h5 class="modal-title" id="productInfoModalLabel">Product Details</h5>
+          </div>
+          <div class="modal-body">
+            <div class="info-grid" *ngIf="selectedProduct">
+              <div class="info-item">
+                <strong class="label">Name:</strong>
+                <div class="input-wrapper">
+                  <input type="text" [value]="selectedProduct.name" disabled class="value">
+                </div>
+              </div>
+              <div class="info-item">
+                <strong class="label">Code:</strong>
+                <div class="input-wrapper">
+                  <input type="text" [value]="selectedProduct.code" disabled class="value">
+                </div>
+              </div>
+              <div class="info-item">
+                <strong class="label">Price:</strong>
+                <div class="input-wrapper">
+                  <input type="text" [value]="selectedProduct.price | currency" disabled class="value">
+                </div>
+              </div>
+            </div>
+
+            <div class="info-item description-item mt-3" *ngIf="selectedProduct && selectedProduct.description">
+              <strong class="label">Description:</strong>
+              <div class="input-wrapper">
+                <textarea [value]="selectedProduct.description" disabled class="value" rows="3"></textarea>
+              </div>
+            </div>
+            
+            <div class="product-images-container mt-3" *ngIf="selectedProduct && selectedProduct.images?.length">
+              <strong class="label mb-2 d-block">Product Images:</strong>
+              <div class="images-gallery">
+                <div class="main-image" *ngIf="currentMainImage">
+                  <img [src]="currentMainImage" alt="Product image" class="img-fluid">
+                </div>
+                <div class="image-thumbnails">
+                  <div class="thumbnail" *ngFor="let image of selectedProduct.images" 
+                       [class.active]="currentMainImage === image.url"
+                       (click)="setMainImage(image.url)">
+                    <img [src]="image.url" alt="Product thumbnail" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+              <i class='bx bx-x'></i> Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content custom-modal">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+      </div>
+      <div class="modal-body">
+        <form #addProductForm="ngForm">
+          <div class="info-grid">
+            <div class="info-item">
+              <strong class="label">Name:</strong>
+              <div class="input-wrapper" [ngClass]="{'valid': addName.touched && addName.valid, 'invalid': addName.touched && addName.invalid}">
+                <input type="text" required [(ngModel)]="newProduct.name" name="name" #addName="ngModel" placeholder="Enter product name">
+              </div>
+            </div>
+            <div class="info-item">
+              <strong class="label">Code:</strong>
+              <div class="input-wrapper" [ngClass]="{'valid': addCode.touched && addCode.valid, 'invalid': addCode.touched && addCode.invalid}">
+                <input type="text" required [(ngModel)]="newProduct.code" name="code" #addCode="ngModel" placeholder="Enter product code">
+              </div>
+            </div>
+            <div class="info-item">
+              <strong class="label">Price:</strong>
+              <div class="input-wrapper" [ngClass]="{'valid': addPrice.touched && addPrice.valid, 'invalid': addPrice.touched && addPrice.invalid}">
+                <input type="number" required [(ngModel)]="newProduct.price" name="price" #addPrice="ngModel" placeholder="Enter product price">
+              </div>
+            </div>
+            <div class="info-item">
+              <strong class="label">Stock:</strong>
+              <div class="input-wrapper" [ngClass]="{'valid': addStock.touched && addStock.valid, 'invalid': addStock.touched && addStock.invalid}">
+                <input type="number" required [(ngModel)]="newProduct.stock" name="stock" #addStock="ngModel" placeholder="Enter initial stock">
+              </div>
+            </div>
+            <div class="info-item">
+              <strong class="label">Category:</strong>
+              <div class="input-wrapper">
+                <mat-select [(ngModel)]="newProduct.category" name="category" placeholder="Select Category" required>
+                  <mat-option *ngFor="let category of categories" [value]="category._id">
+                    {{ category.Cname }}
+                  </mat-option>
+                </mat-select>
+              </div>
+            </div>
+            <div class="info-item">
+              <strong class="label">Brand:</strong>
+              <div class="input-wrapper">
+                <mat-select [(ngModel)]="newProduct.brand" name="brand" placeholder="Select Brand" required>
+                  <mat-option *ngFor="let brand of brands" [value]="brand._id">
+                    {{ brand.Bname }}
+                  </mat-option>
+                </mat-select>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="addNewProduct()" [disabled]="addProductForm.invalid" title="Add Product">
+          <i class="bx bx-check"></i>
+        </button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <i class='bx bx-x'></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Sell Existing Product Modal -->
+    <div class="modal fade" id="sellProductModal" tabindex="-1" role="dialog" aria-labelledby="sellProductModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content custom-modal">
+          <div class="modal-header">
+            <h5 class="modal-title" id="sellProductModalLabel">Sell This Product</h5>
+          </div>
+          <div class="modal-body">
+            <form #sellProductForm="ngForm">
+              <div class="info-grid">
+                <div class="info-item">
+                  <strong class="label">Product:</strong>
+                  <div class="input-wrapper">
+                    <input type="text" [value]="selectedProduct?.name" disabled class="value">
+                  </div>
+                </div>
+                <div class="info-item">
+                  <strong class="label">Category:</strong>
+                  <div class="input-wrapper">
+                    <input type="text" [value]="getCategoryName(selectedProduct?.category)" disabled class="value">
+                  </div>
+                </div>
+                <div class="info-item">
+                  <strong class="label">Brand:</strong>
+                  <div class="input-wrapper">
+                    <input type="text" [value]="getBrandName(selectedProduct?.brand)" disabled class="value">
+                  </div>
+                </div>
+                <div class="info-item">
+                  <strong class="label">Original Price:</strong>
+                  <div class="input-wrapper">
+                    <input type="text" [value]="selectedProduct?.price | currency" disabled class="value">
+                  </div>
+                </div>
+                <div class="info-item">
+                  <strong class="label">Your Price:</strong>
+                  <div class="input-wrapper" [ngClass]="{'valid': sellPrice.touched && sellPrice.valid, 'invalid': sellPrice.touched && sellPrice.invalid}">
+                    <input type="number" [(ngModel)]="sellProductData.price" name="price" #sellPrice="ngModel" required min="1" placeholder="Enter your selling price" class="value">
+                  </div>
+                </div>
+                <div class="info-item">
+                  <strong class="label">Stock:</strong>
+                  <div class="input-wrapper" [ngClass]="{'valid': sellStock.touched && sellStock.valid, 'invalid': sellStock.touched && sellStock.invalid}">
+                    <input type="number" [(ngModel)]="sellProductData.stock" name="stock" #sellStock="ngModel" required min="1" placeholder="Enter quantity to sell" class="value">
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" (click)="sellExistingProduct()" [disabled]="!sellProductData.stock || sellProductData.stock <= 0 || !sellProductData.price || sellProductData.price <= 0">
+              <i class="bx bx-cart"></i> Add To My Store
+            </button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+              <i class='bx bx-x'></i> Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

@@ -89,9 +89,6 @@
                                 </td>
                             </tr>
                             <tr *ngIf="!isLoading && !showNoResults && orders.length === 0" class="no-results-row">
-                                <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
-                                    No {{ currentFilter === 'active' ? 'Active' : 'Inactive' }} Customers Yet
-                                </td>
                             </tr>
                             <tr *ngIf="isLoading" class="no-results-row">
                                 <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">

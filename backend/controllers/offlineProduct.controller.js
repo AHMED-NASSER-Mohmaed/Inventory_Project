@@ -71,15 +71,15 @@ const router = express.Router();
 
 router
     .post("/OffProduct",
-        prot_rest(APP_CONFIG.SUPPERADMIN),
+        prot_rest(APP_CONFIG.SUPPERADMIN , APP_CONFIG.ADMIN),
         catchAsync(offlineProductOp.addProduct)
     )
     .patch("/OffProduct/updateQty/:id/:qty",
-        prot_rest(APP_CONFIG.SUPPERADMIN),
+        prot_rest(APP_CONFIG.SUPPERADMIN , APP_CONFIG.ADMIN),
         catchAsync(offlineProductOp.updateQty)
     )
     .get("/OffProduct",
-        prot_rest(APP_CONFIG.SUPPERADMIN,APP_CONFIG.CLERK),
+        prot_rest(APP_CONFIG.SUPPERADMIN , APP_CONFIG.ADMIN),
         validateSortPaginationParams(offlineProductOp.allowedSort),
         validatorFilterParams(offlineProductOp.allowedFilters,offlineProductOp.allowedFilterValues),
         validateSearchParams(offlineProductOp.searchFiledName,offlineProductOp.searchValueAcoordingNaN),
@@ -93,13 +93,13 @@ router
         catchAsync(offlineProductOp.getStaffProducts)
     )
     .get("/OffProduct/count",
-        prot_rest(APP_CONFIG.SUPPERADMIN),
+        prot_rest(APP_CONFIG.SUPPERADMIN , APP_CONFIG.ADMIN),
         validatorFilterParams(offlineProductOp.allowedFilters,offlineProductOp.allowedFilterValues),
         validateSearchParams(offlineProductOp.searchFiledName,offlineProductOp.searchValueAcoordingNaN),
         catchAsync(offlineProductOp.getCount)
     )
     .patch("/OffProduct/exportTo",
-        prot_rest(APP_CONFIG.SUPPERADMIN),
+        prot_rest(APP_CONFIG.SUPPERADMIN , APP_CONFIG.ADMIN),
         catchAsync(offlineProductOp.exportTo)
     )
     

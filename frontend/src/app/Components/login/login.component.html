@@ -17,10 +17,6 @@
 		  <button type="button" id="createAccount" (click)="login()" [disabled]="loginForm.invalid || isLoading" [ngClass]="{'disabled': loginForm.invalid || isLoading}">
 			{{isLoading ? 'Logging in...' : 'Login'}}
 		  </button>
-		  <button type="button" id="googleLogin">
-			<img draggable="false" src="https://cdn-icons-png.flaticon.com/128/300/300221.png" alt="Google" width="14">
-			Sign in with Google
-		  </button>
 		</form>
 		<span class="login">
 		  <p>Don't have an account?</p><a id="login" routerLink="/signup" style="text-decoration: underline;">Sign up</a>

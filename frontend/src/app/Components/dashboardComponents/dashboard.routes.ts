@@ -13,6 +13,7 @@ import { BrandsComponent } from './brands/brands.component';
 import { OrdersComponent } from './orders/orders.component';
 import { OffproductComponent } from './offproduct/offproduct.component';
 import { OnproductComponent } from './onproduct/onproduct.component';
+import { AnalyticsComponent } from './analytics/analytics.component';
 
 export const dashRoutes: Routes = [
   {
@@ -89,6 +90,11 @@ export const dashRoutes: Routes = [
         path: 'offline-products',
         component: OffproductComponent,
         title: 'Offline Product'
+      },
+      {
+        path: 'analytics',
+        component: AnalyticsComponent,
+        title: 'Analytics'
       }
     ]
   }

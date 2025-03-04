@@ -1,0 +1,262 @@
+<div class="parent3" [ngClass]="{'dark': isDarkMode}">
+    <section id="content">
+        <main>
+            <div class="head-title">
+                <div class="left">
+                    <div class="head-flex">
+                        <h1>Hi, {{tokenData.id.firstName}}!</h1>
+                        <div class="switch-container">
+                            <label class="switch-mode">
+                                <input type="checkbox" id="switch-mode" (change)="toggleDarkMode()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                     
+                </div>
+            </div>
+
+           
+
+            <div class="table-data">
+                <div class="order">
+                    <div class="head">
+                        <div class="headhead">
+                        <h3>Orders</h3>
+                        <!-- <div class="items-per-page">
+                            <label> 
+                                <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" name="itemsPerPage">
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                </select>
+                            </label>
+                        </div> -->
+                        </div>
+                        <!-- <form >
+                            <div class="form-input">
+                                
+                                <input type="search" 
+                                       [(ngModel)]="searchQuery" 
+                                       name="searchQuery" 
+                                       [placeholder]="searchPlaceholder"
+                                       (keypress)="validateSearchInput($event)"
+                                       >
+                                <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                           
+                             
+                            </div>
+                        </form> -->
+                    </div>
+
+                    <table style="border-spacing: 15px; border-collapse: separate;">
+                        <thead>
+                            <tr>
+                                <th  style="cursor: pointer">
+                                    Order Id
+                                    <!-- <i class="bx" [ngClass]="{
+                                        'bx-up-arrow-alt': sortField === 'orderId' && sortDirection === 'asc',
+                                        'bx-down-arrow-alt': sortField === 'orderId' && sortDirection === 'desc',
+                                        'bx-sort': sortField !== 'orderId'
+                                    }"></i> -->
+                                </th>
+                                
+                                <th >
+
+                                    Customer
+
+                                </th>
+
+                                <th style="cursor: pointer">
+                                    Created At
+                                    <!-- <i class="bx" [ngClass]="{
+                                        'bx-up-arrow-alt': sortField === 'createdAt' && sortDirection === 'asc',
+                                        'bx-down-arrow-alt': sortField === 'createdAt' && sortDirection === 'desc',
+                                        'bx-sort': sortField !== 'createdAt'
+                                    }"></i> -->
+                                </th>
+                                <th>
+                                    Total
+                                    
+                                </th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngIf="showNoResults" class="no-results-row">
+                                <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
+                                    No Customers Found with this {{lastSearchFilter === 'name' ? 'Name' : lastSearchFilter === 'SSN' ? 'SSN' : 'Phone Number'}}
+                                </td>
+                            </tr>
+                            <tr *ngIf="!isLoading && !showNoResults && orders.length === 0" class="no-results-row">
+                                <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
+                                    No {{ currentFilter === 'active' ? 'Active' : 'Inactive' }} Customers Yet
+                                </td>
+                            </tr>
+                            <tr *ngIf="isLoading" class="no-results-row">
+                                <td colspan="5" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
+                                    <div style="display: flex; justify-content: center; align-items: center; height: 100%;" id="spinner">
+                                        <mat-spinner style="color: white;" class="mat-spinner"></mat-spinner>
+                                    </div>
+                                </td>
+                            </tr>
+                             <tr *ngFor="let order of paginatedOrders; let i = index">
+                                <td>
+                                    <p>{{ order.orderId }}</p>
+                                </td>
+                                <td>
+                                    <p>{{ order.customerName }}</p>
+                                </td>
+                                <td>{{ order.createdAt | date:'dd/MM/yyyy' }}</td>
+                                <td>
+                                    <span >
+                                        {{ order.orderTotalPrice }} le
+                                    </span>
+
+                                </td>
+                                <td>
+                                  <button
+                                    class="btn btn-secondary btn-lg"
+                                    data-toggle="modal"
+                                    data-target="#sellerInfoModal"
+                                    (click)="selectOrder(order)"
+                                    style="padding: 5px; display: flex; align-items: center; justify-content: center; height: auto; width: 40px;"
+                                    title="View Order Details"
+                                  >
+                                    <i class='bx bx-show'></i> 
+                                  </button>
+                                </td>
+                            </tr> 
+                        </tbody>
+                    </table>
+                    <!-- <div class="pagination-controls">
+                        <button (click)="previousPage()" [disabled]="!hasPreviousPage"><i class='bx bx-chevron-left' style="font-size: 1.7em;"></i></button>
+                        <button (click)="nextPage()" [disabled]="!hasNextPage"><i class='bx bx-chevron-right' style="font-size: 1.7em;"></i></button>
+                    </div> -->
+                </div>
+            </div>
+            
+            
+        </main>
+    </section>
+
+
+<div class="modal fade" id="sellerInfoModal" tabindex="-1" role="dialog" aria-labelledby="sellerInfoModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="sellerInfoModalLabel">Order Details</h5>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="selectedSuborder">
+          <p><strong>Seller Name:</strong> {{ selectedSuborder.sellerName }}</p>
+
+          <!-- Dropdown for Order Status -->
+          <div class="form-group">
+            <label for="orderStatus"><strong>Order Status:</strong></label>
+            <select
+              id="orderStatus"
+              class="form-control"
+              [(ngModel)]="selectedSuborder.orderStatus"
+              [disabled]="!editing"
+            >
+              <!-- <option value="pending">Pending</option> -->
+              <!-- <option value="processing">Processing</option> -->
+              <!-- <option value="shipped">Shipped</option> -->
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+
+          <p><strong>Total Quantity:</strong> {{ selectedSuborder.orderTotalQty }}</p>
+
+          <div *ngIf="selectedSuborder.products && selectedSuborder.products.length > 0">
+            <div *ngIf="selectedSuborder.products && selectedSuborder.products.length > 0">
+              <div *ngFor="let product of selectedSuborder.products">
+                <hr/>
+                <p><strong>Product Name:</strong> {{ product.productName }}</p>
+                <p><strong>Product ID:</strong> {{ product.productId }}</p>
+                <p><strong>Requested Quantity:</strong> {{ product.productRequestedQuantity }}</p>
+                <p><strong>Fulfilled Quantity:</strong> {{ product.productFulfilledQuantity }}</p>
+                <p><strong>Available Stock:</strong> {{ product.productStock }}</p>
+              </div>
+
+            <!-- Counter Input for Fulfilled Quantity -->
+            <!-- <div class="form-group">
+              <label for="fulfilledQuantity"><strong>Fulfilled Quantity:</strong></label>
+              <div class="input-group">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="decrementQuantity()"
+                  [disabled]="!editing || selectedSuborder.products[0].productFulfilledQuantity <= 0"
+                >
+                  <i class='bx bx-minus'></i>
+                </button>
+                <input
+                  type="number"
+                  id="fulfilledQuantity"
+                  class="form-control text-center"
+                  [(ngModel)]="selectedSuborder.products[0].productFulfilledQuantity"
+                  [disabled]="!editing"
+                  readonly
+                />
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="incrementQuantity()"
+                  [disabled]="!editing || selectedSuborder.products[0].productFulfilledQuantity >= selectedSuborder.products[0].productStock"
+                >
+                  <i class='bx bx-plus'></i>
+                </button>
+              </div>
+              <div *ngIf="validationError" class="text-danger mt-2">
+                {{ validationError }}
+              </div>
+            </div> -->
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="updateBtn"
+          (click)="toggleEdit()"
+          [disabled]="!selectedSuborder?.orderId || validationError"
+        >
+          <i class='bx' [ngClass]="{'bx-pen': !editing, 'bx-check': editing}"></i>
+          {{ editing ? 'Save' : 'Edit' }}
+        </button>
+
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <i class='bx bx-x'></i> Close
+        </button>
+      </div>
+    </div>
+  </div>
+ 
+</div>
+
+  
+
+
+
+
+
+   
+</div>
+<div class="pagination-controls my-5">
+  <button (click)="prevPage()" [disabled]="currentPage === 1">
+    <i class='bx bx-chevron-left'></i> Prev
+  </button>
+
+  <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+  <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+    Next <i class='bx bx-chevron-right'></i>
+  </button>
+</div>
+</div>
+

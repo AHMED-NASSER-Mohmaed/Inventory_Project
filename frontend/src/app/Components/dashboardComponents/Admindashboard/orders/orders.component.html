@@ -1,0 +1,310 @@
+<div class="parent3" [ngClass]="{'dark': isDarkMode}">
+    <section id="content">
+        <main>
+            <div class="head-title">
+                <div class="left">
+                    <div class="head-flex">
+                        <h1>Hi, {{tokenData?.id?.firstName}}!</h1>
+                        <div class="switch-container">
+                            <label class="switch-mode">
+                                <input type="checkbox" id="switch-mode" (change)="toggleDarkMode()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <ul class="breadcrumb">
+                        <li><a>Dashboard</a></li>
+                        <li><i class='bx bx-chevron-right'></i></li>
+                        <li><a class="active">Orders</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <ul class="box-info">
+                <li>
+                    <ngx-skeleton-loader *ngIf="offlineOrdersCount === 0 && isLoading" appearance="custom-content">
+                        <div class="skeleton-container">
+                          <div class="skeleton-box">
+                            <div class="skeleton-circle"></div>
+                          </div>
+                          <div class="skeleton-text">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line"></div>
+                          </div>
+                        </div>
+                    </ngx-skeleton-loader>
+
+                    <i *ngIf="!(offlineOrdersCount === 0 && isLoading)" class='bx bx-store' id="lol"></i>
+                    <span *ngIf="!(offlineOrdersCount === 0 && isLoading)" class="text">
+                        <h3>{{offlineOrdersCount}}</h3>
+                        <p>Offline Orders</p>
+                    </span>
+                </li>
+            </ul>
+
+            <div class="table-data">
+                <div class="order">
+                    <div class="head">
+                        <div class="headhead">
+                            <h3>Orders</h3>
+                            <div class="items-per-page">
+                                <label> 
+                                    <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" name="itemsPerPage">
+                                        <option value="5">5</option>
+                                        <option value="10">10</option>
+                                        <option value="25">25</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                        <form (ngSubmit)="onSearch($event)">
+                            <div class="form-input">
+                                <input type="search" 
+                                       [(ngModel)]="searchQuery" 
+                                       name="searchQuery" 
+                                       [placeholder]="searchPlaceholder"
+                                       (paste)="handlePaste($event)">
+                                <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                                <div id="search-btns">
+                                    <button mat-icon-button type="button" [matMenuTriggerFor]="menu" style="border: none; background-color: var(--light);">
+                                        <i class='bx bx-filter' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
+                                    </button>
+                                    <button mat-icon-button type="button" (click)="resetSearch()" style="border: none; background-color: var(--light);" title="Reset Search">
+                                        <i class='bx bx-reset' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
+                                    </button>
+                                </div>
+                                <mat-menu #menu="matMenu" class="matMenu">
+                                    <button mat-menu-item class="mat-menu-item">
+                                        <mat-button-toggle-group vertical name="favoriteColor" aria-label="Favorite Color"
+                                            [hideSingleSelectionIndicator]="hideSingleSelectionIndicator()" 
+                                            class="matbuttongroupfilter"
+                                            (change)="onFilterChange($event)">
+                                            <mat-button-toggle value="customerName">Customer</mat-button-toggle>
+                                            <mat-button-toggle value="orderStatus">Status</mat-button-toggle>
+                                            <mat-button-toggle value="orderId">Order ID</mat-button-toggle>
+                                        </mat-button-toggle-group>
+                                    </button>
+                                </mat-menu>
+                            </div>
+                        </form>
+                    </div>
+
+                    <table style="border-spacing: 15px; border-collapse: separate;">
+                        <thead>
+                            <tr>
+                                <th (click)="toggleSort('customerName')" style="cursor: pointer">
+                                    Customer
+                                    <i class="bx" [ngClass]="{
+                                        'bx-up-arrow-alt': sortField === 'customerName' && sortDirection === 'asc',
+                                        'bx-down-arrow-alt': sortField === 'customerName' && sortDirection === 'desc',
+                                        'bx-sort': sortField !== 'customerName'
+                                    }"></i>
+                                </th>
+                                <th (click)="toggleSort('orderStatus')" style="cursor: pointer">
+                                    Status
+                                    <i class="bx" [ngClass]="{
+                                        'bx-up-arrow-alt': sortField === 'orderStatus' && sortDirection === 'asc',
+                                        'bx-down-arrow-alt': sortField === 'orderStatus' && sortDirection === 'desc',
+                                        'bx-sort': sortField !== 'orderStatus'
+                                    }"></i>
+                                </th>
+                                <th (click)="toggleSort('orderTotalPrice')" style="cursor: pointer">
+                                    Total
+                                    <i class="bx" [ngClass]="{
+                                        'bx-up-arrow-alt': sortField === 'orderTotalPrice' && sortDirection === 'asc',
+                                        'bx-down-arrow-alt': sortField === 'orderTotalPrice' && sortDirection === 'desc',
+                                        'bx-sort': sortField !== 'orderTotalPrice'
+                                    }"></i>
+                                </th>
+                                <th (click)="toggleSort('createdAt')" style="cursor: pointer">
+                                    Date
+                                    <i class="bx" [ngClass]="{
+                                        'bx-up-arrow-alt': sortField === 'createdAt' && sortDirection === 'asc',
+                                        'bx-down-arrow-alt': sortField === 'createdAt' && sortDirection === 'desc',
+                                        'bx-sort': sortField !== 'createdAt'
+                                    }"></i>
+                                </th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngIf="showNoResults" class="no-results-row">
+                                <td colspan="6" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
+                                    No Orders Found with this {{ selectedFilter === 'customerName' ? 'Customer Name' : selectedFilter === 'orderId' ? 'Order ID' : 'Status' }}
+                                </td>
+                            </tr>
+                            <tr *ngIf="!isLoading && !showNoResults && orders.length === 0" class="no-results-row">
+                                <td colspan="6" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
+                                    No {{ currentFilter === 'online' ? 'Online' : currentFilter === 'offline' ? 'In-Store' : '' }} Orders Found
+                                </td>
+                            </tr>
+                            <tr *ngIf="isLoading" class="no-results-row">
+                                <td colspan="6" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
+                                    <div style="display: flex; justify-content: center; align-items: center; height: 100%;" id="spinner">
+                                        <mat-spinner style="color: white;" class="mat-spinner"></mat-spinner>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr *ngFor="let order of orders; let i = index">
+                                <td>
+                                    <p>{{ order.customerName }}</p>
+                                </td>
+                                <td>
+                                    <span class="online2" [ngClass]="getStatusClass(order.orderStatus)">
+                                        {{ order.orderStatus }}
+                                    </span>
+                                </td>
+                                <td>{{ formatPrice(order.orderTotalPrice) }}</td>
+                                <td>{{ order.createdAt | date:'dd/MM/yyyy' }}</td>
+                                <td>
+                                    <div class="dropdown" [ngClass]="{'show': dropdownStates[i]}" (click)="toggleDropdown(i)">
+                                        <a class="btn btn-secondary dropdown-toggle btn-lg" role="button" id="dropdownMenuLink" aria-haspopup="true" aria-expanded="false" style="padding: 0px 5px; padding-left: 8px; display: flex; align-items: center;   background-color: var(--dark); color:var(--light);;">
+                                            ...
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-lg" [ngClass]="{'show': dropdownStates[i]}" aria-labelledby="dropdownMenuLink" style="cursor: pointer; ">
+                                            <a class="dropdown-item p-3" (click)="showOrderDetails(order)" data-toggle="modal" data-target="#orderDetailsModal"><i class='bx bx-show'></i> Details</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination-controls">
+                        <button (click)="previousPage()" [disabled]="!hasPreviousPage"><i class='bx bx-chevron-left' style="font-size: 1.7em;"></i></button>
+                        <button (click)="nextPage()" [disabled]="!hasNextPage"><i class='bx bx-chevron-right' style="font-size: 1.7em;"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orderDetailsModalLabel">
+                        <i class='bx bx-package'></i> Order Details
+                        <span *ngIf="selectedOrder" class="order-id-badge">ID: #{{selectedOrder.orderId}}</span>
+                    </h5>
+                </div>
+                <div class="modal-body" *ngIf="selectedOrder">
+                    <div class="order-header-wrapper">
+                        <div class="order-status-banner" [ngClass]="getStatusClass(selectedOrder.orderStatus)">
+                            <span class="status-text">{{selectedOrder.orderStatus}}</span>
+                            <span class="order-date">{{selectedOrder.createdAt | date:'MMM dd, yyyy'}}</span>
+                        </div>
+                        
+                        <div class="order-info-grid">
+                            <div class="order-info-column">
+                                <div class="info-group">
+                                    <h6 class="info-title"><i class='bx bx-user'></i> Customer</h6>
+                                    <p class="info-value">{{selectedOrder.customerName}}</p>
+                                </div>
+                                
+                                <div class="info-group">
+                                    <h6 class="info-title"><i class='bx bx-store'></i> Clerk</h6>
+                                    <p class="info-value">{{selectedOrder.sellerName}}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="order-info-column">
+                                <div class="info-group">
+                                    <h6 class="info-title"><i class='bx bx-calendar'></i> Order Date</h6>
+                                    <p class="info-value">{{selectedOrder.createdAt | date:'MMM dd, yyyy HH:mm'}}</p>
+                                </div>
+                                
+                                <div class="info-group">
+                                    <h6 class="info-title"><i class='bx bx-refresh'></i> Last Updated</h6>
+                                    <p class="info-value">{{selectedOrder.updatedAt | date:'MMM dd, yyyy HH:mm'}}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="order-info-column">
+                                <div class="info-group">
+                                    <h6 class="info-title"><i class='bx bx-tag'></i> Order Type</h6>
+                                    <p class="info-value">
+                                        <span class="order-type-badge" [class.online]="isOnlineOrder(selectedOrder)" [class.offline]="isOfflineOrder(selectedOrder)">
+                                            <i class='bx' [ngClass]="{'bx-shopping-bag': isOnlineOrder(selectedOrder), 'bx-store': isOfflineOrder(selectedOrder)}"></i>
+                                            {{getOrderType(selectedOrder)}}
+                                        </span>
+                                    </p>
+                                </div>
+                                
+                                <div class="info-group">
+                                    <h6 class="info-title"><i class='bx bx-package'></i> Total Items</h6>
+                                    <p class="info-value">{{selectedOrder.orderTotalQty}} items</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="products-section">
+                        <div class="section-header">
+                            <h6 style="margin-top: 0.5em;" class="section-title"><i class='bx bx-cart'></i> Products</h6>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table product-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Code</th>
+                                        <th class="text-right">Price</th>
+                                        <th class="text-center">Requested</th>
+                                        <th class="text-center">Fulfilled</th>
+                                        <th class="text-center">Canceled</th>
+                                        <th class="text-right">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let product of selectedOrder.products">
+                                        <td>
+                                            <div class="product-info">
+                                                <div class="product-image-container">
+                                                    <img [src]="product.productUrlImage" alt="{{ product.productName }}" class="product-thumbnail">
+                                                </div>
+                                                <div class="product-details">
+                                                    <div class="product-name">{{ product.productName }}</div>
+                                                    <div class="product-code" *ngIf="product.productCode">Code: {{ product.productCode }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ product.productCode }}</td>
+                                        <td class="text-right">{{ formatPrice(product.productPrice) }}</td>
+                                        <td class="text-center">{{ product.productRequestedQuantity }}</td>
+                                        <td class="text-center">
+                                            <span [ngClass]="{'text-success': product.productFulfilledQuantity === product.productRequestedQuantity, 'text-warning': product.productFulfilledQuantity < product.productRequestedQuantity && product.productFulfilledQuantity > 0, 'text-danger': product.productFulfilledQuantity === 0}">
+                                                {{ product.productFulfilledQuantity }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span [ngClass]="{'text-danger': product.productCanceledQuantity > 0}">
+                                                {{ product.productCanceledQuantity }}
+                                            </span>
+                                        </td>
+                                        <td class="text-right subtotal">{{ formatPrice(product.productPrice * product.productFulfilledQuantity) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span class="summary-label">Total Items:</span>
+                            <span class="summary-value">{{ selectedOrder.orderTotalQty }}</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span class="summary-label">Total Amount:</span>
+                            <span class="summary-value">{{ formatPrice(selectedOrder.orderTotalPrice) }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <i class='bx bx-x'></i> Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
