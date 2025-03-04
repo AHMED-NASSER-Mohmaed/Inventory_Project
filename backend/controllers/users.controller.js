@@ -979,7 +979,7 @@ route
   //update image profile for othe with intvention from super admin.
   .patch(
     "/updateImageProfileFor/:id",
-    prot_rest(APP_CONFIG.SUPPERADMIN),
+    prot_rest(APP_CONFIG.SUPPERADMIN,APP_CONFIG.ADMIN),
     catchAsync(genaraicFunctions.updateImageProfileFor)
   );
 
