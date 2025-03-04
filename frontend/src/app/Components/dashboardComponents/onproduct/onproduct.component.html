@@ -4,7 +4,7 @@
           <div class="head-title">
               <div class="left">
                   <div class="head-flex">
-                      <h1>Hi, {{tokenData.id.firstName}}!</h1>
+                      <h1>Hi, {{tokenData?.id?.firstName}}!</h1>
                       <div class="switch-container">
                           <label class="switch-mode">
                               <input type="checkbox" id="switch-mode" (change)="toggleDarkMode()">
@@ -15,7 +15,7 @@
                   <ul class="breadcrumb">
                       <li><a>Dashboard</a></li>
                       <li><i class='bx bx-chevron-right'></i></li>
-                      <li><a class="active">Products</a></li>
+                      <li><a class="active">Online Products</a></li>
                   </ul>
               </div>
           </div>
@@ -32,7 +32,7 @@
                           <div class="skeleton-line"></div>
                         </div>
                       </div>
-                    </ngx-skeleton-loader>                      
+                  </ngx-skeleton-loader>                      
                     
                   <i *ngIf="!isLoading" class='bx bxs-package'></i>
                   <span *ngIf="!isLoading" class="text">
@@ -46,16 +46,16 @@
               <div class="order">
                   <div class="head">
                       <div class="headhead">
-                      <h3>Products</h3>
-                      <div class="items-per-page">
-                          <label> 
-                              <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" name="itemsPerPage">
-                                  <option value="5">5</option>
-                                  <option value="10">10</option>
-                                  <option value="25">25</option>
-                              </select>
-                          </label>
-                      </div>
+                        <h3>Online Products</h3>
+                        <div class="items-per-page">
+                            <label> 
+                                <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" name="itemsPerPage">
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                </select>
+                            </label>
+                        </div>
                       </div>
                       <form (ngSubmit)="onSearch($event)">
                           <div class="form-input">
@@ -67,13 +67,13 @@
                                      (paste)="handlePaste($event)">
                               <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
                               <div id="search-btns">
-                              <button mat-icon-button type="button" [matMenuTriggerFor]="menu" style="border: none; background-color: var(--light);">
-                                  <i class='bx bx-filter' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
-                              </button>
+                                <button mat-icon-button type="button" [matMenuTriggerFor]="menu" style="border: none; background-color: var(--light);">
+                                    <i class='bx bx-filter' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
+                                </button>
 
-                              <button mat-icon-button type="button" (click)="resetSearch()" style="border: none; background-color: var(--light);" title="Reset Search">
-                                  <i class='bx bx-reset' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
-                              </button>
+                                <button mat-icon-button type="button" (click)="resetSearch()" style="border: none; background-color: var(--light);" title="Reset Search">
+                                    <i class='bx bx-reset' style="color: var(--dark); margin-left: 0.7em; font-size: 1.3em;"></i>
+                                </button>
                               </div>
                               <mat-menu #menu="matMenu" class="matMenu">
                                   <button mat-menu-item class="mat-menu-item">
@@ -175,7 +175,6 @@
                                       </div>
                                   </div>
                               </mat-menu>
-                              
                           </div>
                       </form>
                   </div>
@@ -186,14 +185,6 @@
                               <th>Product</th>
                               <th>Code</th>
                               <th>Approval</th>
-                              <th (click)="toggleSort('price')" style="cursor: pointer">
-                                  Price
-                                  <i class="bx" [ngClass]="{
-                                      'bx-up-arrow-alt': sortField === 'price' && sortDirection === 'asc',
-                                      'bx-down-arrow-alt': sortField === 'price' && sortDirection === 'desc',
-                                      'bx-sort': sortField !== 'price'
-                                  }"></i>
-                              </th>
                               <th (click)="toggleSort('createdAt')" style="cursor: pointer">
                                   Created At
                                   <i class="bx" [ngClass]="{
@@ -232,9 +223,9 @@
                           </tr>
                           <tr *ngFor="let product of products; let i = index">
                               <td>
-                                  <p>{{ product.product.name }}</p>
+                                  <p>{{ product.name }}</p>
                               </td>
-                              <td>{{ product.product.code }}</td>
+                              <td>{{ product.code }}</td>
                               <td>
                                   <span class="status process" [ngClass]="{
                                       'status-pending': product.status === 'pending',
@@ -244,10 +235,9 @@
                                       {{ product.status | titlecase }}
                                   </span>
                               </td>
-                              <td>{{ product.price | currency }}</td>
                               <td>{{ product.createdAt | date:'dd/MM/yyyy' }}</td>
                               <td>
-                                  <span class="status process" [class.active]="product.isActive" [class.deactivated]="!product.isActive" [style]="{'min-width': '100px', 'display': 'inline-block', 'text-align': 'center', 'color': product.isActive ? '#2ed134' : '#e6382f'}">
+                                  <span class="status process" [style]="{'min-width': '100px', 'display': 'inline-block', 'text-align': 'center', 'color': product.isActive ? '#2ed134' : '#e6382f'}">
                                       {{ product.isActive ? 'Active' : 'Inactive' }}
                                   </span>
                               </td>
@@ -261,7 +251,13 @@
                                               <i class='bx bx-show'></i> Show
                                           </a>
                                           <div class="dropdown-divider"></div>
-                                          <a *ngIf="canToggleActivation(product)" class="dropdown-item p-3" (click)="product.isActive ? openConfirmDialog(product._id) : openConfirmDialog2(product._id)" style="cursor:pointer;">
+                                          <a *ngIf="product.status === 'pending' || product.status === 'rejected'" class="dropdown-item p-3" (click)="openConfirmDialog2(product._id, 'approve')">
+                                              <i class='bx bx-check-circle'></i> Approve
+                                          </a>
+                                          <a *ngIf="product.status === 'pending'" class="dropdown-item p-3" (click)="openConfirmDialog(product._id, 'reject')">
+                                              <i class='bx bx-x-circle'></i> Reject
+                                          </a>
+                                          <a *ngIf="canToggleActivation(product)" class="dropdown-item p-3" (click)="product.isActive ? openConfirmDialog(product._id, 'deactivate') : openConfirmDialog2(product._id, 'activate')">
                                               <i class='bx' [ngClass]="{'bx-check-circle': !product.isActive, 'bx-x-circle': product.isActive}"></i>
                                               {{product.isActive ? 'Deactivate' : 'Activate'}}
                                           </a>
@@ -282,81 +278,179 @@
 
   <!-- Product Info Modal -->
   <div class="modal fade" id="productInfoModal" tabindex="-1" role="dialog" aria-labelledby="productInfoModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="productInfoModalLabel">Product Details</h5>
         </div>
         <div class="modal-body">
           <form #editForm="ngForm">
-            <div class="info-grid" *ngIf="selectedProduct && selectedProduct.product">
+            <div class="info-grid" *ngIf="selectedProduct">
               <div class="info-item">
                 <strong class="label">Name:</strong>
                 <div class="input-wrapper">
-                  <input type="text" [value]="selectedProduct.product.name" name="name" disabled class="value">
+                  <input type="text" [(ngModel)]="selectedProduct.name" name="name" [disabled]="!editing" class="value">
                 </div>
               </div>
               <div class="info-item">
                 <strong class="label">Code:</strong>
                 <div class="input-wrapper">
-                  <input type="text" [value]="selectedProduct.product.code" name="code" disabled class="value">
-                </div>
-              </div>
-              <div class="info-item">
-                <strong class="label">Price:</strong>
-                <div class="input-wrapper">
-                  <input type="number" [(ngModel)]="selectedProduct.price" name="price" [disabled]="!editing || !canUpdateProduct(selectedProduct)" class="value">
-                </div>
-              </div>
-              <div class="info-item">
-                <strong class="label">Stock:</strong>
-                <div class="input-wrapper">
-                  <input type="number" [(ngModel)]="selectedProduct.stock" name="stock" [disabled]="!editing || !canUpdateProduct(selectedProduct)" class="value">
+                  <input type="text" [(ngModel)]="selectedProduct.code" name="code" [disabled]="!editing" class="value">
                 </div>
               </div>
               <div class="info-item">
                 <strong class="label">Category:</strong>
                 <div class="input-wrapper">
-                  <input type="text" [value]="getCategoryName(selectedProduct.product.category)" name="categoryDisplay" disabled class="value">
+                  <ng-container *ngIf="editing; else categoryText">
+                    <mat-select [(ngModel)]="selectedProduct.category" name="category" class="value">
+                      <mat-option *ngFor="let category of categories" [value]="category._id">
+                        {{ category.Cname }}
+                      </mat-option>
+                    </mat-select>
+                  </ng-container>
+                  <ng-template #categoryText>
+                    <input type="text" [value]="getCategoryName(selectedProduct.category)" name="categoryDisplay" disabled class="value">
+                  </ng-template>
                 </div>
               </div>
               <div class="info-item">
                 <strong class="label">Brand:</strong>
                 <div class="input-wrapper">
-                  <input type="text" [value]="getBrandName(selectedProduct.product.brand)" name="brandDisplay" disabled class="value">
+                  <ng-container *ngIf="editing; else brandText">
+                    <mat-select [(ngModel)]="selectedProduct.brand" name="brand" class="value">
+                      <mat-option *ngFor="let brand of brands" [value]="brand._id">
+                        {{ brand.Bname }}
+                      </mat-option>
+                    </mat-select>
+                  </ng-container>
+                  <ng-template #brandText>
+                    <input type="text" [value]="getBrandName(selectedProduct.brand)" name="brandDisplay" disabled class="value">
+                  </ng-template>
+                </div>
+              </div>
+              <div class="info-item">
+                <strong class="label">Created Date:</strong>
+                <div class="input-wrapper">
+                  <input type="text" [value]="selectedProduct.createdAt | date:'dd/MM/yyyy'" name="createdAt" disabled class="value">
                 </div>
               </div>
             </div>
 
-            <div class="info-item description-item mt-3" *ngIf="selectedProduct && selectedProduct.product">
+            <div class="info-item description-item mt-3" *ngIf="selectedProduct && selectedProduct.description">
               <strong class="label">Description:</strong>
               <div class="input-wrapper">
-                <textarea [value]="selectedProduct.product.description" name="description" disabled class="value" rows="3"></textarea>
+                <textarea [(ngModel)]="selectedProduct.description" name="description" [disabled]="!editing" class="value" rows="3"></textarea>
               </div>
             </div>
 
-            <div class="product-images-container" *ngIf="selectedProduct && selectedProduct.product && selectedProduct.product.images">
-              <h6>Product Images</h6>
+            <div class="product-images-container" *ngIf="selectedProduct && selectedProduct.images && selectedProduct.images.length > 0">
+              <h6 class="text-center">Product Images</h6>
               
               <div class="images-grid">
-                <div class="image-item" *ngFor="let image of selectedProduct.product.images">
+                <div class="image-item" *ngFor="let image of selectedProduct.images">
                   <img [src]="image.url" alt="Product image">
-                </div>
-                
-                <div class="no-images-placeholder" *ngIf="selectedProduct.product.images.length === 0">
-                  <i class='bx bx-image'></i>
-                  <p>No images yet</p>
+                  <button type="button" class="image-delete-btn" (click)="deleteImageDirectly(selectedProduct._id, image.fileId)"
+                          title="Delete image">
+                    <i class='bx bx-trash'></i>
+                  </button>
                 </div>
               </div>
+              
+              <div class="image-upload-controls" style="display: flex; align-items: center; gap: 10px; margin-top: 15px; justify-content: center;">
+                <input type="file" id="newImages" style="display: none;" (change)="onImageSelected($event)" multiple accept="image/*">
+                <button type="button" class="btn" (click)="openFileSelector()" 
+                        style="background-color: var(--light); color: var(--dark); border: 1px solid var(--dark); 
+                                 padding: 4px 6px; border-radius: 4px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                    <i class="bx bx-image-add"></i> Add Images
+                </button>
+                <button type="button" class="btn" (click)="updateImages()" [disabled]="newImages.length === 0"
+                        style="background-color: var(--dark); color: var(--light); border: none;
+                                 padding: 4px 6px; border-radius: 4px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                    <i class="bx bx-cloud-upload"></i> Upload Images
+                </button>
+              </div>
+              
+              <!-- Show selected file count -->
+              <div class="file-selected-indicator" *ngIf="newImages.length > 0" 
+                   style="text-align: center; margin-top: 10px; color: var(--blue);">
+                <i class='bx bx-check-circle'></i>
+                {{ newImages.length }} file(s) selected
+              </div>
+            </div>
+
+            <div class="no-images-placeholder" *ngIf="selectedProduct && (!selectedProduct.images || selectedProduct.images.length === 0)">
+              <i class='bx bx-image'></i>
+              <p>No images available</p>
+              
+              <div class="image-upload-controls" style="display: flex; align-items: center; gap: 10px; margin-top: 15px; justify-content: center;">
+                <input type="file" id="newImages" style="display: none;" (change)="onImageSelected($event)" multiple accept="image/*">
+                <button type="button" class="btn" (click)="openFileSelector()" 
+                        style="background-color: var(--light); color: var (--dark); border: 1px solid var(--dark); 
+                                 padding: 6px 12px; border-radius: 4px; display: flex; align-items: center; gap: 8px;">
+                    <i class="bx bx-image-add"></i> Add Images
+                </button>
+                <button type="button" class="btn" (click)="updateImages()" [disabled]="newImages.length === 0"
+                        style="background-color: var(--dark); color: var(--light); border: none;
+                                 padding: 6px 12px; border-radius: 4px; display: flex; align-items: center; gap: 8px;">
+                    <i class="bx bx-cloud-upload"></i> Upload Images
+                </button>
+              </div>
+              
+              <div class="file-selected-indicator" *ngIf="newImages.length > 0" style="margin-top: 10px; color: var(--blue);">
+                <i class='bx bx-check-circle'></i>
+                {{ newImages.length }} file(s) selected
+              </div>
+            </div>
+
+            <h3 class="modal-section-heading">Seller Information</h3>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Seller</th>
+                    <th>Stock</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Added On</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let sellerInfo of selectedProduct.sellerProductsInfo">
+                    <td>{{ sellerInfo.sellerDetails?.companyName || 'N/A' }}</td>
+                    <td>{{ sellerInfo.stock }}</td>
+                    <td>{{ sellerInfo.price | currency }}</td>
+                    <td>
+                      <span [class.status-approved]="!sellerInfo.isDeleted" 
+                            [class.status-rejected]="sellerInfo.isDeleted">
+                        {{ sellerInfo.isDeleted ? 'Inactive' : 'Active' }}
+                      </span>
+                    </td>
+                    <td>{{ sellerInfo.createdAt | date:'dd/MM/yyyy' }}</td>
+                    <td>
+                      <button type="button" class="btn btn-sm" 
+                              [ngClass]="{'btn-success': sellerInfo.isDeleted, 'btn-danger': !sellerInfo.isDeleted}"
+                              (click)="openConfirmDialogSellerProduct(sellerInfo._id, sellerInfo.isDeleted)">
+                        <i class='bx' [ngClass]="{'bx-check-circle': sellerInfo.isDeleted, 'bx-x-circle': !sellerInfo.isDeleted}"></i>
+                        {{ sellerInfo.isDeleted ? 'Activate' : 'Deactivate' }}
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="!selectedProduct.sellerProductsInfo || selectedProduct.sellerProductsInfo.length === 0">
+                    <td colspan="6" class="text-center">No seller information available</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </form>
         </div>
         <div class="modal-footer">
-          <button *ngIf="selectedProduct && canUpdateProduct(selectedProduct)" type="button" class="btn btn-primary" (click)="toggleEdit($event)" id="updateBtn">
-            <i class='bx' [ngClass]="{'bx-pen': !editing, 'bx-check': editing}"></i>
+          <button type="button" class="btn btn-primary" (click)="toggleEdit($event)" id="updateBtn">
+            <i class='bx' [ngClass]="{'bx-pen': !editing, 'bx-check': editing}"></i> 
+            {{ editing ? 'Save' : 'Edit' }}
           </button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">
-              <i class='bx bx-x'></i>
+            <i class='bx bx-x'></i> Close
           </button>
         </div>
       </div>

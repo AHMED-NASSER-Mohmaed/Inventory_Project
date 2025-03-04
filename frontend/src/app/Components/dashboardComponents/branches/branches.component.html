@@ -185,7 +185,7 @@
                 <div class="info-item">
                   <strong class="label">Registration Number:</strong>
                   <div class="input-wrapper" [ngClass]="{'valid': registrationInput?.touched && registrationInput?.valid, 'invalid': registrationInput?.touched && registrationInput?.invalid}">
-                    <input type="text" [(ngModel)]="selectedBranch.registrationNumber" name="registrationNumber" pattern="\d{3}-\d{3}" [disabled]="!editing" #registrationInput="ngModel">
+                    <input type="text" [(ngModel)]="selectedBranch.registrationNumber" name="registrationNumber" pattern="\d{3}-\d{3}" [disabled]="!editing" #registrationInput="ngModel" placeholder="Pattern: 123-456">
                   </div>
                 </div>
                 <div class="info-item">

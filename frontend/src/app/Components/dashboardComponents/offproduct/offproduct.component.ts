@@ -675,7 +675,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
       this.exportQuantity
     ).subscribe({
       next: (res) => {
-        this.toaster.success('Product exported successfully');
+        this.toaster.success('Product Distrubuted successfully');
         // Update stock in UI
         this.selectedProduct.stock -= this.exportQuantity;
         const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
@@ -704,7 +704,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
         this.refreshProductData();
       },
       error: (error) => {
-        this.toaster.error(error.error.message || 'Failed to export product');
+        this.toaster.error(error.error.message || 'Failed to Distrubute product');
       }
     });
   }

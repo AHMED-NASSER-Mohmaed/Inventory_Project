@@ -1,1 +1,158 @@
-<p>analytics works!</p>
+<div class="parent3" [ngClass]="{'dark': isDarkMode}">
+    <section id="content">
+        <main>
+            <div class="head-title">
+                <div class="left">
+                    <div class="head-flex">
+                        <h1>Hi, {{tokenData.id.firstName}}!</h1>
+                    </div>
+                    <ul class="breadcrumb">
+                        <li><a>Dashboard</a></li>
+                        <li><i class='bx bx-chevron-right'></i></li>
+                        <li><a>Analysis</a></li>
+                    </ul>
+                </div>
+                <button class="btn-refresh" (click)="loadAnalyticsData()" [disabled]="isLoading">
+                    <i class='bx bx-refresh' [class.rotating]="isLoading"></i>
+                    Refresh Data
+                </button>
+            </div>
+
+            <div *ngIf="isLoading" class="loading-container">
+                <ngx-skeleton-loader count="3" appearance="line" [theme]="{ height: '100px', width: '100%' }"></ngx-skeleton-loader>
+                <ngx-skeleton-loader count="2" appearance="line" [theme]="{ height: '300px', width: '100%' }"></ngx-skeleton-loader>
+            </div>
+
+            <ul *ngIf="!isLoading" class="box-info">
+                <li>
+                    <i class='bx bxs-user'></i>
+                    <span class="text">
+                        <h3>{{getTotalSignUps()}}</h3>
+                        <p>New Users</p>
+                    </span>
+                </li>
+                <li>
+                    <i class='bx bxs-dollar-circle'></i>
+                    <span class="text">
+                        <h3>${{getTotalRevenue() | number:'1.0-0'}}</h3>
+                        <p>Total Revenue</p>
+                    </span>
+                </li>
+                <li>
+                    <i class='bx bxs-shopping-bag'></i>
+                    <span class="text">
+                        <h3>{{analyticsData?.totalCountOfProducts || 0}}</h3>
+                        <p>Total Products</p>
+                    </span>
+                </li>
+            </ul>
+
+            <div *ngIf="!isLoading" class="charts-container">
+                <div class="chart-card">
+                    <h3>Monthly Sign-ups</h3>
+                    <div class="chart-wrapper">
+                        <canvas baseChart
+                            [datasets]="monthlySignUpsChartData.datasets"
+                            [labels]="monthlySignUpsChartData.labels"
+                            [options]="barChartOptions"
+                            [type]="barChartType">
+                        </canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <h3>Product Status Distribution</h3>
+                    <div class="chart-wrapper pie-chart">
+                        <canvas baseChart
+                            [datasets]="productStatusChartData.datasets"
+                            [labels]="productStatusChartData.labels"
+                            [options]="pieChartOptions"
+                            [type]="pieChartType">
+                        </canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <h3>Monthly Revenue</h3>
+                    <div class="chart-wrapper">
+                        <canvas baseChart
+                            [datasets]="monthlyRevenueChartData.datasets"
+                            [labels]="monthlyRevenueChartData.labels"
+                            [options]="lineChartOptions"
+                            [type]="lineChartType">
+                        </canvas>
+                    </div>
+                </div>
+
+                <div *ngIf="analyticsData?.revenueBySeller?.length > 0" class="chart-card">
+                    <h3>Revenue by Seller</h3>
+                    <div class="chart-wrapper">
+                        <canvas baseChart
+                            [datasets]="revenueBySellerChartData.datasets"
+                            [labels]="revenueBySellerChartData.labels"
+                            [options]="revenueBySellerOptions"
+                            [type]="barChartType">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="!isLoading && analyticsData?.popularProducts" class="table-data">
+                <div class="order">
+                    <div class="head">
+                        <h3>Popular Products</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity Sold</th>
+                                <th>Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let product of analyticsData.popularProducts.slice(0, 5)">
+                                <td>
+                                    <img *ngIf="product.productDetails?.images?.length > 0" [src]="product.productDetails.images[0].url" alt="Product Image">
+                                    <p>{{ product.productDetails?.name }}</p>
+                                </td>
+                                <td>${{ product.finalPrice | number:'1.2-2' }}</td>
+                                <td>{{ product.totalSoldQty }}</td>
+                                <td>${{ product.totalRevenue | number:'1.2-2' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div *ngIf="!isLoading && analyticsData?.topSellers?.length > 0" class="table-data">
+                <div class="order">
+                    <div class="head">
+                        <h3>Top Sellers</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Seller</th>
+                                <th>Company</th>
+                                <th>Orders</th>
+                                <th>Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let seller of analyticsData.topSellers">
+                                <td>
+                                    <p>{{ seller.sellerDetails?.firstName }} {{ seller.sellerDetails?.lastName }}</p>
+                                </td>
+                                <td>{{ seller.sellerDetails?.companyName }}</td>
+                                <td>{{ seller.orderCount }}</td>
+                                <td>${{ seller.totalRevenue | number:'1.2-2' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </section>
+</div>
