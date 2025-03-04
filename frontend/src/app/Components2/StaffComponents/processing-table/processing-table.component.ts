@@ -173,6 +173,10 @@ export class ProcessingTableComponent {
           this.validationError = `stock is (${product.productStock}) cannot proceed the order. please choose the cancelled status`;
           return false;
         }
+        if(product.productFulfilledQuantity == 0){
+          this.validationError = `Fulfilled Quantity cannot be 0`;
+          return false;
+        }
       }
       this.validationError = null;
       return true;

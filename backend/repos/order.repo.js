@@ -284,10 +284,12 @@ class OrderRepository {
   
     await order.save();
   
+    if (!someProductsCancelled) {
+      throw new Error("No valid online products to cancel.");
+    }
+    
     return {
-      message: someProductsCancelled
-        ? "Selected online products have been cancelled successfully."
-        : "No valid online products to cancel.",
+      message: "Selected online products have been cancelled successfully.",
       newStatus: order.status,
       updatedTotalPrice: order.totalPrice,
       updatedTotalQty: order.totalQty,

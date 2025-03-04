@@ -12,7 +12,7 @@ class DashboardController {
   initializeRoutes() {
     this.router.get(
       "/admin-dashboard/analytics",
-      // prot_rest("admin", "super_admin"),
+      prot_rest("admin", "super_admin"),
       this.getAnalyticsOverview
     );
   }

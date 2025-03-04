@@ -58,6 +58,17 @@ module.exports.protect = catchAsync(async (req, res, next) => {
       )
     );
 
+  if (
+    currentUser.userType === "seller" &&
+    (currentUser.status == 0 || currentUser.status == -1)
+  ) {
+    return next(
+      new AppError(
+        "Your account is not yet approved or has been rejected.",
+        401
+      )
+    );
+  }
   // if (
   //   !currentUser.isEmailVerified &&
   //   req.path !== "/auth/resendVerificationEmail" &&
