@@ -92,18 +92,23 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
         if (response && response.data) {
           // Handle the new response structure
           const responseData = response.data;
-          const productData = responseData.product;
+          const productData = responseData;
             const matchingProduct = this.products.find(
               (pro) => pro.onlineProductId == productData._id
             );
+            
+            console.log(productData,"ooooooooooooo");
+
           this.product = {
             _id: productData._id,
-            name: productData.name,
-            description: productData.description,
-            price: productData.price,
-            category: productData.category,
-            brand: productData.brand,
-            images: productData.images
+            name: productData.product.name,
+            description: productData.product.description,
+            price: productData.product.price,
+            category: productData.product.category,
+            brand: productData.product.brand,
+            images: productData.product.images,
+            companyName:productData.seller.companyName
+
           }
           this.stockCount =  matchingProduct
           ? Math.max(matchingProduct.stock - matchingProduct.requiredQty, 0) : responseData.stock ;
