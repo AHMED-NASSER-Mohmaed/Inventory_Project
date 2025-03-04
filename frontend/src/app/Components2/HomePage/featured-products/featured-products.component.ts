@@ -136,7 +136,7 @@ export class FeaturedProductsComponent implements OnInit {
         Swal.fire({
           icon: 'info',
           title: 'Oops!',
-          text: 'Product Out of Stock!',
+          text: error.error.message,
         });
       }
     });
