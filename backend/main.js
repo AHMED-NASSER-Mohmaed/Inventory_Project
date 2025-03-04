@@ -17,7 +17,7 @@ const Product = require("./models/product.model");
 const branch = require("./models/branch.model");
 
 
-const { compareSync } = require("bcryptjs");
+// const { compareSync } = require("bcryptjs");
 const { Brand } = require("./models/brand.model");
 const port = APP_CONFIG.HTTP_PORT || 5000;
 
@@ -57,6 +57,7 @@ process.on("uncaughtException", (err) => {
         userType: "staff",
         SSN: "30101101206161",
         role: "super_admin",
+        branch:APP_CONFIG.MAIN_BRANCH_ID,
       }
       if (!await Staff.findOne({ SSN: superAdmin.SSN })) {
 

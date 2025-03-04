@@ -9,6 +9,7 @@ import { HeaderComponent } from '../../core/header/header.component';
 import { FooterComponent } from '../../core/footer/footer.component';
 import { ReviewsService } from '../../_services/reviews.service';
 import { CartService } from '../../_services/cart.service';
+import { decodeToken } from '../../_helper/jwt-helper';
 
 interface ProductImage {
   _id?: string;
@@ -52,6 +53,8 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
   errorMessage: string = '';
   stockCount: number = 0;
 
+  token:any;
+  // New responsive carousel data
   products: any[] = [];
   responsiveOptions: any[] = [
     { breakpoint: '1024px', numVisible: 3, numScroll: 3 },
@@ -73,6 +76,10 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
   ) {}
 
   ngOnInit(): void {
+    const item = localStorage.getItem('token');
+    this.token = decodeToken(item!);
+    console.log(`token: ${this.token}`);
+    console.log(this.token);
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.productId = params['id'];
@@ -92,18 +99,23 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
         if (response && response.data) {
           // Handle the new response structure
           const responseData = response.data;
-          const productData = responseData.product;
+          const productData = responseData;
             const matchingProduct = this.products.find(
               (pro) => pro.onlineProductId == productData._id
             );
+            
+            console.log(productData,"ooooooooooooo");
+
           this.product = {
             _id: productData._id,
-            name: productData.name,
-            description: productData.description,
-            price: productData.price,
-            category: productData.category,
-            brand: productData.brand,
-            images: productData.images
+            name: productData.product.name,
+            description: productData.product.description,
+            price: productData.product.price,
+            category: productData.product.category,
+            brand: productData.product.brand,
+            images: productData.product.images,
+            companyName:productData.seller.companyName
+
           }
           this.stockCount =  matchingProduct
           ? Math.max(matchingProduct.stock - matchingProduct.requiredQty, 0) : responseData.stock ;

@@ -24,7 +24,7 @@
                     <span class="text-danger">Product Out of Stock!</span>
                 </div>
               }
-              <button class="btn add-to-cart-btn" [disabled]="product.shallowStock <= 0" (click)="$event.stopPropagation(); increase(product)">Add to Cart</button>
+              <button class="btn add-to-cart-btn" [disabled]="product.shallowStock <= 0 || token.id.userType != 'customer'" (click)="$event.stopPropagation(); increase(product)">Add to Cart</button>
             </div>
             <div class="img-body">
               <h5 class="card-title">{{ product.name }}</h5>

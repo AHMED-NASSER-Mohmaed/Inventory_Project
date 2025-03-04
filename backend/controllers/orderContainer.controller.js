@@ -46,7 +46,7 @@ class OrderContainerController {
 
     this.router.get(
       "/allSuborders/offline",
-      pro_res("super_admin"),
+      pro_res("super_admin", "admin"),
       catchAsync(this.getAllOfflineSubordersForSuperAdmin)
     );
 

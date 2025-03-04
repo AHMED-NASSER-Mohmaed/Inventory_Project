@@ -19,6 +19,7 @@ import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { RouterModule } from '@angular/router';
 
 import { CartService } from '../../_services/cart.service';
+import { decodeToken } from '../../_helper/jwt-helper';
 
 
 
@@ -53,7 +54,7 @@ export class ProductsListComponent implements OnInit {
 
   loading: boolean = false;
   tempProducts: any[] = []
-
+  token:any;
 
   constructor(
     private productsService: ProductsService,
@@ -62,6 +63,8 @@ export class ProductsListComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    const item = localStorage.getItem('token');
+        this.token = decodeToken(item!);
     this.route.queryParams.subscribe(params => {
       this.selectedCategoryId = params['catId'] || "";
       this.selectedBrandId = params['brandId'] || "";
