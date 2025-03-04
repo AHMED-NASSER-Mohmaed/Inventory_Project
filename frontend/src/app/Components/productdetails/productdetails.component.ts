@@ -9,6 +9,7 @@ import { HeaderComponent } from '../../core/header/header.component';
 import { FooterComponent } from '../../core/footer/footer.component';
 import { ReviewsService } from '../../_services/reviews.service';
 import { CartService } from '../../_services/cart.service';
+import { decodeToken } from '../../_helper/jwt-helper';
 
 interface ProductImage {
   _id?: string;
@@ -52,6 +53,7 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
   errorMessage: string = '';
   stockCount: number = 0;
 
+  token:any;
   // New responsive carousel data
   products: any[] = [];
   responsiveOptions: any[] = [
@@ -74,6 +76,10 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
   ) {}
 
   ngOnInit(): void {
+    const item = localStorage.getItem('token');
+    this.token = decodeToken(item!);
+    console.log(`token: ${this.token}`);
+    console.log(this.token);
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.productId = params['id'];

@@ -6,6 +6,7 @@ import { QuickviewComponent } from '../quickview/quickview.component';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../../../_services/cart.service';
 import Swal from 'sweetalert2';
+import { decodeToken } from '../../../_helper/jwt-helper';
 
 @Component({
   selector: 'app-featured-products',
@@ -20,10 +21,13 @@ export class FeaturedProductsComponent implements OnInit {
   showQuickView: boolean = false;
   selectedProduct: any | null = null;
   sessionId: string | null = null;
+  token:any;
 
   constructor(private productsService: ProductsService, private cartService: CartService) {}
 
   ngOnInit(): void {
+    const item = localStorage.getItem('token');
+    this.token = decodeToken(item!);
     this.loadCart(() => {
       this.getFeaturedProducts(); // Ensures cart is loaded before fetching products
     });
