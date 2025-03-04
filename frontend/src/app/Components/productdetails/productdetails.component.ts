@@ -53,11 +53,8 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
   errorMessage: string = '';
   stockCount: number = 0;
 
-<<<<<<< HEAD
-=======
   token:any;
   // New responsive carousel data
->>>>>>> c6ef4b7c79eafa8e7bc7095652ca8b69d9645909
   products: any[] = [];
   responsiveOptions: any[] = [
     { breakpoint: '1024px', numVisible: 3, numScroll: 3 },
