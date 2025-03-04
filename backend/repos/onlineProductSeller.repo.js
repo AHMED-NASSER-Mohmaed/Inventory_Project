@@ -243,17 +243,19 @@ class OnlineProductRepository {
     }
   }
 
+  //supper admin
   async deActiveSellerProduct(onProductId) {
     try {
-      return await OnlineProducts.updateOne({ _id: onProductId }, { isDeleted: true });
+      console.log("idddd",onProductId);
+      return await OnlineProducts.updateOne({ _id: onProductId, status:APP_CONFIG.APPROVED_STATUS }, { isDeleted: true });
     } catch (error) {
       throw error;
     }
   }
-
+  //supper admin
   async activeSellerProduct(onProductId) {
     try {
-      return await OnlineProducts.updateOne({ _id: onProductId }, { isDeleted: false });
+      return await OnlineProducts.updateOne({ _id: onProductId ,status:APP_CONFIG.APPROVED_STATUS}, { isDeleted: false });
     } catch (error) {
       throw error;
     }

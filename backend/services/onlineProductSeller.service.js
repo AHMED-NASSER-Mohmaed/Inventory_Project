@@ -188,7 +188,7 @@ class OnlineProductService {
     try{
       let ack=await onlineProductRepo.deActiveSellerProduct(onProductId);
 
-      
+      // console.log(ack);
       if (!ack.modifiedCount && !ack.matchedCount)
         throw new AppError("product dose not exist!", APP_CONFIG.HTTP_BAD_REQUEST);
        

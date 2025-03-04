@@ -45,7 +45,7 @@ process.on("uncaughtException", (err) => {
     callback: async () => {
 
       // console.log(await Product.collection.drop());
-      /****************************************************************************************** */
+      /*******************************************************************************************/
       let superAdmin = {
         _id: APP_CONFIG.SUPPERADMIN_ID,
         firstName: "ahmed",
@@ -65,7 +65,7 @@ process.on("uncaughtException", (err) => {
         await Staff.create(superAdmin);
 
       }
-      /****************************************************************************************** */
+      /*******************************************************************************************/
 
       let mainBranch = {
         "_id": APP_CONFIG.MAIN_BRANCH_ID,
@@ -73,7 +73,8 @@ process.on("uncaughtException", (err) => {
         governate: 6,
         registrationNumber: "123-69",
         admin: APP_CONFIG.SUPPERADMIN_ID,
-        location: "Elmasoura - Ahmed Maher Street"
+        location: "Elmasoura - Ahmed Maher Street",
+        isActive:true,
       }
 
       await branch.findOneAndUpdate(
@@ -87,7 +88,8 @@ process.on("uncaughtException", (err) => {
         type: "online",
         governate: 1,
         registrationNumber: "123-692",
-        location: "Online"
+        location: "Online",
+        isActive:true,
       }
 
       await branch.findOneAndUpdate(

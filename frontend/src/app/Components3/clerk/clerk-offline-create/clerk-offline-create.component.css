@@ -125,6 +125,10 @@
 .add-to-cart-btn:hover {
     background-color: rgb(101, 96, 96); 
 }
+.no-border td {
+    border: none;
+  }
+
 
 
 
@@ -405,4 +409,15 @@ stroke: var(--spinner-color) !important;
     display: flex;
     justify-content: flex-end;
     cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.quantity-row{
+    position: relative;
+}
+
+.quantity{
+    position: absolute;
+    right: -38%;
 }
