@@ -10,7 +10,7 @@ const {
     validateSearchParams,
     validatorFilterParams,
     validateSortPaginationParams,
-  } = require("../middlewares/validation.middlewares");
+} = require("../middlewares/validation.middlewares");
 
 
 const router = require("express").Router();
@@ -117,6 +117,7 @@ const ProductController = {
         let result = await productService.activeProduct(req.params.productId);
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
+    
     //deprecated
     approveOnProduct: async (req, res, next) => {
         let result = await productService.approveProduct(req.params.productId);
@@ -133,25 +134,33 @@ const ProductController = {
         sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
     },
 
-    getAllOnlineProduct:async(req,res,next)=>{
-        
-        if(req.validatedParams.filters)
-            req.validatedParams.filters={};
+    getAllOnlineProduct: async (req, res, next) => {
 
-        req.validatedParams.filters['isActive']=true;
-        req.validatedParams.filters['status']=APP_CONFIG.APPROVED_STATUS;
+        // if (req.validatedParams.filters)
+        //     req.validatedParams.filters = {};
+
+        // req.validatedParams.filters['isActive'] = true;
+        // req.validatedParams.filters['status'] = APP_CONFIG.REJECT_STATUS;
 
 
         let result = await productService.getAllOnlineProductInfo(req.validatedParams);
-        sendResponseToClint(res,APP_CONFIG.HTTP_OK,APP_CONFIG.SUCCESS_MESSAGE,result);
-        
+        sendResponseToClint(res, APP_CONFIG.HTTP_OK, APP_CONFIG.SUCCESS_MESSAGE, result);
+
     },
 
-    
+    allowedFieldName: [
+        ["isActive", "undefined"],
+        ["status", "undefined"],
+    ],
+    allowedFiledsValues: [
+        ["true", "false", "undefined"],
+        [APP_CONFIG.REJECT_STATUS, APP_CONFIG.PENDING_STATUS, APP_CONFIG.APPROVED_STATUS, "undefined"],
+    ],
+
     searchFiledName: ["code", "brand", "category", "name"],
     searchValueAcoordingNaN: [true, true, true, true],
 
-    allowedSort: ["price"],
+    allowedSort: ["createdAt", "price"],
 
 }
 
@@ -174,12 +183,12 @@ router
     )
 
     .get("/getAllAvailableProduct",
-        
+
         pro_res(APP_CONFIG.SELLER),
 
         validateSortPaginationParams(ProductController.allowedSort),
 
-        validatorFilterParams([['undefine']],[['undefine']]),
+        validatorFilterParams([['undefine']], [['undefine']]),
 
         validateSearchParams(ProductController.searchFiledName,
             ProductController.searchValueAcoordingNaN),
@@ -188,10 +197,17 @@ router
 
     )
 
+    //supper admin
     .get("/getAllOnlineProductInfo",
+
         pro_res(APP_CONFIG.SUPPERADMIN),
-        validateSortPaginationParams(),
-        validatorFilterParams([['undefined']] , [['undefined']]),
+
+        validateSortPaginationParams(ProductController.allowedSort),
+
+        validatorFilterParams(ProductController.allowedFieldName, ProductController.allowedFiledsValues),
+
+        validateSearchParams(ProductController.searchFiledName,ProductController.searchValueAcoordingNaN),
+
         catchAsync(ProductController.getAllOnlineProduct)
     )
 

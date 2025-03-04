@@ -109,12 +109,12 @@ router.post("/seller/addExistingProduct",
         catchAsync(productSellerController.rejectProduct)
     )
     //supper admin
-    .patch("deActiveOnProduct/:productId",
+    .delete("/deActiveOnProduct/:onProductId",
         pro_res(APP_CONFIG.SUPPERADMIN),
         catchAsync(productSellerController.deActiveSellerProduct)
     )
     //supper admin
-    .patch("activeOnProduct/:productId",
+    .patch("/activeOnProduct/:onProductId",
         pro_res(APP_CONFIG.SUPPERADMIN),
         catchAsync(productSellerController.activeSellerProduct)
     )

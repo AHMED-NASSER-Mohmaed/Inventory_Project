@@ -245,6 +245,7 @@ class OnlineProductRepository {
 
   async deActiveSellerProduct(onProductId) {
     try {
+      console.log("idddd",onProductId);
       return await OnlineProducts.updateOne({ _id: onProductId }, { isDeleted: true });
     } catch (error) {
       throw error;
