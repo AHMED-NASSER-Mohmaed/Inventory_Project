@@ -613,19 +613,26 @@ const customerOp = {
 
   //done
   updateCustomer: async (req, res, next) => {
-    if (req.user.role !== APP_CONFIG.SUPPERADMIN) {
-      if (req.user.userType == APP_CONFIG.CUSTOMER)
-        req.params.id = req.user._id;
-      else
-        throw new AppError(
-          "sorry, you are not authorized.",
-          APP_CONFIG.HTTP_UNAUTHORIZED
-        );
-    }
+    
+     
 
-    console.log(req.params.id);
+    // if ( req.user.role !== APP_CONFIG.SUPPERADMIN || req.user.userType !== APP_CONFIG.CUSTOMER ) {
+    //   // if (req.user.userType == APP_CONFIG.CUSTOMER)
+    //   //   req.params.id = req.user._id;
+    //   // else
 
-    let result = await userService.updateUser(req.params.id, req.body);
+    //     throw new AppError(
+    //       "sorry, you are not authorized.",
+    //       APP_CONFIG.HTTP_UNAUTHORIZED
+    //     );
+    // }
+
+    let id=req.user._id;
+
+    if(req.params.id)
+      id=req.params.id;
+
+    let result = await userService.updateUser( id , req.body);
     sendResponseToClint(
       res,
       APP_CONFIG.HTTP_OK,
@@ -957,7 +964,7 @@ route
 
   .post(
     "/updateCustomer",
-    prot_rest(APP_CONFIG.CUSTOMER),
+    prot_rest(APP_CONFIG.SUPPERADMIN,APP_CONFIG.CUSTOMER),
     catchAsync(customerOp.updateCustomer)
   )
 
@@ -972,7 +979,7 @@ route
   //update personal image profile for users
   .post(
     "/updateImageProfile",
-    prot_rest("supper_admin", "customer"),
+    prot_rest(APP_CONFIG.SUPPERADMIN,  APP_CONFIG.CUSTOMER),
     catchAsync(genaraicFunctions.updateImageProfile)
   )
 
