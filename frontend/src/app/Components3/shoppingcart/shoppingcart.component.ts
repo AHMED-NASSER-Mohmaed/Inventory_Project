@@ -8,9 +8,9 @@ import { CartService } from '../../_services/cart.service';
 
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import Swal from 'sweetalert2';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-shoppingcart',
