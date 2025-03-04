@@ -65,7 +65,7 @@ class DashboardRepository {
     return await Order.aggregate([
       {
         $match: {
-          status: { $in: ["delivered", "completed"] },
+          status: { $in: ["delivered", "completed", "partially delivered"] },
         },
       },
       {
@@ -178,7 +178,7 @@ class DashboardRepository {
     return await Order.aggregate([
       {
         $match: {
-          status: { $in: ["delivered", "completed"] },
+          status: { $in: ["delivered", "completed", "partially delivered"] },
         },
       },
       {
