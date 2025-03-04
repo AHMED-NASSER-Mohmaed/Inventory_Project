@@ -66,7 +66,7 @@ class OrderContainerController {
 
     this.router.get(
       "/order-container-offline",
-      AuthMiddleware.protect,
+      pro_res("clerk", "cashier"),
       catchAsync(this.getOfflineOrderContainers)
     );
 
@@ -107,7 +107,7 @@ class OrderContainerController {
 
     this.router.get(
       "/AllSubOrdersForClerk", // same as the cashier below but it will process the suborders that are related to our company only
-      AuthMiddleware.protect,
+      pro_res("clerk"),
       catchAsync(this.getAllOnlineOrdersForClerk)
     );
 
