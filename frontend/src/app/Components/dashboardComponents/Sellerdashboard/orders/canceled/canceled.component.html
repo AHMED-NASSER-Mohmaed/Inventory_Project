@@ -54,7 +54,11 @@
                             <tr>
                                 <th  style="cursor: pointer">
                                     Order Id
-                                    
+                                    <!-- <i class="bx" [ngClass]="{
+                                        'bx-up-arrow-alt': sortField === 'orderId' && sortDirection === 'asc',
+                                        'bx-down-arrow-alt': sortField === 'orderId' && sortDirection === 'desc',
+                                        'bx-sort': sortField !== 'orderId'
+                                    }"></i> -->
                                 </th>
                                 
                                 <th >
@@ -65,7 +69,11 @@
 
                                 <th style="cursor: pointer">
                                     Created At
-                                    
+                                    <!-- <i class="bx" [ngClass]="{
+                                        'bx-up-arrow-alt': sortField === 'createdAt' && sortDirection === 'asc',
+                                        'bx-down-arrow-alt': sortField === 'createdAt' && sortDirection === 'desc',
+                                        'bx-sort': sortField !== 'createdAt'
+                                    }"></i> -->
                                 </th>
                                 <th>
                                     Total
@@ -136,6 +144,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="sellerInfoModalLabel">Order Details</h5>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <i class='bx bx-x'></i>
+        </button>
       </div>
       <div class="modal-body">
         <div *ngIf="selectedSuborder">
@@ -150,7 +161,10 @@
               [(ngModel)]="selectedSuborder.orderStatus"
               [disabled]="!editing"
             >
+              <option value="pending">Pending</option>
               <option value="processing">Processing</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
               <option value="cancelled">Cancelled</option>
             </select>
           </div>
@@ -163,9 +177,9 @@
               <p><strong>Product Name:</strong> {{ product.productName }}</p>
               <p><strong>Product ID:</strong> {{ product.productId }}</p>
               <p><strong>Requested Quantity:</strong> {{ product.productRequestedQuantity }}</p>
+              <p><strong>Fulfilled Quantity:</strong> {{ product.productFulfilledQuantity }}</p>
               <p><strong>Available Stock:</strong> {{ product.productStock }}</p>
             </div>
-          
 
             <!-- Counter Input for Fulfilled Quantity -->
             <!-- <div class="form-group">
@@ -206,7 +220,7 @@
 
       <div class="modal-footer">
         <!-- Update Button -->
-        <button
+        <!-- <button
           type="button"
           class="btn btn-primary"
           id="updateBtn"
@@ -215,7 +229,7 @@
         >
           <i class='bx' [ngClass]="{'bx-pen': !editing, 'bx-check': editing}"></i>
           {{ editing ? 'Save' : 'Edit' }}
-        </button>
+        </button> -->
 
         <!-- Close Button -->
         <button type="button" class="btn btn-secondary" data-dismiss="modal">

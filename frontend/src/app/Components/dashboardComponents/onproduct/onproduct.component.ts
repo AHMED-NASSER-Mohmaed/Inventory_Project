@@ -3,21 +3,22 @@ import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
-import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.component';
-import { ConfirmDialogComponent2 } from '../../../confirm-dialog2/confirm-dialog2.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
-import { decodeToken } from '../../../_helpers/jwt-helper';
 import { ToastrService } from 'ngx-toastr';
 import { MatSelectModule } from '@angular/material/select';
-import { OffProduct, ProductImage } from '../../../_models/offproduct';
 import { MatTreeNestedDataSource, MatTreeModule } from '@angular/material/tree';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ProductImage } from '../../../_models/offproduct';
+import { decodeToken } from '../../../_helper/jwt-helper';
+import { ConfirmDialogComponent2 } from '../../../confirm-dialog2/confirm-dialog2.component';
+import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.component';
 import { OnproductsService } from '../../../_services/onproducts.service';
+
 
 interface FilterNode {
   name: string;
@@ -25,6 +26,23 @@ interface FilterNode {
   id?: string;
   value?: string;
   children?: FilterNode[];
+}
+
+interface Product {
+  _id: string;
+  product: {
+    name: string;
+    code: string;
+    description: string;
+    category: string;
+    brand: string;
+    images: ProductImage[];
+  };
+  stock: number;
+  price: number;
+  isActive: boolean;  
+  status: string;     
+  createdAt: string;
 }
 
 @Component({
@@ -53,7 +71,7 @@ export class OnproductComponent implements OnInit, OnDestroy{
     hasNextPage: boolean = false;
     hasPreviousPage: boolean = false;
   
-    products: OffProduct[] = [];
+    products: Product[] = [];
     isDarkMode: boolean = false;
     dropdownStates: boolean[] = [];
     selectedProduct: any = {};
@@ -62,7 +80,7 @@ export class OnproductComponent implements OnInit, OnDestroy{
   
     subscriptions: Subscription[] = [];
   
-    pageCache: { [key: string]: { result: OffProduct[]; total: number } } = {};
+    pageCache: { [key: string]: { result: Product[]; total: number } } = {};
   
     selectedFilter: string = 'name'; 
     searchQuery: string = '';
@@ -80,52 +98,18 @@ export class OnproductComponent implements OnInit, OnDestroy{
   
     tokenData: any = null;
   
-    activeProductsCount: any = null;
-    inactiveProductsCount: any = null;
+    totalProductsCount: number = 0;
   
-    branches: { id: string; main: string; sub: string }[] = [];
     categories: { _id: string; Cname: string }[] = [];
     brands: { _id: string; Bname: string }[] = [];
-    suppliers: { _id: string; companyName: string }[] = [];
   
-    selectedBranch: string = '';
     selectedCategory: string = '';
     selectedBrand: string = '';
-  
-    newProduct: {
-      name: string;
-      code: string;
-      description: string;
-      cost: number;
-      category: string;
-      brand: string;
-      supplier: string;
-      stock: number;
-    } = {
-      name: '',
-      code: '',
-      description: '',
-      cost: 0,
-      category: '',
-      brand: '',
-      supplier: '',
-      stock: 0
-    };
-  
-    selectedImageIds: string[] = [];
-    newImages: File[] = [];
-  
-    stockUpdateQuantity: number = 0;
-    exportDestinationBranch: string = '';
-    exportQuantity: number = 0;
+    selectedStatus: string = '';
   
     treeControl = new NestedTreeControl<FilterNode>(node => node.children);
     filterDataSource = new MatTreeNestedDataSource<FilterNode>();
     filterNodes: FilterNode[] = [
-      {
-        name: 'Branch',
-        children: []
-      },
       {
         name: 'Category',
         children: []
@@ -133,11 +117,19 @@ export class OnproductComponent implements OnInit, OnDestroy{
       {
         name: 'Brand',
         children: []
+      },
+      {
+        name: 'Status',
+        children: [
+          { name: 'Pending', type: 'status', value: 'pending' },
+          { name: 'Approved', type: 'status', value: 'approved' },
+          { name: 'Rejected', type: 'status', value: 'rejected' }
+        ]
       }
     ];
   
     constructor(
-      private onproductService: OnproductsService,
+      private onproductsService: OnproductsService,
       public dialog: MatDialog,
       public toaster: ToastrService
     ) {}
@@ -145,12 +137,9 @@ export class OnproductComponent implements OnInit, OnDestroy{
     ngOnInit(): void {
       this.updateSearchPlaceholder();
       this.loadProducts();
-      this.getInActiveProductsCount();
-      this.getActiveProductsCount();
-      this.loadBranches();
       this.loadCategories();
       this.loadBrands();
-      this.loadSuppliers();
+      
       const token = localStorage.getItem('token');
       if (token) {
         this.tokenData = decodeToken(token);
@@ -161,7 +150,7 @@ export class OnproductComponent implements OnInit, OnDestroy{
     hideSingleSelectionIndicator = signal(true);
   
     loadProducts(): void {
-      const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}_${this.selectedBranch}_${this.selectedCategory}_${this.selectedBrand}`;
+      const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}_${this.selectedCategory}_${this.selectedBrand}_${this.selectedStatus}`;
   
       if (this.pageCache[cacheKey]) {
         const cached = this.pageCache[cacheKey];
@@ -171,6 +160,7 @@ export class OnproductComponent implements OnInit, OnDestroy{
         this.updatePaginationState();
         this.showNoResults = false;
         this.isLoading = false;
+        this.totalProductsCount = cached.total;
         return;
       }
   
@@ -179,14 +169,14 @@ export class OnproductComponent implements OnInit, OnDestroy{
   
       let filterParams: string[] = [];
       
-      if (this.selectedBranch) {
-        filterParams.push(`branch:${this.selectedBranch}`);
-      }
       if (this.selectedCategory) {
         filterParams.push(`category:${this.selectedCategory}`);
       }
       if (this.selectedBrand) {
         filterParams.push(`brand:${this.selectedBrand}`);
+      }
+      if (this.selectedStatus) {
+        filterParams.push(`status:${this.selectedStatus}`);
       }
       
       if (this.currentFilter === 'active') {
@@ -202,7 +192,7 @@ export class OnproductComponent implements OnInit, OnDestroy{
         sortParam = `&sort=${this.sortField}:${this.sortDirection}`;
       }
   
-      const obs = this.onproductService.getPaginatedProducts(
+      const obs = this.onproductsService.getPaginatedProducts(
         this.currentPage,
         this.itemsPerPage,
         filterParam,
@@ -214,12 +204,12 @@ export class OnproductComponent implements OnInit, OnDestroy{
           this.products = res.data.result;
           this.showNoResults = false;
           const total = res.data.total;
+          this.totalProductsCount = total;
           this.totalPages = Math.ceil(total / this.itemsPerPage);
           this.dropdownStates = new Array(this.products.length).fill(false);
           this.pageCache[cacheKey] = { result: this.products, total: total };
           this.updatePaginationState();
           this.isLoading = false;
-          console.log(res);
         },
         error: (error) => {
           this.toaster.clear();
@@ -237,7 +227,7 @@ export class OnproductComponent implements OnInit, OnDestroy{
     }
   
     loadCategories(): void {
-      const sub = this.onproductService.getAllCategories().subscribe({
+      const sub = this.onproductsService.getAllCategories().subscribe({
         next: (res) => {
           this.categories = res.data;
           
@@ -260,7 +250,7 @@ export class OnproductComponent implements OnInit, OnDestroy{
     }
   
     loadBrands(): void {
-      const sub = this.onproductService.getAllBrands().subscribe({
+      const sub = this.onproductsService.getAllBrands().subscribe({
         next: (res) => {
           this.brands = res.data;
           
@@ -282,19 +272,7 @@ export class OnproductComponent implements OnInit, OnDestroy{
       this.subscriptions.push(sub);
     }
   
-    loadSuppliers(): void {
-      const sub = this.onproductService.getAllSuppliers().subscribe({
-        next: (res) => {
-          this.suppliers = res.data;
-        },
-        error: (error) => {
-          this.toaster.error('Failed to load suppliers', 'Error');
-        }
-      });
-      this.subscriptions.push(sub);
-    }
-  
-    onBranchFilterChange(): void {
+    onCategoryFilterChange(): void {
       this.currentPage = 1;
       this.isSearchMode = false;
       this.searchQuery = '';
@@ -302,14 +280,14 @@ export class OnproductComponent implements OnInit, OnDestroy{
       this.loadProducts();
     }
   
-    onCategoryFilterChange(): void {
+    onBrandFilterChange(): void {
       this.currentPage = 1;
       this.isSearchMode = false;
       this.searchQuery = '';
       this.loadProducts();
     }
-  
-    onBrandFilterChange(): void {
+    
+    onStatusFilterChange(): void {
       this.currentPage = 1;
       this.isSearchMode = false;
       this.searchQuery = '';
@@ -358,24 +336,16 @@ export class OnproductComponent implements OnInit, OnDestroy{
       this.isDarkMode = !this.isDarkMode;
     }
   
-    showProductInfo(product: OffProduct): void {
-      this.selectedProduct = {
-        _id: product._id,
-        product: { ...product.product },
-        branch: product.branch,
-        stock: product.stock,
-        createdAt: product.createdAt,
-        updatedAt: product.updatedAt
-      };
-      this.backupProduct = { ...this.selectedProduct };
-      this.selectedImageIds = [];
+    showProductInfo(product: Product): void {
+      this.selectedProduct = { ...product };
+      this.backupProduct = { ...product };
+      this.editing = false;
     }
   
     // Product actions
     deActivateProduct(productId: string): void {
-      const sub = this.onproductService.deactivateProduct(productId).subscribe({
+      const sub = this.onproductsService.deactivateProduct(productId).subscribe({
         next: (res) => {
-          console.log(res);
           this.toaster.success('Product deactivated successfully');
           this.refreshProductData();
         },
@@ -387,16 +357,14 @@ export class OnproductComponent implements OnInit, OnDestroy{
             progressBar: true,
             closeButton: true,
           });
-          console.log(error);
         },
       });
       this.subscriptions.push(sub);
     }
   
     activateProduct(productId: string): void {
-      const sub = this.onproductService.activateProduct(productId).subscribe({
+      const sub = this.onproductsService.activateProduct(productId).subscribe({
         next: (res) => {
-          console.log(res);
           this.toaster.success('Product activated successfully');
           this.refreshProductData();
         },
@@ -408,7 +376,6 @@ export class OnproductComponent implements OnInit, OnDestroy{
             progressBar: true,
             closeButton: true,
           });
-          console.log(error);
         },
       });
       this.subscriptions.push(sub);
@@ -434,44 +401,6 @@ export class OnproductComponent implements OnInit, OnDestroy{
       this.subscriptions.push(sub);
     }
   
-    getActiveProductsCount(): void {
-      const sub = this.onproductService.getActiveProductsCount().subscribe({
-        next: (res) => {
-          this.activeProductsCount = res.data && res.data[0] ? res.data[0].total || 0 : 0;
-        },
-        error: (error) => {
-          this.toaster.clear();
-          this.toaster.error(error.error.message, 'Failed', {
-            timeOut: 1500,
-            positionClass: 'toast-bottom-right',
-            progressBar: true,
-            closeButton: true,
-          });
-          console.error('Error getting active products count', error);
-        },
-      });
-      this.subscriptions.push(sub);
-    }
-  
-    getInActiveProductsCount(): void {
-      const sub = this.onproductService.getInactiveProductsCount().subscribe({
-        next: (res) => {
-          this.inactiveProductsCount = res.data && res.data[0] ? res.data[0].total || 0 : 0;
-        },
-        error: (error) => {
-          this.toaster.clear();
-          this.toaster.error(error.error.message, 'Failed', {
-            timeOut: 1500,
-            positionClass: 'toast-bottom-right',
-            progressBar: true,
-            closeButton: true,
-          });
-          console.error('Error getting inactive products count', error);
-        },
-      });
-      this.subscriptions.push(sub);
-    }
-  
     toggleDropdown(index: number): void {
       this.dropdownStates = this.dropdownStates.map((state, i) =>
         i === index ? !state : false
@@ -481,23 +410,20 @@ export class OnproductComponent implements OnInit, OnDestroy{
     toggleEdit(event?: any): void {
       if (this.editing) {
         const workingBackup = { ...this.backupProduct };
+        
+        // Only allow editing price and stock
         const updatePayload = {
-          name: this.selectedProduct.product.name,
-          code: this.selectedProduct.product.code,
-          description: this.selectedProduct.product.description,
-          cost: this.selectedProduct.product.cost,
-          category: this.selectedProduct.product.category,
-          brand: this.selectedProduct.product.brand
+          price: this.selectedProduct.price,
+          stock: this.selectedProduct.stock
         };
         
-        const sub = this.onproductService
-          .updateProductData(this.selectedProduct.product._id, updatePayload)
+        const sub = this.onproductsService
+          .updateProductData(this.selectedProduct._id, updatePayload)
           .subscribe({
             next: (res: any) => {
               if (res.message === 'success') {
                 this.toaster.success('Product updated successfully');
                 this.backupProduct = { ...this.selectedProduct };
-                
                 this.refreshProductData();
               } else {
                 this.selectedProduct = { ...workingBackup };
@@ -525,232 +451,6 @@ export class OnproductComponent implements OnInit, OnDestroy{
       if (event && event.target) event.target.blur();
     }
   
-    deleteImageDirectly(imageId: string): void {
-      const dialogRef = this.dialog.open(ConfirmDialogComponent2);
-      const sub = dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.onproductService.deleteProductImage(this.selectedProduct.product._id, imageId).subscribe({
-            next: (res) => {
-              this.toaster.success('Image deleted successfully');
-              
-              if (this.selectedProduct && this.selectedProduct.product && this.selectedProduct.product.images) {
-                this.selectedProduct.product.images = this.selectedProduct.product.images.filter(
-                  (img: ProductImage) => img._id !== imageId && img.fileId !== imageId
-                );
-                
-                const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
-                if (index !== -1) {
-                  this.products[index].product.images = [...this.selectedProduct.product.images];
-                }
-              }
-            },
-            error: (error) => {
-              console.log(error)
-              this.toaster.error(error.error?.message || 'Failed to delete image');
-            }
-          });
-        }
-      });
-      this.subscriptions.push(sub);
-    }
-  
-    deleteImage(imageId: string): void {
-      if (this.selectedImageIds.includes(imageId)) {
-        this.selectedImageIds = this.selectedImageIds.filter(id => id !== imageId);
-      } else {
-        this.selectedImageIds.push(imageId);
-      }
-    }
-  
-    onImageSelected(event: any): void {
-      const files = event.target.files;
-      if (files && files.length > 0) {
-        this.newImages = [...this.newImages, ...Array.from(files as FileList)];
-      }
-    }
-  
-    openFileSelector(): void {
-      const fileInput = document.getElementById('newImages');
-      if (fileInput) {
-        fileInput.click();
-      }
-    }
-  
-    updateImages(): void {
-      if (this.selectedImageIds.length === 0 && this.newImages.length === 0) {
-        this.toaster.info('No images to update');
-        return;
-      }
-  
-      this.onproductService.updateProductImages(
-        this.selectedProduct.product._id, 
-        this.selectedImageIds, 
-        this.newImages
-      ).subscribe({
-        next: (res) => {
-          this.toaster.success('Images updated successfully');
-          if (res.data && res.data.images) {
-            this.selectedProduct.product.images = res.data.images;
-            const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
-            if (index !== -1) {
-              this.products[index].product.images = res.data.images;
-            }
-          }
-          this.selectedImageIds = [];
-          this.newImages = [];
-        },
-        error: (error) => {
-          this.toaster.error(error.error.message || 'Failed to update images');
-        }
-      });
-    }
-  
-    isImageSelected(imageId: string): boolean {
-      return this.selectedImageIds.includes(imageId);
-    }
-  
-    updateStock(): void {
-      if (!this.stockUpdateQuantity || this.stockUpdateQuantity <= 0) {
-        this.toaster.error('Please enter a valid quantity');
-        return;
-      }
-  
-      this.onproductService.updateProductStock(
-        this.selectedProduct._id, 
-        this.stockUpdateQuantity
-      ).subscribe({
-        next: (res) => {
-          this.toaster.success('Stock updated successfully');
-          // Update stock in UI
-          this.selectedProduct.stock += this.stockUpdateQuantity;
-          const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
-          if (index !== -1) {
-            this.products[index].stock = this.selectedProduct.stock;
-          }
-          
-          const modalElement = document.getElementById('stockUpdateModal');
-          if (modalElement) {
-            modalElement.classList.remove('show');
-            modalElement.style.display = 'none';
-          }
-          const backdrops = document.getElementsByClassName('modal-backdrop');
-          while (backdrops.length > 0) {
-            backdrops[0].parentNode?.removeChild(backdrops[0]);
-          }
-          document.body.classList.remove('modal-open');
-          document.body.style.removeProperty('padding-right');
-          
-          this.stockUpdateQuantity = 0;
-          
-          this.refreshProductData();
-        },
-        error: (error) => {
-          console.log(error);
-          this.toaster.error(error.error.message || 'Failed to update stock');
-        }
-      });
-    }
-  
-    exportProduct(): void {
-      if (!this.exportDestinationBranch) {
-        this.toaster.error('Please select a destination branch');
-        return;
-      }
-  
-      if (!this.exportQuantity || this.exportQuantity <= 0) {
-        this.toaster.error('Please enter a valid quantity');
-        return;
-      }
-  
-      if (this.exportQuantity > this.selectedProduct.stock) {
-        this.toaster.error('Export quantity cannot exceed available stock');
-        return;
-      }
-  
-      this.onproductService.exportProduct(
-        this.selectedProduct._id,
-        this.selectedProduct.branch.toString(),
-        this.exportDestinationBranch,
-        this.exportQuantity
-      ).subscribe({
-        next: (res) => {
-          this.toaster.success('Product exported successfully');
-          // Update stock in UI
-          this.selectedProduct.stock -= this.exportQuantity;
-          const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
-          if (index !== -1) {
-            this.products[index].stock = this.selectedProduct.stock;
-          }
-          
-          // Close modal with pure JavaScript
-          const modalElement = document.getElementById('exportProductModal');
-          if (modalElement) {
-            modalElement.classList.remove('show');
-            modalElement.style.display = 'none';
-          }
-          const backdrops = document.getElementsByClassName('modal-backdrop');
-          while (backdrops.length > 0) {
-            backdrops[0].parentNode?.removeChild(backdrops[0]);
-          }
-          // Remove modal-open class from body
-          document.body.classList.remove('modal-open');
-          document.body.style.removeProperty('padding-right');
-          
-          this.exportDestinationBranch = '';
-          this.exportQuantity = 0;
-          
-          // Refresh data
-          this.refreshProductData();
-        },
-        error: (error) => {
-          this.toaster.error(error.error.message || 'Failed to export product');
-        }
-      });
-    }
-  
-    addNewProduct(): void {
-      if (!this.newProduct.name || !this.newProduct.code || !this.newProduct.category ||
-          !this.newProduct.brand || !this.newProduct.supplier || this.newProduct.cost <= 0 ||
-          this.newProduct.stock <= 0) {
-        this.toaster.error('Please fill all required fields with valid values');
-        return;
-      }
-  
-      this.onproductService.addProduct(this.newProduct).subscribe({
-        next: (res) => {
-          this.toaster.success('Product added successfully');
-          
-          const modalElement = document.getElementById('addProductModal');
-          if (modalElement) {
-            modalElement.classList.remove('show');
-            modalElement.style.display = 'none';
-          }
-          const backdrops = document.getElementsByClassName('modal-backdrop');
-          while (backdrops.length > 0) {
-            backdrops[0].parentNode?.removeChild(backdrops[0]);
-          }
-          document.body.classList.remove('modal-open');
-          document.body.style.removeProperty('padding-right');
-          
-          this.newProduct = {
-            name: '',
-            code: '',
-            description: '',
-            cost: 0,
-            category: '',
-            brand: '',
-            supplier: '',
-            stock: 0
-          };
-          
-          this.refreshProductData();
-        },
-        error: (error) => {
-          this.toaster.error(error.error.message || 'Failed to add product');
-        }
-      });
-    }
-  
     isSearchMode: boolean = false;
   
     onSearch(event: Event) {
@@ -773,16 +473,16 @@ export class OnproductComponent implements OnInit, OnDestroy{
       this.currentPage = 1;
       this.sortField = null;
       this.sortDirection = null;
-      this.selectedBranch = '';
       this.selectedCategory = '';
       this.selectedBrand = '';
+      this.selectedStatus = '';
       this.loadProducts();
       this.updateSearchPlaceholder();
     }
   
     validateSearchInput(event: KeyboardEvent): boolean {
       if (this.selectedFilter === 'code') {
-        const pattern = /^[0-9]$/;
+        const pattern = /^[0-9\-]$/;
         if (!pattern.test(event.key) && event.key !== 'Backspace' && event.key !== 'Delete') {
           event.preventDefault();
           return false;
@@ -796,7 +496,7 @@ export class OnproductComponent implements OnInit, OnDestroy{
       const pastedText = event.clipboardData?.getData('text') || '';
   
       if (this.selectedFilter === 'code') {
-        const pattern = /^[0-9]*$/;
+        const pattern = /^[0-9\-]*$/;
         if (pattern.test(pastedText)) {
           this.searchQuery = pastedText;
         }
@@ -827,16 +527,16 @@ export class OnproductComponent implements OnInit, OnDestroy{
   
       let filterParams: string[] = [searchFilter];
       
-      if (this.selectedBranch) {
-        filterParams.push(`branch:${this.selectedBranch}`);
-      }
-      
       if (this.selectedCategory) {
         filterParams.push(`category:${this.selectedCategory}`);
       }
       
       if (this.selectedBrand) {
         filterParams.push(`brand:${this.selectedBrand}`);
+      }
+      
+      if (this.selectedStatus) {
+        filterParams.push(`status:${this.selectedStatus}`);
       }
       
       if (this.currentFilter === 'active') {
@@ -852,7 +552,7 @@ export class OnproductComponent implements OnInit, OnDestroy{
         sortParam = `&sort=${this.sortField}:${this.sortDirection}`;
       }
   
-      const sub = this.onproductService
+      const sub = this.onproductsService
         .searchProducts(filters, this.currentPage, this.itemsPerPage, sortParam)
         .subscribe({
           next: (res) => {
@@ -862,6 +562,7 @@ export class OnproductComponent implements OnInit, OnDestroy{
                 : [res.data.result];
               this.showNoResults = this.products.length === 0;
               this.totalPages = Math.ceil(res.data.total / this.itemsPerPage);
+              this.totalProductsCount = res.data.total;
               this.dropdownStates = new Array(this.products.length).fill(false);
               this.updatePaginationState();
             }
@@ -888,15 +589,8 @@ export class OnproductComponent implements OnInit, OnDestroy{
         placeholder += ' Name';
       }
       
-      if (this.selectedBranch || this.selectedCategory || this.selectedBrand) {
+      if (this.selectedCategory || this.selectedBrand || this.selectedStatus) {
         let filters = [];
-        
-        if (this.selectedBranch) {
-          const branch = this.branches.find(b => b.id === this.selectedBranch);
-          if (branch) {
-            filters.push(`Branch: ${branch.main} ${branch.sub}`);
-          }
-        }
         
         if (this.selectedCategory) {
           const category = this.categories.find(c => c._id === this.selectedCategory);
@@ -910,6 +604,10 @@ export class OnproductComponent implements OnInit, OnDestroy{
           if (brand) {
             filters.push(`Brand: ${brand.Bname}`);
           }
+        }
+        
+        if (this.selectedStatus) {
+          filters.push(`Status: ${this.selectedStatus.charAt(0).toUpperCase() + this.selectedStatus.slice(1)}`);
         }
         
         if (filters.length > 0) {
@@ -947,64 +645,6 @@ export class OnproductComponent implements OnInit, OnDestroy{
       }
     }
   
-    openAddModal(): void {
-      this.newProduct = {
-        name: '',
-        code: '',
-        description: '',
-        cost: 0,
-        category: '',
-        brand: '',
-        supplier: '',
-        stock: 0
-      };
-    }
-  
-    loadBranches(): void {
-      const sub = this.onproductService.getMappedBranches().subscribe({
-        next: (res) => {
-          if (res.message === 'success' && res.data) {
-            this.branches = Object.keys(res.data).map((id) => {
-              const location: string = res.data[id].location;
-              const parts = location.split('-').map((s) => s.trim());
-              return { id, main: parts[0], sub: parts[1] || '' };
-            });
-            
-            const branchNode = this.filterNodes.find(node => node.name === 'Branch');
-            if (branchNode) {
-              branchNode.children = this.branches.map(branch => ({
-                name: `${branch.main} ${branch.sub}`,
-                type: 'branch',
-                id: branch.id,
-                value: branch.id
-              }));
-              this.filterDataSource.data = [...this.filterNodes];
-            }
-            
-            this.updateSearchPlaceholder();
-          }
-        },
-        error: (error) => {
-          this.toaster.error('Failed to load branches', 'Error', {
-            timeOut: 1500,
-            positionClass: 'toast-bottom-right',
-            progressBar: true,
-            closeButton: true,
-          });
-        },
-      });
-      this.subscriptions.push(sub);
-    }
-  
-    getBranchName(branchId: any): string {
-      if (!branchId) {
-        return 'N/A';
-      }
-      
-      const branch = this.branches.find(b => b.id === branchId.toString());
-      return branch ? `${branch.main} ${branch.sub}` : branchId.toString();
-    }
-  
     getCategoryName(categoryId: any): string {
       const category = this.categories.find(c => c._id === categoryId);
       return category ? category.Cname : categoryId;
@@ -1015,17 +655,12 @@ export class OnproductComponent implements OnInit, OnDestroy{
       return brand ? brand.Bname : brandId;
     }
   
-    getSupplierName(supplierId: any): string {
-      const supplier = this.suppliers.find(s => s._id === supplierId);
-      return supplier ? supplier.companyName : supplierId;
-    }
-  
     ngOnDestroy(): void {
       this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
   
     refreshProductData(): void {
-      const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}_${this.selectedBranch}_${this.selectedCategory}_${this.selectedBrand}`;
+      const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}_${this.selectedCategory}_${this.selectedBrand}_${this.selectedStatus}`;
       if (this.pageCache[cacheKey]) {
         delete this.pageCache[cacheKey];
       }
@@ -1035,9 +670,6 @@ export class OnproductComponent implements OnInit, OnDestroy{
       } else {
         this.loadProducts();
       }
-      
-      this.getActiveProductsCount();
-      this.getInActiveProductsCount();
     }
   
     hasChild = (_: number, node: FilterNode) => !!node.children && node.children.length > 0;
@@ -1046,10 +678,6 @@ export class OnproductComponent implements OnInit, OnDestroy{
       if (!node.type) return;
   
       switch(node.type) {
-        case 'branch':
-          this.selectedBranch = node.id === this.selectedBranch ? '' : node.id || '';
-          this.onBranchFilterChange();
-          break;
         case 'category':
           this.selectedCategory = node.id === this.selectedCategory ? '' : node.id || '';
           this.onCategoryFilterChange();
@@ -1058,6 +686,10 @@ export class OnproductComponent implements OnInit, OnDestroy{
           this.selectedBrand = node.id === this.selectedBrand ? '' : node.id || '';
           this.onBrandFilterChange();
           break;
+        case 'status':
+          this.selectedStatus = node.value === this.selectedStatus ? '' : node.value || '';
+          this.onStatusFilterChange();
+          break;
       }
     }
   
@@ -1065,26 +697,21 @@ export class OnproductComponent implements OnInit, OnDestroy{
       if (!node.type) return false;
   
       switch(node.type) {
-        case 'branch':
-          return node.id === this.selectedBranch;
         case 'category':
           return node.id === this.selectedCategory;
         case 'brand':
           return node.id === this.selectedBrand;
+        case 'status':
+          return node.value === this.selectedStatus;
         default:
           return false;
       }
     }
   
-    expandedSection: 'branch' | 'category' | 'brand' | null = null;
+    expandedSection: 'category' | 'brand' | 'status' | null = null;
   
-    toggleFilterSection(section: 'branch' | 'category' | 'brand'): void {
+    toggleFilterSection(section: 'category' | 'brand' | 'status'): void {
       this.expandedSection = this.expandedSection === section ? null : section;
-    }
-  
-    selectBranch(branchId: string): void {
-      this.selectedBranch = this.selectedBranch === branchId ? '' : branchId;
-      this.onBranchFilterChange();
     }
   
     selectCategory(categoryId: string): void {
@@ -1097,27 +724,41 @@ export class OnproductComponent implements OnInit, OnDestroy{
       this.onBrandFilterChange();
     }
   
-    clearFilter(filterType: 'branch' | 'category' | 'brand'): void {
-      if (filterType === 'branch') {
-        this.selectedBranch = '';
-        this.onBranchFilterChange();
-      } else if (filterType === 'category') {
+    selectStatus(status: string): void {
+      this.selectedStatus = this.selectedStatus === status ? '' : status;
+      this.onStatusFilterChange();
+    }
+  
+    clearFilter(filterType: 'category' | 'brand' | 'status'): void {
+      if (filterType === 'category') {
         this.selectedCategory = '';
         this.onCategoryFilterChange();
       } else if (filterType === 'brand') {
         this.selectedBrand = '';
         this.onBrandFilterChange();
+      } else if (filterType === 'status') {
+        this.selectedStatus = '';
+        this.onStatusFilterChange();
       }
     }
   
     resetFilters(): void {
-      this.selectedBranch = '';
       this.selectedCategory = '';
       this.selectedBrand = '';
+      this.selectedStatus = '';
       this.currentPage = 1;
       this.loadProducts();
       this.updateSearchPlaceholder();
       this.expandedSection = null;
+    }
+  
+    canUpdateProduct(product: any): boolean {
+      return product && 
+        (product.status === 'pending' || product.status === 'approved');
+    }
+  
+    canToggleActivation(product: any): boolean {
+      return product && product.status === 'approved';
     }
 
 }

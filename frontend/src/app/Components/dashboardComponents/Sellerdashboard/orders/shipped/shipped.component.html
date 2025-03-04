@@ -54,7 +54,11 @@
                             <tr>
                                 <th  style="cursor: pointer">
                                     Order Id
-                                    
+                                    <!-- <i class="bx" [ngClass]="{
+                                        'bx-up-arrow-alt': sortField === 'orderId' && sortDirection === 'asc',
+                                        'bx-down-arrow-alt': sortField === 'orderId' && sortDirection === 'desc',
+                                        'bx-sort': sortField !== 'orderId'
+                                    }"></i> -->
                                 </th>
                                 
                                 <th >
@@ -65,7 +69,11 @@
 
                                 <th style="cursor: pointer">
                                     Created At
-                                    
+                                    <!-- <i class="bx" [ngClass]="{
+                                        'bx-up-arrow-alt': sortField === 'createdAt' && sortDirection === 'asc',
+                                        'bx-down-arrow-alt': sortField === 'createdAt' && sortDirection === 'desc',
+                                        'bx-sort': sortField !== 'createdAt'
+                                    }"></i> -->
                                 </th>
                                 <th>
                                     Total
@@ -127,6 +135,8 @@
                     </div> -->
                 </div>
             </div>
+            
+            
         </main>
     </section>
 
@@ -150,7 +160,10 @@
               [(ngModel)]="selectedSuborder.orderStatus"
               [disabled]="!editing"
             >
-              <option value="processing">Processing</option>
+              <!-- <option value="pending">Pending</option> -->
+              <!-- <option value="processing">Processing</option> -->
+              <!-- <option value="shipped">Shipped</option> -->
+              <option value="delivered">Delivered</option>
               <option value="cancelled">Cancelled</option>
             </select>
           </div>
@@ -158,14 +171,15 @@
           <p><strong>Total Quantity:</strong> {{ selectedSuborder.orderTotalQty }}</p>
 
           <div *ngIf="selectedSuborder.products && selectedSuborder.products.length > 0">
-            <div *ngFor="let product of selectedSuborder.products">
-              <hr/>
-              <p><strong>Product Name:</strong> {{ product.productName }}</p>
-              <p><strong>Product ID:</strong> {{ product.productId }}</p>
-              <p><strong>Requested Quantity:</strong> {{ product.productRequestedQuantity }}</p>
-              <p><strong>Available Stock:</strong> {{ product.productStock }}</p>
-            </div>
-          
+            <div *ngIf="selectedSuborder.products && selectedSuborder.products.length > 0">
+              <div *ngFor="let product of selectedSuborder.products">
+                <hr/>
+                <p><strong>Product Name:</strong> {{ product.productName }}</p>
+                <p><strong>Product ID:</strong> {{ product.productId }}</p>
+                <p><strong>Requested Quantity:</strong> {{ product.productRequestedQuantity }}</p>
+                <p><strong>Fulfilled Quantity:</strong> {{ product.productFulfilledQuantity }}</p>
+                <p><strong>Available Stock:</strong> {{ product.productStock }}</p>
+              </div>
 
             <!-- Counter Input for Fulfilled Quantity -->
             <!-- <div class="form-group">
@@ -205,7 +219,6 @@
       </div>
 
       <div class="modal-footer">
-        <!-- Update Button -->
         <button
           type="button"
           class="btn btn-primary"
@@ -217,16 +230,23 @@
           {{ editing ? 'Save' : 'Edit' }}
         </button>
 
-        <!-- Close Button -->
         <button type="button" class="btn btn-secondary" data-dismiss="modal">
           <i class='bx bx-x'></i> Close
         </button>
       </div>
     </div>
   </div>
+ 
 </div>
 
+  
 
+
+
+
+
+   
+</div>
 <div class="pagination-controls my-5">
   <button (click)="prevPage()" [disabled]="currentPage === 1">
     <i class='bx bx-chevron-left'></i> Prev
@@ -238,12 +258,5 @@
     Next <i class='bx bx-chevron-right'></i>
   </button>
 </div>
-
-
-
-
-
-
-   
 </div>
 
