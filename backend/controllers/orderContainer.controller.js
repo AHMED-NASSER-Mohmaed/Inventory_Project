@@ -114,7 +114,7 @@ class OrderContainerController {
     this.router.get(
       // in order to change the status into compelete after the order is delivered or partially delivered
       "/AllSubOrdersForCashier", // he will get all suborders that has a cashier null so he can choose to handle that suboder if he wants
-      AuthMiddleware.protect,
+      pro_res("cashier"),
       catchAsync(this.getAllOnlineOrdersForCashier) // cashier will get all suborders that has his id or null even if the suborder was not related to our company (because we need to take our rate from the external seller)
     );
 
