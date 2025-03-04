@@ -480,6 +480,8 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
                   this.pageCache = {};
                   this.loadSellers();
                   this.editing = false;
+                  
+                  this.closeModal('categoryInfoModal');
               },
               error: (error) => {
                   this.toaster.error(error.error.message, 'Failed', {
@@ -516,16 +518,7 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
               this.pageCache = {};
               this.loadSellers();
               
-              // Clean up modal
-              const modal = document.getElementById('addCategoryModal');
-              if (modal) {
-                (modal as any).style.display = 'none';
-                document.body.classList.remove('modal-open');
-                const backdrop = document.querySelector('.modal-backdrop');
-                if (backdrop) {
-                  backdrop.remove();
-                }
-              }
+              this.closeModal('addCategoryModal');
           },
           error: (error) => {
               this.toaster.error(error.error.message, 'Failed', {
@@ -537,6 +530,26 @@ export class CatagoriesComponent implements OnInit, OnDestroy{
           }
       });
       this.subscriptions.push(sub);
+    }
+  
+    closeModal(modalId: string): void {
+      const modalElement = document.getElementById(modalId);
+      
+      if (modalElement) {
+          document.body.classList.remove('modal-open');
+          
+          const backdrops = document.querySelectorAll('.modal-backdrop');
+          backdrops.forEach(backdrop => {
+              backdrop.remove();
+          });
+          
+          modalElement.style.display = 'none';
+          modalElement.classList.remove('show');
+          modalElement.setAttribute('aria-hidden', 'true');
+          
+          document.body.style.removeProperty('padding-right');
+          document.body.style.overflow = '';
+      }
     }
   
     ngOnDestroy(): void {

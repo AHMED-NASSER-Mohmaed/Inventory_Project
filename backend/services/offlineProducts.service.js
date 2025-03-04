@@ -152,7 +152,7 @@ module.exports.OfflineProductsService = {
                     console.log("hhhhhhhhhhhhhhhhhh",qty);
                     // -->we have to register our own seller id at product 
                     
-                    let onlineListProduct=await  OnlineProductsRepository.upsertSellerRecord(offProduct.product,APP_CONFIG.COMPANY_ID,qty);
+                    let onlineListProduct=await  OnlineProductsRepository.upsertSellerRecord(offProduct.product,APP_CONFIG.COMPANY_ID,qty,offProduct.price);
                     
                     await Product.updateOne({_id:offProduct.product},{$addToSet:{sellers:onlineListProduct._id}}); 
                     

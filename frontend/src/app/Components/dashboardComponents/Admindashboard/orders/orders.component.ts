@@ -65,6 +65,8 @@ export class OrdersComponent {
 
   onlineOrdersCount: number = 0;
   offlineOrdersCount: number = 0;
+  
+  isOnlineAdmin: boolean = false;
 
   constructor(
     private admindashOrdersService: AdminDashOrdersService,
@@ -74,12 +76,18 @@ export class OrdersComponent {
 
   ngOnInit(): void {
     this.updateSearchPlaceholder();
-    this.loadOrders(this.currentFilter);
-
+    
     const token = localStorage.getItem('token');
     if (token) {
       this.tokenData = decodeToken(token);
+      this.isOnlineAdmin = this.tokenData?.id?.branch === 10;
+      
+      if (this.isOnlineAdmin) {
+        this.currentFilter = 'online';
+      }
     }
+    
+    this.loadOrders(this.currentFilter);
   }
 
   hideSingleSelectionIndicator = signal(true);
@@ -88,37 +96,47 @@ export class OrdersComponent {
     this.isLoading = true;
     this.orders = [];
 
-    const offlineSub = this.admindashOrdersService.getOfflineOrders().subscribe({
-      next: (res) => {
-        this.offlineOrders = res.allOfflineSuborders || [];
-        this.offlineOrdersCount = this.offlineOrders.length;
-        this.onlineOrdersCount = 0; 
-        this.allOrders = [...this.offlineOrders];
-
-        if (filter === 'offline' || filter === '') {
-          this.processOrders(this.offlineOrders);
-        } else {
+    if (this.isOnlineAdmin) {
+      const onlineSub = this.admindashOrdersService.getOnlineOrders().subscribe({
+        next: (onlineRes) => {
+          this.onlineOrders = onlineRes.subOrders || [];
+          this.onlineOrdersCount = this.onlineOrders.length;
+          this.allOrders = [...this.onlineOrders];
           
-          this.orders = [];
-          this.showNoResults = true;
-          this.isLoading = false;
-        }
-      },
-      error: this.handleError.bind(this)
-    });
-    this.subscriptions.push(offlineSub);
+          this.processOrders(this.onlineOrders);
+        },
+        error: this.handleError.bind(this)
+      });
+      this.subscriptions.push(onlineSub);
+    } else {
+      const offlineSub = this.admindashOrdersService.getOfflineOrders().subscribe({
+        next: (res) => {
+          this.offlineOrders = res.allOfflineSuborders || [];
+          this.offlineOrdersCount = this.offlineOrders.length;
+          this.allOrders = [...this.offlineOrders];
+          
+          this.processOrders(this.offlineOrders);
+        },
+        error: this.handleError.bind(this)
+      });
+      this.subscriptions.push(offlineSub);
+    }
   }
 
   isOnlineOrder(order: Order): boolean {
-    return false; 
+    if (this.isOnlineAdmin) return true;
+    
+    return false;
   }
 
   isOfflineOrder(order: Order): boolean {
-    return true; 
+    if (this.isOnlineAdmin) return false;
+    
+    return true;
   }
 
   getOrderType(order: Order): string {
-    return 'In-Store'; 
+    return this.isOnlineOrder(order) ? 'Online' : 'In-Store';
   }
 
   processOrders(orders: Order[]): void {
@@ -216,18 +234,21 @@ export class OrdersComponent {
   }
 
   refreshCurrentView(): void {
-    this.processOrders(this.offlineOrders);
+    if (this.isOnlineAdmin) {
+      this.processOrders(this.onlineOrders);
+    } else {
+      this.processOrders(this.offlineOrders);
+    }
   }
 
   setFilter(filter: string): void {
-    if (filter === 'online') {
-      this.showNoResults = true;
-      this.orders = [];
-      this.isLoading = false;
-      return;
+    // For branch 10, only allow 'online' filter
+    if (this.isOnlineAdmin) {
+      this.currentFilter = 'online';
+    } else {
+      this.currentFilter = filter === 'offline' ? 'offline' : '';
     }
-
-    this.currentFilter = filter === 'offline' ? 'offline' : '';
+    
     this.currentPage = 1;
     this.isSearchMode = false;
     this.searchQuery = '';
@@ -264,8 +285,7 @@ export class OrdersComponent {
     this.isSearchMode = true;
     this.currentPage = 1;
 
-    // Only search in offline orders
-    this.processOrders(this.offlineOrders);
+    this.refreshCurrentView();
   }
 
   resetSearch(): void {
@@ -302,7 +322,8 @@ export class OrdersComponent {
         : this.selectedFilter === 'orderId'
         ? 'Order ID'
         : 'Customer Name';
-    const status = this.currentFilter === 'offline' ? 'Offline' : 'All';
+    
+    const status = this.isOnlineAdmin ? 'Online' : 'Offline';
     this.searchPlaceholder = `Search ${status} Orders By ${filterType}...`;
   }
 
@@ -329,6 +350,9 @@ export class OrdersComponent {
       case 'cancelled': return 'cancelled';
       case 'pending': return 'pending';
       case 'partially delivered': return 'partial';
+      case 'delivered': return 'completed';
+      case 'shipped': return 'process';
+      case 'processing': return 'process';
       default: return 'process';
     }
   }

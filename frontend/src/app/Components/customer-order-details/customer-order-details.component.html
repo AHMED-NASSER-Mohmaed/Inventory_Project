@@ -1,6 +1,12 @@
 <div class="rightbox">
     <div class="profile">
-        <h1>Orders History</h1>
+        <div class="header-container">
+            <h1>Orders History</h1>
+            <button class="sort-button" (click)="toggleSortOrder()">
+                <i class="bx" [ngClass]="sortAscending ? 'bx-sort-up' : 'bx-sort-down'"></i>
+                {{ sortAscending ? 'Oldest First' : 'Newest First' }}
+            </button>
+        </div>
         
         <div *ngIf="isLoading" class="loading-container">
             <mat-spinner class="mat-spinner"></mat-spinner>
@@ -139,7 +145,6 @@
                   <td class="text-right subtotal">
                     {{formatPrice(getProductSubtotal(product))}}
                   </td>
-                  <!-- Add delete button column only for pending orders -->
                   <td class="text-center" *ngIf="selectedOrder.orderStatus.toLowerCase() === 'pending'">
                     <button type="button" class="btn btn-sm btn-danger cancel-product-btn" 
                             (click)="cancelProduct(selectedOrder.orderId, product.productId)"
@@ -169,7 +174,6 @@
   </div>
 </div>
 
-<!-- Add a more descriptive product cancellation confirmation -->
 <div class="modal fade" id="productCancellationModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">

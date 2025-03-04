@@ -8,6 +8,7 @@ export interface Product {
   productUrlImage: string;
   productCode: string;
   productPrice: number;
+  productStock?: number;
   productRequestedQuantity: number;
   productFulfilledQuantity: number;
   productCanceledQuantity: number;
@@ -21,6 +22,7 @@ export interface Order {
   products: Product[];
   orderTotalQty: number;
   orderTotalPrice: number;
+  paymentStatus?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -67,11 +69,6 @@ export class AdminDashOrdersService {
       return new HttpHeaders().set('Authorization', `Bearer ${token}` );
     }
 
-  getOnlineOrders(): Observable<any> {
-    // Since there's no online order API anymore, return an empty array
-    return of({ allOnlineSuborders: [] });
-  }
-
   getOfflineOrders(): Observable<any> {
     return this.http.get<{message: string, orderContainers: OrderContainer[]}>(`${this.baseUrl}/order-container-offline`, { headers: this.getHeaders() })
       .pipe(
@@ -82,17 +79,26 @@ export class AdminDashOrdersService {
       );
   }
 
+  getOnlineOrders(): Observable<any> {
+    return this.http.get<{message: string, subOrders: Order[]}>(`${this.baseUrl}/AllSubOrdersForOnlineAdmin`, { headers: this.getHeaders() })
+      .pipe(
+        map(response => {
+          return { subOrders: response.subOrders || [] };
+        })
+      );
+  }
+
   private mapOrderContainersToOrders(orderContainers: OrderContainer[]): Order[] {
-    return orderContainers.map(container => { //!!!!!!!!!!!!!!!!!
+    return orderContainers.map(container => {
       return {
         orderId: container._id,
         orderStatus: container.status,
-        customerName: container.phone1 ,
+        customerName: container.phone1,
         sellerName: container.clerk?.name || 'Clerk 1',
         products: container.products.map(prod => ({
           productId: prod.productId,
           productName: prod.name,
-          productUrlImage: prod.images?.[1] ,
+          productUrlImage: prod.images?.[1],
           productCode: prod.code,
           productPrice: prod.price,
           productRequestedQuantity: prod.requestedQuantity,

@@ -40,6 +40,7 @@ export class CustomerOrderDetailsComponent implements OnInit, OnDestroy {
   isLoading: boolean = true;
   subscriptions: Subscription[] = [];
   tokenData: any = null;
+  sortAscending: boolean = false; 
   
   currentPage: number = 1;
   itemsPerPage: number = 6; 
@@ -68,6 +69,7 @@ export class CustomerOrderDetailsComponent implements OnInit, OnDestroy {
     const sub = this.customerOrderDetails.getCustomerOrders().subscribe({
       next: (res) => {
         this.allOrders = res;
+        this.sortOrders(); 
         this.updatePagination();
         this.isLoading = false;
       },
@@ -79,6 +81,21 @@ export class CustomerOrderDetailsComponent implements OnInit, OnDestroy {
     });
     
     this.subscriptions.push(sub);
+  }
+
+  toggleSortOrder(): void {
+    this.sortAscending = !this.sortAscending;
+    this.sortOrders();
+    this.updatePagination();
+  }
+
+  sortOrders(): void {
+    // Sort the allOrders array based on the createdAt date
+    this.allOrders.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return this.sortAscending ? dateA - dateB : dateB - dateA;
+    });
   }
 
   updatePagination(): void {
@@ -213,6 +230,7 @@ export class CustomerOrderDetailsComponent implements OnInit, OnDestroy {
     const sub = this.customerOrderDetails.getCustomerOrders().subscribe({
       next: (orders) => {
         this.allOrders = orders;
+        this.sortOrders(); // Apply current sort order
         
         const updatedOrder = orders.find(order => order.orderId === orderId);
         if (updatedOrder) {

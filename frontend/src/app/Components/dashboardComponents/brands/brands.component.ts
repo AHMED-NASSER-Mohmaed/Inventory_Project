@@ -36,14 +36,14 @@ export class BrandsComponent {
   hasNextPage: boolean = false;
   hasPreviousPage: boolean = false;
 
-  categories: Brand[] = [];  // changed from category[] to Brand[]
+  categories: Brand[] = [];  
   isDarkMode: boolean = false;
   dropdownStates: boolean[] = [];
   editing: boolean = false;
 
   subscriptions: Subscription[] = [];
 
-  pageCache: { [key: string]: { result: Brand[]; total: number } } = {};  // changed from category[] to Brand[]
+  pageCache: { [key: string]: { result: Brand[]; total: number } } = {};  
 
   selectedFilter: string = 'name';
   searchQuery: string = '';
@@ -64,7 +64,7 @@ export class BrandsComponent {
   activeCustomersCount: any = null; 
   inactiveCustomersCount : any = null;
 
-  selectedCategory: Brand | null = null;  // changed from category to Brand
+  selectedCategory: Brand | null = null;  
   newCategoryName: string = '';
 
   constructor(
@@ -524,15 +524,8 @@ export class BrandsComponent {
             this.pageCache = {};
             this.loadSellers();
             
-            const modal = document.getElementById('addCategoryModal');
-            if (modal) {
-              (modal as any).style.display = 'none';
-              document.body.classList.remove('modal-open');
-              const backdrop = document.querySelector('.modal-backdrop');
-              if (backdrop) {
-                backdrop.remove();
-              }
-            }
+            // Use the proper modal closing method
+            this.closeModal('addCategoryModal');
         },
         error: (error) => {
             this.toaster.error(error.error.message, 'Failed', {
@@ -544,6 +537,26 @@ export class BrandsComponent {
         }
     });
     this.subscriptions.push(sub);
+  }
+
+  closeModal(modalId: string): void {
+    const modalElement = document.getElementById(modalId);
+    
+    if (modalElement) {
+        document.body.classList.remove('modal-open');
+        
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(backdrop => {
+            backdrop.remove();
+        });
+        
+        modalElement.style.display = 'none';
+        modalElement.classList.remove('show');
+        modalElement.setAttribute('aria-hidden', 'true');
+        
+        document.body.style.removeProperty('padding-right');
+        document.body.style.overflow = '';
+    }
   }
 
   ngOnDestroy(): void {

@@ -12,12 +12,24 @@ const signup = catchAsync(async (req, res) => {
   const baseUrl = `${req.protocol}://${req.get("host")}`;
   const newUser = await AuthService.signup(req.body, baseUrl);
   createSendToken(newUser, 201, res);
+
+  res.status(200).json({status: "success"});
+
 });
 const login = catchAsync(async (req, res) => {
   console.log("hello", req.body);
   const user = await AuthService.login(req.body.email, req.body.password);
   // console.log(user);
-  createSendToken(user, 200, res);
+  let {token}=createSendToken(user, 200, res);
+
+  res.status(200).json({
+    status: "success",
+    token,
+    data: {
+      user,
+    },
+  });
+
 });
 
 const updatePassword = catchAsync(async (req, res) => {
@@ -89,6 +101,8 @@ const createSendToken = (user, statusCode, res) => {
   user.updatedAt = undefined;
   user.__v = undefined;
   const token = JWT_Manager.signToken(user);
+
+  return {token,user};
 
   res.status(statusCode).json({
     status: "success",

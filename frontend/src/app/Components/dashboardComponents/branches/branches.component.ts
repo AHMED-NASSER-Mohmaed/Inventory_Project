@@ -247,15 +247,7 @@ export class BranchesComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.toaster.success('Branch added successfully');
         
-        const modal = document.getElementById('addBranchModal');
-        if (modal) {
-          (modal as any).style.display = 'none';
-          document.body.classList.remove('modal-open');
-          const backdrop = document.querySelector('.modal-backdrop');
-          if (backdrop) {
-            backdrop.remove();
-          }
-        }
+        this.closeModal('addBranchModal');
 
         this.newBranch = {
           type: '',
@@ -279,6 +271,26 @@ export class BranchesComponent implements OnInit, OnDestroy {
         this.toaster.error(error.error.message || 'Error adding branch');
       }
     });
+  }
+
+  closeModal(modalId: string): void {
+    const modalElement = document.getElementById(modalId);
+    
+    if (modalElement) {
+      document.body.classList.remove('modal-open');
+      
+      const backdrops = document.querySelectorAll('.modal-backdrop');
+      backdrops.forEach(backdrop => {
+        backdrop.remove();
+      });
+      
+      modalElement.style.display = 'none';
+      modalElement.classList.remove('show');
+      modalElement.setAttribute('aria-hidden', 'true');
+      
+      document.body.style.removeProperty('padding-right');
+      document.body.style.overflow = '';
+    }
   }
 
   toggleDropdown(index: number): void {
@@ -312,16 +324,9 @@ export class BranchesComponent implements OnInit, OnDestroy {
           this.toaster.success('Branch updated successfully');
           this.editing = false;
           
-          const modal = document.getElementById('branchInfoModal');
-          if (modal) {
-            (modal as any).style.display = 'none';
-            document.body.classList.remove('modal-open');
-            const backdrop = document.querySelector('.modal-backdrop');
-            if (backdrop) {
-              backdrop.remove();
-            }
-          }
-  
+          // Use the new closeModal method here too
+          this.closeModal('branchInfoModal');
+          
           this.branchService.clearCache();
           this.currentPage = 1;
           this.isLoading = true;

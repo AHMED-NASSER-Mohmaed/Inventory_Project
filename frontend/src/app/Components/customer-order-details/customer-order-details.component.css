@@ -1158,8 +1158,8 @@ input:checked + .slider:before {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding-bottom: 15px;
   margin-bottom: 20px;
-  overflow: hidden; /* Add overflow control */
-  width: 100%; /* Ensure it takes full width of parent */
+  overflow: hidden; 
+  width: 100%; 
 }
 
 .pagination-controls {
@@ -1281,7 +1281,6 @@ input:checked + .slider:before {
   background-color: #007bff;
 }
 
-/* Order Card Body */
 .order-card-body {
   padding: 15px;
   display: grid;
@@ -1304,15 +1303,14 @@ input:checked + .slider:before {
   padding: 0;
   border: none;
   width: 100%;
-  color: #555; /* Ensure consistent color */
-  font-size: 0.9rem; /* Ensure consistent font size */
+  color: #555; 
+  font-size: 0.9rem; 
 }
 
-/* Remove the earlier .order-date styling that was making it different */
 .order-card-body .order-date {
-  color: #555; /* Override the previous #aaa color */
-  font-size: 0.9rem; /* Override the previous 0.8em size */
-  margin-top: 0; /* Override any previous margin */
+  color: #555; 
+  font-size: 0.9rem; 
+  margin-top: 0; 
 }
 
 .order-price {
@@ -1622,4 +1620,53 @@ input:checked + .slider:before {
 
 .highlight-change {
   animation: highlight 2s ease-in-out;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.header-container h1 {
+  margin: 0;
+  margin-top: 40px;
+}
+
+.sort-button {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  color: #333;
+  font-size: 0.7em;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 8px 15px;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+  font-family: 'Montserrat', sans-serif;
+  margin-top: 40px;
+}
+
+.sort-button:hover {
+  background-color: #eaeaea;
+  transform: translateY(-2px);
+}
+
+.sort-button i {
+  font-size: 1.2em;
+}
+
+@media (max-width: 576px) {
+  .header-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .sort-button {
+    margin-top: 0;
+  }
 }
