@@ -13,33 +13,35 @@ const OnlineProductsRepository = {
     }
   },
 
-  //for product details page
   getProductByID: async (id) => {
     try {
-      return await OnlineProducts.findOne({
-        _id: id,
-        isActive: true,
-        status: APP_CONFIG.APPROVED_STATUS,
-      })
+      return await OnlineProducts.findOne(
+        {
+          _id: id,
+          isActive: true,
+          status: APP_CONFIG.APPROVED_STATUS
+        }
+      )
         .populate({
           path: "seller",
-          select: "firstName lastName companyName",
+          select: "firstName lastName companyName -kind"
         })
         .populate({
-          path: "brand",
-          select: "Bname",
+          path: "product",
+          select: "name code images description brand category",
+          populate: [
+            { path: "brand", select: "Bname" },
+            { path: "category", select: "Cname" }
+          ]
         })
-        .populate({
-          path: "category",
-          select: "Cname",
-        })
-        .select("stock name code price images description brand category");
-  
+        .select("-__v -branch -createdAt -updatedAt -isActive -isDeleted -status");
+
     } catch (error) {
       throw error;
     }
   },
-  
+
+
 
   updateSellerRecordQty: async (productId, sellerId, newQty) => {
     try {
@@ -47,7 +49,7 @@ const OnlineProductsRepository = {
         { product: productId, sellerId },
         { $set: { stock: newQty } }
       );
-      return await OnlineProducts.updateOne({ product: productId, seller:sellerId }, { $set: { stock: newQty } })
+      return await OnlineProducts.updateOne({ product: productId, seller: sellerId }, { $set: { stock: newQty } })
 
     } catch (error) {
       throw error;
@@ -172,7 +174,7 @@ const OnlineProductsRepository = {
   getONProductsDash: async (filters, sort, page, limit) => {
 
     try {
-      
+
       if (sort && sort.price) {
 
         let value = sort.price;

@@ -162,9 +162,9 @@ process.on("uncaughtException", (err) => {
         companyName: "Madridista"
       }
 
-      if (!await Supplier.findOne({ email: supplier.email })) {
-        console.log(await Supplier.create(supplier));
-      }
+      // if (!await Supplier.findOne({ email: supplier.email })) {
+      //   console.log(await Supplier.create(supplier));
+      // }
       
 
       if (!await Supplier.findOne({ email: Dawoodsupplier.email })) {

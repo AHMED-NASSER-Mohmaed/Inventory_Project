@@ -57,6 +57,7 @@ export class ShoppingcartComponent implements OnInit {
     // this.loading = true; 
     this.cartService.getCart(this.sessionId!).subscribe((response) => {
       this.products = response.cart.products;
+      console.log(this.products)
       for(let i = 0; i < this.products.length; i++){
         console.log(this.products[i].sellerCompanyName)
        if(this.products[i].sellerCompanyName == 'inentory system') this.products[i].sellerCompanyName = 'Our System'
