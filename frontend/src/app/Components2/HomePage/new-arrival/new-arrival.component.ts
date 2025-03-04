@@ -6,6 +6,7 @@ import { QuickviewComponent } from '../quickview/quickview.component';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../../../_services/cart.service';
 import Swal from 'sweetalert2';
+import { decodeToken } from '../../../_helper/jwt-helper';
 
 @Component({
   selector: 'app-new-arrival',
@@ -20,10 +21,12 @@ export class NewArrivalComponent implements OnInit {
   showQuickView: boolean = false;
   selectedProduct: any | null = null;
   sessionId: string | null = null;
-
+  token:any;
   constructor(private productsService: ProductsService, private cartService: CartService) {}
 
   ngOnInit(): void {
+    const item = localStorage.getItem('token');
+    this.token = decodeToken(item!);
     this.loadCart(() => {
       this.getFeaturedProducts(); // Ensures cart is loaded before fetching products
     });
@@ -135,10 +138,10 @@ export class NewArrivalComponent implements OnInit {
       error: (error) => {
         console.error("Error adding to cart:", error);
         Swal.fire({
-          icon: 'info',
-          title: 'Oops!',
-          text: 'Product Out of Stock!',
-        });
+            icon: 'info',
+            title: 'Oops!',
+            text: error.error.message,
+          });
       }
     });
   }

@@ -44,6 +44,37 @@ class OrderRepository {
     .exec();
   }
 
+  // online admin
+
+  async getAllOnlineOrdersForOnlineAdmin(passedStatus) {
+    if(passedStatus){
+      return await Order.find({
+        subOrderType: "online",
+        seller: APP_CONFIG.COMPANY_ID,
+        status: passedStatus,
+      }).populate("products.onlineProduct products.product seller").populate({
+        path: "orderContainer", // Populate the orderContainer field
+        populate: {
+          path: "customer", // Nested population: populate the customer inside orderContainer
+        },
+      })
+      .exec();
+    }
+    else{
+      return await Order.find({
+        subOrderType: "online",
+        seller: APP_CONFIG.COMPANY_ID,
+      }).populate("products.onlineProduct products.product seller").populate({
+        path: "orderContainer", // Populate the orderContainer field
+        populate: {
+          path: "customer", // Nested population: populate the customer inside orderContainer
+        },
+      })
+      .exec();
+    }
+  }
+
+
   // clerk
    async getAllOnlineOrdersForOurCompanyForClerkPendingState(clerkId) {
     return await Order.find({

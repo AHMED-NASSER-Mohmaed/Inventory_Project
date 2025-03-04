@@ -29,7 +29,7 @@ class SellerAnalysisRepository {
       {
         $match: {
           seller: new mongoose.Types.ObjectId(sellerId),
-          status: { $in: ["delivered", "completed"] },
+          status: { $in: ["delivered", "completed", "partially delivered"] },
         },
       },
       {
@@ -52,7 +52,7 @@ class SellerAnalysisRepository {
       {
         $match: {
           seller: new mongoose.Types.ObjectId(sellerId),
-          status: { $in: ["delivered", "completed"] },
+          status: { $in: ["delivered", "completed", "partially delivered"] },
         },
       },
       { $unwind: "$products" },

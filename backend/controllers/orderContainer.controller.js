@@ -124,6 +124,12 @@ class OrderContainerController {
       pro_res('seller'),
       catchAsync(this.getAllOnlineOrdersForSeller)
     );
+
+    this.router.get(
+      "/AllSubOrdersForOnlineAdmin",
+      pro_res('admin'),
+      catchAsync(this.getAllOnlineOrdersForOnlineAdmin)
+    );
   }
   //   Create an order container from cart
   async createOnlineOrderContainer(req, res) {
@@ -199,8 +205,8 @@ class OrderContainerController {
     //review it ya man
 
     if (
-      req.user.branch != APP_CONFIG.ONLINE_BRANCH_ID ||
-      req.user.role != "clerk"
+      req.user.branch != APP_CONFIG.ONLINE_BRANCH_ID
+      // req.user.role != "clerk"
     ) {
       throw new AppError(
         "You are not authorized to get those orders since you are not employed in this branch.",
@@ -213,7 +219,42 @@ class OrderContainerController {
 
     let status = req.query.status; //ahmed nasser
 
-    let userType = "clerk";
+    let userType = req.user.role;
+    
+    const subOrders =
+      await SubOrderService.getAllOnlineOrdersForClerkOrSellerBasedOnStatus(
+        clerkId,
+        status,
+        userType
+      );
+    // console.log(subOrders);
+    res.status(APP_CONFIG.HTTP_OK).json({
+      message: "success",
+      subOrders,
+    });
+  }
+
+  async getAllOnlineOrdersForOnlineAdmin(req, res) {
+    // console.log(req.user,"clame");
+    //review it ya man
+
+    if (
+      req.user.branch != APP_CONFIG.ONLINE_BRANCH_ID
+      // req.user.role != "clerk"
+    ) {
+      throw new AppError(
+        "You are not authorized to get those orders since you are not employed in this branch.",
+        APP_CONFIG.HTTP_UNAUTHORIZED
+      );
+    }
+
+    let clerkId = req.user.id; // you have to check on the online branch here which would be a static value in the app config
+    // if the clerk doesn't match that branch id then throw an error
+
+    let status = req.query.status; //ahmed nasser
+
+    let userType = 'admin';
+    
     const subOrders =
       await SubOrderService.getAllOnlineOrdersForClerkOrSellerBasedOnStatus(
         clerkId,
