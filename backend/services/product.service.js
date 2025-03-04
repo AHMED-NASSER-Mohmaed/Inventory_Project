@@ -119,6 +119,7 @@ module.exports.productService={
         }
     },
 
+    //for product
     deleteProduct:async(productId)=>{
         try{
             
@@ -134,7 +135,7 @@ module.exports.productService={
             throw error;
         }
     },
-
+     //for product
     activeProduct:async(productId)=>{
         
         try{
@@ -149,6 +150,7 @@ module.exports.productService={
             throw error;
         }
     },
+    
     //deprecated
     approveProduct:async(productId)=>{
         try{

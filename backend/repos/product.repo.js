@@ -3,7 +3,7 @@ const Product = require('../models/product.model');
 const { APP_CONFIG } = require('../config/app.config');
 const mongoose = require("mongoose");
 const { inboxResult } = require('../utils/apiFeatures');
-const { matches } = require('lodash');
+const { matches, result } = require('lodash');
 // const { inboxResult } = require("../utils/apiFeatures")
 
 module.exports.productRepo = {
@@ -56,7 +56,7 @@ module.exports.productRepo = {
       throw error;
     }
   },
-
+  //for product
   deleteProduct: async (productId) => {
     try {
       return await Product.updateOne({ _id: productId }, { $set: { isActive: false } });
@@ -64,7 +64,7 @@ module.exports.productRepo = {
       throw error;
     }
   },
-
+  //for product
   activeProduct: async (productId) => {
     try {
       return await Product.updateOne({ _id: productId }, { $set: { isActive: true } });
@@ -186,75 +186,104 @@ module.exports.productRepo = {
     }
   */
 
-
+  //isActive --> true + false 
+  //status --> pending , rejected , 
   getAllOnlineProductInfo: async (filters, sort, page, limit) => {
     try {
-      return Product.aggregate([
-        {
-          $match: {
-            sellers: { $exists: true, $ne: [] } // Ensure the product has sellers
-          }
-        },
-        {
-          $lookup: {
-            from: "onlineproducts", // Match with OnlineProducts collection
-            localField: "sellers",   // The sellers array in Product
-            foreignField: "_id",     // The _id in OnlineProducts
-            as: "OnLineProducts"
-          }
-        },
-        {
-          $unwind: "$OnLineProducts" // Unwind the array to process each OnlineProduct separately
-        },
-        {
-          $lookup: {
-            from: "users", // Match with Seller collection
-            localField: "OnLineProducts.seller", // The seller reference in OnlineProducts
-            foreignField: "_id", // The _id in Seller collection
-            as: "OnLineProducts.sellerDetails"
-          }
-        },
-        {
-          $unwind: "$OnLineProducts.sellerDetails" // Since sellerDetails is an array, unwind to get a single seller
-        },
-        {
-          $group: {
-            _id: "$_id",
-            name: { $first: "$name" },
-            code: { $first: "$code" },
-            price: { $first: "$price" },
-            images: { $first: "$images" },
-            category: { $first: "$category" },
-            brand: { $first: "$brand" },
+      const [result, total] = await Promise.all([
+        await Product.aggregate([
+          {
+            $match: {
+              sellers: { $exists: true, $ne: [] }, // Ensure the product has sellers
+              ...filters
+            }
+          },
+          {
+            $lookup: {
+              from: "onlineproducts", // Match with OnlineProducts collection
+              localField: "sellers",   // The sellers array in Product
+              foreignField: "_id",     // The _id in OnlineProducts
+              as: "sellerProductsInfo"
+            }
+          },
+          {
+            $unwind: "$sellerProductsInfo" // Unwind the array to process each OnlineProduct separately
+          },
+          {
+            $lookup: {
+              from: "users", // Match with Seller collection
+              localField: "sellerProductsInfo.seller", // The seller reference in OnlineProducts
+              foreignField: "_id", // The _id in Seller collection
+              as: "sellerProductsInfo.sellerDetails"
+            }
+          },
+          {
+            $unwind: "$sellerProductsInfo.sellerDetails" // Since sellerDetails is an array, unwind to get a single seller
+          },
+          {
+            $group: {
+              _id: "$_id",
+              name: { $first: "$name" },
+              code: { $first: "$code" },
+              images: { $first: "$images" },
+              category: { $first: "$category" },
+              brand: { $first: "$brand" },
+              isActive: { $first: "$isActive" },
+              status: { $first: "$status" },
+              createdAt: { $first: "$createdAt" },
 
-            OnLineProducts: { $push: "$OnLineProducts" } // Reassemble the array after populating seller details
-          }
-        },
-        {
-          $project:{
-            "_id":1,
-            "name":1,
-            "code":1,
-            "price":1,
-            "images":1,
-            "description":1,
-            "category":1,
-            "brand":1,
-            "createdAt":1,
-            "OnLineProducts._id":1,
-            "OnLineProducts.isDeleted":1,
-            "OnLineProducts.stock":1,
-            "OnLineProducts.createdAt":1,
-            "OnLineProducts.price":1,
-            "OnLineProducts.sellerDetails._id":1,
-            "OnLineProducts.sellerDetails.firstName":1,
-            "OnLineProducts.sellerDetails.lastName":1,
-            "OnLineProducts.sellerDetails.companyName":1,
+              sellerProductsInfo: { $push: "$sellerProductsInfo" } // Reassemble the array after populating seller details
+            }
+          },
+          {
+            $project: {
+              "_id": 1,
+              "name": 1,
+              "code": 1,
+              "sellerProductsInfo.price": 1,
+              "images": 1,
+              "description": 1,
+              "category": 1,
+              "brand": 1,
+              "isActive":1,
+              "status":1,
+              "createdAt": 1,
+              "sellerProductsInfo._id": 1,
+              "sellerProductsInfo.isDeleted": 1,
+              "sellerProductsInfo.stock": 1,
+              "sellerProductsInfo.createdAt": 1,
+              "sellerProductsInfo.price": 1,
+              "sellerProductsInfo.sellerDetails._id": 1,
+              "sellerProductsInfo.sellerDetails.firstName": 1,
+              "sellerProductsInfo.sellerDetails.lastName": 1,
+              "sellerProductsInfo.sellerDetails.companyName": 1,
 
+            }
+          },
+          {
+            $sort: sort 
+          },
+          {
+            $skip: (page - 1) * limit
+          },
+          {
+            $limit: limit
           }
-        }
 
-      ]);
+        ]),
+
+        await Product.aggregate([
+          {
+            $match: {
+              sellers: { $exists: true, $ne: [] }, // Ensure the product has sellers
+              ...filters
+            }
+          }, { $count: "total" }
+        ])
+
+      ])
+
+      return inboxResult(result, total[0]?.total || 0, page, limit);
     } catch (err) {
       throw err;
     }
