@@ -673,7 +673,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
 
   updateStock(): void {
     if (!this.stockUpdateQuantity || this.stockUpdateQuantity <= 0) {
-      this.toaster.error('Please enter a valid quantity');
+      this.toaster.error('Please enter a valid quantity !');
       return;
     }
 
@@ -682,7 +682,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
       this.stockUpdateQuantity
     ).subscribe({
       next: (res) => {
-        this.toaster.success('Stock updated successfully');
+        this.toaster.success('Stock updated successfully !');
         this.selectedProduct.stock += this.stockUpdateQuantity;
         const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
         if (index !== -1) {
