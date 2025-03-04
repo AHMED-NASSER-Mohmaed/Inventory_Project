@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -7,9 +7,18 @@ import { Observable } from 'rxjs';
 })
 export class SAanalsisService {
 
-  constructor(private http: HttpClient) { }
+  private baseUrl = 'http://localhost:3000';
   
-  getAdminAnalytics(): Observable<any> {
-    return this.http.get<any>(`http://localhost:3000/admin-dashboard/analytics`);
-  }
+    constructor(private http: HttpClient) { }
+    
+    private getHeaders(): HttpHeaders {
+      const token = localStorage.getItem('token');
+      return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    }
+    
+    getAdminAnalytics(): Observable<any> {
+      return this.http.get<any>(`${this.baseUrl}/admin-dashboard/analytics`, {
+        headers: this.getHeaders()
+      });
+    }
 }

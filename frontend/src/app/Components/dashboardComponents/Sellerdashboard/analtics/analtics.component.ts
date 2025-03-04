@@ -24,19 +24,16 @@ export class AnalticsComponent implements OnInit, OnDestroy {
   
   analyticsData: any = null;
   
-  // Chart data for order status
   orderStatusChartData: ChartData<'pie'> = {
     labels: [],
     datasets: []
   };
   
-  // Chart data for monthly revenue (if available)
   monthlyRevenueChartData: ChartData<'line'> = {
     labels: [],
     datasets: []
   };
   
-  // Chart options
   pieChartOptions: ChartConfiguration['options'] = {
     responsive: true,
     plugins: {
@@ -59,7 +56,6 @@ export class AnalticsComponent implements OnInit, OnDestroy {
     }
   };
   
-  // Chart types
   pieChartType: ChartType = 'pie';
   lineChartType: ChartType = 'line';
   
@@ -153,8 +149,10 @@ export class AnalticsComponent implements OnInit, OnDestroy {
   }
   
   getTotalProducts(): number {
-    if (!this.analyticsData?.topProducts) return 0;
-    return this.analyticsData.topProducts.length;
+    if (!this.analyticsData?.totalProducts) return 0;
+    return this.analyticsData.totalProducts.reduce(
+      (sum: number, item: any) => sum + item.totalProducts, 0
+    );
   }
 
   toggleDarkMode(): void {

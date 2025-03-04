@@ -98,12 +98,12 @@
                         <tbody>
                             <tr *ngFor="let product of analyticsData.topProducts.slice(0, 5)">
                                 <td>
-                                    <img *ngIf="product.images?.length > 0" [src]="product.images[0].url" alt="Product Image">
-                                    <p>{{ product.name }}</p>
+                                    <img *ngIf="product.productDetails?.images?.length > 0" [src]="product.productDetails.images[0].url" alt="Product Image">
+                                    <p>{{ product.productDetails.name }}</p>
                                 </td>
-                                <td>${{ product.price | number:'1.2-2' }}</td>
-                                <td>{{ product.quantitySold || 0 }}</td>
-                                <td>${{ product.revenue | number:'1.2-2' }}</td>
+                                <td>${{ product.finalPrice | number:'1.2-2' }}</td>
+                                <td>{{ product.totalQuantity || 0 }}</td>
+                                <td>${{ product.totalProductRevenue | number:'1.2-2' }}</td>
                             </tr>
                         </tbody>
                     </table>
