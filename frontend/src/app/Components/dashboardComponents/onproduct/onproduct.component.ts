@@ -154,7 +154,6 @@ export class OnproductComponent implements OnInit, OnDestroy{
 
   isUploadingImages: boolean = false;
 
-  // Add necessary methods for product editing and image management
   toggleEdit(event?: any): void {
     if (this.editing) {
       const workingBackup = { ...this.backupProduct };
@@ -255,20 +254,18 @@ export class OnproductComponent implements OnInit, OnDestroy{
     }
   }
 
-  // Add this method to create image objects from Files
   createImageObjectsFromFiles(files: File[]): ProductImage[] {
     return files.map(file => {
       const url = URL.createObjectURL(file);
       return {
-        _id: `temp-${Math.random().toString(36).substring(2, 15)}`, // temporary ID
+        _id: `temp-${Math.random().toString(36).substring(2, 15)}`,
         url: url,
-        fileId: `temp-${Math.random().toString(36).substring(2, 15)}`, // temporary fileId
+        fileId: `temp-${Math.random().toString(36).substring(2, 15)}`, 
         filename: file.name
       };
     });
   }
 
-  // Replace the existing updateImages method with this improved version
   updateImages(): void {
     if ((this.selectedImageIds.length === 0 && this.newImages.length === 0) || this.isUploadingImages) {
       return;
@@ -276,7 +273,6 @@ export class OnproductComponent implements OnInit, OnDestroy{
 
     this.isUploadingImages = true;
     
-    // Create client-side image objects from files for immediate display
     const cachedImageObjects = this.createImageObjectsFromFiles(this.newImages);
     
     this.onproductsService.updateProductImages(
@@ -285,18 +281,15 @@ export class OnproductComponent implements OnInit, OnDestroy{
       this.newImages
     ).subscribe({
       next: (res) => {
-        // Using setTimeout to prevent ExpressionChangedAfterItHasBeenCheckedError
         setTimeout(() => {
           this.isUploadingImages = false;
         });
         
         if (res && (res.message === 'success' || res.status === 200 || res.success)) {
-          // Initialize images array if it doesn't exist
           if (!this.selectedProduct.images) {
             this.selectedProduct.images = [];
           }
           
-          // Remove deleted images
           if (this.selectedImageIds.length > 0) {
             this.selectedProduct.images = this.selectedProduct.images.filter(
               (img: ProductImage) => !this.selectedImageIds.includes(img._id) && 
@@ -304,12 +297,10 @@ export class OnproductComponent implements OnInit, OnDestroy{
             );
           }
           
-          // Add new images using cached image objects
           if (cachedImageObjects.length > 0) {
             this.selectedProduct.images = [...this.selectedProduct.images, ...cachedImageObjects];
           }
           
-          // Update product in list
           const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
           if (index !== -1) {
             this.products[index].images = [...this.selectedProduct.images];
@@ -319,15 +310,12 @@ export class OnproductComponent implements OnInit, OnDestroy{
           this.newImages = [];
           this.toaster.success('Images updated successfully');
         } else {
-          // Even if response format is unexpected, still update UI with cached images
           console.warn("Response format unexpected:", res);
           
-          // Initialize images array if it doesn't exist
           if (!this.selectedProduct.images) {
             this.selectedProduct.images = [];
           }
           
-          // Remove deleted images
           if (this.selectedImageIds.length > 0) {
             this.selectedProduct.images = this.selectedProduct.images.filter(
               (img: ProductImage) => !this.selectedImageIds.includes(img._id) && 
@@ -335,12 +323,10 @@ export class OnproductComponent implements OnInit, OnDestroy{
             );
           }
           
-          // Add new images using cached image objects
           if (cachedImageObjects.length > 0) {
             this.selectedProduct.images = [...this.selectedProduct.images, ...cachedImageObjects];
           }
           
-          // Update product in list
           const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
           if (index !== -1) {
             this.products[index].images = [...this.selectedProduct.images];
@@ -350,7 +336,6 @@ export class OnproductComponent implements OnInit, OnDestroy{
           this.newImages = [];
           this.toaster.success('Images updated successfully');
           
-          // Refresh data to ensure we have the latest from the server
           this.refreshProductData();
         }
       },

@@ -89,7 +89,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
   brands: { _id: string; Bname: string }[] = [];
   suppliers: { _id: string; companyName: string }[] = [];
 
-  selectedBranch: string = '19777'; // Set default branch filter to 19777
+  selectedBranch: string = '19777';
   selectedCategory: string = '';
   selectedBrand: string = '';
 
@@ -616,13 +616,11 @@ export class OffproductComponent implements OnInit, OnDestroy {
             this.selectedProduct.product.images = [];
           }
           
-          // Add our cached image objects to the existing images
           this.selectedProduct.product.images = [
             ...this.selectedProduct.product.images, 
             ...cachedImageObjects
           ];
           
-          // Update in products array too for consistency
           const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
           if (index !== -1 && this.products[index].product) {
             if (!this.products[index].product.images) {
@@ -685,7 +683,6 @@ export class OffproductComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (res) => {
         this.toaster.success('Stock updated successfully');
-        // Update stock in UI
         this.selectedProduct.stock += this.stockUpdateQuantity;
         const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
         if (index !== -1) {
@@ -833,7 +830,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
     this.currentPage = 1;
     this.sortField = null;
     this.sortDirection = null;
-    this.selectedBranch = '';
+    this.selectedBranch = '19777';  
     this.selectedCategory = '';
     this.selectedBrand = '';
     this.loadProducts();
@@ -1171,7 +1168,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
   }
 
   resetFilters(): void {
-    this.selectedBranch = '';
+    this.selectedBranch = '19777'; 
     this.selectedCategory = '';
     this.selectedBrand = '';
     this.currentPage = 1;
@@ -1179,7 +1176,6 @@ export class OffproductComponent implements OnInit, OnDestroy {
     this.updateSearchPlaceholder();
     this.expandedSection = null;
   }
-
 
   getSelectedImagePreview(file: File): string {
     return URL.createObjectURL(file);
