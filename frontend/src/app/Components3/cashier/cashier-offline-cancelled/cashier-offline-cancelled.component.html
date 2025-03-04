@@ -63,7 +63,7 @@
                                 
                                 <th >
 
-                                    Customer
+                                    Customer Ph.
 
                                 </th>
 
@@ -106,12 +106,12 @@
                                 </td>
                                 <td>
                                     <!-- <p>{{ order.customerName }}</p> -->
-                                    <p>Unknown</p>
+                                    <p>{{order.phone1}}</p>
                                 </td>
                                 <td>{{ order.createdAt | date:'dd/MM/yyyy' }}</td>
                                 <td>
                                     <span >
-                                        {{ order.orderTotalPrice }} le
+                                        {{ order.orderTotalPrice | currency}} 
                                     </span>
 
                                 </td>
