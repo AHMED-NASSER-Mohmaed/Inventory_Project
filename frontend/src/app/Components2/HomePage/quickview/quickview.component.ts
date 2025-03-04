@@ -35,7 +35,14 @@ export class QuickviewComponent  {
     
   }
   ngOnInit(): void{
+    console.log(this.selectedProduct)
     this.loadCart();
+  }
+
+  ngOnChanges(): void{
+    this.loadCart();
+    if(!this.shallowStock) this.shallowStock = this.selectedProduct.stock;
+    this.quantity = 1;
   }
 
   closeModal() {
@@ -55,34 +62,40 @@ export class QuickviewComponent  {
 
   loadCart() {
     // this.loading = true; 
-    this.cartService.getCart(this.sessionId!).subscribe((response) => {
-      this.products = response.cart.products;
-      for(let i = 0; i < this.products.length; i++){
-       if(this.products[i].onlineProductId == this.selectedProduct._id){
-        this.shallowStock = this.products[i].stock - this.products[i].requiredQty;
-       }
+    if(this.selectedProduct){
+      this.cartService.getCart(this.sessionId!).subscribe((response) => {
+        console.log(this.selectedProduct)
+        this.products = response.cart.products;
+        for(let i = 0; i < this.products.length; i++){
+          console.log(this.products[i].onlineProductId )
+         if(this.products[i].onlineProductId == this.selectedProduct._id){
+          this.shallowStock = this.products[i].stock - this.products[i].requiredQty;
+          console.log(this.shallowStock)
+         }
+        }
+        console.log(this.products);
+        // this.getSubtotal();
+        // this.getTotalAmount();
+        if(localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
+          localStorage.removeItem('sessionId');
+          this.sessionId = null;
+        }
+        if(!localStorage.getItem('token') && response.sessionId && this.sessionId != response.sessionId) {
+          localStorage.setItem('sessionId', response.sessionId);
+            this.sessionId = response.sessionId;
+        }
+        // this.spinner.hide();
+        // this.loading = false; 
+      },
+  
+      (error) => {
+        console.error('Error loading cart:', error);
+        // this.loading = false; // ✅ Ensure loading is set to false on error
+        // this.spinner.hide();
       }
-      console.log(this.products);
-      // this.getSubtotal();
-      // this.getTotalAmount();
-      if(localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
-        localStorage.removeItem('sessionId');
-        this.sessionId = null;
-      }
-      if(!localStorage.getItem('token') && response.sessionId && this.sessionId != response.sessionId) {
-        localStorage.setItem('sessionId', response.sessionId);
-          this.sessionId = response.sessionId;
-      }
-      // this.spinner.hide();
-      // this.loading = false; 
-    },
+      );
 
-    (error) => {
-      console.error('Error loading cart:', error);
-      // this.loading = false; // ✅ Ensure loading is set to false on error
-      // this.spinner.hide();
     }
-  );
   }
 
 

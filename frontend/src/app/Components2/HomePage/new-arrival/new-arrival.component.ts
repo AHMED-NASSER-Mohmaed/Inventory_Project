@@ -94,10 +94,16 @@ export class NewArrivalComponent implements OnInit {
     });
   }
 
+  // openQuickView(product: any) {
+  //   this.selectedProduct = product;
+  //   this.showQuickView = true;
+  // }
+
   openQuickView(product: any) {
+    console.log("Selected product:", product);
     this.selectedProduct = product;
     this.showQuickView = true;
-  }
+}
 
   closeQuickView() {
     this.showQuickView = false;
@@ -140,7 +146,7 @@ export class NewArrivalComponent implements OnInit {
         Swal.fire({
             icon: 'info',
             title: 'Oops!',
-            text: error.error.message,
+            text: 'Product Out Of Stock',
           });
       }
     });

@@ -37,7 +37,7 @@ export class ProductsListComponent implements OnInit {
   selectedCategoryId: string = "";
   selectedBrandId: string = "";
   showQuickView: boolean = false;
-  selectedProduct: Product | null = null;
+  selectedProduct: any | null = null;
   currentPage: number = 1;
   itemsPerPage: number = 6;
   totalPages: number = 1;
@@ -232,10 +232,13 @@ export class ProductsListComponent implements OnInit {
     this.hasPreviousPage = false;
   }
 
-  openQuickView(product: Product): void {
+  openQuickView(product: any) {
+    console.log("Selected product:", product);
     this.selectedProduct = product;
     this.showQuickView = true;
-  }
+}
+
+
 
   closeQuickView(): void {
     this.showQuickView = false;
@@ -354,7 +357,7 @@ export class ProductsListComponent implements OnInit {
           Swal.fire({
             icon: 'info',
             title: 'Oops!',
-            text: error.error.message,
+            text: 'Product Out Of Stock',
           });
         }
       });
