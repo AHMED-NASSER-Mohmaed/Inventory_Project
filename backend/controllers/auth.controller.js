@@ -122,21 +122,21 @@ authRouter.post(
   resendVerificationEmail
 );
 
-router.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
+// router.get(
+//   "/auth/google",
+//   passport.authenticate("google", { scope: ["profile", "email"] })
+// );
 
-// Handle callback after Google has authenticated the user
-router.get(
-  "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/auth/login" }),
-  (req, res) => {
-    // On successful authentication, generate a JWT for the user
-    const token = JWT_Manager.signToken(req.user.id, req.user.userType);
-    // You can redirect to your front-end with the token in query parameters
-    res.redirect(`/LandingPage?token=${token}`);
-  }
-);
+// // Handle callback after Google has authenticated the user
+// router.get(
+//   "/auth/google/callback",
+//   passport.authenticate("google", { failureRedirect: "/auth/login" }),
+//   (req, res) => {
+//     // On successful authentication, generate a JWT for the user
+//     const token = JWT_Manager.signToken(req.user.id, req.user.userType);
+//     // You can redirect to your front-end with the token in query parameters
+//     res.redirect(`/LandingPage?token=${token}`);
+//   }
+// );
 
 module.exports = authRouter;
