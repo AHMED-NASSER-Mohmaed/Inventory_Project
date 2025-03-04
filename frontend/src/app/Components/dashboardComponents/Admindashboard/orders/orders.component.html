@@ -21,7 +21,8 @@
             </div>
 
             <ul class="box-info">
-                <li>
+                <!-- Offline Orders Count - Only shown for non-branch 10 users -->
+                <li *ngIf="!isOnlineAdmin">
                     <ngx-skeleton-loader *ngIf="offlineOrdersCount === 0 && isLoading" appearance="custom-content">
                         <div class="skeleton-container">
                           <div class="skeleton-box">
@@ -34,10 +35,34 @@
                         </div>
                     </ngx-skeleton-loader>
 
-                    <i *ngIf="!(offlineOrdersCount === 0 && isLoading)" class='bx bx-store' id="lol"></i>
-                    <span *ngIf="!(offlineOrdersCount === 0 && isLoading)" class="text">
+                    <i *ngIf="!(offlineOrdersCount === 0 && isLoading)" class='bx bx-store' id="lol" 
+                       (click)="setFilter('offline')" style="cursor: pointer;" 
+                       [ngStyle]="{'color': currentFilter === 'offline' ? '#3C91E6' : ''}"></i>
+                    <span *ngIf="!(offlineOrdersCount === 0 && isLoading)" class="text" 
+                          (click)="setFilter('offline')" style="cursor: pointer;">
                         <h3>{{offlineOrdersCount}}</h3>
                         <p>Offline Orders</p>
+                    </span>
+                </li>
+                
+                <!-- Online Orders Count - Only shown for branch 10 -->
+                <li *ngIf="isOnlineAdmin">
+                    <ngx-skeleton-loader *ngIf="onlineOrdersCount === 0 && isLoading" appearance="custom-content">
+                        <div class="skeleton-container">
+                          <div class="skeleton-box">
+                            <div class="skeleton-circle"></div>
+                          </div>
+                          <div class="skeleton-text">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line"></div>
+                          </div>
+                        </div>
+                    </ngx-skeleton-loader>
+
+                    <i *ngIf="!(onlineOrdersCount === 0 && isLoading)" class='bx bx-shopping-bag' id="lol"></i>
+                    <span *ngIf="!(onlineOrdersCount === 0 && isLoading)" class="text">
+                        <h3>{{onlineOrdersCount}}</h3>
+                        <p>Online Orders</p>
                     </span>
                 </li>
             </ul>
@@ -46,7 +71,9 @@
                 <div class="order">
                     <div class="head">
                         <div class="headhead">
-                            <h3>Orders</h3>
+                            <h3>
+                                {{isOnlineAdmin ? 'Online' : 'Offline'}} Orders
+                            </h3>
                             <div class="items-per-page">
                                 <label> 
                                     <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" name="itemsPerPage">
@@ -124,6 +151,7 @@
                                         'bx-sort': sortField !== 'createdAt'
                                     }"></i>
                                 </th>
+                                <!-- No need for Type column as we're only showing one type of orders per user -->
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -135,7 +163,7 @@
                             </tr>
                             <tr *ngIf="!isLoading && !showNoResults && orders.length === 0" class="no-results-row">
                                 <td colspan="6" style="text-align: center; padding: 20px; width: 100%; display: table-cell;">
-                                    No {{ currentFilter === 'online' ? 'Online' : currentFilter === 'offline' ? 'In-Store' : '' }} Orders Found
+                                    No {{ currentFilter === 'online' ? 'Online' : currentFilter === 'offline' ? 'In-Store' : 'All' }} Orders Found
                                 </td>
                             </tr>
                             <tr *ngIf="isLoading" class="no-results-row">
