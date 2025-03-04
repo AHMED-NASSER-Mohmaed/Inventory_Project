@@ -8,12 +8,12 @@ const mongoose = require("mongoose");
 class DashboardRepository {
   // Total number of products
   async getTotalProducts() {
-    return await Product.countDocuments();
+    return await OnlineProducts.countDocuments();
   }
 
   // Group products by status (e.g., "pending", "approved", "rejected")
   async getProductStatusSummary() {
-    return await Product.aggregate([
+    return await OnlineProducts.aggregate([
       {
         $group: {
           _id: "$status",
@@ -44,7 +44,7 @@ class DashboardRepository {
     return await Order.aggregate([
       {
         $match: {
-          status: { $in: ["delivered", "completed"] },
+          status: { $in: ["delivered", "completed", "partially delivered"] },
         },
       },
       {
@@ -60,7 +60,6 @@ class DashboardRepository {
     ]);
   }
 
-  // Revenue Stats: revenue breakdown by seller (with populated seller details)
   // Revenue Stats: revenue breakdown by seller with populated seller details and restricted fields
   async getRevenueBySeller() {
     return await Order.aggregate([
