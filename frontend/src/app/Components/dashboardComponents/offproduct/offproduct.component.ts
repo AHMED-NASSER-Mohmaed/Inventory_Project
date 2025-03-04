@@ -88,7 +88,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
   brands: { _id: string; Bname: string }[] = [];
   suppliers: { _id: string; companyName: string }[] = [];
 
-  selectedBranch: string = '';
+  selectedBranch: string = '19777'; // Set default branch filter to 19777
   selectedCategory: string = '';
   selectedBrand: string = '';
 
@@ -144,7 +144,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.updateSearchPlaceholder();
-    this.loadProducts();
+    this.loadProducts(); // This will automatically apply the branch filter
     this.getInActiveProductsCount();
     this.getActiveProductsCount();
     this.loadBranches();
@@ -676,14 +676,12 @@ export class OffproductComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (res) => {
         this.toaster.success('Product Distrubuted successfully');
-        // Update stock in UI
         this.selectedProduct.stock -= this.exportQuantity;
         const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
         if (index !== -1) {
           this.products[index].stock = this.selectedProduct.stock;
         }
         
-        // Close modal with pure JavaScript
         const modalElement = document.getElementById('exportProductModal');
         if (modalElement) {
           modalElement.classList.remove('show');
@@ -693,14 +691,12 @@ export class OffproductComponent implements OnInit, OnDestroy {
         while (backdrops.length > 0) {
           backdrops[0].parentNode?.removeChild(backdrops[0]);
         }
-        // Remove modal-open class from body
         document.body.classList.remove('modal-open');
         document.body.style.removeProperty('padding-right');
         
         this.exportDestinationBranch = '';
         this.exportQuantity = 0;
         
-        // Refresh data
         this.refreshProductData();
       },
       error: (error) => {

@@ -336,10 +336,12 @@
               </div>
             </div>
 
-            <div class="info-item description-item mt-3" *ngIf="selectedProduct && selectedProduct.description">
-              <strong class="label">Description:</strong>
-              <div class="input-wrapper">
-                <textarea [(ngModel)]="selectedProduct.description" name="description" [disabled]="!editing" class="value" rows="3"></textarea>
+            <div class="description-container mt-3" *ngIf="selectedProduct">
+              <div class="description-header">
+                <strong class="label">Description:</strong>
+              </div>
+              <div class="description-content">
+                <textarea [(ngModel)]="selectedProduct.description" name="description" [disabled]="!editing" class="value full-width" rows="3" placeholder="No description available"></textarea>
               </div>
             </div>
 
@@ -410,30 +412,41 @@
                     <th>Seller</th>
                     <th>Stock</th>
                     <th>Price</th>
-                    <th>Status</th>
                     <th>Added On</th>
+                    <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let sellerInfo of selectedProduct.sellerProductsInfo">
-                    <td>{{ sellerInfo.sellerDetails?.companyName || 'N/A' }}</td>
+                    <td>
+                      {{ sellerInfo.sellerDetails?.companyName || 'N/A' }}
+                      <br>
+                      <small style="font-size: 0.8em; color: #666;">
+                        ({{ sellerInfo.sellerDetails?.firstName || '' }} {{ sellerInfo.sellerDetails?.lastName || '' }})
+                      </small>
+                    </td>
                     <td>{{ sellerInfo.stock }}</td>
                     <td>{{ sellerInfo.price | currency }}</td>
+                    
+                    <td>{{ sellerInfo.createdAt | date:'dd/MM/yyyy' }}</td>
                     <td>
                       <span [class.status-approved]="!sellerInfo.isDeleted" 
                             [class.status-rejected]="sellerInfo.isDeleted">
                         {{ sellerInfo.isDeleted ? 'Inactive' : 'Active' }}
                       </span>
                     </td>
-                    <td>{{ sellerInfo.createdAt | date:'dd/MM/yyyy' }}</td>
                     <td>
-                      <button type="button" class="btn btn-sm" 
+                      <button *ngIf="selectedProduct.status === 'approved'" 
+                              type="button" class="btn btn-sm" 
                               [ngClass]="{'btn-success': sellerInfo.isDeleted, 'btn-danger': !sellerInfo.isDeleted}"
                               (click)="openConfirmDialogSellerProduct(sellerInfo._id, sellerInfo.isDeleted)">
                         <i class='bx' [ngClass]="{'bx-check-circle': sellerInfo.isDeleted, 'bx-x-circle': !sellerInfo.isDeleted}"></i>
                         {{ sellerInfo.isDeleted ? 'Activate' : 'Deactivate' }}
                       </button>
+                      <span *ngIf="selectedProduct.status !== 'approved'" class="text-muted">
+                        <small>Product not approved</small>
+                      </span>
                     </td>
                   </tr>
                   <tr *ngIf="!selectedProduct.sellerProductsInfo || selectedProduct.sellerProductsInfo.length === 0">

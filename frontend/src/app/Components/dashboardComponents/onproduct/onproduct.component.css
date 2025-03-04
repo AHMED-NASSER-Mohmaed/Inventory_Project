@@ -2257,3 +2257,37 @@ input[type="number"] {
   color: #000;
 }
 
+.description-container {
+  margin: 20px 0;
+  position: relative;
+  padding-top: 20px;
+}
+
+.description-container::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #ccc, transparent);
+}
+
+.description-header {
+  margin-bottom: 10px;
+}
+
+.description-content {
+  width: 100%;
+}
+
+.description-content textarea.full-width {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid var(--grey);
+  background-color: var(--light);
+  color: var(--dark);
+  resize: vertical;
+}
+

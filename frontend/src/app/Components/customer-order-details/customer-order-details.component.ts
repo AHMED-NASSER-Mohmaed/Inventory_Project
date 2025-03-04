@@ -181,7 +181,6 @@ export class CustomerOrderDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Add new method to cancel a specific product from an order
   cancelProduct(orderId: string, productId: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent2, {
       width: '350px',
@@ -193,8 +192,8 @@ export class CustomerOrderDetailsComponent implements OnInit, OnDestroy {
         this.isLoading = true;
         const sub = this.customerOrderDetails.cancelProductsFromOrder(orderId, [productId]).subscribe({
           next: (res) => {
+            console.log(res)
             this.toaster.success('Product removed from order successfully');
-            // Reload the order details
             this.refreshOrderDetails(orderId);
           },
           error: (error) => {
@@ -209,41 +208,32 @@ export class CustomerOrderDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Enhanced method to refresh order details with animation
   refreshOrderDetails(orderId: string): void {
     this.isLoading = true;
     const sub = this.customerOrderDetails.getCustomerOrders().subscribe({
       next: (orders) => {
-        // Update the allOrders array
         this.allOrders = orders;
         
-        // Find and update the specific order in the UI
         const updatedOrder = orders.find(order => order.orderId === orderId);
         if (updatedOrder) {
-          // Get old values for animation
           const oldTotalQty = this.selectedOrder?.orderTotalQty || 0;
           const oldTotalPrice = this.selectedOrder?.orderTotalPrice || 0;
           
-          // Update the modal view with the refreshed data
           this.selectedOrder = { ...updatedOrder };
           
-          // Update the order in the current page if it exists
           const index = this.orders.findIndex(o => o.orderId === orderId);
           if (index !== -1) {
             this.orders[index] = { ...updatedOrder };
             
-            // Check if the order has been fully cancelled
             if (updatedOrder.orderStatus.toLowerCase() === 'cancelled') {
               this.toaster.info('All products have been cancelled. Order is now cancelled.');
             } else {
-              // Show a toast notification about the updated totals
               const priceDiff = oldTotalPrice - updatedOrder.orderTotalPrice;
               const itemsDiff = oldTotalQty - updatedOrder.orderTotalQty;
               
               if (priceDiff > 0 || itemsDiff > 0) {
                 this.toaster.info(`Order updated: ${itemsDiff} item(s) and ${this.formatPrice(priceDiff)} removed`);
                 
-                // Highlight the changed values in the UI
                 setTimeout(() => {
                   this.highlightTotals();
                 }, 300);
@@ -265,7 +255,6 @@ export class CustomerOrderDetailsComponent implements OnInit, OnDestroy {
     this.subscriptions.push(sub);
   }
 
-  // Add this method to highlight the updated totals
   highlightTotals(): void {
     const totalPriceElement = document.querySelector('.summary-row.total .summary-value');
     const totalItemsElement = document.querySelector('.summary-row:not(.total) .summary-value');

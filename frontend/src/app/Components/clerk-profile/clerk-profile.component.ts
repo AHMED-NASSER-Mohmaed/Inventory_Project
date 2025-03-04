@@ -8,6 +8,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AccountService } from '../../_services/account.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmLogoutDialogComponent } from '../../confirm-logout-dialog/confirm-logout-dialog.component';
+import { decodeToken } from '../../_helper/jwt-helper';
 
 @Component({
   selector: 'app-clerk-profile',
@@ -18,9 +19,15 @@ import { ConfirmLogoutDialogComponent } from '../../confirm-logout-dialog/confir
 export class ClerkProfileComponent implements OnInit{
   constructor(public customerProfileService: CustomersProfileService ,public accountService: AccountService, public dialog: MatDialog, public router: Router){}
 
+  token = localStorage.getItem('token');
+  tokenData = this.token ? decodeToken(this.token) : null;
+
   isEditing = false;
   sub = {} as Subscription;
 
+  get dashboardRoute(): string {
+    return this.tokenData?.id?.branch === 10 ? '/clerk-dashboard' : '/clerk-offline-dashboard';
+  }
 
   user = {} as Account;
   userP : string = '';
@@ -32,6 +39,7 @@ export class ClerkProfileComponent implements OnInit{
         this.user = res.user;
         this.userP = res.user.photo.url;
         console.log(this.userP);
+        console.log("This is the toooooken:" , this.tokenData);
       },
       error: (error) => {
         console.log(error);
@@ -41,9 +49,6 @@ export class ClerkProfileComponent implements OnInit{
       }
     })
   }
-
-
-
 
  openConfirmDialog(){
      const dialogRef = this.dialog.open(ConfirmLogoutDialogComponent);

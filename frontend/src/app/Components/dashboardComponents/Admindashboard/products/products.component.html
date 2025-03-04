@@ -160,7 +160,6 @@
                             <tr>
                                 <th>Product</th>
                                 <th>Code</th>
-                                <th>Branch</th>
                                 <th (click)="toggleSort('price')" style="cursor: pointer">
                                     Price
                                     <i class="bx" [ngClass]="{
@@ -210,7 +209,6 @@
                                     <p>{{ product.product.name }}</p>
                                 </td>
                                 <td>{{ product.product.code }}</td>
-                                <td>{{ product.branch ? getBranchName(product.branch) : 'N/A' }}</td>
                                 <td>{{ product.product.price | currency }}</td>
                                 <td>{{ product.createdAt | date:'dd/MM/yyyy' }}</td>
                                 <td>

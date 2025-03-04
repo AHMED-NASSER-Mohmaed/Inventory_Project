@@ -1,10 +1,9 @@
-
 <div class="container">
     <div class="leftbox">
         <nav>
             <a routerLink="/LandingPage" id="Home"><i class="fa-solid fa-house"></i></a>
             <a id="profile" class="active"><i class="fa fa-user"></i></a>
-            <a routerLink="/cashier-dashboard"id="Dashboard"><i class='bx bxs-dashboard'></i></a>
+            <a [routerLink]="dashboardRoute" id="Dashboard"><i class='bx bxs-dashboard'></i></a>
             <a (click)="openConfirmDialog()" id="Logout"><i class="fa-solid fa-right-from-bracket" style="transform: rotate(180deg);"></i></a>
         </nav>
     </div>

@@ -91,10 +91,6 @@
           <button type="button" id="createAccount" (click)="account.userType === 'customer' ? signUpForCustomer() : signUpForSeller()" [disabled]="signupForm.invalid || isLoading" [ngClass]="{'disabled': signupForm.invalid || isLoading}">
             {{isLoading ? 'Creating account...' : 'Create account'}}
           </button>
-          <button type="button" id="googleLogin">
-            <img draggable="false" src="https://cdn-icons-png.flaticon.com/128/300/300221.png" alt="Google" width="14">
-            Sign up with Google
-          </button>
         </form>
         <span class="login">
           <p>Already have an account? </p><a id="login" (click)="navigateToLogin()" style="text-decoration: underline;">Sign in</a>

@@ -224,7 +224,6 @@ export class OnproductComponent implements OnInit, OnDestroy{
                 (img: ProductImage) => img._id !== imageId && img.fileId !== imageId
               );
               
-              // Update product in list
               const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
               if (index !== -1) {
                 this.products[index].images = [...this.selectedProduct.images];
