@@ -122,6 +122,7 @@ authRouter.post(
   resendVerificationEmail
 );
 
+/*
 router.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -138,5 +139,5 @@ router.get(
     res.redirect(`/LandingPage?token=${token}`);
   }
 );
-
+*/
 module.exports = authRouter;

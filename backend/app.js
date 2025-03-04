@@ -8,24 +8,24 @@ const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const { APP_CONFIG } = require("./config/app.config");
 const rateLimit = require("express-rate-limit");
-const passport = require("./config/passport");
-const session = require("express-session");
+// const passport = require("./config/passport");
+// const session = require("express-session");
 /******************************************************************* */
 
 /********************************************************************/
 const app = express();
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+// app.use(
+//   session({
+//     secret: process.env.SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: false,
+//   })
+// );
 
 // Initialize Passport middleware
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views/emails"));
