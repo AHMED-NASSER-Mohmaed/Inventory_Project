@@ -166,15 +166,34 @@ export class ProcessingComponent {
     
       validateFulfilledQuantity(): boolean {
         if (this.selectedSuborder?.products?.length > 0) {
-          const product = this.selectedSuborder.products[0];
-          if (product.productFulfilledQuantity > product.productStock ) {
-            this.validationError = `Fulfilled quantity cannot exceed available stock (${product.productStock}). please choose the cancelled status`;
+          let IsAllFulFilledQuntitiesValid = 0;
+          let IsAllProductsZeroStock = 0;
+          for(let i = 0; i < this.selectedSuborder.products.length; i++) {
+            const product = this.selectedSuborder.products[i];
+  
+            if (product.productFulfilledQuantity > product.productStock ) {
+              this.validationError = `Fulfilled quantity cannot exceed available stock (${product.productStock}). please choose the cancelled status`;
+              return false;
+            }
+            if (product.productStock == 0) {
+              // this.validationError = `stock is (${product.productStock}) cannot proceed the order. please choose the cancelled status`;
+              // return false;
+              IsAllProductsZeroStock += 1;
+            }
+            if(product.productFulfilledQuantity == 0){
+              // this.validationError = `Fulfilled Quantity cannot be 0`;
+              IsAllFulFilledQuntitiesValid += 1;
+            }
+          }
+          if(IsAllFulFilledQuntitiesValid == this.selectedSuborder.products.length){
+            this.validationError = `You cannot set all the fulfilled quantities for all products by 0!`;
             return false;
           }
-          if (product.productStock == 0) {
-            this.validationError = `stock is (${product.productStock}) cannot proceed the order. please choose the cancelled status`;
+          if(IsAllProductsZeroStock == this.selectedSuborder.products.length){
+            this.validationError = `The stock for all products is 0, we cannot proceed the order. Please choose the cancelled status`;
             return false;
           }
+            
         }
         this.validationError = null;
         return true;
