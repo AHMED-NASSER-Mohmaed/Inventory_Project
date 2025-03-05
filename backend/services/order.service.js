@@ -48,19 +48,19 @@ class OrderService {
     
         let newTotalPrice = 0;
         let newTotalQty = 0;
-        console.log(order);
+        // console.log(order);
         if(order.status == "shipped" && !fulfilledQuantities) throw new AppError("You have to fulfill the order first before updating the status to shipped");
         // update fulfilled and canceled quantities
         if (fulfilledQuantities && newStatus == 'shipped') {
             await Promise.all(order.products.map(async prod => {
-              console.log(" hahahh " + prod.onlineProduct._id);
-                // if (fulfilledQuantities[prod.product._id]) { // product here refers to the id of each product within products array
-                  if (fulfilledQuantities[prod.onlineProduct._id]) { 
-                  console.log(" hahahh " + prod.onlineProduct._id);
+              // console.log(" hahahh " + prod.onlineProduct._id);
+                if (fulfilledQuantities[prod.product._id]) { // product here refers to the id of each product within products array
+                  // if (fulfilledQuantities[prod.onlineProduct._id]) { 
+                  // console.log(" hahahh " + prod.onlineProduct._id);
                     
                   // const OnlineProduct = await onlineProductRepo.getOnlineProductById(prod.onlineProduct); // only to check on the stock before updating and to reduce the stock after
-                    // let fulfilledQty = fulfilledQuantities[prod.product._id];
-                    let fulfilledQty = fulfilledQuantities[prod.onlineProduct._id];
+                    let fulfilledQty = fulfilledQuantities[prod.product._id];
+                    // let fulfilledQty = fulfilledQuantities[prod.onlineProduct._id];
 
                     if(fulfilledQty < 0 ) throw new AppError("Invalid quantity");
                     if(prod.fulfilledQuantity > 0){
