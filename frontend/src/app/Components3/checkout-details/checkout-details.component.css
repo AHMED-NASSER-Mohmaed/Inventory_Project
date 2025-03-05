@@ -7,6 +7,7 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
+    /* background-color: #f8ece4; */
     padding: 30px;
 }
 .no-border td {
@@ -17,6 +18,7 @@ body {
     /* max-width: 1100px; Wider container */
     margin: auto;
     background: beige;
+    /* background-color: #f8ece4; */
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
@@ -177,16 +179,17 @@ stroke: var(--spinner-color) !important;
   .payment-option input {
     margin-right: 10px;
     transform: scale(1.2);
+    color: black;
   }
   
   .payment-option i {
     margin-right: 8px;
     font-size: 18px;
-    color: #007bff;
+    color: black;
   }
   
   .payment-option:hover {
-    border-color: #007bff;
+    /* border-color: black; */
     background: #f8f9fa;
   }
   

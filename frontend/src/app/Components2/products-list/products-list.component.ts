@@ -199,6 +199,7 @@ export class ProductsListComponent implements OnInit {
               sellerId: item.seller?._id || '',
               stock: item.stock,
               sellerCompanyName: item.seller?.companyName,
+              description: item.product.description,
               shallowStock: matchingProduct 
                 ? Math.max(matchingProduct.stock - matchingProduct.requiredQty, 0) 
                 : item.stock,  // Prevent negative stock values
