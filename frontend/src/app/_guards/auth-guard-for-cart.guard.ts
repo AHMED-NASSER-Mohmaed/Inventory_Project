@@ -14,13 +14,18 @@ export class authGuardForCartGuard implements CanActivate {
     return this.cartService.getCart(localStorage.getItem('sessionId')!).pipe(
       map((response: any) => {
         const isLoggedIn = !!localStorage.getItem('token');
-        const hasProducts = response.cart?.products?.length > 0;
+        const products = response.cart?.products || [];
+        const hasProducts = products.length > 0;
+        
+        // Check if there is exactly 1 product and it's either not approved or inactive
+        const onlyProductIsInvalid = products.length === 1 &&
+                                     (products[0].productIsDeleted);
 
-        if (!hasProducts) {
+        if (!hasProducts || onlyProductIsInvalid) {
           Swal.fire({
             icon: 'info',
             title: 'Empty Cart',
-            text: 'Your cart is empty. Please add items before proceeding.',
+            text: 'Your cart is empty or contains unavailable items. Please add valid products before proceeding.',
           }).then(() => {
             this.router.navigate(['/products']);
           });
@@ -38,20 +43,20 @@ export class authGuardForCartGuard implements CanActivate {
           return false;
         }
         
-        
         return true; // User can access the route
       }),
       catchError((error) => {
         Swal.fire({
-            icon: 'info',
-            title: 'Empty Cart',
-            text: 'Your cart is empty. Please add items before proceeding.',
-          }).then(() => {
-            this.router.navigate(['/products']);
-          });
-            return of(false);
+          icon: 'info',
+          title: 'Empty Cart',
+          text: 'Your cart is empty. Please add items before proceeding.',
+        }).then(() => {
+          this.router.navigate(['/products']);
+        });
+        return of(false);
       })
     );
   }
+
 }
 

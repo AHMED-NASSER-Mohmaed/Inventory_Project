@@ -60,6 +60,8 @@ export class ShoppingcartComponent implements OnInit {
       console.log(this.products)
       for(let i = 0; i < this.products.length; i++){
         console.log(this.products[i].sellerCompanyName)
+        // if(i % 2 == 0){
+        // this.products[i].productIsActive = false}
        if(this.products[i].sellerCompanyName == 'inentory system') this.products[i].sellerCompanyName = 'Our System'
       }
       this.products.forEach(pro => pro.shallowStock = pro.stock - pro.requiredQty);
@@ -90,7 +92,8 @@ export class ShoppingcartComponent implements OnInit {
       // console.error('Error loading cart:', error);
       // this.spinner.hide();
       // this.loading = false; 
-      Swal.fire('warning', error.error.message, 'warning');
+      // Swal.fire('warning', error.error.message, 'warning');
+      console.log(error.error.message);
       this.stopLoading();
     }
   );
@@ -126,8 +129,11 @@ export class ShoppingcartComponent implements OnInit {
   // }
 
   getSubtotal(): number {
-    return this.products.reduce((acc, product) => acc + (product.productPrice * product.requiredQty), 0);
+    return this.products
+        .filter(product => !product.productIsDeleted)
+        .reduce((acc, product) => acc + (product.productPrice * product.requiredQty), 0);
   }
+
 
   getTotalAmount(): number {
     return this.getSubtotal() + this.shippingFees;

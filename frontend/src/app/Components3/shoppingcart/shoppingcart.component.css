@@ -229,5 +229,47 @@ input:focus, textarea:focus, select:focus {
 stroke: var(--spinner-color) !important;
 } */
 .custom-spinner::ng-deep circle {
-    stroke: #4d4846 !important; /* Change this to your desired color */
+    stroke: #4d4846 !important; 
+}
+
+
+.card-container {
+    position: relative;
+}
+.inactive {
+    filter: blur(3px);
+    opacity: 0.6;
+    pointer-events: none; 
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: black;
+    font-weight: bold;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 100; 
+    pointer-events: all; 
+}
+
+.card-container {
+    position: relative;
+}
+
+.unavailable-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 0, 0, 0.8);
+    color: white;
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    text-align: center;
+    z-index: 10;
 }

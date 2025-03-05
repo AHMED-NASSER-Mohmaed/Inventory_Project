@@ -16,7 +16,7 @@
                 </div>
             </div>
             
-            @for (product of products; track product.onlineProductId){
+            <!-- @for (product of products; track product.onlineProductId){
                 <div class="row border p-4 card">
     
                     <div class="row main align-items-center">
@@ -52,8 +52,64 @@
                 <div class="m-auto w-100  text-center fs-3 my-5 fw-bold empty">
                    No products ordered yet!
                 </div>
-              }
-            <a  [routerLink]="['/LandingPage']"  class="left-arrow"><div class="back-to-shop mt-5"><span class="text-muted"> &leftarrow; Back to shop</span></div></a>
+              } -->
+           
+              @for (product of products; track product.onlineProductId){
+                <div class="position-relative card-container">
+                    
+                    <div class="row border p-4 card" [class.inactive]="product.productIsDeleted">
+                        <div class="row main align-items-center">
+                            <div class="col-lg-3">
+                                <img class="img-fluid" [src]="product.urlImage" alt="{{ product.productName }}">
+                            </div>
+            
+                            <div class="col-lg-6 row p-4 px-md-4 py-md-0">
+                                <h2 class="fs-4">{{ product.productName }}</h2>
+                                <div class="text-muted description">{{ product.productDescription }}</div>
+                                <div class="col-8 text-muted mt-3"><span class="category text-capitalize">Category: <span>{{ product.productCategory }}</span></span></div>
+                                <div class="col-4 text-muted mt-3"><span class="category text-capitalize">Brand: <span>{{ product.productBrand }}</span></span></div>
+                                <div class="col-8 text-muted mt-3"><span class="seller text-capitalize">Sold by: {{ product.sellerCompanyName }}</span></div>
+                                <div class="col-4 mt-3"><span class="price fs-5">{{ product.productPrice | currency:'USD':'symbol':'1.0-0' }}</span></div>
+                            </div>
+            
+                            <div class="col-lg-3 row p-4 px-md-4">
+                                <div class="col-12 col-lg-12 quantity mt-lg-3">
+                                    <a class="decrease" (click)="decrease(product)" *ngIf="!product.productIsDeleted">-</a>
+                                    <span>{{product.requiredQty}}</span>
+                                    <a class="increase" (click)="increase(product)" *ngIf="!product.productIsDeleted">+</a>
+                                </div>
+            
+                                @if (product.shallowStock > 0 && !product.productIsDeleted) {
+                                    <div class="available-stock mt-lg-5">Only <span>{{product.shallowStock}}</span> left in stock</div>
+                                } @else if (product.productIsDeleted) {
+                                    <div class="text-danger fw-bold mt-lg-5">This product is no longer available.</div>
+                                } @else {
+                                    <div class="out-stock mt-lg-5">Out of stock</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+            
+                    @if (product.productIsDeleted) {
+                        <div class="unavailable-message">
+                            This product is no longer available.
+                        </div>
+                    }
+            
+                    <span class="close" (click)="removeProduct(product.onlineProductId)">&#10005;</span>
+                </div>
+            } @empty {
+                <div class="m-auto w-100 text-center fs-3 my-5 fw-bold empty">
+                    No products ordered yet!
+                </div>
+            }
+            
+            
+            
+            
+            
+
+              <a  [routerLink]="['/LandingPage']"  class="left-arrow"><div class="back-to-shop mt-5"><span class="text-muted"> &leftarrow; Back to shop</span></div></a>
         </div>
         <div class="col-lg-4 summary sticky-lg-top order-lg-2 order-1">
             <div>

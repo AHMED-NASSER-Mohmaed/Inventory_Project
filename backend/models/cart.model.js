@@ -65,7 +65,7 @@ CartSchema.pre(/^find/, function (next) {
   this.populate({
     path: "products.onlineProduct",
     select:
-      "-branch -isActive -status -rating -ratingsQuantity -createdAt -updatedAt",
+      "-branch  -rating -ratingsQuantity -createdAt -updatedAt",
     populate: [
       { path: "seller", select: "firstName lastName companyName" },
       { 

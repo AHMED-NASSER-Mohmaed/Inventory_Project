@@ -64,7 +64,9 @@ export class CheckoutDetailsComponent implements OnInit {
   loadCart() {
     // this.loading = true; 
     this.cartService.getCart(this.sessionId!).subscribe((response) => {
-      this.products = response.cart.products;
+      this.products = response.cart.products.filter(
+        (product: any) => !product.productIsDeleted
+      );
       console.log(this.products);
       for(let i = 0; i < this.products.length; i++){
         console.log(this.products[i].productName)
@@ -103,7 +105,9 @@ export class CheckoutDetailsComponent implements OnInit {
   }
 
   getSubtotal(): number {
-    return this.products.reduce((acc, product) => acc + (product.productPrice * product.requiredQty), 0);
+    return this.products
+        .filter(product => !product.productIsDeleted)
+        .reduce((acc, product) => acc + (product.productPrice * product.requiredQty), 0);
   }
 
   getTotalAmount(): number {

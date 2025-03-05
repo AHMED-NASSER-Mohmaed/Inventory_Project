@@ -244,6 +244,9 @@ class CartService {
             productDescription: product.description,
             productCategory: product.category?.Cname,
             productBrand: product.brand?.Bname,
+            productStatus: op.status,
+            productIsActive: op.isActive,
+            productIsDeleted: op.isDeleted,
             // Flatten seller details:
             sellerId: seller._id,
             sellerCompanyName: seller?.companyName || seller?.firstName,
