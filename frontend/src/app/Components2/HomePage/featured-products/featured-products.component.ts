@@ -70,15 +70,16 @@ export class FeaturedProductsComponent implements OnInit {
           );
 
           return {
-            _id: item.product._id,
+            _id: item._id,
             name: item.product.name,
-            price: item.product.price,
+            price: item.price,
             imgUrl: item.product.images.length > 1
               ? item.product.images[1].url
               : item.product.images[0].url,
             sellerName: `${item.seller?.firstName || ''} ${item.seller?.lastName || ''}`,
             sellerId: item.seller?._id || '',
             stock: item.stock,
+            description: item.product.description,
             sellerCompanyName: item.seller?.companyName,
             shallowStock: matchingProduct
               ? Math.max(matchingProduct.stock - matchingProduct.requiredQty, 0)
