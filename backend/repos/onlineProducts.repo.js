@@ -130,10 +130,10 @@ const OnlineProductsRepository = {
               "product._id": 1,
               "product.name": 1,
               "product.code": 1,
-              "product.price": 1,
+              "price": 1,
               "product.images": 1,
               "product.description": 1,
-              "product.stock": 1,
+              "stock": 1,
               "seller._id": 1,
               "seller.firstName": 1, // Ensure seller's first name is included
               "seller.lastName": 1,
@@ -162,7 +162,7 @@ const OnlineProductsRepository = {
           },
         ]),
       ]);
-
+      // console.log(result);
       return inboxResult(result, total[0]?.total || 0, page, limit);
     } catch (error) {
       throw error;

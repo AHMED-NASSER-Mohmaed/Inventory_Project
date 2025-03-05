@@ -114,8 +114,7 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
             category: productData.product.category,
             brand: productData.product.brand,
             images: productData.product.images,
-            companyName:productData.seller.companyName
-
+            companyName:productData.seller.companyName,
           }
           this.stockCount =  matchingProduct
           ? Math.max(matchingProduct.stock - matchingProduct.requiredQty, 0) : responseData.stock ;
