@@ -28,7 +28,7 @@ const OnlineProductsRepository = {
         })
         .populate({
           path: "product",
-          select: "name code images description brand category price",
+          select: "name code images description brand category",
           populate: [
             { path: "brand", select: "Bname" },
             { path: "category", select: "Cname" }
