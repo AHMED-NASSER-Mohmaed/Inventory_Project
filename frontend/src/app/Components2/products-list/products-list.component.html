@@ -99,7 +99,7 @@
                                 <span class="text-danger">Product Out of Stock!</span>
                             </div>
                         }
-                        <button [disabled]="product.shallowStock <= 0 || token.id.userType != 'customer'" class="btn add-to-cart-btn" (click)="$event.stopPropagation(); increase(product)">Add to Cart</button>
+                        <button [disabled]="product.shallowStock <= 0 || (token && token.id.userType != 'customer')" class="btn add-to-cart-btn" (click)="$event.stopPropagation(); increase(product)">Add to Cart</button>
                     </div>
                 </div>
             </div>

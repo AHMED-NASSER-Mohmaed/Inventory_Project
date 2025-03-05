@@ -162,7 +162,7 @@ const OnlineProductsRepository = {
           },
         ]),
       ]);
-      console.log(result);
+      // console.log(result);
       return inboxResult(result, total[0]?.total || 0, page, limit);
     } catch (error) {
       throw error;
