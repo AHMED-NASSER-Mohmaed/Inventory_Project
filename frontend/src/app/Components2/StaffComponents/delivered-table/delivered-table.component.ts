@@ -98,13 +98,13 @@ export class DeliveredTableComponent {
         this.tokenData = decodeToken(token);
       }
     
-      this.status = 'delivered'; 
+      // this.status = 'delivered'; 
       this.fetchOrders(this.status); 
     }
     
     fetchOrders(status: string) {
       this.isLoading = true;
-      this.clerkDashboardService.getAllOrders(status).subscribe({
+      this.clerkDashboardService.getAllOrders('delivered').subscribe({
         next: (data) => {
           console.log('Fetched orders:', data);
           this.orders = data;

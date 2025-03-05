@@ -22,7 +22,7 @@
                 <div class="order">
                     <div class="head">
                         <div class="headhead">
-                        <h3>Delivered Orders</h3>
+                        <h3>Completed Orders</h3>
                         <!-- <div class="items-per-page">
                             <label> 
                                 <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" name="itemsPerPage">
@@ -152,9 +152,8 @@
         <div *ngIf="selectedSuborder">
           <p><strong>Seller Name:</strong> {{ selectedSuborder.sellerName }}</p>
           <p><strong>Order Status:</strong> {{ selectedSuborder.orderStatus }}</p>
-
           <!-- Dropdown for Order Status -->
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="orderStatus"><strong>Order Status:</strong></label>
             <select
               id="orderStatus"
@@ -162,11 +161,13 @@
               [(ngModel)]="selectedSuborder.orderStatus"
               [disabled]="!editing"
             >
-              
-              <!-- <option value="delivered">Delivered</option> -->
-              <option value="completed" selected>Completed</option>
+              <option value="pending">Pending</option>
+              <option value="processing">Processing</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
             </select>
-          </div>
+          </div> -->
 
           <p><strong>Total Quantity:</strong> {{ selectedSuborder.orderTotalQty }}</p>
 
@@ -180,7 +181,7 @@
             </div>
 
             <!-- Counter Input for Fulfilled Quantity -->
-          <!-- <div class="form-group">
+            <!-- <div class="form-group">
               <label for="fulfilledQuantity"><strong>Fulfilled Quantity:</strong></label>
               <div class="input-group">
                 <button
@@ -218,7 +219,7 @@
 
       <div class="modal-footer">
         <!-- Update Button -->
-        <button
+        <!-- <button
           type="button"
           class="btn btn-primary"
           id="updateBtn"
@@ -227,8 +228,9 @@
         >
           <i class='bx' [ngClass]="{'bx-pen': !editing, 'bx-check': editing}"></i>
           {{ editing ? 'Save' : 'Edit' }}
-        </button>
+        </button> -->
 
+        <!-- Close Button -->
         <button type="button" class="btn btn-secondary" data-dismiss="modal">
           <i class='bx bx-x'></i> Close
         </button>
@@ -238,6 +240,8 @@
 </div>
 
   
+
+
 
 <div class="pagination-controls my-5">
   <button (click)="prevPage()" [disabled]="currentPage === 1">
@@ -250,8 +254,6 @@
     Next <i class='bx bx-chevron-right'></i>
   </button>
 </div>
-
-
 
 
 

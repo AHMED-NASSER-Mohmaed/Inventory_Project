@@ -106,7 +106,7 @@ export class CompletedTableComponent implements OnInit, OnDestroy{
     
     fetchOrders(status: string) {
       this.isLoading = true;
-      this.cashierservice.getAllOrders(status).subscribe({
+      this.cashierservice.getAllOrders( 'completed').subscribe({
         next: (data) => {
           console.log('Fetched orders:', data);
           this.orders = data;

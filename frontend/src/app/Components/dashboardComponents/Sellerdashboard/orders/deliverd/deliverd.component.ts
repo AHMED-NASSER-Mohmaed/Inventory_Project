@@ -106,7 +106,7 @@ export class DeliverdComponent {
       
       fetchOrders(status: string) {
         this.isLoading = true;
-        this.sellerOrderService.getAllOrders(status).subscribe({
+        this.sellerOrderService.getAllOrders('delivered').subscribe({
           next: (data) => {
             console.log('Fetched orders:', data);
             this.orders = data;
@@ -231,7 +231,7 @@ export class DeliverdComponent {
             return;
           }
       
-          const newStatus = this.selectedSuborder.orderStatus ?? 'PENDING';
+          let newStatus = this.selectedSuborder.orderStatus ?? 'PENDING';
       
           const fulfilledQuantities: { [key: string]: number } = {};
       

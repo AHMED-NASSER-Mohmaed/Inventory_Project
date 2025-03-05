@@ -100,7 +100,7 @@ ProductSchema.index({ code: 1, category: 1, brand: 1 }, { unique: true });
 
 ProductSchema.pre('save',function(){
   if(this.cost)
-    this.price=this.cost*this.markupPercentage;
+    this.price=this.cost*this.markupPercentage + this.price;
 })
 
 ProductSchema.pre('updateOne', function (next) {
@@ -108,7 +108,7 @@ ProductSchema.pre('updateOne', function (next) {
 
   if (update.cost) {
     update.$set = update.$set || {};
-    update.$set.price = update.cost * update.markupPercentage;
+    update.$set.price = update.cost * update.markupPercentage + update.$set.price ;
   }
 
   next();

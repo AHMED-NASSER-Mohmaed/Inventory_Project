@@ -105,7 +105,7 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
 
 
   fetchOrders() {
-    this.clerkDashboardService.getAllOrders(this.status).subscribe({
+    this.clerkDashboardService.getAllOrders('pending').subscribe({
       next: (data) => {
         console.log(data);
         this.orders = data; 
@@ -239,7 +239,7 @@ export class PendingTableComponent  implements OnInit, OnDestroy{
         status: newStatus, 
         fulfilledQuantities: { ...fulfilledQuantities }, 
       };
-      if(newStatus == this.status) {
+      if(newStatus == this.status || 'pending' === newStatus ) {
         this.toaster.info('You have to update the status first!!', 'Info');
         return;
       }

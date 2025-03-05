@@ -77,9 +77,9 @@ export class ShoppingcartComponent implements OnInit {
         localStorage.removeItem('sessionId');
         this.sessionId = null;
       }
-      if(!localStorage.getItem('token') && response.sessionId && this.sessionId != response.sessionId) {
-        localStorage.setItem('sessionId', response.sessionId);
-          this.sessionId = response.sessionId;
+      if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !==localStorage.getItem('sessionId')) ) {
+        localStorage.setItem('sessionId', response.data.sessionId);
+        this.sessionId = response.data.sessionId;
       }
       // this.spinner.hide();
       // this.loading = false; 
@@ -87,9 +87,10 @@ export class ShoppingcartComponent implements OnInit {
     },
 
     (error) => {
-      console.error('Error loading cart:', error);
+      // console.error('Error loading cart:', error);
       // this.spinner.hide();
       // this.loading = false; 
+      Swal.fire('warning', error.error.message, 'warning');
       this.stopLoading();
     }
   );
@@ -141,9 +142,9 @@ export class ShoppingcartComponent implements OnInit {
           localStorage.removeItem('sessionId');
           this.sessionId = null;
         }
-        if(!localStorage.getItem('token') && response.data.sessionId && response.data.sessionId != this.sessionId) {
+        if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !==localStorage.getItem('sessionId')) ) {
           localStorage.setItem('sessionId', response.data.sessionId);
-            this.sessionId = response.data.sessionId;
+          this.sessionId = response.data.sessionId;
         }
       this.getSubtotal();
       this.getTotalAmount();
@@ -173,9 +174,9 @@ export class ShoppingcartComponent implements OnInit {
         localStorage.removeItem('sessionId');
         this.sessionId = null;
       }
-      if(!localStorage.getItem('token') && response.data.sessionId && response.data.sessionId != this.sessionId) {
+      if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !==localStorage.getItem('sessionId')) ) {
         localStorage.setItem('sessionId', response.data.sessionId);
-          this.sessionId = response.data.sessionId;
+        this.sessionId = response.data.sessionId;
       }
       // this.loadCart();
       this.getSubtotal();

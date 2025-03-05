@@ -100,13 +100,13 @@ export class DeliveredTableComponent {
         this.tokenData = decodeToken(token);
       }
     
-      this.status = 'delivered'; 
+      // this.status = 'delivered'; 
       this.fetchOrders(this.status); 
     }
     
     fetchOrders(status: string) {
       this.isLoading = true;
-      this.cashierservice.getAllOrders(status).subscribe({
+      this.cashierservice.getAllOrders('delivered').subscribe({
         next: (data) => {
           console.log('Fetched orders:', data);
           this.orders = data;
@@ -226,12 +226,13 @@ export class DeliveredTableComponent {
           return;
         }
     
+        console.log(this.status,"order status");
         // Make a request to update the suborder without changing the status or fulfilled quantities
         console.log(this.selectedSuborder.orderId)
-        if('delivered' == this.status) {
-          this.toaster.info('You have to update the status first!!', 'Info');
-          return;
-        }
+        // if( 'delivered' === this.status || 'partially delivered' === this.status) {
+        //   this.toaster.info('You have to update the status first!!', 'Info');
+        //   return;
+        // }
         const sub = this.cashierservice.updateSuborder(this.selectedSuborder.orderId).subscribe({
           next: (res: any) => {
             if (res.message === 'success') {
@@ -241,11 +242,13 @@ export class DeliveredTableComponent {
               this.toaster.error('Failed to update order.', 'Error');
             }
             this.editing = false;
+            this.fetchOrders('delivered');
           },
           error: (error) => {
             console.error('Error updating suborder', error);
             this.toaster.error('An error occurred while updating the order.', 'Error');
             this.editing = false;
+            this.fetchOrders('delivered');
           }
         });
     

@@ -107,7 +107,7 @@ export class ProcessingComponent {
       
       fetchOrders(status: string) {
         this.isLoading = true;
-        this.sellerOrdersService.getAllOrders(status).subscribe({
+        this.sellerOrdersService.getAllOrders('processing').subscribe({
           next: (data) => {
             console.log('Fetched orders:', data);
             this.orders = data;
@@ -266,10 +266,14 @@ export class ProcessingComponent {
             fulfilledQuantities: { ...fulfilledQuantities }, 
           };
           console.log(workingBackup);
-          if(newStatus == this.status) {
+          if(newStatus == this.status || 'processing' === newStatus) {
             this.toaster.info('You have to update the status first!!', 'Info');
             return;
           }
+          // if(newStatus == this.status) {
+          //   this.toaster.info('You have to update the status first!!', 'Info');
+          //   return;
+          // }
       
           const sub = this.sellerOrdersService
             .updateSuborder(this.selectedSuborder.orderId, {

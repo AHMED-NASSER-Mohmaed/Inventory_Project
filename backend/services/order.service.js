@@ -279,11 +279,18 @@ class OrderService {
         }
         else if(status == "shipped"){
           const returnedOrders =  await orderRepository.getAllOnlineOrdersForClerkOrSellerShippedState(clerkId, userType);
+          console.log(returnedOrders);
           const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+          
           return mappedOrders;
         }
         else if(status == "delivered"){
           const returnedOrders =  await orderRepository.getAllOnlineOrdersForClerkOrSellerDeliveredState(clerkId, userType);
+          const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+          return mappedOrders;
+        }
+        else  if(status == "completed") {
+          const returnedOrders =  await orderRepository.getAllOnlineOrdersByStatusCompletedForSeller(clerkId);
           const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
           return mappedOrders;
         }

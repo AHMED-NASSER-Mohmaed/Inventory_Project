@@ -105,7 +105,7 @@ export class ProcessingTableComponent {
     
     fetchOrders(status: string) {
       this.isLoading = true;
-      this.clerkDashboardService.getAllOrders(status).subscribe({
+      this.clerkDashboardService.getAllOrders('processing').subscribe({
         next: (data) => {
           console.log('Fetched orders:', data);
           this.orders = data;
@@ -267,7 +267,7 @@ export class ProcessingTableComponent {
 
         console.log(workingBackup);
 
-        if(newStatus == this.status) {
+        if(newStatus == this.status || 'processing' === newStatus) {
           this.toaster.info('You have to update the status first!!', 'Info');
           return;
         }

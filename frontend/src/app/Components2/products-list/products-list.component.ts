@@ -307,9 +307,9 @@ export class ProductsListComponent implements OnInit {
             localStorage.removeItem('sessionId');
             this.sessionId = null;
           }
-          if (!localStorage.getItem('token') && response.sessionId && this.sessionId != response.sessionId) {
-            localStorage.setItem('sessionId', response.sessionId);
-            this.sessionId = response.sessionId;
+          if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !==localStorage.getItem('sessionId')) ) {
+            localStorage.setItem('sessionId', response.data.sessionId);
+            this.sessionId = response.data.sessionId;
           }
     
           if (callback) callback(); // Run callback after cart loads
@@ -341,7 +341,8 @@ export class ProductsListComponent implements OnInit {
             localStorage.removeItem('sessionId');
             this.sessionId = null;
           }
-          if (!localStorage.getItem('token') && response.data.sessionId && response.data.sessionId !== this.sessionId) {
+
+          if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !==localStorage.getItem('sessionId')) ) {
             localStorage.setItem('sessionId', response.data.sessionId);
             this.sessionId = response.data.sessionId;
           }

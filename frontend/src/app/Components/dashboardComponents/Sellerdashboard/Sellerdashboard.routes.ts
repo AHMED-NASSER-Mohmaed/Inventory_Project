@@ -8,6 +8,7 @@ import { ShippedComponent } from './orders/shipped/shipped.component';
 import { DeliverdComponent } from './orders/deliverd/deliverd.component';
 import { CanceledComponent } from './orders/canceled/canceled.component';
 import { AnalticsComponent } from './analtics/analtics.component';
+import { CompletedTableComponent } from './orders/completed-table/completed-table.component';
 
 
 export const dashRoutes3: Routes = [
@@ -61,6 +62,11 @@ export const dashRoutes3: Routes = [
         path: 'analytics',
         component: AnalticsComponent,
         title: 'Analytics'
+      },
+      {
+        path: 'completed',
+        component: CompletedTableComponent,
+        title: 'Completed Orders'
       }
     ]
   }

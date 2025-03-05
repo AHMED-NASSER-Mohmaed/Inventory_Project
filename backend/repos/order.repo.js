@@ -189,6 +189,19 @@ class OrderRepository {
     .exec();
   }
 
+  async getAllOnlineOrdersByStatusCompletedForSeller(cashierId) { // read only in frontend won't be modified
+    return await Order.find({
+      subOrderType: "online",
+      status: "completed",
+       seller: cashierId ,
+    }).populate("products.onlineProduct products.product  seller").populate({
+      path: "orderContainer", // Populate the orderContainer field
+      populate: {
+        path: "customer", // Nested population: populate the customer inside orderContainer
+      },
+    })
+    .exec();
+  }
   async getAllOnlineSubOrdersForSuperAdmin() {
     return await Order.find({
       subOrderType: "online",

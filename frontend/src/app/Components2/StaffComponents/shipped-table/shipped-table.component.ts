@@ -98,14 +98,14 @@ export class ShippedTableComponent {
         this.tokenData = decodeToken(token);
       }
     
-      this.status = 'shipped'; 
+      // this.status = 'shipped'; 
       this.fetchOrders(this.status); 
     }
     
     
     fetchOrders(status: string) {
       this.isLoading = true;
-      this.clerkDashboardService.getAllOrders(status).subscribe({
+      this.clerkDashboardService.getAllOrders('shipped').subscribe({
         next: (data) => {
           console.log('Fetched orders:', data);
           this.orders = data;
@@ -243,7 +243,7 @@ export class ShippedTableComponent {
           status: newStatus,
           fulfilledQuantities: { ...fulfilledQuantities },
         };
-        if(newStatus == this.status) {
+        if(newStatus == this.status || 'partially shipped' === newStatus || 'shipped' === newStatus) {
           this.toaster.info('You have to update the status first!!', 'Info');
           return;
         }

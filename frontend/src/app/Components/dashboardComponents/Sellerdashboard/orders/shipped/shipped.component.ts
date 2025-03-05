@@ -34,7 +34,7 @@ export class ShippedComponent {
       products:any;
       orders: any = [];
       dataresponse:any;
-      status: any ='Processing';
+      status: any ='shipped';
       suborders : any ;
       selectedSuborder: any ;
       // ={ 
@@ -99,14 +99,14 @@ export class ShippedComponent {
           this.tokenData = decodeToken(token);
         }
       
-        this.status = 'shipped'; 
+        // this.status = 'shipped'; 
         this.fetchOrders(this.status); 
       }
       
       
       fetchOrders(status: string) {
         this.isLoading = true;
-        this.sellerOrderService.getAllOrders(status).subscribe({
+        this.sellerOrderService.getAllOrders('shipped').subscribe({
           next: (data) => {
             console.log('Fetched orders:', data);
             this.orders = data;
@@ -230,7 +230,7 @@ export class ShippedComponent {
             return;
           }
       
-          const newStatus = this.selectedSuborder.orderStatus ?? 'PENDING';
+          let newStatus = this.selectedSuborder.orderStatus ?? 'PENDING';
       
           const fulfilledQuantities: { [key: string]: number } = {};
       
@@ -244,7 +244,9 @@ export class ShippedComponent {
             status: newStatus,
             fulfilledQuantities: { ...fulfilledQuantities },
           };
-          if(newStatus == this.status) {
+          console.log(newStatus)
+          console.log(this.status)
+          if(newStatus == this.status || 'partially shipped' === newStatus || 'shipped' === newStatus) {
             this.toaster.info('You have to update the status first!!', 'Info');
             return;
           }

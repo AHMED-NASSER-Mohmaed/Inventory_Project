@@ -107,7 +107,7 @@ export class CanceledComponent {
         
         fetchOrders(status: string) {
           this.isLoading = true;
-          this.sellerOrdersService.getAllOrders(status).subscribe({
+          this.sellerOrdersService.getAllOrders('cancelled').subscribe({
             next: (data) => {
               console.log('Fetched orders:', data);
               this.orders = data;
