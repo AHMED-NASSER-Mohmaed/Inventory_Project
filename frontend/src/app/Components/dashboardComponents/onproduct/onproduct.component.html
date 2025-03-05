@@ -15,7 +15,7 @@
                   <ul class="breadcrumb">
                       <li><a>Dashboard</a></li>
                       <li><i class='bx bx-chevron-right'></i></li>
-                      <li><a class="active">Online Products</a></li>
+                      <li><a class="active">Online Shop</a></li>
                   </ul>
               </div>
           </div>
@@ -46,7 +46,7 @@
               <div class="order">
                   <div class="head">
                       <div class="headhead">
-                        <h3>Online Products</h3>
+                        <h3>Online Shop</h3>
                         <div class="items-per-page">
                             <label> 
                                 <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" name="itemsPerPage">
@@ -345,60 +345,51 @@
               </div>
             </div>
 
-            <div class="product-images-container" *ngIf="selectedProduct && selectedProduct.images && selectedProduct.images.length > 0">
-              <h6 class="text-center">Product Images</h6>
+            <div class="product-images-container" *ngIf="selectedProduct">
+              <h4 style="margin-bottom: 5px;">Product Images</h4>
               
               <div class="images-grid">
                 <div class="image-item" *ngFor="let image of selectedProduct.images">
                   <img [src]="image.url" alt="Product image">
-                  <button type="button" class="image-delete-btn" (click)="deleteImageDirectly(selectedProduct._id, image.fileId)"
-                          title="Delete image">
+                  <button type="button" class="image-delete-btn" 
+                    (click)="deleteImageDirectly(selectedProduct._id, image.fileId)" 
+                    title="Delete image">
                     <i class='bx bx-trash'></i>
                   </button>
                 </div>
+                
+                <div class="no-images-placeholder" *ngIf="!selectedProduct.images?.length">
+                  <i class='bx bx-image'></i>
+                  <p>No images yet</p>
+                </div>
               </div>
               
-              <div class="image-upload-controls" style="display: flex; align-items: center; gap: 10px; margin-top: 15px; justify-content: center;">
+              
+              
+              <!-- Image upload controls -->
+              <div class="image-upload-controls" style="display: flex; align-items: center; gap: 10px;">
                 <input type="file" id="newImages" style="display: none;" (change)="onImageSelected($event)" multiple accept="image/*">
-                <button type="button" class="btn" (click)="openFileSelector()" 
+                <button type="button" class="btn" (click)="openFileSelector()" [disabled]="isUploadingImages"
                         style="background-color: var(--light); color: var(--dark); border: 1px solid var(--dark); 
-                                 padding: 4px 6px; border-radius: 4px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                               padding: 4px 6px; border-radius: 4px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
                     <i class="bx bx-image-add"></i> Add Images
                 </button>
-                <button type="button" class="btn" (click)="updateImages()" [disabled]="newImages.length === 0"
+                <button type="button" class="btn" (click)="updateImages()" 
+                        [disabled]="(newImages.length === 0 && selectedImageIds.length === 0) || isUploadingImages"
                         style="background-color: var(--dark); color: var(--light); border: none;
-                                 padding: 4px 6px; border-radius: 4px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
-                    <i class="bx bx-cloud-upload"></i> Upload Images
+                               padding: 4px 6px; border-radius: 4px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                    <i class="bx" [ngClass]="{'bx-cloud-upload': !isUploadingImages, 'bx-loader-circle bx-spin': isUploadingImages}"></i> 
+                    {{ isUploadingImages ? 'Uploading...' : 'Upload Images' }}
+                </button>
+                <button *ngIf="newImages.length > 0" type="button" class="btn" (click)="clearSelectedImages()" 
+                        [disabled]="isUploadingImages"
+                        style="background-color: var(--red); color: var(--light); border: none;
+                                padding: 4px 6px; border-radius: 4px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                    <i class="bx bx-reset"></i> Reset
                 </button>
               </div>
-              
-              <!-- Show selected file count -->
-              <div class="file-selected-indicator" *ngIf="newImages.length > 0" 
-                   style="text-align: center; margin-top: 10px; color: var(--blue);">
-                <i class='bx bx-check-circle'></i>
-                {{ newImages.length }} file(s) selected
-              </div>
-            </div>
-
-            <div class="no-images-placeholder" *ngIf="selectedProduct && (!selectedProduct.images || selectedProduct.images.length === 0)">
-              <i class='bx bx-image'></i>
-              <p>No images available</p>
-              
-              <div class="image-upload-controls" style="display: flex; align-items: center; gap: 10px; margin-top: 15px; justify-content: center;">
-                <input type="file" id="newImages" style="display: none;" (change)="onImageSelected($event)" multiple accept="image/*">
-                <button type="button" class="btn" (click)="openFileSelector()" 
-                        style="background-color: var(--light); color: var (--dark); border: 1px solid var(--dark); 
-                                 padding: 6px 12px; border-radius: 4px; display: flex; align-items: center; gap: 8px;">
-                    <i class="bx bx-image-add"></i> Add Images
-                </button>
-                <button type="button" class="btn" (click)="updateImages()" [disabled]="newImages.length === 0"
-                        style="background-color: var(--dark); color: var(--light); border: none;
-                                 padding: 6px 12px; border-radius: 4px; display: flex; align-items: center; gap: 8px;">
-                    <i class="bx bx-cloud-upload"></i> Upload Images
-                </button>
-              </div>
-              
-              <div class="file-selected-indicator" *ngIf="newImages.length > 0" style="margin-top: 10px; color: var(--blue);">
+            
+              <div class="file-selected-indicator" *ngIf="newImages.length > 0">
                 <i class='bx bx-check-circle'></i>
                 {{ newImages.length }} file(s) selected
               </div>

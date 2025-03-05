@@ -152,7 +152,8 @@ export class OnproductComponent implements OnInit, OnDestroy{
   selectedImageIds: string[] = [];
   newImages: File[] = [];
 
-  // Add necessary methods for product editing and image management
+  isUploadingImages: boolean = false;
+
   toggleEdit(event?: any): void {
     if (this.editing) {
       const workingBackup = { ...this.backupProduct };
@@ -253,32 +254,94 @@ export class OnproductComponent implements OnInit, OnDestroy{
     }
   }
 
+  createImageObjectsFromFiles(files: File[]): ProductImage[] {
+    return files.map(file => {
+      const url = URL.createObjectURL(file);
+      return {
+        _id: `temp-${Math.random().toString(36).substring(2, 15)}`,
+        url: url,
+        fileId: `temp-${Math.random().toString(36).substring(2, 15)}`, 
+        filename: file.name
+      };
+    });
+  }
+
   updateImages(): void {
-    if (this.selectedImageIds.length === 0 && this.newImages.length === 0) {
-      this.toaster.info('No images to update');
+    if ((this.selectedImageIds.length === 0 && this.newImages.length === 0) || this.isUploadingImages) {
       return;
     }
 
+    this.isUploadingImages = true;
+    
+    const cachedImageObjects = this.createImageObjectsFromFiles(this.newImages);
+    
     this.onproductsService.updateProductImages(
       this.selectedProduct._id, 
       this.selectedImageIds, 
       this.newImages
     ).subscribe({
       next: (res) => {
-        this.toaster.success('Images updated successfully');
-        if (res.data && res.data.images) {
-          this.selectedProduct.images = res.data.images;
+        setTimeout(() => {
+          this.isUploadingImages = false;
+        });
+        
+        if (res && (res.message === 'success' || res.status === 200 || res.success)) {
+          if (!this.selectedProduct.images) {
+            this.selectedProduct.images = [];
+          }
           
-          // Update product in list
+          if (this.selectedImageIds.length > 0) {
+            this.selectedProduct.images = this.selectedProduct.images.filter(
+              (img: ProductImage) => !this.selectedImageIds.includes(img._id) && 
+                                    !this.selectedImageIds.includes(img.fileId)
+            );
+          }
+          
+          if (cachedImageObjects.length > 0) {
+            this.selectedProduct.images = [...this.selectedProduct.images, ...cachedImageObjects];
+          }
+          
           const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
           if (index !== -1) {
-            this.products[index].images = res.data.images;
+            this.products[index].images = [...this.selectedProduct.images];
           }
+          
+          this.selectedImageIds = [];
+          this.newImages = [];
+          this.toaster.success('Images updated successfully');
+        } else {
+          console.warn("Response format unexpected:", res);
+          
+          if (!this.selectedProduct.images) {
+            this.selectedProduct.images = [];
+          }
+          
+          if (this.selectedImageIds.length > 0) {
+            this.selectedProduct.images = this.selectedProduct.images.filter(
+              (img: ProductImage) => !this.selectedImageIds.includes(img._id) && 
+                                    !this.selectedImageIds.includes(img.fileId)
+            );
+          }
+          
+          if (cachedImageObjects.length > 0) {
+            this.selectedProduct.images = [...this.selectedProduct.images, ...cachedImageObjects];
+          }
+          
+          const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
+          if (index !== -1) {
+            this.products[index].images = [...this.selectedProduct.images];
+          }
+          
+          this.selectedImageIds = [];
+          this.newImages = [];
+          this.toaster.success('Images updated successfully');
+          
+          this.refreshProductData();
         }
-        this.selectedImageIds = [];
-        this.newImages = [];
       },
       error: (error) => {
+        this.isUploadingImages = false;
+        console.error("Image upload error:", error);
         this.toaster.error(error.error?.message || 'Failed to update images');
       }
     });
@@ -987,6 +1050,29 @@ export class OnproductComponent implements OnInit, OnDestroy{
 
   canToggleActivation(product: any): boolean {
     return product && product.status === 'approved';
+  }
+
+  getSelectedImagePreview(file: File): string {
+    return URL.createObjectURL(file);
+  }
+
+  getImageName(file: File): string {
+    if (file.name.length > 15) {
+      return file.name.substring(0, 12) + '...';
+    }
+    return file.name;
+  }
+
+  removeSelectedImage(index: number): void {
+    if (index >= 0 && index < this.newImages.length) {
+      const updatedImages = [...this.newImages];
+      updatedImages.splice(index, 1);
+      this.newImages = updatedImages;
+    }
+  }
+
+  clearSelectedImages(): void {
+    this.newImages = [];
   }
 
   constructor(

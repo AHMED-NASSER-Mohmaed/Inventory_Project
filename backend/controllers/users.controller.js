@@ -979,7 +979,7 @@ route
   //update personal image profile for users
   .post(
     "/updateImageProfile",
-    prot_rest(APP_CONFIG.SUPPERADMIN,  APP_CONFIG.CUSTOMER),
+    prot_rest(APP_CONFIG.SUPPERADMIN,  APP_CONFIG.CUSTOMER , APP_CONFIG.SELLER),
     catchAsync(genaraicFunctions.updateImageProfile)
   )
 

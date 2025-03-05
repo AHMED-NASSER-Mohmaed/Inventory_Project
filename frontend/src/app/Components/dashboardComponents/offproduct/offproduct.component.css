@@ -66,7 +66,7 @@
     display: inline-block;
     width: 50px;
     height: 25px;
-    margin-right: 5em;
+    margin-left: 2em;
 }
 
 .switch-mode input {
@@ -1815,4 +1815,62 @@ input[type="number"] {
 :host .parent3.dark #stockUpdateModal .modal-footer,
 :host .parent3.dark #exportProductModal .modal-footer {
     color: var(--dark); 
+}
+
+/* Add this to the existing CSS file */
+.selected-images-preview {
+    margin-top: 15px;
+    border-top: 1px solid var(--grey);
+    padding-top: 15px;
+}
+
+.selected-images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.selected-image-item {
+    position: relative;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--grey);
+}
+
+.selected-image-item img {
+    width: 100%;
+    height: 80%;
+    object-fit: cover;
+}
+
+.image-remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(255, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-name {
+    font-size: 10px;
+    padding: 2px 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: var(--light);
+    color: var(--dark);
+    text-align: center;
+    line-height: 1.2;
 }

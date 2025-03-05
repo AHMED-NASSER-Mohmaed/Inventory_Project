@@ -28,7 +28,7 @@ const OnlineProductsRepository = {
         })
         .populate({
           path: "product",
-          select: "name code images description brand category price",
+          select: "name code images description brand category",
           populate: [
             { path: "brand", select: "Bname" },
             { path: "category", select: "Cname" }
@@ -162,7 +162,7 @@ const OnlineProductsRepository = {
           },
         ]),
       ]);
-      console.log(result);
+      // console.log(result);
       return inboxResult(result, total[0]?.total || 0, page, limit);
     } catch (error) {
       throw error;

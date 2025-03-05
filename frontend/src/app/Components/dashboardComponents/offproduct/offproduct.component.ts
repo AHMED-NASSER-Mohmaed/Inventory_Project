@@ -3,6 +3,7 @@ import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { ConfirmDialogComponent } from '../../../confirm-dialog/confirm-dialog.component';
 import { ConfirmDialogComponent2 } from '../../../confirm-dialog2/confirm-dialog2.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -88,7 +89,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
   brands: { _id: string; Bname: string }[] = [];
   suppliers: { _id: string; companyName: string }[] = [];
 
-  selectedBranch: string = '19777'; // Set default branch filter to 19777
+  selectedBranch: string = '19777';
   selectedCategory: string = '';
   selectedBrand: string = '';
 
@@ -577,31 +578,91 @@ export class OffproductComponent implements OnInit, OnDestroy {
     }
   }
 
-  updateImages(): void {
-    if (this.selectedImageIds.length === 0 && this.newImages.length === 0) {
-      this.toaster.info('No images to update');
-      return;
-    }
+  isUploadingImages: boolean = false;
 
+  createImageObjectsFromFiles(files: File[]): ProductImage[] {
+    return files.map(file => {
+      const url = URL.createObjectURL(file);
+      return {
+        _id: `temp-${Math.random().toString(36).substring(2, 15)}`, 
+        url: url,
+        fileId: `temp-${Math.random().toString(36).substring(2, 15)}`, 
+        filename: file.name
+      };
+    });
+  }
+
+  updateImages(): void {
+    if (this.newImages.length === 0) return;
+    
+    this.isUploadingImages = true;
+    
+    const cachedImageObjects = this.createImageObjectsFromFiles(this.newImages);
+    
     this.offproductService.updateProductImages(
       this.selectedProduct.product._id, 
-      this.selectedImageIds, 
+      [], 
       this.newImages
-    ).subscribe({
-      next: (res) => {
-        this.toaster.success('Images updated successfully');
-        if (res.data && res.data.images) {
-          this.selectedProduct.product.images = res.data.images;
-          const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
-          if (index !== -1) {
-            this.products[index].product.images = res.data.images;
+    )
+    .pipe(
+      finalize(() => {
+        this.isUploadingImages = false;
+      })
+    )
+    .subscribe({
+      next: (response: any) => {
+        if (response && (response.message === 'success' || response.status === 200 || response.success)) {
+          if (!this.selectedProduct.product.images) {
+            this.selectedProduct.product.images = [];
           }
+          
+          this.selectedProduct.product.images = [
+            ...this.selectedProduct.product.images, 
+            ...cachedImageObjects
+          ];
+          
+          const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
+          if (index !== -1 && this.products[index].product) {
+            if (!this.products[index].product.images) {
+              this.products[index].product.images = [];
+            }
+            this.products[index].product.images = [...this.selectedProduct.product.images];
+          }
+          
+          // Clear the new images array
+          this.newImages = [];
+          
+          this.toaster.success('Images uploaded successfully');
+        } else {
+          // Even if response format is unexpected, still update UI with cached images
+          console.warn("Response format unexpected:", response);
+          
+          if (!this.selectedProduct.product.images) {
+            this.selectedProduct.product.images = [];
+          }
+          
+          // Add cached image objects
+          this.selectedProduct.product.images = [
+            ...this.selectedProduct.product.images, 
+            ...cachedImageObjects
+          ];
+          
+          // Update in products array
+          const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
+          if (index !== -1 && this.products[index].product) {
+            if (!this.products[index].product.images) {
+              this.products[index].product.images = [];
+            }
+            this.products[index].product.images = [...this.selectedProduct.product.images];
+          }
+          
+          this.newImages = [];
+          this.toaster.success('Images uploaded successfully');
         }
-        this.selectedImageIds = [];
-        this.newImages = [];
       },
-      error: (error) => {
-        this.toaster.error(error.error.message || 'Failed to update images');
+      error: (error: any) => {
+        console.error("Image upload error:", error);
+        this.toaster.error('Failed to upload images: ' + (error.message || error.error?.message || 'Unknown error'));
       }
     });
   }
@@ -612,7 +673,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
 
   updateStock(): void {
     if (!this.stockUpdateQuantity || this.stockUpdateQuantity <= 0) {
-      this.toaster.error('Please enter a valid quantity');
+      this.toaster.error('Please enter a valid quantity !');
       return;
     }
 
@@ -621,8 +682,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
       this.stockUpdateQuantity
     ).subscribe({
       next: (res) => {
-        this.toaster.success('Stock updated successfully');
-        // Update stock in UI
+        this.toaster.success('Stock updated successfully !');
         this.selectedProduct.stock += this.stockUpdateQuantity;
         const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
         if (index !== -1) {
@@ -770,7 +830,7 @@ export class OffproductComponent implements OnInit, OnDestroy {
     this.currentPage = 1;
     this.sortField = null;
     this.sortDirection = null;
-    this.selectedBranch = '';
+    this.selectedBranch = '19777';  
     this.selectedCategory = '';
     this.selectedBrand = '';
     this.loadProducts();
@@ -1108,12 +1168,36 @@ export class OffproductComponent implements OnInit, OnDestroy {
   }
 
   resetFilters(): void {
-    this.selectedBranch = '';
+    this.selectedBranch = '19777'; 
     this.selectedCategory = '';
     this.selectedBrand = '';
     this.currentPage = 1;
     this.loadProducts();
     this.updateSearchPlaceholder();
     this.expandedSection = null;
+  }
+
+  getSelectedImagePreview(file: File): string {
+    return URL.createObjectURL(file);
+  }
+
+  getImageName(file: File): string {
+    if (file.name.length > 15) {
+      return file.name.substring(0, 12) + '...';
+    }
+    return file.name;
+  }
+
+  removeSelectedImage(index: number): void {
+    if (index >= 0 && index < this.newImages.length) {
+      const updatedImages = [...this.newImages];
+      updatedImages.splice(index, 1);
+      this.newImages = updatedImages;
+    }
+  }
+
+
+  clearSelectedImages(): void {
+    this.newImages = [];
   }
 }

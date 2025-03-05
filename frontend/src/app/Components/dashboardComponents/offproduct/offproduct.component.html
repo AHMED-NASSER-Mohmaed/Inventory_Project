@@ -17,7 +17,7 @@
                         <li><i class='bx bx-chevron-right'></i></li>
                         <li><a>Inventory</a></li>
                         <li><i class='bx bx-chevron-right'></i></li>
-                        <li><a class="active">Offline Products</a></li>
+                        <li><a class="active">Stocks</a></li>
                     </ul>
                 </div>
             </div>
@@ -67,7 +67,7 @@
                 <div class="order">
                     <div class="head">
                         <div class="headhead">
-                        <h3>Offline Products</h3>
+                        <h3>Stocks</h3>
                         <button type="button" class="btn btn-sm btn-outline-dark" data-toggle="modal" data-target="#addProductModal" (click)="openAddModal()" style="margin-left: 5px; margin-bottom: 5px; color: var(--dark); background-color: var(--grey);">
                             <i class='bx bx-plus' style="padding: 3px;"></i>
                         </button>
@@ -361,7 +361,16 @@
                 <div class="info-item">
                   <strong class="label">Supplier:</strong>
                   <div class="input-wrapper">
-                    <input type="text" [value]="getSupplierName(selectedProduct.product.supplier)" name="supplier" disabled class="value">
+                    <ng-container *ngIf="editing; else supplierText">
+                      <mat-select [(ngModel)]="selectedProduct.product.supplier" name="supplier" class="value">
+                        <mat-option *ngFor="let supplier of suppliers" [value]="supplier._id">
+                          {{ supplier.companyName }}
+                        </mat-option>
+                      </mat-select>
+                    </ng-container>
+                    <ng-template #supplierText>
+                      <input type="text" [value]="getSupplierName(selectedProduct.product.supplier)" name="supplierDisplay" disabled class="value">
+                    </ng-template>
                   </div>
                 </div>
                 <div class="info-item">
@@ -385,8 +394,8 @@
                 </div>
               </div>
 
-              <div class="product-images-container" *ngIf="selectedProduct && selectedProduct.product && selectedProduct.product.images">
-                <h6>Product Images</h6>
+              <div class="product-images-container" *ngIf="selectedProduct && selectedProduct.product">
+                <h4 style="margin-bottom: 5px;">Product Images</h4>
                 
                 <div class="images-grid">
                   <div class="image-item" *ngFor="let image of selectedProduct.product.images">
@@ -404,23 +413,33 @@
                 
                 <div class="image-upload-controls" style="display: flex; align-items: center; gap: 10px;">
                     <input type="file" id="newImages" style="display: none;" (change)="onImageSelected($event)" multiple accept="image/*">
-                    <button type="button" class="btn" (click)="openFileSelector()" 
+                    <button type="button" class="btn" (click)="openFileSelector()" [disabled]="isUploadingImages"
                             style="background-color: var(--light); color: var(--dark); border: 1px solid var(--dark); 
                                      padding: 4px 6px; border-radius: 4px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
                         <i class="bx bx-image-add"></i> Add Images
                     </button>
-                    <button type="button" class="btn" (click)="updateImages()" [disabled]="newImages.length === 0"
+                    <button type="button" class="btn" (click)="updateImages()" 
+                            [disabled]="newImages.length === 0 || isUploadingImages"
                             style="background-color: var(--dark); color: var(--light); border: none;
                                      padding: 4px 6px; border-radius: 4px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
-                        <i class="bx bx-cloud-upload"></i> Upload Images
+                        <i class="bx" [ngClass]="{'bx-cloud-upload': !isUploadingImages, 'bx-loader-circle bx-spin': isUploadingImages}"></i> 
+                        {{ isUploadingImages ? 'Uploading...' : 'Upload Images' }}
+                    </button>
+                    <button *ngIf="newImages.length > 0" type="button" class="btn" (click)="clearSelectedImages()" 
+                            [disabled]="isUploadingImages"
+                            style="background-color: var(--red); color: var(--light); border: none;
+                                    padding: 4px 6px; border-radius: 4px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                        <i class="bx bx-reset"></i> Reset
                     </button>
                 </div>
-                
+
                 <!-- Show selected file count -->
                 <div class="file-selected-indicator" *ngIf="newImages.length > 0">
                   <i class='bx bx-check-circle'></i>
                   {{ newImages.length }} file(s) selected
                 </div>
+
+             
               </div>
             </form>
           </div>

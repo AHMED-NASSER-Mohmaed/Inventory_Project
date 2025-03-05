@@ -14,6 +14,9 @@
             <h1>Personal Info</h1>
             <div class="image-container">
                 <img [src]="userP" width="100" height="100" style="border-radius: 180px;" class="firstImage" />
+                <input type="file" class="btn change-btn" style="display: none;" id="imageUpload"
+                (change)="onImageChange($event)" />
+            <button class="btn change-btn" (click)="triggerImageUpload()"><i class="fa fa-pencil"></i> Change</button>
             </div>
     
             <form #personalInfoForm="ngForm">
