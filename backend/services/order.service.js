@@ -44,21 +44,24 @@ class OrderService {
             throw new AppError("Sorry, you are not allowed to update this order since it belongs to another seller");
           }
         }  
-        console.log(order);
+        // console.log(order);
     
         let newTotalPrice = 0;
         let newTotalQty = 0;
-        console.log(order);
+        // console.log(order);
         if(order.status == "shipped" && !fulfilledQuantities) throw new AppError("You have to fulfill the order first before updating the status to shipped");
         // update fulfilled and canceled quantities
-        if (fulfilledQuantities && order.status == "shipped") {
+        if (fulfilledQuantities && newStatus == 'shipped') {
             await Promise.all(order.products.map(async prod => {
-              console.log(" hahahh " + prod.onlineProduct._id);
+              // console.log(" hahahh " + prod.onlineProduct._id);
                 if (fulfilledQuantities[prod.product._id]) { // product here refers to the id of each product within products array
-              console.log(" hahahh " + prod.onlineProduct._id);
+                  // if (fulfilledQuantities[prod.onlineProduct._id]) { 
+                  // console.log(" hahahh " + prod.onlineProduct._id);
                     
                   // const OnlineProduct = await onlineProductRepo.getOnlineProductById(prod.onlineProduct); // only to check on the stock before updating and to reduce the stock after
                     let fulfilledQty = fulfilledQuantities[prod.product._id];
+                    // let fulfilledQty = fulfilledQuantities[prod.onlineProduct._id];
+
                     if(fulfilledQty < 0 ) throw new AppError("Invalid quantity");
                     if(prod.fulfilledQuantity > 0){
                       await onlineProductRepo.updateOnlineProduct(prod.onlineProduct._id, { // you to return the fulfilled quantity back to the stock before updating the new filfulled quantity to avoid decreasing the stock infinitely if you try to fulfill the the product more than once
@@ -185,8 +188,8 @@ class OrderService {
 
         orders.sort((a, b) => statusPriority.indexOf(a.status) - statusPriority.indexOf(b.status));
 
-        const highestStatus = orders[orders.length - 1]?.status || "pending"; // Default to "pending"
-        const secondHighestStatus = orders.length > 1 ? orders[orders.length - 2]?.status : highestStatus;
+        let highestStatus = orders[orders.length - 1]?.status || "pending"; // Default to "pending"
+        let secondHighestStatus = orders.length > 1 ? orders[orders.length - 2]?.status : highestStatus;
 
 
         if(highestStatus == "cancelled") { // cannot make the whole order container cannceled if only one order is canceled

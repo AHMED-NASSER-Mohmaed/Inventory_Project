@@ -264,6 +264,9 @@ export class ProcessingTableComponent {
           fulfilledQuantities: { ...fulfilledQuantities }, 
         };
 
+
+        console.log(workingBackup);
+
         if(newStatus == this.status) {
           this.toaster.info('You have to update the status first!!', 'Info');
           return;

@@ -254,7 +254,7 @@ export class ProcessingComponent {
           const newStatus = this.selectedSuborder.orderStatus ?? 'PENDING';
       
           const fulfilledQuantities: { [key: string]: number } = {};
-      
+          
           this.selectedSuborder.products.forEach((product:any) => {
             if (product.productId && product.productFulfilledQuantity !== undefined) {
               fulfilledQuantities[product.productId] = product.productFulfilledQuantity;
@@ -265,7 +265,7 @@ export class ProcessingComponent {
             status: newStatus, 
             fulfilledQuantities: { ...fulfilledQuantities }, 
           };
-  
+          console.log(workingBackup);
           if(newStatus == this.status) {
             this.toaster.info('You have to update the status first!!', 'Info');
             return;
