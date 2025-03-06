@@ -57,7 +57,7 @@
               @for (product of products; track product.onlineProductId){
                 <div class="position-relative card-container">
                     
-                    <div class="row border p-4 card" [class.inactive]="product.productIsDeleted || !product.productIsActive || product.onProductIsActive">
+                    <div class="row border p-4 card" [class.inactive]="product.productIsDeleted || !product.productIsActive || !product.onProductIsActive">
                         <div class="row main align-items-center">
                             <div class="col-lg-3">
                                 <img class="img-fluid" [src]="product.urlImage" alt="{{ product.productName }}">
@@ -74,12 +74,12 @@
             
                             <div class="col-lg-3 row p-4 px-md-4">
                                 <div class="col-12 col-lg-12 quantity mt-lg-3">
-                                    <a class="decrease" (click)="decrease(product)" *ngIf="!product.productIsDeleted || product.productIsActive || product.onProductIsActive">-</a>
+                                    <a class="decrease" (click)="decrease(product)" *ngIf="!product.productIsDeleted && product.productIsActive && product.onProductIsActive">-</a>
                                     <span>{{product.requiredQty}}</span>
-                                    <a class="increase" (click)="increase(product)" *ngIf="!product.productIsDeleted || product.productIsActive || product.onProductIsActive">+</a>
+                                    <a class="increase" (click)="increase(product)" *ngIf="!product.productIsDeleted && product.productIsActive && product.onProductIsActive">+</a>
                                 </div>
             
-                                @if (product.shallowStock > 0 && (!product.productIsDeleted || product.productIsActive || product.onProductIsActive)) {
+                                @if (product.shallowStock > 0 && (!product.productIsDeleted && product.productIsActive && product.onProductIsActive)) {
                                     <div class="available-stock mt-lg-5">Only <span>{{product.shallowStock}}</span> left in stock</div>
                                 } @else if (product.productIsDeleted || !product.productIsActive) {
                                     <div class="text-danger fw-bold mt-lg-5">This product is no longer available.</div>
@@ -90,7 +90,7 @@
                         </div>
                     </div>
             
-                    @if (product.productIsDeleted || !product.productIsActive || product.onProductIsActive) {
+                    @if (product.productIsDeleted || !product.productIsActive || !product.onProductIsActive) {
                         <div class="unavailable-message">
                             This product is no longer available.
                         </div>
