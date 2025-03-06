@@ -130,7 +130,7 @@ export class ShoppingcartComponent implements OnInit {
 
   getSubtotal(): number {
     return this.products
-        .filter(product => !product.productIsDeleted || product.productIsActive)
+        .filter(product => !product.productIsDeleted || product.productIsActive  || product.onProductIsActive)
         .reduce((acc, product) => acc + (product.productPrice * product.requiredQty), 0);
   }
 

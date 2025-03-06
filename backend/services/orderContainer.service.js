@@ -19,7 +19,7 @@ class OrderContainerService {
       const OnlineProduct = await onlineProductRepo.getOnlineProductById(
         item.onlineProduct._id
       );
-      if(OnlineProduct.isDeleted) continue;
+      if(OnlineProduct.isDeleted ||!OnlineProduct.isActive) continue;
       tempArrayToBeAddedInTheProductUser.push(item.onlineProduct._id);
       // console.log(OnlineProduct);
 

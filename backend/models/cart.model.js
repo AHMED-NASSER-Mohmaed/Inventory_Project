@@ -70,7 +70,7 @@ CartSchema.pre(/^find/, function (next) {
       { path: "seller", select: "firstName lastName companyName" },
       { 
         path: "product", 
-        select: "name price images category brand description", 
+        select: "name price isActive images category brand description", 
         populate: [{ path: "category", select: "Cname" } , { path: "brand", select: "Bname" }]
       },
     ],

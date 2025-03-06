@@ -245,7 +245,8 @@ class CartService {
             productCategory: product.category?.Cname,
             productBrand: product.brand?.Bname,
             productStatus: op.status,
-            productIsActive: op.isActive,
+            onProductIsActive: op.isActive,
+            productIsActive: product.isActive,
             productIsDeleted: op.isDeleted,
             // Flatten seller details:
             sellerId: seller._id,

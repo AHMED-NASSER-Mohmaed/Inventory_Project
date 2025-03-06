@@ -19,7 +19,7 @@ export class authGuardForCartGuard implements CanActivate {
         
         // Check if there is exactly 1 product and it's either not approved or inactive
         const onlyProductIsInvalid = products.length === 1 &&
-                                     (products[0].productIsDeleted || !products[0].productIsActive);
+                                     (products[0].productIsDeleted || !products[0].productIsActive || products[0].onProductIsActive);
 
         if (!hasProducts || onlyProductIsInvalid) {
           Swal.fire({
