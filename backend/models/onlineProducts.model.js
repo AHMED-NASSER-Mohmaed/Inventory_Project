@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { APP_CONFIG } = require("../config/app.config");
+const notification=require("./notification.model");
 const AppError = require("../utils/appError");
 
 // Online Products Schema
@@ -46,24 +47,48 @@ OnlineProductsSchema.pre('save', function(next) {
 });
 
 
-OnlineProductsSchema.pre(['updateOne', 'updateMany', 'findOneAndUpdate'], function (next) {
-  const update = this.getUpdate();
+OnlineProductsSchema.pre(['updateOne', 'updateMany', 'findOneAndUpdate','findByIdAndUpdate'], async function (next) {
 
-  // Extracting values safely
+  const update = this.getUpdate();
+  const filter = this.getQuery(); 
+
+  
+
+  // Extract values safely
   const price = update?.$set?.price ?? update?.price;
   const stock = update?.$set?.stock ?? update?.stock;
 
   // Validate stock and price
   if (price !== undefined && price < 1) {
-    return next(new AppError("Invalid field! Price must be at least 1.", APP_CONFIG.HTTP_BAD_REQUEST));
+      return next(new AppError("Invalid field! Price must be at least 1.", APP_CONFIG.HTTP_BAD_REQUEST));
   }
   if (stock !== undefined && stock < 0) {
-    return next(new AppError("Invalid field! Stock must be greater than 0.", APP_CONFIG.HTTP_BAD_REQUEST));
+      return next(new AppError("Invalid field! Stock must be greater than 0.", APP_CONFIG.HTTP_BAD_REQUEST));
   }
+ 
+ 
 
   next();
 });
 
+
+OnlineProductsSchema.post(['updateOne', 'updateMany', 'findOneAndUpdate', 'findByIdAndUpdate'], async function (doc) {
+  if (!doc) return; // Ensure document exists
+
+  console.log(doc, "Updated Document After Update");
+
+  // Check if stock is 0
+  if (doc.stock === 0) {
+      if (doc.seller?.toString() === APP_CONFIG.COMPANY_ID?.toString()) {
+          console.log(doc.branch.toString());
+
+          await notification.create({ 
+              product: new mongoose.Types.ObjectId(doc.product.toString()), 
+              branch: doc.branch 
+          });
+      }
+  }
+});
 
 
 OnlineProductsSchema.index({ seller: 1, product: 1 }, { unique: true });

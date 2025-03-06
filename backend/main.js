@@ -15,7 +15,7 @@ const Supplier = require("./models/supplier.model");
 const User = require("./models/user.model");
 const Product = require("./models/product.model");
 const branch = require("./models/branch.model");
-
+const offline =require("./models/offlineSchema.model");
 
 // const { compareSync } = require("bcryptjs");
 const { Brand } = require("./models/brand.model");
@@ -188,10 +188,10 @@ process.on("uncaughtException", (err) => {
 
 
 
+      // await offline.findByIdAndUpdate("67c8460e87cdd476e4fd8c0f", { $set:{stock:0}}  );
 
 
-
-
+      
 
 
 

@@ -125,17 +125,17 @@ module.exports.OfflineProductsService = {
 
 
                 //the new qty is the qty that will be decreased from the source branch
-                let newSourceQty = offProduct.stock - +qty;
-                console.log("new source qty",newSourceQty);
-
+                let newSourceQty = offProduct.stock - qty;
+                
                 if (newSourceQty < 0)
                     throw new AppError("this source branch dose not have enough quantity", APP_CONFIG.HTTP_BAD_REQUEST);
-
+                
                 let newDestQty = qty ;
-
-
+                
+                
                 let product=await productService.isProductExist(offProduct.product);
-
+                
+                console.log("new source qty *********************",newSourceQty, " dest qty *********************: ",newDestQty);
                 //detination offline branch product
                 //findOne and update if it dose not exist add an offline product to it 
 

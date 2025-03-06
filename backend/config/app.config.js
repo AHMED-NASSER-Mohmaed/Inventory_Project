@@ -104,5 +104,12 @@ module.exports.APP_CONFIG = {
   PENDING_STATUS: "pending",
   AWAITING_APPROVAL_STATUS: "awaiting_approval",
 
+  /************************************************************************************************/
+
+  //notifications status
+  SEEN_STATUS:"seen",
+  NOT_SEEN_STATUS: "notseen",
+  DELETED_STATUS: "deleted",
+
   COMPANYNAME: "Watchly",
 };
