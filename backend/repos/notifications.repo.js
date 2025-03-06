@@ -11,7 +11,7 @@ module.exports.notificationRepo={
             .populate({
                 path: "branch",
                 select: "governate location -_id"
-            }).select("-__v");
+            }).select("-__v -updatedAt");
         
         }catch(error){
             throw error;

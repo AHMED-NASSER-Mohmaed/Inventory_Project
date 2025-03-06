@@ -11,9 +11,7 @@ const notificationSchema= mongoose.Schema({
    status : {type:String , enum:[ APP_CONFIG.SEEN_STATUS , APP_CONFIG.NOT_SEEN_STATUS , APP_CONFIG.DELETED_STATUS ],
     default : APP_CONFIG.NOT_SEEN_STATUS
    }
-},{
-    timestamp:true
-});
+},{ timestamps: true });
 
 
 
