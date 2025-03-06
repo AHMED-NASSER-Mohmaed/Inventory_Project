@@ -165,7 +165,7 @@
                         </div>
                         <div class="notification-actions">
                             <button class="view-btn" (click)="markAsSeen(notification, $event)">
-                                <i class='bx bx-show'></i>
+                                <i style="color: var(--dark);" class='bx bx-show'></i>
                             </button>
                             <button class="delete-btn" (click)="deleteNotification(notification, $event)">
                                 <i class='bx bx-x'></i>
@@ -197,9 +197,6 @@
     <div class="notification-modal" (click)="$event.stopPropagation()">
         <div class="notification-modal-header">
             <h3>Out of Stock Notification Details</h3>
-            <button class="close-modal" (click)="closeDetailsModal()">
-                <i class='bx bx-x'></i>
-            </button>
         </div>
         <div class="notification-modal-body">
             <div class="detail-row">
@@ -216,7 +213,7 @@
             </div>
             <div class="detail-row">
                 <span class="detail-label">Governorate:</span>
-                <span class="detail-value">{{ selectedNotification.branch.governate }}</span>
+                <span class="detail-value">{{ getGovernorateName(selectedNotification.branch.governate) }}</span>
             </div>
             <div class="detail-row">
                 <span class="detail-label">Status:</span>
@@ -228,7 +225,7 @@
             </div>
         </div>
         <div class="notification-modal-footer">
-            <button class="btn-primary" (click)="closeDetailsModal()">Close</button>
+            <button style="background-color: var(--dark) !important;" class="btn-primary" (click)="closeDetailsModal()">Close</button>
         </div>
     </div>
 </div>

@@ -41,12 +41,48 @@ export class DashboardComponent implements OnInit, OnDestroy {
   isNotificationsClosing: boolean = false;
   isModalClosing: boolean = false;
 
+  // Governorate mapping
+  governorates = [
+    { id: 1, name: 'Cairo' },
+    { id: 2, name: 'Giza' },
+    { id: 3, name: 'Alexandria' },
+    { id: 4, name: 'Qalyubia' },
+    { id: 5, name: 'Beheira' },
+    { id: 6, name: 'Dakahlia' },
+    { id: 7, name: 'Sharqia' },
+    { id: 8, name: 'Gharbia' },
+    { id: 9, name: 'Monufia' },
+    { id: 10, name: 'Kafr El-Sheikh' },
+    { id: 11, name: 'Fayoum' },
+    { id: 12, name: 'Beni Suef' },
+    { id: 13, name: 'Minya' },
+    { id: 14, name: 'Assiut' },
+    { id: 15, name: 'Sohag' },
+    { id: 16, name: 'Qena' },
+    { id: 17, name: 'Luxor' },
+    { id: 18, name: 'Aswan' },
+    { id: 19, name: 'Red Sea' },
+    { id: 20, name: 'New Valley' },
+    { id: 22, name: 'Matrouh' },
+    { id: 23, name: 'North Sinai' },
+    { id: 24, name: 'South Sinai' },
+    { id: 25, name: 'Port Said' },
+    { id: 26, name: 'Suez' },
+    { id: 27, name: 'Ismailia' },
+    { id: 28, name: 'Damietta' }
+  ];
+
   constructor(
     public accountService: AccountService, 
     public dialog: MatDialog, 
     public router: Router, 
     private superAdminDashboardService: SuperAdminFashboardService
   ) {}
+
+  getGovernorateName(id: number): string {
+    const governorate = this.governorates.find(gov => gov.id === id);
+    return governorate ? governorate.name : 'Unknown';
+  }
 
   toggleDropdown(menu: string): void {
     this.dropdownStates[menu] = !this.dropdownStates[menu];
