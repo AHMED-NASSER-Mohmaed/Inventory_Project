@@ -33,6 +33,15 @@ style.
   display: inline-block;
   margin: 0 auto;
   }
+  .btn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        display: inline-block;
+        margin-top: 20px;
+      }
 .card
   div(style='\
   border-radius: 200px;\
@@ -42,9 +51,11 @@ style.
   margin: 0 auto;\
   ')
     i.checkmark &check;
+  
    
   h1 Success
   p
     | We received your purchase request;
     br
     |                 Payment is confirmed. Thank you!
+  a.btn(href="http://localhost:3001/LandingPage") Go to Home
