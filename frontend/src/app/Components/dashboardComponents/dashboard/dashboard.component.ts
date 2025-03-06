@@ -7,20 +7,45 @@ import { Subscription } from 'rxjs';
 import { decodeToken } from '../../../_helpers/jwt-helper';
 import { RouterModule } from '@angular/router';
 import { SuperAdminFashboardService } from '../../../_services/super-admin-fashboard.service';
+import { CommonModule } from '@angular/common';
+
+interface Notification {
+  _id: string;
+  product: {
+    name: string;
+    code: string;
+  };
+  branch: {
+    governate: number;
+    location: string;
+  };
+  status: string;
+}
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
-  imports: [RouterOutlet, RouterLink , RouterModule],
+  imports: [RouterOutlet, RouterLink, RouterModule, CommonModule],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   dropdownStates: { [key: string]: boolean } = {};
   sub = {} as Subscription;
   tokenData: any = null;
+  notifications: Notification[] = [];
+  isNotificationsOpen: boolean = false;
+  notificationsCount: number = 0;
+  selectedNotification: Notification | null = null;
+  isNotificationsClosing: boolean = false;
+  isModalClosing: boolean = false;
 
-  constructor(public accountService: AccountService, public dialog: MatDialog, public router: Router , superAdminDashboardService: SuperAdminFashboardService) {}
+  constructor(
+    public accountService: AccountService, 
+    public dialog: MatDialog, 
+    public router: Router, 
+    private superAdminDashboardService: SuperAdminFashboardService
+  ) {}
 
   toggleDropdown(menu: string): void {
     this.dropdownStates[menu] = !this.dropdownStates[menu];
@@ -41,6 +66,93 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  toggleNotifications() {
+    if (this.isNotificationsOpen) {
+      this.closeNotifications();
+    } else {
+      this.isNotificationsOpen = true;
+      this.loadNotifications();
+    }
+  }
+
+  closeNotifications() {
+    this.isNotificationsClosing = true;
+    setTimeout(() => {
+      this.isNotificationsOpen = false;
+      this.isNotificationsClosing = false;
+    }, 280); // Slightly less than animation duration to avoid flicker
+  }
+
+  // Close notifications when clicking outside
+  onDocumentClick(event: MouseEvent) {
+    const notificationContainer = document.querySelector('.notification-container');
+    const modalOverlay = document.querySelector('.notification-modal-overlay');
+    
+    if (notificationContainer && !notificationContainer.contains(event.target as Node) && 
+        this.isNotificationsOpen && !modalOverlay) {
+      this.closeNotifications();
+    }
+  }
+
+  loadNotifications() {
+    this.superAdminDashboardService.getNotifications().subscribe({
+      next: (response) => {
+        if (response.message === 'success' && response.data) {
+          this.notifications = response.data;
+          this.updateNotificationsCount();
+        }
+      },
+      error: (error) => {
+        console.error('Failed to load notifications', error);
+      }
+    });
+  }
+
+  updateNotificationsCount() {
+    this.notificationsCount = this.notifications.filter(n => n.status === 'notseen').length;
+  }
+
+  markAsSeen(notification: Notification, event: Event) {
+    event.stopPropagation();
+    
+    // Store for modal display
+    this.selectedNotification = notification;
+    
+    if (notification.status === 'notseen') {
+      this.superAdminDashboardService.markNotificationAsSeen(notification._id).subscribe({
+        next: () => {
+          notification.status = 'seen';
+          this.updateNotificationsCount();
+        },
+        error: (error) => {
+          console.error('Failed to mark notification as seen', error);
+        }
+      });
+    }
+  }
+
+  deleteNotification(notification: Notification, event: Event) {
+    event.stopPropagation();
+    
+    this.superAdminDashboardService.deleteNotification(notification._id).subscribe({
+      next: () => {
+        this.notifications = this.notifications.filter(n => n._id !== notification._id);
+        this.updateNotificationsCount();
+      },
+      error: (error) => {
+        console.error('Failed to delete notification', error);
+      }
+    });
+  }
+
+  closeDetailsModal() {
+    this.isModalClosing = true;
+    setTimeout(() => {
+      this.selectedNotification = null;
+      this.isModalClosing = false;
+    }, 280);
+  }
   
   ngOnInit(): void {
     const token = localStorage.getItem('token');
@@ -48,6 +160,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.tokenData = decodeToken(token);
       console.log('Decoded token:', this.tokenData);
     }
+
+    this.loadNotifications();
 
     const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
 
@@ -123,11 +237,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
     }
     
+    // Add click event listener to document to close dropdown when clicking outside
+    document.addEventListener('click', this.onDocumentClick.bind(this));
   }
 
   ngOnDestroy(): void {
     if(this.sub){
       this.sub.unsubscribe();
     }
+    
+    // Remove document click listener
+    document.removeEventListener('click', this.onDocumentClick.bind(this));
   }
 }
