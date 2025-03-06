@@ -139,7 +139,7 @@ module.exports.OfflineProductsService = {
                 //detination offline branch product
                 //findOne and update if it dose not exist add an offline product to it 
 
-                console.log(product,"exported product");
+                // console.log(product,"exported product");
 
                 await OfflineProductsRepo.updateQuantity(offProductId, newSourceQty);
 
@@ -149,7 +149,7 @@ module.exports.OfflineProductsService = {
                 
                 if (destinationBranch['type'] === 'online') {
                     //may be the first time to export this product to online sysytem
-                    console.log("hhhhhhhhhhhhhhhhhh",qty);
+                    // console.log("hhhhhhhhhhhhhhhhhh",qty);
                     // -->we have to register our own seller id at product 
                     
                     let onlineListProduct=await  OnlineProductsRepository.upsertSellerRecord(offProduct.product,APP_CONFIG.COMPANY_ID,qty,product.price);
