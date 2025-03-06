@@ -401,6 +401,12 @@
 :host .notification-message {
   font-size: 14px;
   color: var(--dark);
+  margin-bottom: 5px;
+}
+
+:host .notification-time {
+  font-size: 12px;
+  color: var(--dark-grey);
 }
 
 :host .notification-actions {

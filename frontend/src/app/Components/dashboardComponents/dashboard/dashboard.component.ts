@@ -20,6 +20,7 @@ interface Notification {
     location: string;
   };
   status: string;
+  createdAt: string;
 }
 
 @Component({
@@ -81,10 +82,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.isNotificationsOpen = false;
       this.isNotificationsClosing = false;
-    }, 280); // Slightly less than animation duration to avoid flicker
+    }, 280); 
   }
 
-  // Close notifications when clicking outside
   onDocumentClick(event: MouseEvent) {
     const notificationContainer = document.querySelector('.notification-container');
     const modalOverlay = document.querySelector('.notification-modal-overlay');
@@ -116,7 +116,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   markAsSeen(notification: Notification, event: Event) {
     event.stopPropagation();
     
-    // Store for modal display
     this.selectedNotification = notification;
     
     if (notification.status === 'notseen') {
@@ -176,7 +175,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       })
     });
 
-    // TOGGLE SIDEBAR
     const menuBar = document.querySelector('#content nav .bx.bx-menu');
     const sidebar = document.getElementById('sidebar');
 
@@ -237,7 +235,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
     }
     
-    // Add click event listener to document to close dropdown when clicking outside
     document.addEventListener('click', this.onDocumentClick.bind(this));
   }
 
@@ -246,7 +243,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.sub.unsubscribe();
     }
     
-    // Remove document click listener
     document.removeEventListener('click', this.onDocumentClick.bind(this));
   }
 }

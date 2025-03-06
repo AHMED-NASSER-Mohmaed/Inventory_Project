@@ -159,6 +159,9 @@
                                 <strong>{{ notification.product.name }}</strong> ({{ notification.product.code }}) 
                                 <strong style="color: var(--red);">is out of stock</strong> at <strong>{{ notification.branch.location }}</strong> branch.
                             </div>
+                            <div class="notification-time">
+                                {{ notification.createdAt | date:'MMM d, y, h:mm a' }}
+                            </div>
                         </div>
                         <div class="notification-actions">
                             <button class="view-btn" (click)="markAsSeen(notification, $event)">
@@ -218,6 +221,10 @@
             <div class="detail-row">
                 <span class="detail-label">Status:</span>
                 <span class="detail-value">{{ selectedNotification.status }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Created At:</span>
+                <span class="detail-value">{{ selectedNotification.createdAt | date:'MMM d, y, h:mm a' }}</span>
             </div>
         </div>
         <div class="notification-modal-footer">
