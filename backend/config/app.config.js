@@ -73,10 +73,10 @@ module.exports.APP_CONFIG = {
   UDIMAGE_URL_KEY: "url",
 
   UDIAMGE_ID_VALUE: "67c987a1432c476416d6741d",
-  UDIMAGE_URL_VALUE: "https://ik.imagekit.io/ysypur5vc/default_n6o_4prV6.jpg",
+  UDIMAGE_URL_VALUE: " 'https://ik.imagekit.io/ysypur5vc/default_U8x4irZXl.jpg?updatedAt=1741260705711'",
 
   DU_IMAGE_DEFALUT_OBG: {
-    fileId: "67a63846432c47641653594a",
+    fileId: "67c987a1432c476416d6741d",
     url: "https://ik.imagekit.io/ysypur5vc/default_n6o_4prV6.jpg",
   },
   PROFILE_IMAGE_FOLDER: "users",

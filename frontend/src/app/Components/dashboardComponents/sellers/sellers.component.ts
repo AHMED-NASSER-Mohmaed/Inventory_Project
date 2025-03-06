@@ -215,10 +215,13 @@ export class SellersComponent implements OnInit, OnDestroy {
       firstName: user.firstName || '',
       lastName: user.lastName || '',
       companyName: user.companyName || '',
+      companyRegistrationNumber:user.companyRegistrationNumber,
       email: user.email || '',
       phoneNumber: user.phoneNumber || ''
     };
+    console.log(this.selectedUser,"selectedOne");
     this.backupUser = { ...this.selectedUser };
+    console.log(this.backupUser,"backend");
   }
 
   // Seller actions
