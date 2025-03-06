@@ -141,10 +141,46 @@
         </form>
         <input type="checkbox" id="switch-mode" hidden >
         <label for="switch-mode" class="switch-mode"></label>
-        <a href="#" class="notification">
-            <i class='bx bxs-bell' style="transform: scale(1.5);"></i>
-            <span class="num">10</span>
-        </a>
+        <div class="notification-container" (click)="$event.stopPropagation()">
+            <a href="javascript:void(0)" class="notification" (click)="toggleNotifications()">
+                <i class='bx bxs-bell' style="transform: scale(1.5);"></i>
+                <span class="num" *ngIf="notificationsCount > 0">{{ notificationsCount }}</span>
+            </a>
+            <div class="notification-dropdown" *ngIf="isNotificationsOpen" [class.closing]="isNotificationsClosing">
+                <div class="notification-header">
+                    <h3>Notifications</h3>
+                </div>
+                <div class="notification-body" *ngIf="notifications.length > 0; else noNotifications">
+                    <div *ngFor="let notification of notifications" 
+                         class="notification-item" 
+                         [ngClass]="{'unseen': notification.status === 'notseen'}">
+                        <div class="notification-content" (click)="markAsSeen(notification, $event)">
+                            <div class="notification-message">
+                                <strong>{{ notification.product.name }}</strong> ({{ notification.product.code }}) 
+                                <strong style="color: var(--red);">is out of stock</strong> at <strong>{{ notification.branch.location }}</strong> branch.
+                            </div>
+                            <div class="notification-time">
+                                {{ notification.createdAt | date:'MMM d, y, h:mm a' }}
+                            </div>
+                        </div>
+                        <div class="notification-actions">
+                            <button class="view-btn" (click)="markAsSeen(notification, $event)">
+                                <i class='bx bx-show'></i>
+                            </button>
+                            <button class="delete-btn" (click)="deleteNotification(notification, $event)">
+                                <i class='bx bx-x'></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <ng-template #noNotifications>
+                    <div class="no-notifications">
+                        No new notifications
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+
         <a href="#" class="profile">
             <img [src]="tokenData.id.photo.url">
         </a>
@@ -155,5 +191,46 @@
     <router-outlet></router-outlet>
     <!-- MAIN -->
 </section>
+
+<!-- Notification Details Modal -->
+<div class="notification-modal-overlay" *ngIf="selectedNotification" [class.closing]="isModalClosing" (click)="closeDetailsModal()">
+    <div class="notification-modal" (click)="$event.stopPropagation()">
+        <div class="notification-modal-header">
+            <h3>Out of Stock Notification Details</h3>
+            <button class="close-modal" (click)="closeDetailsModal()">
+                <i class='bx bx-x'></i>
+            </button>
+        </div>
+        <div class="notification-modal-body">
+            <div class="detail-row">
+                <span class="detail-label">Product Name:</span>
+                <span class="detail-value">{{ selectedNotification.product.name }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Product Code:</span>
+                <span class="detail-value">{{ selectedNotification.product.code }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Branch Location:</span>
+                <span class="detail-value">{{ selectedNotification.branch.location }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Governorate:</span>
+                <span class="detail-value">{{ selectedNotification.branch.governate }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value">{{ selectedNotification.status }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Created At:</span>
+                <span class="detail-value">{{ selectedNotification.createdAt | date:'MMM d, y, h:mm a' }}</span>
+            </div>
+        </div>
+        <div class="notification-modal-footer">
+            <button class="btn-primary" (click)="closeDetailsModal()">Close</button>
+        </div>
+    </div>
+</div>
 </div>
 

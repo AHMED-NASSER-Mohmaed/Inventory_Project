@@ -1,119 +1,138 @@
 <app-header></app-header>
+
 <div class="banner">
     <div class="banner-text">
-        <p>Contact us</p>
+        <p>About Our Brand</p>
     </div>
-    <nav class=" banner-nav  text-white">
+    <nav class="banner-nav">
         <a [routerLink]="['/LandingPage']">Home</a>
         <span>/</span>
-          About
+        About Us
     </nav>
 </div>
 
-
-
-<div class="container">
-
-    <div class="image">
-        <img src="assets/girl1-1.jpg" alt="Spring Winter 2022">
-    </div>
-    <div class="text">
-        <p class="spring">Spring Winter 2022</p>
-        <p class="text-secondary">Looking for love in all the wrong places? Start with something pure, something good for you, and something that makes you feel pampered like a princess. We’re talking about clean beauty gift sets, of course –
-             and we’ve got a bouquet of beauties for yourself or someone you love!</p>
-        <button>SHOP THE LOOK</button>
-    </div>
-   
-</div>
-
-
-
-<div class="sec2 ">
-
-    <div class="quote-section">
-        <blockquote>
-            “We are community led, with a continued commitment to be the most responsible version of ourselves – and we never rest on our laurels.”
-        </blockquote>
-    </div>
-
-    <!-- Logos Section -->
-    <section class="logos-section">
-        <div class="logo-item">
-            <img src="assets/logo3.png" alt="Logo 1">
-        </div>
-        <div class="logo-item">
-            <img src="assets/logo4.png" alt="Logo 4">
-        </div>
-        <div class="logo-item">
-            <img src="assets/logo3.png" alt="Logo 3">
-        </div>
-        <div class="logo-item">
-            <img src="assets/logo4.png" alt="Logo 4">
-        </div>
-        <div class="logo-item">
-            <img src="assets/logo3.png" alt="Logo 5">
-        </div>
-    </section>
-</div>
-
-
-
-<div class="container">
-    <div class="text">
-        <p class="spring">Our Mission</p>
-        <p class="text-secondary fs-5">Complexion-perfecting natural foundation enriched with antioxidant-packed superfruits, vitamins, and other skin-nourishing nutrients. Creamy liquid formula sets with a pristine matte finish for soft, velvety smooth skin. Made using clean, non-toxic ingredients, our products are designed for everyone…</p>
-    </div>
-    <div class="mission">
-        <img src="assets/IMG-1.jpg" alt="Our Mission">
-    </div>
-</div>
-
-
-<div class="team">
-    <p class="fs-1" style="text-align: center; font-family: 'Baskerville Serial', serif; margin: 55px 0; line-height: 50px;">
-        We Pride Ourselves On Having <br>
-        A Team Of Highly Skilled
-    </p>
-
-    <div class="container  justify-content-evenly">
-        <div class="row imgCards">
-            <!-- Card 1 -->
-            <div class="col-md-4 d-flex justify-content-center">
-                <div class="card">
-                    <img src="assets/team1.jpg" alt="John Doe">
-                    <div class="card-body">
-                        <h5 class="card-title">John Doe</h5>
-                        <p class="card-text">Founder, Chief Creative</p>
-                    </div>
+<section class="content-section light">
+    <div class="container">
+        <div class="content-row">
+            <div class="content-col">
+                <div class="featured-image">
+                    <img src="assets/girl1-1.jpg" alt="Spring Winter 2022 Collection" class="img-fluid">
                 </div>
             </div>
-
-            <!-- Card 2 -->
-            <div class="col-md-4 d-flex justify-content-center">
-                <div class="card">
-                    <img src="assets/team2.jpg" alt="Valeria Nadopta">
-                    <div class="card-body">
-                        <h5 class="card-title">Valeria Nadopta</h5>
-                        <p class="card-text">Founder, CEO</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="col-md-4 d-flex justify-content-center">
-                <div class="card">
-                    <img src="assets/team1.jpg" alt="Jennifer C">
-                    <div class="card-body">
-                        <h5 class="card-title">Jennifer C</h5>
-                        <p class="card-text">Founder, Chief Creative</p>
-                    </div>
+            <div class="content-col">
+                <h2 class="section-title">Spring Winter 2022</h2>
+                <p class="section-description">Looking for love in all the wrong places? Start with something pure, something good for you, and something that makes you feel pampered like a princess. We're talking about clean beauty gift sets, of course – and we've got a bouquet of beauties for yourself or someone you love!</p>
+                <div class="cta-button-wrapper">
+                    <button class="cta-button">SHOP THE LOOK</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
+<section class="content-section dark">
+    <div class="container">
+        <div class="quote-section">
+            <div class="quote-icon">
+                <i class="fas fa-quote-left"></i>
+            </div>
+            <blockquote>
+                "We are community led, with a continued commitment to be the most responsible version of ourselves – and we never rest on our laurels."
+            </blockquote>
+            <p class="quote-attribution">— Our Founder</p>
+        </div>
 
+        <div class="logos-section">
+            <div class="logo-item">
+                <img src="assets/logo3.png" alt="Logo 1">
+            </div>
+            <div class="logo-item">
+                <img src="assets/logo4.png" alt="Logo 2">
+            </div>
+            <div class="logo-item">
+                <img src="assets/logo3.png" alt="Logo 3">
+            </div>
+            <div class="logo-item">
+                <img src="assets/logo4.png" alt="Logo 4">
+            </div>
+            <div class="logo-item">
+                <img src="assets/logo3.png" alt="Logo 5">
+            </div>
+        </div>
+    </div>
+</section>
 
+<section class="content-section light">
+    <div class="container">
+        <div class="content-row">
+            <div class="content-col">
+                <h2 class="section-title">Our Mission</h2>
+                <p class="section-description">Complexion-perfecting natural foundation enriched with antioxidant-packed superfruits, vitamins, and other skin-nourishing nutrients. Creamy liquid formula sets with a pristine matte finish for soft, velvety smooth skin. Made using clean, non-toxic ingredients, our products are designed for everyone…</p>
+                <p class="section-description">We believe in creating products that not only make you look good but also feel good about using. Our commitment to sustainability guides everything we do, from sourcing ingredients to packaging and delivery.</p>
+            </div>
+            <div class="content-col">
+                <div class="mission-image">
+                    <img src="assets/watch3.jpg" alt="Our Mission" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content-section dark team-section" >
+    <div class="container">
+        <h2 class="team-heading">We Pride Ourselves On Having A Team Of Highly Skilled Professionals</h2>
+        
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="team-image">
+                    <img src="assets/p1.png" alt="John Doe">
+                    <div class="team-overlay">
+                        <h3 class="team-name">Ahmed Nasser</h3>
+                        <p class="team-role">Team Leader, Chief Officer</p>
+                        <div class="team-social">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="team-card">
+                <div class="team-image">
+                    <img src="assets/p2.png" alt="Valeria Nadopta">
+                    <div class="team-overlay">
+                        <h3 class="team-name">Youmna Hatem</h3>
+                        <p class="team-role">Founder, CEO</p>
+                        <div class="team-social">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="team-card">
+                <div class="team-image">
+                    <img src="assets/p3.png" alt="Jennifer C">
+                    <div class="team-overlay">
+                        <h3 class="team-name">Mohamed Dawood</h3>
+                        <p class="team-role">Organizer, Chief Creative</p>
+                        <div class="team-social">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <app-footer></app-footer>

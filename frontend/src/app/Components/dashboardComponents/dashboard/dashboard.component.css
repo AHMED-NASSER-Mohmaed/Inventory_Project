@@ -247,6 +247,7 @@
 :host #content nav .notification {
   font-size: 20px;
   position: relative;
+  cursor: pointer;
 }
 :host #content nav .notification .num {
   position: absolute;
@@ -312,11 +313,264 @@
         background-color: #060714;
     }
 }
-  
 
+/* Notification Dropdown */
+:host .notification-container {
+  position: relative;
+}
 
+:host .notification-dropdown {
+  position: absolute;
+  top: 45px;
+  right: -10px;
+  width: 350px;
+  max-height: 400px;
+  background: var(--light);
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  z-index: 1000;
+  transform-origin: top right;
+  animation: dropdown-in 0.3s ease forwards;
+}
 
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 
+@keyframes dropdown-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+:host .notification-dropdown.closing {
+  animation: dropdown-out 0.3s ease forwards;
+}
+
+:host .notification-header {
+  padding: 15px;
+  border-bottom: 1px solid var(--grey);
+  text-align: center;
+}
+
+:host .notification-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--dark);
+}
+
+:host .notification-body {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+:host .notification-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--grey);
+  background-color: white;
+  transition: all 0.3s ease;
+}
+
+:host .notification-item.unseen {
+  background-color: #f0f0f0;
+  font-weight: 500;
+}
+
+:host .notification-content {
+  flex: 1;
+  padding-right: 10px;
+  cursor: pointer;
+}
+
+:host .notification-message {
+  font-size: 14px;
+  color: var(--dark);
+  margin-bottom: 5px;
+}
+
+:host .notification-time {
+  font-size: 12px;
+  color: var(--dark-grey);
+}
+
+:host .notification-actions {
+  display: flex;
+  gap: 8px;
+}
+
+:host .notification-actions button {
+  background: none;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+:host .notification-actions .view-btn {
+  color: var(--blue);
+}
+
+:host .notification-actions .delete-btn {
+  color: var(--red);
+}
+
+:host .notification-actions button:hover {
+  background-color: var(--grey);
+}
+
+:host .no-notifications {
+  padding: 20px;
+  text-align: center;
+  color: var(--dark-grey);
+}
+
+/* Notification Modal */
+:host .notification-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fade-in 0.3s ease;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+:host .notification-modal-overlay.closing {
+  animation: fade-out 0.3s ease forwards;
+}
+
+:host .notification-modal {
+  width: 400px;
+  max-width: 90%;
+  background: var(--light);
+  border-radius: 10px;
+  overflow: hidden;
+  animation: modal-in 0.3s ease;
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modal-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+:host .notification-modal-overlay.closing .notification-modal {
+  animation: modal-out 0.3s ease forwards;
+}
+
+:host .notification-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid var(--grey);
+}
+
+:host .notification-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--dark);
+}
+
+:host .close-modal {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--dark-grey);
+}
+
+:host .notification-modal-body {
+  padding: 20px;
+}
+
+:host .detail-row {
+  margin-bottom: 12px;
+  display: flex;
+}
+
+:host .detail-label {
+  font-weight: bold;
+  width: 120px;
+  color: var(--dark);
+}
+
+:host .detail-value {
+  color: var(--dark);
+}
+
+:host .notification-modal-footer {
+  padding: 15px;
+  border-top: 1px solid var(--grey);
+  text-align: right;
+}
+
+:host .btn-primary {
+  background-color: var(--blue);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
 /* MAIN */
 :host #content main {
@@ -536,7 +790,7 @@
     height: auto;
     background: transparent;
     border-radius: none;
-    color: var(--dark);
+    color: var (--dark);
   }
 
   :host #content nav form.show .form-input input {

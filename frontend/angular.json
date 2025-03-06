@@ -21,14 +21,11 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
-         
-  "src/assets",
-
-             
+              "src/assets",
               {
                 "glob": "**/*",
                 "input": "public",
-                 "output": "/public/"        
+                "output": "/public/"
               }
             ],
             "styles": [
@@ -38,7 +35,8 @@
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
               "node_modules/ngx-toastr/toastr.css",
-              "node_modules/leaflet/dist/leaflet.css"
+              "node_modules/leaflet/dist/leaflet.css",
+              "node_modules/boxicons/css/boxicons.min.css"
             ],
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
@@ -110,7 +108,6 @@
       }
     }
   },
-  
   "cli": {
     "analytics": false
   }

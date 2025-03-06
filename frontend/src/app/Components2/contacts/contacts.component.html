@@ -1,62 +1,115 @@
 <app-header></app-header>
 
+<!-- Enhanced Hero Banner -->
 <div class="banner">
+    <div class="banner-overlay"></div>
     <div class="banner-text">
-        <p>Contact us</p>
+        <p>Contact Us</p>
     </div>
-    <nav class=" banner-nav  text-white">
+    <nav class="banner-nav">
         <a [routerLink]="['/LandingPage']">Home</a>
         <span>/</span>
-          Contacts
+        Contact
     </nav>
 </div>
 
-
-
-<!-- Map Container -->
-<div id="map" style="height: 300px; width: 100%; margin-top: 20px;">
-    
-</div>
-
-
-
-<div class="container">
-    <div class="grid-container">
-        <section class="contact-info">
-            <h1 style="font-family: 'Baskerville Serial'; color: #000000;">How To Find Us</h1>
-            <p style="color: #a4a4a4;">Get in touch to discuss your employee wellbeing needs today.
-                 Please give us a call, drop us an email or fill out the contact form and 
-                 we'll get back to you.</p>
-            <div class="info-details">
-                <p  style="color: #85411c;">+80 123 567 89</p>
-                <p>283 N. Glenwood Street, Levittown, NY</p>
-                <p >+<a href="mailto:help.lenoss@gmail.com"  style="color: #85411c;">help.lenossgmail.com</a></p>
+<!-- Contact Section -->
+<section class="contact-section">
+    <div class="container">
+        <div class="row">
+            <!-- Map Container -->
+            <div class="col-lg-12 mb-5">
+                <div class="map-container">
+                    <div id="map" style="height: 400px; width: 100%;"></div>
+                </div>
             </div>
-        </section>
-
-        <section class="contact-form">
-            <h2  style="font-family: 'Baskerville Serial'; ">Contact Us</h2>
-            <p style="color: #a4a4a4;">Your email address won't be published. Required fields are marked *</p>
-            <form (ngSubmit)="submitContactForm()">
-                <div class="form-group">
-                    <input type="text" id="name" name="name" [(ngModel)]="contact.name" placeholder="Your name" required>
-                </div>
-                <div class="form-group">
-                    <input type="email" id="email" name="email" [(ngModel)]="contact.email" placeholder="Your Email" required>
-                </div>
-                <div class="form-group">
-                    <textarea id="message" name="message" [(ngModel)]="contact.message" rows="5" placeholder="Message..." required></textarea>
-                </div>
-                <button type="submit">GET IN TOUCH</button>
-            </form>
             
-        </section>
+            <!-- Contact Info -->
+            <div class="col-lg-5">
+                <div class="contact-info-card">
+                    <div class="section-heading">
+                        <h2>How To Find Us</h2>
+                        <div class="heading-line"></div>
+                    </div>
+                    
+                    <p class="intro-text">Get in touch to discuss your employee wellbeing needs today. 
+                    Please give us a call, drop us an email or fill out the contact form and 
+                    we'll get back to you.</p>
+                    
+                    <ul class="contact-details">
+                        <li>
+                            <div class="contact-icon">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h4>Phone</h4>
+                                <p>+80 123 567 89</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h4>Address</h4>
+                                <p>283 N. Glenwood Street, Levittown, NY</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h4>Email</h4>
+                                <p><a href="mailto:help.lenoss&#64;gmail.com">help.lenoss&#64;gmail.com</a></p>
+                            </div>
+                        </li>
+                    </ul>
+                    
+                    <div class="social-links">
+                        <h4>Follow Us</h4>
+                        <div class="social-icons">
+                            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Form -->
+            <div class="col-lg-7">
+                <div class="contact-form-card">
+                    <div class="section-heading">
+                        <h2>Send Us A Message</h2>
+                        <div class="heading-line"></div>
+                    </div>
+                    
+                    <p class="form-intro">Your email address won't be published. Required fields are marked *</p>
+                    
+                    <form (ngSubmit)="submitContactForm()" class="contact-form">
+                        <div class="form-group">
+                            <input type="text" id="name" name="name" [(ngModel)]="contact.name" placeholder="Your Name *" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="email" id="email" name="email" [(ngModel)]="contact.email" placeholder="Your Email *" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <textarea id="message" name="message" [(ngModel)]="contact.message" rows="6" placeholder="Your Message *" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">
+                            <span>Send Message</span>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-
-
-
-
-
+</section>
 
 <app-footer></app-footer>

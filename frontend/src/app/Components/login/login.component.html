@@ -1,7 +1,12 @@
 <div class="parent">
 	<section>
 	  <div id="loginForm">
-		<h1>Login</h1>
+		<div class="logo-heading">
+          <div class="logo-icon" routerLink="/LandingPage">
+            <i class='bx bxs-watch'></i>
+          </div>
+          <h1>Login</h1>
+        </div>
 		<small>Get back to your fancy watch.</small>
 		<form id="createAccountForm" #loginForm="ngForm">
 		  <input type="email" [(ngModel)]="account.email" name="email" id="email" placeholder="Email" required email>

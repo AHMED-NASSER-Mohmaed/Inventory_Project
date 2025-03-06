@@ -234,3 +234,37 @@ small {
         padding-top: 80px;
     }
 }
+
+.logo-heading {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	margin-bottom: 15px;
+}
+
+.logo-heading h1 {
+	margin: 0;
+	padding: 0;
+	line-height: 1;
+}
+
+.logo-icon {
+	font-size: 2rem;
+	cursor: pointer;
+	color: #fff;
+	background-color: #808182;
+	width: 45px;
+	height: 45px;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+	transition: all 0.3s ease;
+}
+
+.logo-icon:hover {
+	transform: scale(1.05);
+	box-shadow: 0 4px 8px rgba(188, 179, 179, 0.3);
+	background-color: #8894a4;
+}

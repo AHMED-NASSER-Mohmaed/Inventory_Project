@@ -1,47 +1,76 @@
-<footer class=" my-5 text-dark"  >
+<footer>
     <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <a class="navbar-brand fs-4" href="#" style="font-family: 'Baskerville Serial', serif; color: #85411c;">Watchly</a>
-                <p>+80 123 567 89</p>
-                <p>283 N. Glenwood Street, Levittown, NY</p>
-                <a href="">helpwatchly.com</a>
+        <div class="row footer-container">
+            <div class="col-md-3 brand-info">
+                <div class="footer-logo">
+                    <a class="navbar-brand" href="#">Watchly</a>
+                    <p class="brand-tagline">Timeless Elegance, Modern Style</p>
+                </div>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+                </div>
             </div>
 
-
-
-
-            <div class=" footer-section  col-md-3">
-                <h4>SERVICES</h4>
+            <div class="footer-section col-md-3">
+                <h4>Customer Service</h4>
+                <div class="footer-divider">
+                    <span class="divider-icon"></span>
+                </div>
                 <ul class="list-unstyled">
-                    <li><a  [routerLink]="['/cart']" >Cart</a></li>
-                    <li><a  [routerLink]="['/products']">Shop</a></li>
-                    <li><a  [routerLink]="['/about']"  >About Us</a></li>
-                    <li><a  [routerLink]="['/contacts']" >Contact Us</a></li>
-                    <li><a  [routerLink]="['/about']" >My Account</a></li>
+                    <li><a [routerLink]="['/cart']">Shopping Cart</a></li>
+                    <li><a [routerLink]="['/products']">Shop Collection</a></li>
+                    <li><a [routerLink]="['/about']">About Our Brand</a></li>
+                    <li><a [routerLink]="['/contacts']">Contact Support</a></li>
+                    <li><a [routerLink]="['/about']">My Account</a></li>
                 </ul>
             </div>
-            <div class=" footer-section col-md-3">
-                <h4>BRANDS</h4>
+            
+            <div class="footer-section col-md-3">
+                <h4>Featured Collections</h4>
+                <div class="footer-divider">
+                    <span class="divider-icon"></span>
+                </div>
                 <ul class="list-unstyled">
-                    <li ><a [routerLink]="['/products']" >Shop</a></li>
-                    <li><a  [routerLink]="['/products']" >Casio</a></li>
-                    <li><a  [routerLink]="['/products']" >Boss</a></li>
-                    <li><a  [routerLink]="['/products']" >Fossil</a></li>
-                    <li><a  [routerLink]="['/products']" >Lacoste</a></li>
+                    <li><a [routerLink]="['/products']">Luxury Watches</a></li>
+                    <li><a [routerLink]="['/products']">Casio Collections</a></li>
+                    <li><a [routerLink]="['/products']">Boss Timepieces</a></li>
+                    <li><a [routerLink]="['/products']">Fossil Watches</a></li>
+                    <li><a [routerLink]="['/products']">Lacoste Designs</a></li>
                 </ul>
             </div>
-            <div class=" col-md-3">
-                <h5>SUBSCRIBE OUR NEWSLETTER</h5>
-                <p>Plus, hear about the latest and greatest from our family of brands</p>
-                <div class="input-group mb-3">
-                    <input type="email" class="form-control" placeholder="Email address...">
-                    <button class="btn SUBSCRIBE" type="button">SUBSCRIBE</button>
+            
+            <div class="col-md-3 subscribe">
+                <h4>Stay Connected</h4>
+                <div class="footer-divider">
+                    <span class="divider-icon"></span>
+                </div>
+                <p>Join our community for exclusive offers and updates</p>
+                <div class="subscription-form">
+                    <input type="email" class="form-control" placeholder="Your email address..." aria-label="Email address">
+                    <button class="btn subscribe-btn" type="button">Subscribe</button>
+                </div>
+                <p class="small">By subscribing, you agree to our Privacy Policy</p>
+                
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <p>+80 123 567 89</p>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:help&#64;watchly.com">help&#64;watchly.com</a>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class=" text-center pt-1 border-top">
-            <p class="p-3">Copyright © 2022. All Rights Reserved</p>
+
+        
+        <div class="footer-bottom">
+            <p>&copy; 2023 Watchly. All Rights Reserved | Premium Timepieces & Watch Collections</p>
+            <p class="address">283 N. Glenwood Street, Levittown, NY</p>
         </div>
     </div>
 </footer>
