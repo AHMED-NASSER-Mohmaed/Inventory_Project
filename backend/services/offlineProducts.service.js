@@ -125,21 +125,21 @@ module.exports.OfflineProductsService = {
 
 
                 //the new qty is the qty that will be decreased from the source branch
-                let newSourceQty = offProduct.stock - +qty;
-                console.log("new source qty",newSourceQty);
-
+                let newSourceQty = offProduct.stock - qty;
+                
                 if (newSourceQty < 0)
                     throw new AppError("this source branch dose not have enough quantity", APP_CONFIG.HTTP_BAD_REQUEST);
-
+                
                 let newDestQty = qty ;
-
-
+                
+                
                 let product=await productService.isProductExist(offProduct.product);
-
+                
+                console.log("new source qty *********************",newSourceQty, " dest qty *********************: ",newDestQty);
                 //detination offline branch product
                 //findOne and update if it dose not exist add an offline product to it 
 
-                console.log(product,"exported product");
+                // console.log(product,"exported product");
 
                 await OfflineProductsRepo.updateQuantity(offProductId, newSourceQty);
 
@@ -149,7 +149,7 @@ module.exports.OfflineProductsService = {
                 
                 if (destinationBranch['type'] === 'online') {
                     //may be the first time to export this product to online sysytem
-                    console.log("hhhhhhhhhhhhhhhhhh",qty);
+                    // console.log("hhhhhhhhhhhhhhhhhh",qty);
                     // -->we have to register our own seller id at product 
                     
                     let onlineListProduct=await  OnlineProductsRepository.upsertSellerRecord(offProduct.product,APP_CONFIG.COMPANY_ID,qty,product.price);
