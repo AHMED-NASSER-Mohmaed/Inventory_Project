@@ -181,7 +181,7 @@ export class ClerkOfflineCreateComponent implements OnInit {
                 : item.product.images[0].url,
               sellerName: `${item.seller?.firstName || ''} ${item.seller?.lastName || ''}`,
               sellerId: item.seller?._id || '',
-              stock: item.stock ? item.stock : 5,
+              stock: item?.stock ? item.stock : 0,
               sellerCompanyName: item.seller?.companyName,
               shallowStock: matchingProduct 
                 ? Math.max(matchingProduct.stock - matchingProduct.requiredQty, 0) 

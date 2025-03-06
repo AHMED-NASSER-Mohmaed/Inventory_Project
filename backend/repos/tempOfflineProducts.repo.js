@@ -33,7 +33,10 @@ class OfflineProductsRepository {
     // Update an OfflineProduct by ID
     async updateOfflineProductById(id, data) {
         try {
-            return await OfflineProducts.findByIdAndUpdate(id, data, { new: true });
+            console.log(data);
+            let res= await OfflineProducts.findByIdAndUpdate(id, data, { new: true });
+            console.log("============",res,"============");
+            return res;
         } catch (error) {
             throw new Error(`Error updating offline product: ${error.message}`);
         }
