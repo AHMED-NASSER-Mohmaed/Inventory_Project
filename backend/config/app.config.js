@@ -72,7 +72,7 @@ module.exports.APP_CONFIG = {
   UDIAMGE_ID_KEY: "fileId",
   UDIMAGE_URL_KEY: "url",
 
-  UDIAMGE_ID_VALUE: "67a63846432c47641653594a",
+  UDIAMGE_ID_VALUE: "67c987a1432c476416d6741d",
   UDIMAGE_URL_VALUE: "https://ik.imagekit.io/ysypur5vc/default_n6o_4prV6.jpg",
 
   DU_IMAGE_DEFALUT_OBG: {
@@ -87,7 +87,7 @@ module.exports.APP_CONFIG = {
   PDIMAGE_URL_KEY: "url",
 
   PDIAMGE_ID_KEY: "67a79f83432c47641634dffc",
-  PDIAMGE_URL_VALUE: "https://ik.imagekit.io/ysypur5vc/Untitled_azZLiI3tg.jpg",
+  PDIAMGE_URL_VALUE: "https://ik.imagekit.io/ysypur5vc/default_U8x4irZXl.jpg",
 
   DP_IMAGE_DEFALUT_OBG: {
     fileId: "67a79f83432c47641634dffc",

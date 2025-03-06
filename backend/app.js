@@ -11,9 +11,37 @@ const rateLimit = require("express-rate-limit");
 // const passport = require("./config/passport");
 // const session = require("express-session");
 /******************************************************************* */
-
+const { IMAGEKIT_ENDPOINT_URL, IMAGEKIT_PRIVATE_KEY, IMAGEKIT_PUBLIC_KEY } =
+  APP_CONFIG;
 /********************************************************************/
 const app = express();
+
+/*
+const imageKit = require("imagekit");
+
+var imagekit = new imageKit({
+  publicKey: IMAGEKIT_PUBLIC_KEY,
+  privateKey: IMAGEKIT_PRIVATE_KEY,
+  urlEndpoint: IMAGEKIT_ENDPOINT_URL,
+});
+
+// Replace with your image URL
+const imageURL = "default_U8x4irZXl.jpg";
+
+// Get file details
+imagekit.listFiles({ searchQuery: `name="${imageURL}"` })
+    .then(response => {
+      console.log("hello");
+        if (response.length > 0) {
+            console.log("File ID:", response[0].fileId);
+        } else {
+            console.log("Image not found.");
+        }
+    })
+    .catch(error => {
+        console.error("Error fetching file details:", error);
+    });
+*/
 
 // app.use(
 //   session({
@@ -73,6 +101,10 @@ for (const controllerFile of controllersDirectory) {
 // app.all("*", (req, res, next) => {
 //   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 // });
+
+
+
+
 
 app.use(globalErrorHandler);
 
