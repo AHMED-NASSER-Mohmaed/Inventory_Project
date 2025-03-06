@@ -1,8 +1,15 @@
- .carousel {
-    height: 80vh;
+.slider-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.carousel {
+    height: 85vh;
     margin-bottom: 30px;
     position: relative;
-    overflow: hidden; 
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .carousel-inner {
@@ -12,137 +19,221 @@
 
 .carousel-item {
     height: 100%;
-    position: absolute; 
-    top: 0;
-    left: 0;
-    opacity: 0; 
-    transition: all 0.6s ease-in-out;
-   
+    position: relative;
+    transition: transform 0.8s ease-in-out; /* Adjust timing for a smoother slide */
 }
 
-.carousel-item.active {
-    opacity: 1; 
+/* Remove or comment out the fade-specific transitions since we're using sliding now */
+/* 
+.carousel-fade .carousel-item {
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+.carousel-fade .carousel-item.active {
+    opacity: 1;
+} 
+*/
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2));
     z-index: 1;
 }
 
 .carousel-item img {
-    height: 80vh;
+    height: 85vh;
     width: 100%;
-    object-fit: cover; 
+    object-fit: cover;
+    filter: brightness(0.9);
 }
 
-
 .carousel-indicators {
-    bottom: 20px;
+    bottom: 30px;
+    z-index: 5;
 }
 
 .carousel-indicators button {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    margin: 0 5px;
-    background-color: rgba(255, 255, 255, 0.5);
-    transition: background-color 0.3s ease;
+    margin: 0 6px;
+    background-color: rgba(255, 255, 255, 0.6);
+    transition: all 0.4s ease;
+    border: none;
 }
 
 .carousel-indicators button.active {
     background-color: white;
+    width: 14px;
+    height: 14px;
+    transform: scale(1.1);
 }
 
-.special-opacity::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1;
+.carousel-control-prev,
+.carousel-control-next {
+    width: 10%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.carousel:hover .carousel-control-prev,
+.carousel:hover .carousel-control-next {
+    opacity: 0.8;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(133, 65, 28, 0.6);
+    border-radius: 50%;
+    background-size: 50%;
 }
 
 .carousel-caption {
     position: absolute;
-    left: 100px;
-    top: 50%;
-    transform: translateY(-50%);
+    left: 10%;
+    right: 10%;
+    top: 35%;
+    transform: translateY(-70%);
     font-family: 'Raleway', sans-serif;
     text-align: left;
     z-index: 2;
-    width: auto;
+    width: 80%;
+    animation-duration: 1s;
+    margin: 0;
+    padding: 0;
 }
 
 .carousel-caption1,
-.carousel-caption2,
-.Explorebtn{
+.carousel-caption2 {
     font-family: 'Baskerville Serial', serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-align: left;
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
 }
 
-
-
 .carousel-caption1 {
-    margin-top: 25px;
-    font-size: 85px;
+    font-size: 70px; /* Reduced from 85px */
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 1px;
+    margin-bottom: 20px; /* Add space between elements instead of top margins */
 }
 
 .carousel-caption2 {
-    margin-top: 70px;
-    font-size: 50px;
+    font-size: 40px; /* Reduced from 50px */
+    color: #f8f8f8;
+    font-weight: 300;
+    margin-bottom: 30px; /* Add space between elements instead of top margins */
 }
 
 .Explorebtn {
-    color: #85411c; 
-    background-color: rgb(252, 252, 252); 
-    margin-top: 40px;
+    color: #85411c;
+    background-color: rgb(252, 252, 252);
     border: none;
-    transition: background-color 0.3s ease, color 0.3s ease; 
-    padding: 12px; 
-    border-radius: 5px;
-   
+    transition: all 0.4s ease;
+    padding: 14px 28px;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    margin-top: 0; /* Remove top margin */
+    display: inline-block; /* Ensures button aligns with left text */
 }
 
 .Explorebtn:hover {
-    background-color: #85411c; 
+    background-color: #85411c;
     color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-
+.Explorebtn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
 
 @media (max-width: 1200px) {
     .carousel-caption {
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 90%;
+        width: 80%;
+        top: 35%;
+        transform: translateY(-70%);
+        left: 10%;
     }
 
     .carousel-caption1 {
-        font-size: 70px;
+        font-size: 60px; /* Reduced from 70px */
+        margin-bottom: 15px;
     }
 
     .carousel-caption2 {
-        font-size: 40px;
+        font-size: 32px; /* Reduced from 40px */
+        margin-bottom: 20px;
+    }
+    
+    .Explorebtn {
+        margin-top: 40px;
+        padding: 12px 24px;
     }
 }
 
 @media (max-width: 768px) {
     .carousel,
     .carousel-item img {
-        height: 60vh;
+        height: 70vh;
     }
 
     .carousel-caption {
-        left: 20px;
-        right: 20px;
-        transform: translateY(-50%);
-        text-align: left;
+        left: 8%;
+        width: 84%;
+        top: 35%;
+        transform: translateY(-70%);
     }
 
     .carousel-caption1 {
-        font-size: 50px;
+        font-size: 40px; /* Reduced from 50px */
+        margin-bottom: 10px;
     }
 
     .carousel-caption2 {
-        font-size: 30px;
-        margin-top: 20px;
+        font-size: 28px; /* Reduced from 32px */
+        margin-bottom: 15px;
     }
-} 
+    
+    .Explorebtn {
+        margin-top: 30px;
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 576px) {
+    .carousel-caption {
+        top: 35%;
+        transform: translateY(-75%);
+        left: 5%;
+        width: 90%;
+    }
+
+    .carousel-caption1 {
+        font-size: 30px; /* Reduced from 36px */
+    }
+
+    .carousel-caption2 {
+        font-size: 20px; /* Reduced from 24px */
+    }
+}
 
 
 

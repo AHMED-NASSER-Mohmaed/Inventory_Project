@@ -56,6 +56,13 @@ export class ProductsListComponent implements OnInit {
   tempProducts: any[] = []
   token:any;
 
+  viewMode: string = 'grid'; 
+  
+  filterSections: {[key: string]: boolean} = {
+    categories: true, 
+    brands: true      
+  };
+
   constructor(
     private productsService: ProductsService,
     private route: ActivatedRoute,
@@ -70,7 +77,7 @@ export class ProductsListComponent implements OnInit {
       this.selectedBrandId = params['brandId'] || "";
   
       this.loadCart(() => {
-        this.getProducts(); // Ensure tempProducts is populated before this runs
+        this.getProducts(); 
       });
     });
   
@@ -126,12 +133,22 @@ export class ProductsListComponent implements OnInit {
       case 'price_desc':
         this.sort = 'price:desc';
         break;
+      case 'name_asc':
+        this.sort = 'name:asc';
+        break;
+      case 'name_desc':
+        this.sort = 'name:desc';
+        break;
+      case 'newest':
+        this.sort = 'createdAt:desc';
+        break;
       default:
         this.sort = '';
         break;
     }
 
-    this.getProducts(1);
+    this.currentPage = 1;
+    this.getProducts();
   }
 
   onCategoryChange(value: string | null): void {
@@ -202,7 +219,7 @@ export class ProductsListComponent implements OnInit {
               description: item.product.description,
               shallowStock: matchingProduct 
                 ? Math.max(matchingProduct.stock - matchingProduct.requiredQty, 0) 
-                : item.stock,  // Prevent negative stock values
+                : item.stock,  
             };
           });
   
@@ -286,8 +303,33 @@ export class ProductsListComponent implements OnInit {
     this.getProducts();
   }
 
-  
-  
+  getCategoryName(categoryId: string): string {
+    const category = this.categories.find(cat => cat._id === categoryId);
+    return category ? category.Cname : '';
+  }
+
+  getBrandName(brandId: string): string {
+    const brand = this.brands.find(b => b._id === brandId);
+    return brand ? brand.Bname : '';
+  }
+
+  clearCategoryFilter(): void {
+    this.selectedCategoryId = "";
+    this.currentPage = 1;
+    this.getProducts();
+  }
+
+  clearBrandFilter(): void {
+    this.selectedBrandId = "";
+    this.currentPage = 1;
+    this.getProducts();
+  }
+
+  applyFilters(): void {
+    this.currentPage = 1;
+    this.getProducts();
+  }
+
     // getSubtotal(): number {
     //   return this.products.reduce((acc, product) => acc + (product.price * product.requiredQty), 0);
     // }
@@ -365,6 +407,13 @@ export class ProductsListComponent implements OnInit {
       });
     }
     
+  toggleFilterSection(section: string): void {
+    this.filterSections[section] = !this.filterSections[section];
+  }
+
+  setViewMode(mode: string): void {
+    this.viewMode = mode;
+  }
   
   
 }

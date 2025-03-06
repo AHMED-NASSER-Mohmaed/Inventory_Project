@@ -1,43 +1,47 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
-<div class="mt-5 container text-center">
-    <p style="font-family: 'Baskerville Serial', serif;" class="fs-1 fw-medium">Featured products</p>
-    <p class="featuredProducts" style="margin-bottom: 50px;" >
-        We are happy to introduce the new Lawson Collection. These are three quartz models <br>
+<div class="section-header">
+    <div class="decorative-line"></div>
+    <h2 class="section-title">Featured Products</h2>
+    <p class="section-description">
+        We are happy to introduce the new Lawson Collection. These are three quartz models<br>
         designed with simplicity and elegance kept in mind.
     </p>
+    <div class="decorative-line"></div>
 </div>
 
-<div class="container">
-    <div class="row">
-
-      <div *ngFor="let product of products" class="col" [routerLink]="['/LandingPage/Product', product._id]" style="cursor: pointer;">
-            <div class="image-container ">
-              <img [src]="product.imgUrl" class="card-img-top product-img" alt="{{ product.name }}">
-              <div class="overlay-icons">
-                <!-- <a class="product-item product-link product-icon" href="#" (click)="$event.stopPropagation()"><i class="fas fa-heart"></i></a> -->
-                <a class="product-item product-link product-icon" (click)="openQuickView(product); $event.stopPropagation()"><i class="fas fa-eye"></i></a>
-              </div>
-              @if(product.shallowStock <= 0){
-                <div class="m-auto text-center mt-3">
-
-                    <span class="text-danger">Product Out of Stock!</span>
+<div class="container products-container">
+    <div class="row product-row justify-content-center">
+        <div *ngFor="let product of products" class="col-xl-3 col-lg-4 col-md-6 col-sm-6 product-col" [routerLink]="['/LandingPage/Product', product._id]">
+            <div class="product-card">
+                <div class="image-container">
+                    <img [src]="product.imgUrl" class="product-img" alt="{{ product.name }}">
+                    <div class="overlay-icons">
+                        <a class="product-icon" (click)="openQuickView(product); $event.stopPropagation()">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </div>
+                    @if(product.shallowStock <= 0){
+                        <div class="stock-badge">
+                            <span>Out of Stock</span>
+                        </div>
+                    }
+                    <button class="btn add-to-cart-btn" [disabled]="product.shallowStock <= 0 || (token && token.id.userType != 'customer')" (click)="$event.stopPropagation(); increase(product)">
+                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </button>
                 </div>
-              }
-              <button class="btn add-to-cart-btn" [disabled]="product.shallowStock <= 0 || (token && token.id.userType != 'customer')" (click)="$event.stopPropagation(); increase(product)">Add to Cart</button>
+                <div class="product-info">
+                    <h5 class="product-title">{{ product.name }}</h5>
+                    <p class="product-price">{{ product.price | currency }}</p>
+                    <p class="product-seller">Sold by: {{ product.sellerCompanyName }}</p>
+                </div>
             </div>
-            <div class="img-body">
-              <h5 class="card-title">{{ product.name }}</h5>
-              <p class="card-price">{{ product.price | currency }} </p>
-              <p class="card-seller">Sold by: {{ product.sellerCompanyName }}</p>
-            </div>
-          </div>
+        </div>
     </div>
 </div>
 
-
 <div class="button-container">
-  <button class="Collectionbtn" [routerLink]="['/products']">Shop New Collection</button>
+    <a class="collection-btn" [routerLink]="['/products']">Shop New Collection</a>
 </div>
 
 <app-quickview 

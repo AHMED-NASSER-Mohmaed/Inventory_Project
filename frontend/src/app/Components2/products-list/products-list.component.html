@@ -6,116 +6,217 @@
     (closeModalEvent)="closeQuickView()">
 </app-quickview>
 
-<div class="container-fluid">
+<div class="container-fluid py-5">
     <div class="row">
-
         <div class="col-md-4 col-lg-3">
-            <aside class="sidebar pt-4 bg-light">
-                <p class="filterHeader">Filter by</p>
-                <hr>
+            <div class="filter-section filter-sidebar mb-4">
+                <h3 class="filter-header">Shop By</h3>
+                <div class="filter-body">
+                    <div class="filter-group">
+                        <div class="filter-group-header" (click)="toggleFilterSection('categories')">
+                            <h5>Categories <i class="fas" [ngClass]="{'fa-chevron-down': !filterSections['categories'], 'fa-chevron-up': filterSections['categories']}"></i></h5>
+                        </div>
+                        <div class="filter-group-body" [ngClass]="{'show': filterSections['categories']}">
+                            <div *ngIf="categories && categories.length > 0">
+                                <label *ngFor="let category of categories" class="filter-option">
+                                    <input type="radio" name="category" [value]="category._id"
+                                        (change)="onCategoryChange(category._id)" 
+                                        [checked]="selectedCategoryId === category._id">
+                                    <span class="checkmark"></span>
+                                    <span class="text-capitalize">{{ category.Cname }}</span>
+                                </label>
+                            </div>
+                            <div *ngIf="!categories || categories.length === 0" class="text-muted">
+                                No categories available
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <div class="filter-group-header" (click)="toggleFilterSection('brands')">
+                            <h5>Brands <i class="fas" [ngClass]="{'fa-chevron-down': !filterSections['brands'], 'fa-chevron-up': filterSections['brands']}"></i></h5>
+                        </div>
+                        <div class="filter-group-body" [ngClass]="{'show': filterSections['brands']}">
+                            <div *ngIf="brands && brands.length > 0">
+                                <label *ngFor="let brand of brands" class="filter-option">
+                                    <input type="radio" name="brand" [value]="brand._id"
+                                        (change)="onBrandChange(brand._id)" 
+                                        [checked]="selectedBrandId === brand._id">
+                                    <span class="checkmark"></span>
+                                    <span class="text-capitalize">{{ brand.Bname }}</span>
+                                </label>
+                            </div>
+                            <div *ngIf="!brands || brands.length === 0" class="text-muted">
+                                No brands available
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Categories</label>
-                    <div *ngIf="categories && categories.length > 0">
-                        <div *ngFor="let category of categories" class="form-check">
-                            <input class="form-check-input" type="radio" name="category" [value]="category._id"
-                                   (change)="onCategoryChange(category._id)" [id]="'category' + category._id"
-                                   [checked]="selectedCategoryId === category._id">
-                            <label class="form-check-label text-capitalize" [for]="'category' + category._id">
-                              {{ category.Cname }}
-                            </label>
+                    <div class="active-filters" *ngIf="selectedCategoryId || selectedBrandId">
+                        <div class="filter-tag" *ngIf="selectedCategoryId">
+                            Category: {{ getCategoryName(selectedCategoryId) }}
+                            <i class="fas fa-times-circle" (click)="clearCategoryFilter()"></i>
+                        </div>
+                        <div class="filter-tag" *ngIf="selectedBrandId">
+                            Brand: {{ getBrandName(selectedBrandId) }}
+                            <i class="fas fa-times-circle" (click)="clearBrandFilter()"></i>
                         </div>
                     </div>
-                    <div *ngIf="!categories || categories.length === 0">
-                        <p>No categories available</p>
+                    
+                    <div class="filter-actions">
+                        <button class="btn btn-reset" (click)="resetFilters()">
+                            <i class="fas fa-sync-alt me-2"></i> Reset All
+                        </button>
+                        <button class="btn btn-apply" (click)="applyFilters()">
+                            Apply Filters
+                        </button>
                     </div>
-                    <hr>
                 </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">Brands</label>
-                    <div *ngIf="brands && brands.length > 0">
-                        <div *ngFor="let brand of brands" class="form-check">
-                            <input class="form-check-input" type="radio" name="brand" [value]="brand._id"
-                                   (change)="onBrandChange(brand._id)" [id]="'brand' + brand._id"
-                                   [checked]="selectedBrandId === brand._id">
-                            <label class="form-check-label text-capitalize" [for]="'brand' + brand._id">
-                              {{ brand.Bname }}
-                            </label>
-                        </div>
-                    </div>
-                    <div *ngIf="!brands || brands.length === 0">
-                        <p>No brands available</p>
-                    </div>
-                    <hr>
-                </div>
-      
-                <button class="btn filter-btn" type="button" (click)="resetFilters()">Reset Filters</button>
-            </aside>
+            </div>
         </div>
 
         <div class="col-md-8 col-lg-9">
-            <div class="row mb-4">
-                <div class="col-md-6 position-relative">
-                    <form (submit)="onSearch($event)">
-                        <div class="input-group">
+            <div class="sort-search-section">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4 class="section-title">Search Products</h4>
+                        <form class="search-form" (submit)="onSearch($event)">
+                            <i class="fas fa-search search-icon"></i>
                             <input 
                                 type="text" 
                                 class="form-control searchBar" 
-                                placeholder="Search products..." 
+                                placeholder="What are you looking for?" 
                                 [(ngModel)]="searchQuery" 
                                 name="searchQuery">
-                            <button type="submit" class="btn btn-outline-secondary">
-                                <i class="fas fa-search"></i>
-                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <h4 class="section-title">Sort By</h4>
+                        <div class="sort-dropdown">
+                            <select class="form-control custom-select" (change)="onSortChange($event)">
+                                <option value="" disabled selected>Select Sort Option</option>
+                                <option value="price_asc">Price: Low to High</option>
+                                <option value="price_desc">Price: High to Low</option>
+                                <option value="newest">Newest First</option>
+                            </select>
+                            <i class="fas fa-sort sort-icon"></i>
                         </div>
-                    </form>
-                </div>
-                <div class="col-md-6">
-                    <select class="form-control custom-select" (change)="onSortChange($event)">
-                        <option value="" disabled selected hidden>Sort</option>
-                        <option value="price_asc">Price: Low to High</option>
-                        <option value="price_desc">Price: High to Low</option>
-                    </select>
+                    </div>
                 </div>
             </div>
 
-            <div class="row productRow">
-                <div *ngFor="let product of products" class="product-card col-md-4 mb-4" [routerLink]="['/LandingPage/Product', product._id]" style="cursor: pointer;">
-                    <div class="image-container position-relative">
-                        <img [src]="product.imgUrl" class="card-img-top product-img" alt="{{ product.name }}">
-                        <div class="overlay-icons">
-                            <!-- <a class="product-item product-link product-icon" href="#" (click)="$event.stopPropagation()"><i class="fas fa-heart"></i></a> -->
-                            <a class="product-item product-link product-icon" (click)="openQuickView(product); $event.stopPropagation()"><i class="fas fa-eye"></i></a>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h4 class="mb-0" *ngIf="products.length > 0">
+                        Showing <span style="color: #6d4c41 !important;" class="text-primary">{{ products.length }}</span> products
+                    </h4>
+                </div>
+                <div class="view-options">
+                    <button class="btn btn-sm me-2" 
+                           [ngClass]="{'btn-primary': viewMode === 'grid', 'btn-outline-secondary': viewMode !== 'grid'}"
+                           (click)="setViewMode('grid')">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="btn btn-sm" 
+                           [ngClass]="{'btn-primary': viewMode === 'list', 'btn-outline-secondary': viewMode !== 'list'}"
+                           (click)="setViewMode('list')">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="row productRow" *ngIf="viewMode === 'grid'">
+                <div *ngFor="let product of products" class="col-xl-4 col-lg-6 col-md-6 col-sm-6 mb-4">
+                    <div class="product-card" [routerLink]="['/LandingPage/Product', product._id]">
+                        <div class="image-container">
+                            <img [src]="product.imgUrl" class="product-img" alt="{{ product.name }}">
+                            <div class="overlay-icons">
+                                <a class="product-icon" (click)="openQuickView(product); $event.stopPropagation()">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                            @if(product.shallowStock <= 0){
+                                <div class="stock-badge">
+                                    <span>Out of Stock</span>
+                                </div>
+                            }
+                            <button class="btn add-to-cart-btn" 
+                                [disabled]="product.shallowStock <= 0 || (token && token.id.userType != 'customer')" 
+                                (click)="$event.stopPropagation(); increase(product)">
+                                <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                            </button>
+                        </div>
+                        <div class="img-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-price">{{ product.price | currency }}</p>
+                            <p class="card-seller">Sold by: {{ product.sellerCompanyName }}</p>
                         </div>
                     </div>
-                    <div class="img-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <p class="card-price">{{ product.price | currency }} </p>
-                        <p class="card-seller">Sold by: {{ product.sellerCompanyName }}</p>
-                        @if(product.shallowStock <= 0){
-                            <div class="mt-3">
+                </div>
+            </div>
 
-                                <span class="text-danger">Product Out of Stock!</span>
+            <div class="product-list" *ngIf="viewMode === 'list'">
+                <div *ngFor="let product of products" class="product-list-item" [routerLink]="['/LandingPage/Product', product._id]">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="list-image-container">
+                                <img [src]="product.imgUrl" alt="{{ product.name }}">
+                                @if(product.shallowStock <= 0){
+                                    <div class="stock-badge">
+                                        <span>Out of Stock</span>
+                                    </div>
+                                }
                             </div>
-                        }
-                        <button [disabled]="product.shallowStock <= 0 || (token && token.id.userType != 'customer') " class="btn add-to-cart-btn" (click)="$event.stopPropagation(); increase(product)">Add to Cart</button>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="list-product-info">
+                                <h5 class="list-product-title">{{ product.name }}</h5>
+                                <p class="list-product-seller">Sold by: {{ product.sellerCompanyName }}</p>
+                                <p class="list-product-description" *ngIf="product.description">
+                                    {{ product.description | slice:0:150 }}{{ product.description.length > 150 ? '...' : '' }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="list-product-actions">
+                                <p class="list-product-price">{{ product.price | currency }}</p>
+                                <button class="btn list-cart-btn" 
+                                    [disabled]="product.shallowStock <= 0 || (token && token.id.userType != 'customer')" 
+                                    (click)="$event.stopPropagation(); increase(product)">
+                                    <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                                </button>
+                                <button class="btn list-quickview-btn" (click)="openQuickView(product); $event.stopPropagation()">
+                                    <i class="fas fa-eye me-2"></i> Quick View
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
+            
+            <div *ngIf="products.length === 0" class="text-center py-5">
+                <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                <h3 class="text-muted">No products found</h3>
+                <p class="text-muted">Try adjusting your filters or search query</p>
             </div>
         </div>
     </div>
 </div>
 
 <div *ngIf="products.length > 0" class="pagination-controls text-center my-4">
-    <button class="btn btn-light" (click)="previousPage()" [disabled]="currentPage === 1">
-        <i class='bx bx-chevron-left' style="font-size: 1.7em;"></i>
+    <button class="btn" (click)="previousPage()" [disabled]="currentPage === 1">
+        <i class="fas fa-chevron-left"></i> Previous
     </button>
     <div *ngFor="let page of pagesArray" class="d-inline-block mx-1">
-        <button class="btn btn-light" (click)="selectedPage(page)" [disabled]="currentPage === page">{{ page }}</button>
+        <button class="btn" 
+            [ngClass]="{'active': currentPage === page}"
+            (click)="selectedPage(page)" 
+            [disabled]="currentPage === page">
+            {{ page }}
+        </button>
     </div>
-    <button class="btn btn-light" (click)="nextPage()" [disabled]="currentPage === totalPages">
-        <i class='bx bx-chevron-right' style="font-size: 1.7em;"></i>
+    <button class="btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next <i class="fas fa-chevron-right"></i>
     </button>
 </div>
 

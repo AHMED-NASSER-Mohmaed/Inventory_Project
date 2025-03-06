@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { decodeToken } from '../../../_helpers/jwt-helper';
 import { RouterModule } from '@angular/router';
+import { SuperAdminFashboardService } from '../../../_services/super-admin-fashboard.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,7 +20,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   sub = {} as Subscription;
   tokenData: any = null;
 
-  constructor(public accountService: AccountService, public dialog: MatDialog, public router: Router) {}
+  constructor(public accountService: AccountService, public dialog: MatDialog, public router: Router , superAdminDashboardService: SuperAdminFashboardService) {}
 
   toggleDropdown(menu: string): void {
     this.dropdownStates[menu] = !this.dropdownStates[menu];

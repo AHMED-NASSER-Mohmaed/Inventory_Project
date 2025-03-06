@@ -1,37 +1,43 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
-<div class="mt-5 container text-center">
-    <p style="font-family: 'Baskerville Serial', serif;" class="fs-1 fw-medium">New Arrival</p>
-    <p class="NewArrival"   style="margin-bottom: 50px;" >
+<div class="section-header">
+    <div class="decorative-line"></div>
+    <h2 class="section-title">New Arrival</h2>
+    <p class="section-description">
         Discover our latest arrivals - fresh styles and trending pieces just added to our collection.<br>
-         Shop the newest fashion must-haves!
+        Shop the newest fashion must-haves!
     </p>
+    <div class="decorative-line"></div>
 </div>
 
-<div class="container">
-    <div class="row">
+<div class="container products-container">
+    <div class="row product-row justify-content-center">
         <!-- Loop through NewArrival -->
-        <div *ngFor="let product of products" class="col" [routerLink]="['/LandingPage/Product', product._id]" style="cursor: pointer;">
-            <div class="image-container position-relative">
-              <img [src]="product.imgUrl" class="card-img-top product-img" alt="{{ product.name }}">
-              <div class="overlay-icons">
-                <!-- <a class="product-item product-link product-icon" href="#" (click)="$event.stopPropagation()"><i class="fas fa-heart"></i></a> -->
-                <a class="product-item product-link product-icon" (click)="openQuickView(product); $event.stopPropagation()"><i class="fas fa-eye"></i></a>
-              </div>
-              @if(product.shallowStock <= 0){
-                <div class="m-auto text-center mt-3">
-
-                    <span class="text-danger">Product Out of Stock!</span>
+        <div *ngFor="let product of products" class="col-xl-3 col-lg-4 col-md-6 col-sm-6 product-col" [routerLink]="['/LandingPage/Product', product._id]">
+            <div class="product-card">
+                <div class="image-container">
+                    <img [src]="product.imgUrl" class="product-img" alt="{{ product.name }}">
+                    <div class="overlay-icons">
+                        <a class="product-icon" (click)="openQuickView(product); $event.stopPropagation()">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </div>
+                    @if(product.shallowStock <= 0){
+                        <div class="stock-badge">
+                            <span>Out of Stock</span>
+                        </div>
+                    }
+                    <button class="btn add-to-cart-btn" [disabled]="product.shallowStock <= 0 ||  (token && token.id.userType != 'customer')" (click)="$event.stopPropagation(); increase(product)">
+                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </button>
                 </div>
-              }
-              <button class="btn add-to-cart-btn" [disabled]="product.shallowStock <= 0 ||  (token && token.id.userType != 'customer')" (click)="$event.stopPropagation(); increase(product)">Add to Cart</button>
+                <div class="product-info">
+                    <h5 class="product-title">{{ product.name }}</h5>
+                    <p class="product-price">{{ product.price | currency }}</p>
+                    <p class="product-seller">Sold by: {{ product.sellerCompanyName }}</p>
+                </div>
             </div>
-            <div class="img-body">
-              <h5 class="card-title">{{ product.name }}</h5>
-              <p class="card-price">{{ product.price | currency }} </p>
-              <p class="card-seller">Sold by: {{ product.sellerCompanyName }}</p>
-            </div>
-          </div>
+        </div>
     </div>
 </div>
 
@@ -41,25 +47,3 @@
     [selectedProduct]="selectedProduct" 
     (closeModalEvent)="closeQuickView()">
 </app-quickview>
-
-
-
-
-
-
-
-
-<!-- 
-<div class="springcontainer">
-
-  <div class="springimage">
-      <img src="assets/girl1-1.jpg" alt="Spring Winter 2022">
-  </div>
-  <div class="springtext">
-      <p class="spring">Spring Winter 2022</p>
-      <p class="text-secondary">Looking for love in all the wrong places? Start with something pure, something good for you, and something that makes you feel pampered like a princess. We’re talking about clean beauty gift sets, of course –
-           and we’ve got a bouquet of beauties for yourself or someone you love!</p>
-      <button  class="springbtn">SHOP THE LOOK</button>
-  </div>
- 
-</div> -->
