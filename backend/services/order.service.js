@@ -214,7 +214,10 @@ class OrderService {
         return {
             orderId,
             orderStatus: orderData.status,
-            customerName: `${orderData.orderContainer?.customer?.firstName} ${orderData.orderContainer?.customer?.lastName}`,
+            customerName: orderData.orderContainer?.customer?.firstName && orderData.orderContainer?.customer?.lastName
+            ? `${orderData.orderContainer.customer.firstName} ${orderData.orderContainer.customer.lastName}`
+            : orderData.orderContainer?.phone1,
+
             sellerName: `${orderData.seller.firstName} ${orderData.seller.lastName}`,
             products: products.map(({ product, onlineProduct, requestedQuantity: productRequestedQuantity, fulfilledQuantity: productFulfilledQuantity, canceledQuantity: productCanceledQuantity }) => ({
                 productId: product?._id,
@@ -317,6 +320,7 @@ class OrderService {
     async getAllOfflineSubOrdersForSuperAdmin(){
       const returnedOrders = await orderRepository.getAllOfflineSubOrdersForSuperAdmin();
       const mappedOrders = await Promise.all(returnedOrders.map(order => this.mapOrderData(order)));
+      console.log(mappedOrders)
       return mappedOrders;
     }
 

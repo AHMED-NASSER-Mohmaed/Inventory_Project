@@ -373,6 +373,7 @@ class OrderContainerController {
         status,
         req.user.branch
       );
+      console.log(orderContainers);
     res.status(APP_CONFIG.HTTP_OK).json({
       message: "success",
       orderContainers,

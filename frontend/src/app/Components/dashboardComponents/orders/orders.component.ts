@@ -115,6 +115,10 @@ export class OrdersComponent implements OnInit, OnDestroy {
     } else if (filter === 'offline') {
       const offlineSub = this.ordersService.getOfflineOrders().subscribe({
         next: (res) => {
+          console.log(res.allOfflineSuborders)
+          for(let i = 0; i < res.allOfflineSuborders.length; i++){
+            res.allOfflineSuborders[i].customerName = res.allOfflineSuborders[i].phone1;
+          }
           this.offlineOrders = res.allOfflineSuborders || [];
           this.offlineOrdersCount = this.offlineOrders.length;
           this.processOrders(this.offlineOrders);

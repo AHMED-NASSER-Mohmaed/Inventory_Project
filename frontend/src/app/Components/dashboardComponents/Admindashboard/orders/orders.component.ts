@@ -28,7 +28,6 @@ import { AdminDashOrdersService } from '../../../../_services/admin-dash-orders.
   styleUrl: './orders.component.css'
 })
 export class OrdersComponent {
-
   currentFilter: string = 'offline';
   currentPage: number = 1;
   itemsPerPage: number = 10;
@@ -111,9 +110,15 @@ export class OrdersComponent {
     } else {
       const offlineSub = this.admindashOrdersService.getOfflineOrders().subscribe({
         next: (res) => {
+          console.log(res)
+          for(let i = 0; i < res.allOfflineSuborders.length; i++){
+            res.allOfflineSuborders[i].customerName = res.allOfflineSuborders[i].phone1;
+          }
           this.offlineOrders = res.allOfflineSuborders || [];
+          console.log(`offlineOrders${ this.offlineOrders}`)
           this.offlineOrdersCount = this.offlineOrders.length;
           this.allOrders = [...this.offlineOrders];
+          console.log(this.allOrders)
           
           this.processOrders(this.offlineOrders);
         },
