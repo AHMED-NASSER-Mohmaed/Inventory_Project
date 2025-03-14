@@ -150,6 +150,7 @@ export class ProductsComponent implements OnInit, OnDestroy{
 
   loadProducts(): void {
     const cacheKey = `${this.currentFilter}_${this.currentPage}_${this.sortField}_${this.sortDirection}_${this.selectedCategory}_${this.selectedBrand}_${this.selectedStatus}`;
+     
 
     if (this.pageCache[cacheKey]) {
       const cached = this.pageCache[cacheKey];
@@ -200,6 +201,7 @@ export class ProductsComponent implements OnInit, OnDestroy{
 
     const sub = obs.subscribe({
       next: (res) => {
+        console.log("data",res.data);
         this.products = res.data.result;
         this.showNoResults = false;
         const total = res.data.total;
@@ -228,6 +230,7 @@ export class ProductsComponent implements OnInit, OnDestroy{
   loadCategories(): void {
     const sub = this.sellerProductsService.getAllCategories().subscribe({
       next: (res) => {
+        console.log(res.data)
         this.categories = res.data;
         
         const categoryNode = this.filterNodes.find(node => node.name === 'Category');

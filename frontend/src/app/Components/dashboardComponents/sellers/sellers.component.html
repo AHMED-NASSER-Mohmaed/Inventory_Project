@@ -301,7 +301,8 @@
                 <div class="info-item">
                   <strong class="label">Company Reg#:</strong>
                     <div class="input-wrapper" [ngClass]="{'valid': regNumberInput.touched && regNumberInput.valid, 'invalid': regNumberInput.touched && regNumberInput.invalid}">
-                    <input type="number" required pattern="^[0-9]{4}$" [(ngModel)]="selectedUser.companyRegistrationNumber" name="companyRegistrationNumber" #regNumberInput="ngModel" [disabled]="!editing" class="value">
+                    <input  [(ngModel)]="selectedUser.companyRegistrationNumber" name="companyRegistrationNumber" #regNumberInput="ngModel" [disabled]="!editing" class="value">
+                    <!-- type="number" required pattern="^[0-9]{4}$" -->
                     </div>
                 </div>
                 <div class="info-item">

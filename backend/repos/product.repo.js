@@ -105,7 +105,7 @@ module.exports.productRepo = {
           .sort(sort)
           .skip((page - 1) * limit) // (starting index = page-1)*limit
           .limit(limit)
-          .select("_id name code images price description")
+          .select("_id name code images price description category brand")
           .lean(),
 
         await Product.countDocuments(filters)

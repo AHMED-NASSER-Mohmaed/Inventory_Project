@@ -16,7 +16,7 @@ const { IMAGEKIT_ENDPOINT_URL, IMAGEKIT_PRIVATE_KEY, IMAGEKIT_PUBLIC_KEY } =
 /********************************************************************/
 const app = express();
 
-/*
+
 const imageKit = require("imagekit");
 
 var imagekit = new imageKit({
@@ -33,7 +33,7 @@ imagekit.listFiles({ searchQuery: `name="${imageURL}"` })
     .then(response => {
       console.log("hello");
         if (response.length > 0) {
-            console.log("File ID:", response[0].fileId);
+            console.log("File ID:", response[0]);
         } else {
             console.log("Image not found.");
         }
@@ -41,7 +41,7 @@ imagekit.listFiles({ searchQuery: `name="${imageURL}"` })
     .catch(error => {
         console.error("Error fetching file details:", error);
     });
-*/
+
 
 // app.use(
 //   session({
