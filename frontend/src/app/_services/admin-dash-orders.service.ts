@@ -25,6 +25,7 @@ export interface Order {
   paymentStatus?: string;
   createdAt: string;
   updatedAt: string;
+  clerkName: string;
 }
 
 interface OrderContainer {
@@ -73,7 +74,11 @@ export class AdminDashOrdersService {
     return this.http.get<{message: string, orderContainers: OrderContainer[]}>(`${this.baseUrl}/order-container-offline`, { headers: this.getHeaders() })
       .pipe(
         map(response => {
-          const allOfflineSuborders = this.mapOrderContainersToOrders(response.orderContainers || []);
+          console.log(`original response: ${response.orderContainers}`)
+          // const allOfflineSuborders = this.mapOrderContainersToOrders(response.orderContainers || []);
+          const allOfflineSuborders = response.orderContainers || [];
+
+          console.log(allOfflineSuborders)
           return { allOfflineSuborders };
         })
       );
@@ -95,6 +100,7 @@ export class AdminDashOrdersService {
         orderStatus: container.status,
         customerName: container.phone1,
         sellerName: container.clerk?.name || 'Clerk 1',
+        clerkName: container.clerk?.name,
         products: container.products.map(prod => ({
           productId: prod.productId,
           productName: prod.name,
