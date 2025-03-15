@@ -39,6 +39,9 @@ export class HeaderComponent  implements OnInit {
   }
 
   loadCart() {
+    if(localStorage.getItem('sessionId')){
+      this.sessionId = localStorage.getItem('sessionId');
+    }
     // Load the cart count immediately from localStorage to prevent flickering
     const storedCount = localStorage.getItem('cartCounter');
     this.cartCounter = storedCount ? parseInt(storedCount, 10) : 0;
@@ -47,13 +50,14 @@ export class HeaderComponent  implements OnInit {
       const count = response.cart.products.length > 0 ? response.cart.products.length : 0;
       this.cartCounter = count;
       localStorage.setItem('cartCounter', count.toString());
-      if(localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
-                localStorage.removeItem('sessionId');
-                this.sessionId = null;
+       if (localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
+        localStorage.removeItem('sessionId');
+        this.sessionId = null;
       }
-      if(!localStorage.getItem('token') && response.sessionId && this.sessionId != response.sessionId) {
+      
+      if (!localStorage.getItem('token') && response.sessionId && (response.sessionId !== localStorage.getItem('sessionId'))) {
         localStorage.setItem('sessionId', response.sessionId);
-          this.sessionId = response.sessionId;
+        this.sessionId = response.sessionId;
       }
         
     }, 

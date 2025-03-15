@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ToastrService, ToastrModule } from 'ngx-toastr';
 import { decodeToken } from '../../_helpers/jwt-helper';
+import { CartService } from '../../_services/cart.service';
 
 
 @Component({
@@ -17,8 +18,10 @@ import { decodeToken } from '../../_helpers/jwt-helper';
   styleUrl: './login.component.css'
 })
 export class LoginComponent implements OnDestroy{
-
-  constructor(public accountService: AccountService , public router: Router, private toastr: ToastrService){}
+  token: string | null | undefined;
+  sessionId: string | null = null;
+  cartCounter = 0;
+  constructor(public accountService: AccountService , public router: Router, private cartService: CartService, private toastr: ToastrService){}
 
   public account: Account = {} as Account;
 
@@ -84,6 +87,8 @@ export class LoginComponent implements OnDestroy{
       },
       complete: () => {
         console.log('Login Complete');
+        this.sessionId = localStorage.getItem('sessionId');
+        this.loadCart();
       }
     })
   }
@@ -92,6 +97,35 @@ export class LoginComponent implements OnDestroy{
     if (this.sub) {
       this.sub.unsubscribe();
     }
+  }
+
+  loadCart() {
+    if(localStorage.getItem('sessionId')){
+      this.sessionId = localStorage.getItem('sessionId');
+    }
+    // Load the cart count immediately from localStorage to prevent flickering
+    const storedCount = localStorage.getItem('cartCounter');
+    this.cartCounter = storedCount ? parseInt(storedCount, 10) : 0;
+  
+    this.cartService.getCart(this.sessionId!).subscribe((response) => {
+      const count = response.cart.products.length > 0 ? response.cart.products.length : 0;
+      this.cartCounter = count;
+      localStorage.setItem('cartCounter', count.toString());
+       if (localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
+        localStorage.removeItem('sessionId');
+        this.sessionId = null;
+      }
+      
+      if (!localStorage.getItem('token') && response.sessionId && (response.sessionId !== localStorage.getItem('sessionId'))) {
+        localStorage.setItem('sessionId', response.sessionId);
+        this.sessionId = response.sessionId;
+      }
+        
+    }, 
+    (error) => {
+      this.cartCounter = 0;
+      localStorage.setItem('cartCounter', '0');
+    });
   }
 
 

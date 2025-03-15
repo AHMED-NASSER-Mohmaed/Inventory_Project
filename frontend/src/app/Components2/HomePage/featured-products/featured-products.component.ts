@@ -34,6 +34,9 @@ export class FeaturedProductsComponent implements OnInit {
   }
 
   loadCart(callback?: Function) {
+    if(localStorage.getItem('sessionId')){
+      this.sessionId = localStorage.getItem('sessionId');
+    }
     this.cartService.getCart(this.sessionId!).subscribe(
       (response) => {
         this.tempProducts = response.cart.products || [];
@@ -44,9 +47,10 @@ export class FeaturedProductsComponent implements OnInit {
           localStorage.removeItem('sessionId');
           this.sessionId = null;
         }
-        if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !==localStorage.getItem('sessionId')) ) {
-          localStorage.setItem('sessionId', response.data.sessionId);
-          this.sessionId = response.data.sessionId;
+        
+        if (!localStorage.getItem('token') && response.sessionId && (response.sessionId !== localStorage.getItem('sessionId'))) {
+          localStorage.setItem('sessionId', response.sessionId);
+          this.sessionId = response.sessionId;
         }
 
         if (callback) callback(); // Execute callback after cart loads
@@ -107,6 +111,9 @@ export class FeaturedProductsComponent implements OnInit {
   }
 
   increase(product: any) {
+    if(localStorage.getItem('sessionId')){
+      this.sessionId = localStorage.getItem('sessionId');
+    }
     console.log(product);
 
     if (product.shallowStock <= 0) {
@@ -125,7 +132,8 @@ export class FeaturedProductsComponent implements OnInit {
           localStorage.removeItem('sessionId');
           this.sessionId = null;
         }
-        if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !==localStorage.getItem('sessionId')) ) {
+    
+        if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !== localStorage.getItem('sessionId'))) {
           localStorage.setItem('sessionId', response.data.sessionId);
           this.sessionId = response.data.sessionId;
         }

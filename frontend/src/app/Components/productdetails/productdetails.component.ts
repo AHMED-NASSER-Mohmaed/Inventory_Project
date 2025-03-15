@@ -209,17 +209,21 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
     this.cleanupFunctions.push(() => window.removeEventListener("resize", resizeHandler));
   }
   loadCart() {
+    if(localStorage.getItem('sessionId')){
+      this.sessionId = localStorage.getItem('sessionId');
+    }
     this.cartService.getCart(this.sessionId!).subscribe((response) => {
       this.products = response.cart.products;
 
       console.log(this.products);
-      if(localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
+      if (localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
         localStorage.removeItem('sessionId');
         this.sessionId = null;
       }
-      if(!localStorage.getItem('token') && response.sessionId && this.sessionId != response.sessionId) {
+      
+      if (!localStorage.getItem('token') && response.sessionId && (response.sessionId !== localStorage.getItem('sessionId'))) {
         localStorage.setItem('sessionId', response.sessionId);
-          this.sessionId = response.sessionId;
+        this.sessionId = response.sessionId;
       }
       this.loadProductDetails();
     },
@@ -232,6 +236,9 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
   }
 
   increase(product: any) {
+    if(localStorage.getItem('sessionId')){
+      this.sessionId = localStorage.getItem('sessionId');
+    }
     console.log(product);
     if (product.requiredQty + 1 > product.stock) return;
       product.requiredQty += 1;
@@ -245,13 +252,14 @@ export class ProductdetailsComponent implements AfterViewInit, OnDestroy, OnInit
         }
       }
       this.cartService.addToCart(product._id, 1, this.sessionId!).subscribe((response) => {
-        if(localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
+        if (localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
           localStorage.removeItem('sessionId');
           this.sessionId = null;
         }
-        if(!localStorage.getItem('token') && response.data.sessionId && response.data.sessionId != this.sessionId) {
+    
+        if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !== localStorage.getItem('sessionId'))) {
           localStorage.setItem('sessionId', response.data.sessionId);
-            this.sessionId = response.data.sessionId;
+          this.sessionId = response.data.sessionId;
         }
     });
 

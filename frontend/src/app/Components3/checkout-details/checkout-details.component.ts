@@ -62,6 +62,9 @@ export class CheckoutDetailsComponent implements OnInit {
   }
 
   loadCart() {
+    if(localStorage.getItem('sessionId')){
+      this.sessionId = localStorage.getItem('sessionId');
+    }
     // this.loading = true; 
     this.cartService.getCart(this.sessionId!).subscribe((response) => {
       this.products = response.cart.products.filter(
@@ -83,13 +86,14 @@ export class CheckoutDetailsComponent implements OnInit {
       });
       this.getSubtotal();
       this.getTotalAmount();
-      if(localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
+      if (localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
         localStorage.removeItem('sessionId');
         this.sessionId = null;
       }
-      if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !==localStorage.getItem('sessionId')) ) {
-        localStorage.setItem('sessionId', response.data.sessionId);
-        this.sessionId = response.data.sessionId;
+      
+      if (!localStorage.getItem('token') && response.sessionId && (response.sessionId !== localStorage.getItem('sessionId'))) {
+        localStorage.setItem('sessionId', response.sessionId);
+        this.sessionId = response.sessionId;
       }
       this.stopLoading();
       // this.spinner.hide();

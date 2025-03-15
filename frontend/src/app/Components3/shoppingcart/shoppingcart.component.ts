@@ -53,6 +53,9 @@ export class ShoppingcartComponent implements OnInit {
   }
 
   loadCart() {
+    if(localStorage.getItem('sessionId')){
+      this.sessionId = localStorage.getItem('sessionId');
+    }
 
     // this.loading = true; 
     this.cartService.getCart(this.sessionId!).subscribe((response) => {
@@ -75,13 +78,14 @@ export class ShoppingcartComponent implements OnInit {
       });
       this.getSubtotal();
       this.getTotalAmount();
-      if(localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
+      if (localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
         localStorage.removeItem('sessionId');
         this.sessionId = null;
       }
-      if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !==localStorage.getItem('sessionId')) ) {
-        localStorage.setItem('sessionId', response.data.sessionId);
-        this.sessionId = response.data.sessionId;
+      
+      if (!localStorage.getItem('token') && response.sessionId && (response.sessionId !== localStorage.getItem('sessionId'))) {
+        localStorage.setItem('sessionId', response.sessionId);
+        this.sessionId = response.sessionId;
       }
       // this.spinner.hide();
       // this.loading = false; 
@@ -140,15 +144,19 @@ export class ShoppingcartComponent implements OnInit {
   }
 
   increase(product: any) {
+    if(localStorage.getItem('sessionId')){
+      this.sessionId = localStorage.getItem('sessionId');
+    }
     if (product.requiredQty + 1 > product.stock) return;
       product.requiredQty += 1;
       product.shallowStock -= 1;
       this.cartService.addToCart(product.onlineProductId, 1, this.sessionId!).subscribe((response) => {
-        if(localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
+        if (localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
           localStorage.removeItem('sessionId');
           this.sessionId = null;
         }
-        if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !==localStorage.getItem('sessionId')) ) {
+    
+        if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !== localStorage.getItem('sessionId'))) {
           localStorage.setItem('sessionId', response.data.sessionId);
           this.sessionId = response.data.sessionId;
         }
@@ -172,15 +180,19 @@ export class ShoppingcartComponent implements OnInit {
   }
 
   decrease(product: any) {
+    if(localStorage.getItem('sessionId')){
+      this.sessionId = localStorage.getItem('sessionId');
+    }
     if (product.requiredQty - 1 < 1) return;
     product.requiredQty -= 1;
     product.shallowStock += 1;
     this.cartService.addToCart(product.onlineProductId, -1, this.sessionId!).subscribe((response) => {
-      if(localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
+      if (localStorage.getItem('token') && !response.data.sessionId && localStorage.getItem('sessionId')) {
         localStorage.removeItem('sessionId');
         this.sessionId = null;
       }
-      if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !==localStorage.getItem('sessionId')) ) {
+  
+      if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !== localStorage.getItem('sessionId'))) {
         localStorage.setItem('sessionId', response.data.sessionId);
         this.sessionId = response.data.sessionId;
       }

@@ -61,6 +61,9 @@ export class QuickviewComponent  {
   }
 
   loadCart() {
+    if(localStorage.getItem('sessionId')){
+      this.sessionId = localStorage.getItem('sessionId');
+    }
     // this.loading = true; 
     if(this.selectedProduct){
       this.cartService.getCart(this.sessionId!).subscribe((response) => {
@@ -76,13 +79,14 @@ export class QuickviewComponent  {
         console.log(this.products);
         // this.getSubtotal();
         // this.getTotalAmount();
-        if(localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
+        if (localStorage.getItem('token') && !response.sessionId && localStorage.getItem('sessionId')) {
           localStorage.removeItem('sessionId');
           this.sessionId = null;
         }
-        if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !==localStorage.getItem('sessionId')) ) {
-          localStorage.setItem('sessionId', response.data.sessionId);
-          this.sessionId = response.data.sessionId;
+        
+        if (!localStorage.getItem('token') && response.sessionId && (response.sessionId !== localStorage.getItem('sessionId'))) {
+          localStorage.setItem('sessionId', response.sessionId);
+          this.sessionId = response.sessionId;
         }
         // this.spinner.hide();
         // this.loading = false; 
@@ -100,6 +104,9 @@ export class QuickviewComponent  {
 
 
   increase(product: any) {
+    if(localStorage.getItem('sessionId')){
+      this.sessionId = localStorage.getItem('sessionId');
+    }
     console.log(product);
     
     if(this.quantity > this.shallowStock) {
@@ -118,7 +125,8 @@ export class QuickviewComponent  {
           localStorage.removeItem('sessionId');
           this.sessionId = null;
         }
-        if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !==localStorage.getItem('sessionId')) ) {
+    
+        if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !== localStorage.getItem('sessionId'))) {
           localStorage.setItem('sessionId', response.data.sessionId);
           this.sessionId = response.data.sessionId;
         }

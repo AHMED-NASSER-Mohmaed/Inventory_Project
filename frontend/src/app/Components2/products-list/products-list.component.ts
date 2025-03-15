@@ -350,6 +350,9 @@ export class ProductsListComponent implements OnInit, OnDestroy {
     // }
 
     loadCart(callback?: Function) {
+      if(localStorage.getItem('sessionId')){
+        this.sessionId = localStorage.getItem('sessionId');
+      }
       this.subscriptions.add(
         this.cartService.getCart(this.sessionId!).subscribe(
           (response) => {
@@ -361,9 +364,10 @@ export class ProductsListComponent implements OnInit, OnDestroy {
               localStorage.removeItem('sessionId');
               this.sessionId = null;
             }
-            if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !==localStorage.getItem('sessionId')) ) {
-              localStorage.setItem('sessionId', response.data.sessionId);
-              this.sessionId = response.data.sessionId;
+            
+            if (!localStorage.getItem('token') && response.sessionId && (response.sessionId !== localStorage.getItem('sessionId'))) {
+              localStorage.setItem('sessionId', response.sessionId);
+              this.sessionId = response.sessionId;
             }
       
             if (callback) callback(); 
@@ -378,6 +382,9 @@ export class ProductsListComponent implements OnInit, OnDestroy {
     
   
     increase(product: any) {
+      if(localStorage.getItem('sessionId')){
+        this.sessionId = localStorage.getItem('sessionId');
+      }
       console.log(product);
       if (product.shallowStock <= 0) {
         Swal.fire({
@@ -397,8 +404,8 @@ export class ProductsListComponent implements OnInit, OnDestroy {
               localStorage.removeItem('sessionId');
               this.sessionId = null;
             }
-  
-            if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !==localStorage.getItem('sessionId')) ) {
+        
+            if (!localStorage.getItem('token') && response.data.sessionId && (response.data.sessionId !== localStorage.getItem('sessionId'))) {
               localStorage.setItem('sessionId', response.data.sessionId);
               this.sessionId = response.data.sessionId;
             }
