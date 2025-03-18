@@ -101,7 +101,7 @@ export class SignupComponent implements OnDestroy {
         //     }, 1500);
         //   }
 
-        this.router.navigateByUrl('/LandingPage');
+        this.router.navigateByUrl('/login');
       }
     })
   }
