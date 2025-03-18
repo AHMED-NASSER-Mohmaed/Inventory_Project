@@ -31,7 +31,6 @@ export class LoginComponent implements OnDestroy{
 
   login(){
     this.isLoading = true;
-    // Clear any previous toaster messages to avoid spam.
     this.toastr.clear();
     this.sub = this.accountService.login(this.account.email , this.account.password).subscribe({
       next: (res: any) => {
@@ -103,7 +102,6 @@ export class LoginComponent implements OnDestroy{
     if(localStorage.getItem('sessionId')){
       this.sessionId = localStorage.getItem('sessionId');
     }
-    // Load the cart count immediately from localStorage to prevent flickering
     const storedCount = localStorage.getItem('cartCounter');
     this.cartCounter = storedCount ? parseInt(storedCount, 10) : 0;
   

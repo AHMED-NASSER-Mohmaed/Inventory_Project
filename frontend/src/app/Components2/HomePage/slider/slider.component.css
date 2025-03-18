@@ -121,18 +121,18 @@
 }
 
 .carousel-caption1 {
-    font-size: 70px; /* Reduced from 85px */
+    font-size: 70px;
     font-weight: 600;
     color: #ffffff;
     letter-spacing: 1px;
-    margin-bottom: 20px; /* Add space between elements instead of top margins */
+    margin-bottom: 20px; 
 }
 
 .carousel-caption2 {
-    font-size: 40px; /* Reduced from 50px */
+    font-size: 40px; 
     color: #f8f8f8;
     font-weight: 300;
-    margin-bottom: 30px; /* Add space between elements instead of top margins */
+    margin-bottom: 30px; 
 }
 
 .Explorebtn {
@@ -148,8 +148,8 @@
     position: relative;
     overflow: hidden;
     z-index: 1;
-    margin-top: 0; /* Remove top margin */
-    display: inline-block; /* Ensures button aligns with left text */
+    margin-top: 0; 
+    display: inline-block; 
 }
 
 .Explorebtn:hover {
@@ -173,12 +173,12 @@
     }
 
     .carousel-caption1 {
-        font-size: 60px; /* Reduced from 70px */
+        font-size: 60px;
         margin-bottom: 15px;
     }
 
     .carousel-caption2 {
-        font-size: 32px; /* Reduced from 40px */
+        font-size: 32px; 
         margin-bottom: 20px;
     }
     
@@ -202,12 +202,12 @@
     }
 
     .carousel-caption1 {
-        font-size: 40px; /* Reduced from 50px */
+        font-size: 40px;
         margin-bottom: 10px;
     }
 
     .carousel-caption2 {
-        font-size: 28px; /* Reduced from 32px */
+        font-size: 28px;
         margin-bottom: 15px;
     }
     
@@ -227,11 +227,11 @@
     }
 
     .carousel-caption1 {
-        font-size: 30px; /* Reduced from 36px */
+        font-size: 30px; 
     }
 
     .carousel-caption2 {
-        font-size: 20px; /* Reduced from 24px */
+        font-size: 20px;
     }
 }
 

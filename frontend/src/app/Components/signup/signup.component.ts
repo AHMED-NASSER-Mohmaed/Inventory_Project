@@ -82,24 +82,26 @@ export class SignupComponent implements OnDestroy {
       },
       complete: () => {
         console.log('Signup Complete');
-        const token = localStorage.getItem('token');
-          let tokenData: any = null;
-          if (token) {
-            tokenData = decodeToken(token);
-            console.log('Decoded token:', tokenData);
-          }
+        // const token = localStorage.getItem('token');
+        //   let tokenData: any = null;
+        //   if (token) {
+        //     tokenData = decodeToken(token);
+        //     console.log('Decoded token:', tokenData);
+        //   }
 
-          if (tokenData.id.userType === 'seller') {
-            setTimeout(() => {
-              this.router.navigateByUrl('/login');
-            }, 1500);
-          }
+        //   if (tokenData.id.userType === 'seller') {
+        //     setTimeout(() => {
+        //       this.router.navigateByUrl('/login');
+        //     }, 1500);
+        //   }
 
-          if (tokenData.id.userType === 'customer') {
-            setTimeout(() => {
-              this.router.navigateByUrl('/LandingPage');
-            }, 1500);
-          }
+        //   if (tokenData.id.userType === 'customer') {
+        //     setTimeout(() => {
+        //       this.router.navigateByUrl('/LandingPage');
+        //     }, 1500);
+        //   }
+
+        this.router.navigateByUrl('/LandingPage');
       }
     })
   }
