@@ -27,6 +27,8 @@ This project is a full-featured **eCommerce and Inventory Management System** de
 - Accept/Reject product submissions from external sellers
 - Add system employees (branch admins, clerks, cashiers)
 - View global analytics and orders
+- Distributes products across all branches to ensure inventory balance.
+- Receives notifications when branches go out of stock for any product.
 - Manage platform commission policies
 - Full control via the Super Admin Dashboard
 
@@ -99,7 +101,16 @@ This project is a full-featured **eCommerce and Inventory Management System** de
 
 ### 📦 Installation
 
-#### 1. Clone the Repository
+#### Clone the Repository
 ```bash
 git clone https://github.com/AHMED-NASSER-Mohmaed/Inventory_Project.git
 cd Inventory_Project
+cd backend
+npm install
+npm run dev
+cd ..
+cd frontend
+npm install
+ng serve
+
+
