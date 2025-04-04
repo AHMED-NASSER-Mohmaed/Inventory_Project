@@ -101,5 +101,5 @@ This project is a full-featured **eCommerce and Inventory Management System** de
 
 #### 1. Clone the Repository
 ```bash
-git clone [https://github.com/AHMED-NASSER-Mohmaed/Inventory_Project.git]
+git clone https://github.com/AHMED-NASSER-Mohmaed/Inventory_Project.git
 cd Inventory_Project
